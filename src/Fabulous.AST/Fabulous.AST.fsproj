@@ -6,7 +6,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs" />
+        <Compile Include="Array.fs" />
+        <Compile Include="Primitives.fs" />
+        <Compile Include="WidgetDiff.fs" />
+        <Compile Include="IViewNode.fs" />
+        <Compile Include="AttributeDefinitions.fs" />
+        <Compile Include="Builders.fs" />
+        <Compile Include="_NodeBase.fs" />
+        <Compile Include="Widgets.fs" />
+        <Compile Include="WidgetDefinitions.fs" />
+        <Compile Include="MapMsg.fs" />
+        <Compile Include="Lifecycle.fs" />
+        <Compile Include="Dispatch.fs" />
+        <Compile Include="Attributes.fs" />
     </ItemGroup>
 
     <ItemGroup>
