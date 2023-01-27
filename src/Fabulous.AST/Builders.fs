@@ -4,13 +4,12 @@ open System.ComponentModel
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fabulous.AST.WidgetCollectionAttributeDefinitions
-open Microsoft.FSharp.Core
 
 type AttributesBundle =
     (struct (StackList<ScalarAttribute> * WidgetAttribute [] voption * WidgetCollectionAttribute [] voption))
 
 [<Struct; NoComparison; NoEquality>]
-type WidgetBuilder<'msg, 'marker> =
+type WidgetBuilder<'marker> =
     struct
         val Key: WidgetKey
         val Attributes: AttributesBundle
@@ -53,7 +52,7 @@ type WidgetBuilder<'msg, 'marker> =
         member inline x.AddScalar(attr: ScalarAttribute) =
             let struct (scalarAttributes, widgetAttributes, widgetCollectionAttributes) = x.Attributes
 
-            WidgetBuilder<'msg, 'marker>(
+            WidgetBuilder<'marker>(
                 x.Key,
                 struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
             )
@@ -71,7 +70,7 @@ type WidgetBuilder<'msg, 'marker> =
             | ValueNone ->
                 let attr = defaultWith()
 
-                WidgetBuilder<'msg, 'marker>(
+                WidgetBuilder<'marker>(
                     x.Key,
                     struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
                 )
@@ -82,7 +81,7 @@ type WidgetBuilder<'msg, 'marker> =
                 let newAttrs =
                     StackList.replace(&scalarAttributes, (fun attr -> attr.Key = attrKey), newAttr)
 
-                WidgetBuilder<'msg, 'marker>(x.Key, struct (newAttrs, widgetAttributes, widgetCollectionAttributes))
+                WidgetBuilder<'marker>(x.Key, struct (newAttrs, widgetAttributes, widgetCollectionAttributes))
 
         [<EditorBrowsable(EditorBrowsableState.Never)>]
         member x.AddWidget(attr: WidgetAttribute) =
@@ -98,7 +97,7 @@ type WidgetBuilder<'msg, 'marker> =
                     attribs2.[attribs.Length] <- attr
                     attribs2
 
-            WidgetBuilder<'msg, 'marker>(x.Key, struct (scalarAttributes, ValueSome res, widgetCollectionAttributes))
+            WidgetBuilder<'marker>(x.Key, struct (scalarAttributes, ValueSome res, widgetCollectionAttributes))
 
         [<EditorBrowsable(EditorBrowsableState.Never)>]
         member x.AddWidgetCollection(attr: WidgetCollectionAttribute) =
@@ -114,7 +113,7 @@ type WidgetBuilder<'msg, 'marker> =
                     attribs2.[attribs.Length] <- attr
                     attribs2
 
-            WidgetBuilder<'msg, 'marker>(x.Key, struct (scalarAttributes, widgetAttributes, ValueSome res))
+            WidgetBuilder<'marker>(x.Key, struct (scalarAttributes, widgetAttributes, ValueSome res))
     end
 
 
@@ -158,7 +157,7 @@ type CollectionBuilder<'msg, 'marker, 'itemMarker> =
                 | ValueNone -> ArraySlice.emptyWithNull()
                 | ValueSome slice -> slice
 
-            WidgetBuilder<'msg, 'marker>(
+            WidgetBuilder<'marker>(
                 x.WidgetKey,
                 AttributesBundle(x.Scalars, ValueNone, ValueSome [| x.Attr.WithValue(attrValue) |])
             )
@@ -187,10 +186,10 @@ type CollectionBuilder<'msg, 'marker, 'itemMarker> =
 [<Struct>]
 type AttributeCollectionBuilder<'msg, 'marker, 'itemMarker> =
     struct
-        val Widget: WidgetBuilder<'msg, 'marker>
+        val Widget: WidgetBuilder<'marker>
         val Attr: WidgetCollectionAttributeDefinition
 
-        new(widget: WidgetBuilder<'msg, 'marker>, attr: WidgetCollectionAttributeDefinition) =
+        new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition) =
             { Widget = widget; Attr = attr }
 
         member inline x.Run(c: Content<'msg>) =
