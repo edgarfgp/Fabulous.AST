@@ -1,15 +1,10 @@
 namespace Fabulous.AST
 
-open System
-open System.Collections.Generic
-open Fabulous
-
 /// Widget definition to create a control
 type WidgetDefinition =
     { Key: WidgetKey
       Name: string
-      TargetType: Type
-      CreateView: Widget * ViewTreeContext * IViewNode voption -> struct (IViewNode * obj) }
+      CreateView: Widget -> obj }
 
 module WidgetDefinitionStore =
     let private _widgets = ResizeArray<WidgetDefinition>()
