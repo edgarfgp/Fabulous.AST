@@ -5,10 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST", "src\Fabulous.AST\Fabulous.AST.fsproj", "{2369F951-2B98-4FBC-B62F-9B6B696B4602}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fantomas.Core", "..\fantomas\src\Fantomas.Core\Fantomas.Core.fsproj", "{E260461D-F433-4356-BBF1-C9FC732EF033}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fantomas.FCS", "..\fantomas\src\Fantomas.FCS\Fantomas.FCS.fsproj", "{2AE5C3DD-6006-49D3-9910-F055081892D6}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Tests", "src\Fabulous.AST.Tests\Fabulous.AST.Tests.fsproj", "{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}"
 EndProject
 Global
@@ -24,14 +20,6 @@ Global
 		{2369F951-2B98-4FBC-B62F-9B6B696B4602}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2369F951-2B98-4FBC-B62F-9B6B696B4602}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2369F951-2B98-4FBC-B62F-9B6B696B4602}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E260461D-F433-4356-BBF1-C9FC732EF033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E260461D-F433-4356-BBF1-C9FC732EF033}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E260461D-F433-4356-BBF1-C9FC732EF033}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E260461D-F433-4356-BBF1-C9FC732EF033}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AE5C3DD-6006-49D3-9910-F055081892D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AE5C3DD-6006-49D3-9910-F055081892D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AE5C3DD-6006-49D3-9910-F055081892D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AE5C3DD-6006-49D3-9910-F055081892D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -9,7 +9,8 @@ open type Fabulous.AST.Node
 let CanCompileBasicTree () =
     let tree =
         ModuleOrNamespace(
-            Range("test.fs", Position(1, 2), Position(3, 4))
+            Range("test.fs", Position(1, 2), Position(3, 4)),
+            []
         )
         
     let rootNode = Tree.compile tree :?> Fantomas.Core.SyntaxOak.ModuleOrNamespaceNode

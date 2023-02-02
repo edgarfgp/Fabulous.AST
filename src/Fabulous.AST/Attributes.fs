@@ -2,6 +2,7 @@
 
 open Fabulous.AST.ScalarAttributeDefinitions
 open Fabulous.AST.WidgetAttributeDefinitions
+open Fabulous.AST.WidgetCollectionAttributeDefinitions
 
 module Attributes =
     let inline defineScalar<'T> name : SimpleScalarAttributeDefinition<'T> =

@@ -18,12 +18,14 @@
         <Compile Include="Nodes\Position.fs" />
         <Compile Include="Nodes\Range.fs" />
         <Compile Include="Nodes\_NodeBase.fs" />
-        <Compile Include="Nodes\ModuleOrNamespace.fs" />
+        <Compile Include="Nodes\ModuleOrNamespaceHeaderNode.fs" />
+        <Compile Include="Nodes\ModuleDecl.fs" />
+        <Compile Include="Nodes\ModuleOrNamespaceNode.fs" />
         <Compile Include="Tree.fs" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\fantomas\src\Fantomas.Core\Fantomas.Core.fsproj" />
+      <PackageReference Include="Fantomas.Core" Version="6.0.0-alpha-002" />
     </ItemGroup>
 
 </Project>
