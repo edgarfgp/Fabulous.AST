@@ -15,7 +15,7 @@ let check (expected: string) (source: WidgetBuilder<IFabOak>)=
         |> CodeFormatter.FormatOakAsync
         |> Async.RunSynchronously
         
-   Assert.AreEqual(expected, res)
+   Assert.AreEqual(expected.Trim(), res.Trim())
 
 [<Test>]
 let CanCompileBasicTree () =
@@ -34,10 +34,25 @@ let CanCompileBasicTree2 () =
     |> check "let x = 123\n"
     
 [<Test>]
+let helloWorld () =
+    Oak() {
+        ModuleOrNamespace() {
+            Let("x", "\"hello, world\"")
+            Call("printfn", "\"%s\"", "x")
+        }
+    }
+    |> check "
+    
+let x = \"hello, world\"
+printfn \"%s\" x
+    
+"
+    
+[<Test>]
 let z () =
     let source =
         """
-let x = 12
+printfn "Hello, world"
 """
     let rootNode = CodeFormatter.ParseOakAsync(false, source) |> Async.RunSynchronously    
     Assert.NotNull(rootNode)

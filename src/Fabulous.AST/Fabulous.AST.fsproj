@@ -16,10 +16,14 @@
         <Compile Include="Helpers.fs" />
         <Compile Include="Nodes\_ValueBase.fs" />
         <Compile Include="Nodes\_NodeBase.fs" />
+        <Compile Include="Nodes\BindingNode.fs" />
+        <Compile Include="Nodes\ModuleDecl\_ModuleDecl.fs" />
+        <Compile Include="Nodes\ModuleDecl\TopLevelBinding.fs" />
+        <Compile Include="Nodes\ModuleDecl\DeclExpr.fs" />
         <Compile Include="Nodes\ModuleOrNamespace.fs" />
         <Compile Include="Nodes\Oak.fs" />
-        <Compile Include="Nodes\TopLevelBinding.fs" />
         <Compile Include="Nodes\Let.fs" />
+        <Compile Include="Nodes\Call.fs" />
         <Compile Include="Nodes\Ast.fs" />
         <Compile Include="Tree.fs" />
     </ItemGroup>

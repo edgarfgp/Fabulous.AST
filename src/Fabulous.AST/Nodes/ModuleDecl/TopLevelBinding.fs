@@ -3,11 +3,7 @@ namespace Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
-type IFabModuleDecl = IFabNodeBase
-
 type IFabTopLevelBinding = inherit IFabModuleDecl
-
-type IFabBindingNode = IFabNodeBase
 
 module TopLevelBinding =
     let BindingNode = Attributes.defineWidget "BindingNode"

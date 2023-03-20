@@ -27,5 +27,5 @@ module ModuleOrNamespaceBuilders =
 [<Extension>]
 type ModuleOrNamespaceYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<#IFabModuleOrNamespace, IFabNodeBase>, x: WidgetBuilder<IFabNodeBase>) : Content =
+    static member inline Yield(_: CollectionBuilder<#IFabModuleOrNamespace, IFabNodeBase>, x: WidgetBuilder<#IFabNodeBase>) : Content =
         { Widgets = MutStackArray1.One(x.Compile()) }
