@@ -1,9 +1,13 @@
 namespace Fabulous.AST
 
-open type Fabulous.AST.Node
+(* This file is here to demonstrate the creation of a computation expression
+   that is able to act as an implicit module, removing the need to explicitly write Oak > ModuleOrNamespace.
+   The actual use case for it is still to be determined *)
+
+open type Fabulous.AST.Ast
 open Fabulous.AST.WidgetCollectionAttributeDefinitions
 
-type AstContent = { ModuleDecls: WidgetBuilder<IFabNodeBase> list }
+type AstContent = { ModuleDecls: WidgetBuilder<IFabModuleDecl> list }
 
 type RootAstBuilder() =
     member inline _.Zero() : AstContent =
@@ -12,11 +16,11 @@ type RootAstBuilder() =
     member _.Combine(a: AstContent, b: AstContent) : AstContent =
         { ModuleDecls = List.append a.ModuleDecls b.ModuleDecls }
              
-    member x.Yield(widget: WidgetBuilder<IFabLet>) =
+    member x.Yield(widget: WidgetBuilder<IFabBinding>) =
         let topLevelBinding = TopLevelBinding(widget)
         
         let builder =
-            WidgetBuilder<IFabNodeBase>(
+            WidgetBuilder<IFabModuleDecl>(
                 topLevelBinding.Key,
                 topLevelBinding.Attributes
             )

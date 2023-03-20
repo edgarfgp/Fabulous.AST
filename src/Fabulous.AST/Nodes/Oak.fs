@@ -13,13 +13,13 @@ module Oak =
     let ModulesOrNamespaces = Attributes.defineWidgetCollection "ModulesOrNamespaces"
      
     let WidgetKey = Widgets.register "Oak" (fun (widget: Widget) ->
-        let modulesOrNamespaces = Helpers.getWidgetCollectionValue widget ModulesOrNamespaces        
+        let modulesOrNamespaces = Helpers.getNodesFromWidgetCollection<ModuleOrNamespaceNode> widget ModulesOrNamespaces        
         Oak([], modulesOrNamespaces, Range.Zero)
     )
     
 [<AutoOpen>]
 module OakBuilders =
-    type Fabulous.AST.Node with
+    type Fabulous.AST.Ast with
         static member inline Oak() =
             CollectionBuilder<IFabOak, IFabModuleOrNamespace>(Oak.WidgetKey, Oak.ModulesOrNamespaces) 
 

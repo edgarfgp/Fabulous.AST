@@ -28,7 +28,6 @@ type WidgetBuilder<'marker> =
             { Key = key
               Attributes = AttributesBundle(StackList.three(scalar1, scalar2, scalar3), ValueNone, ValueNone) }
 
-        [<EditorBrowsable(EditorBrowsableState.Never)>]
         member x.Compile() : Widget =
             let struct (scalarAttributes, widgetAttributes, widgetCollectionAttributes) = x.Attributes
 
@@ -125,21 +124,25 @@ type CollectionBuilder<'marker, 'itemMarker> =
     struct
         val WidgetKey: WidgetKey
         val Scalars: StackList<ScalarAttribute>
+        val Widgets: WidgetAttribute[] voption
         val Attr: WidgetCollectionAttributeDefinition
 
-        new(widgetKey: WidgetKey, scalars: StackList<ScalarAttribute>, attr: WidgetCollectionAttributeDefinition) =
+        new(widgetKey: WidgetKey, scalars: StackList<ScalarAttribute>, widgets: WidgetAttribute[] voption, attr: WidgetCollectionAttributeDefinition) =
             { WidgetKey = widgetKey
               Scalars = scalars
+              Widgets = widgets
               Attr = attr }
 
         new(widgetKey: WidgetKey, attr: WidgetCollectionAttributeDefinition) =
             { WidgetKey = widgetKey
               Scalars = StackList.empty()
+              Widgets = ValueNone
               Attr = attr }
 
         new(widgetKey: WidgetKey, attr: WidgetCollectionAttributeDefinition, scalar: ScalarAttribute) =
             { WidgetKey = widgetKey
               Scalars = StackList.one scalar
+              Widgets = ValueNone
               Attr = attr }
 
         new(widgetKey: WidgetKey,
@@ -148,6 +151,7 @@ type CollectionBuilder<'marker, 'itemMarker> =
             scalarB: ScalarAttribute) =
             { WidgetKey = widgetKey
               Scalars = StackList.two(scalarA, scalarB)
+              Widgets = ValueNone
               Attr = attr }
 
         member inline x.Run(c: Content) =
@@ -158,7 +162,7 @@ type CollectionBuilder<'marker, 'itemMarker> =
 
             WidgetBuilder<'marker>(
                 x.WidgetKey,
-                AttributesBundle(x.Scalars, ValueNone, ValueSome [| x.Attr.WithValue(attrValue) |])
+                AttributesBundle(x.Scalars, x.Widgets, ValueSome [| x.Attr.WithValue(attrValue) |])
             )
 
         member inline _.Combine(a: Content, b: Content) : Content =

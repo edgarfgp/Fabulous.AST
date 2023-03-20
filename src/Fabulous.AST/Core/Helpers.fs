@@ -31,10 +31,10 @@ module Helpers =
             | None -> ValueNone
             | Some attr -> ValueSome attr.Value
             
-    let getWidgetValue (widget: Widget) (def: WidgetAttributeDefinition) =
+    let getNodeFromWidget<'T> (widget: Widget) (def: WidgetAttributeDefinition) =
         match tryGetWidgetValue widget def with
         | ValueNone -> failwith $"Could not find widget attribute {def.Name} on widget {widget.DebugName}"
-        | ValueSome value -> value
+        | ValueSome value -> createValueForWidget<'T> value
         
     let tryGetWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match widget.WidgetCollectionAttributes with
@@ -44,13 +44,19 @@ module Helpers =
             | None -> ValueNone
             | Some attr -> ValueSome attr.Value
         
-    let getWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
+    let getWidgetsFromWidgetCollection (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match tryGetWidgetCollectionValue widget def with
         | ValueNone -> failwith $"Could not find widget collection attribute {def.Name} on widget {widget.DebugName}"
         | ValueSome value ->
             let struct (count, elements) = value
-            
             elements
             |> Array.take (int count)
-            |> Array.map createValueForWidget
             |> List.ofArray
+            
+    let getNodesFromWidgetCollection<'T> (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
+        getWidgetsFromWidgetCollection widget def
+        |> List.map createValueForWidget<'T>
+        
+    let createNodeFromBuilder (builder: WidgetBuilder<'T>): 'U =
+        builder.Compile()
+        |> createValueForWidget<'U>

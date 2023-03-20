@@ -6,26 +6,31 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Array.fs" />
-        <Compile Include="Primitives.fs" />
-        <Compile Include="AttributeDefinitions.fs" />
-        <Compile Include="Builders.fs" />
-        <Compile Include="WidgetDefinitions.fs" />
-        <Compile Include="Widgets.fs" />
-        <Compile Include="Attributes.fs" />
-        <Compile Include="Helpers.fs" />
+        <Compile Include="Core\Array.fs" />
+        <Compile Include="Core\Primitives.fs" />
+        <Compile Include="Core\AttributeDefinitions.fs" />
+        <Compile Include="Core\Builders.fs" />
+        <Compile Include="Core\WidgetDefinitions.fs" />
+        <Compile Include="Core\Helpers.fs" />
+        <Compile Include="Core\Widgets.fs" />
+        <Compile Include="Core\Attributes.fs" />
         <Compile Include="Nodes\_ValueBase.fs" />
         <Compile Include="Nodes\_NodeBase.fs" />
-        <Compile Include="Nodes\BindingNode.fs" />
-        <Compile Include="Nodes\ModuleDecl\_ModuleDecl.fs" />
-        <Compile Include="Nodes\ModuleDecl\TopLevelBinding.fs" />
-        <Compile Include="Nodes\ModuleDecl\DeclExpr.fs" />
+        <Compile Include="Nodes\SingleText.fs" />
+        <Compile Include="Nodes\MultipleTexts.fs" />
+        <Compile Include="Nodes\IdentifierOrDot.fs" />
+        <Compile Include="Nodes\IdentList.fs" />
+        <Compile Include="Nodes\Constant.fs" />
+        <Compile Include="Nodes\ExprAppNode.fs" />
+        <Compile Include="Nodes\Expr.fs" />
+        <Compile Include="Nodes\Binding.fs" />
+        <Compile Include="Nodes\ModuleDecl.fs" />
         <Compile Include="Nodes\ModuleOrNamespace.fs" />
         <Compile Include="Nodes\Oak.fs" />
-        <Compile Include="Nodes\Let.fs" />
-        <Compile Include="Nodes\Call.fs" />
-        <Compile Include="Nodes\Ast.fs" />
+        <Compile Include="HighLevelNodes\CommonNodes.fs" />
+        <Compile Include="HighLevelNodes\ImplicitModule.fs" />
         <Compile Include="Tree.fs" />
+        <Compile Include="Playground.fs" />
     </ItemGroup>
 
     <ItemGroup>
