@@ -3,7 +3,6 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open FSharp.Compiler.Text
 open Fabulous.AST.StackAllocatedCollections
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 type IFabModuleOrNamespace = inherit IFabNodeBase

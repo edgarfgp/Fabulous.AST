@@ -9,10 +9,12 @@ open Fabulous.AST
 open type Node
 
 let check (expected: string) (source: WidgetBuilder<IFabOak>)=
+   let oak =  Tree.compile source |> unbox<Oak>
+   let config =
+        { FormatConfig.Default with
+            InsertFinalNewline = false }       
    let res =
-       Tree.compile source
-        |> unbox<Oak>
-        |> CodeFormatter.FormatOakAsync
+       CodeFormatter.FormatOakAsync(oak, config)
         |> Async.RunSynchronously
         
    Assert.AreEqual(expected.Trim(), res.Trim())
@@ -20,9 +22,9 @@ let check (expected: string) (source: WidgetBuilder<IFabOak>)=
 [<Test>]
 let CanCompileBasicTree () =
     ast {
-        Let("hello", "\"World\"")
+        Let("hello", "World")
     }
-    |> check "let hello = \"World\"\n"
+    |> check "let hello = World"
     
 [<Test>]
 let CanCompileBasicTree2 () =
@@ -31,7 +33,7 @@ let CanCompileBasicTree2 () =
             Let("x", "123")
         }
     }
-    |> check "let x = 123\n"
+    |> check "let x = 123"
     
 [<Test>]
 let helloWorld () =
@@ -41,15 +43,13 @@ let helloWorld () =
             Call("printfn", "\"%s\"", "x")
         }
     }
-    |> check "
-    
-let x = \"hello, world\"
-printfn \"%s\" x
-    
-"
-    
+    |> check """
+let x = "hello, world"
+printfn "%s" x
+"""
+
 [<Test>]
-let z () =
+let inspectOak () =
     let source =
         """
 printfn "Hello, world"
