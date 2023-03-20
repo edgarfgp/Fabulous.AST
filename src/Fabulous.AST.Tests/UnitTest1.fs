@@ -36,6 +36,18 @@ let CanCompileBasicTree1 () =
 let x = "hello, world"
 printfn "%s" x
 """
+
+[<Test>]
+let CanCompileBasicTree11 () =
+    ast {
+        for i = 0 to 2 do
+            Call("printfn", "\"%s\"", $"{i}")
+    }
+    |> check """
+printfn "%s" 0
+printfn "%s" 1
+printfn "%s" 2
+"""
     
 [<Test>]
 let CanCompileBasicTree2 () =
@@ -57,6 +69,20 @@ let helloWorld () =
     |> check """
 let x = "hello, world"
 printfn "%s" x
+"""
+
+[<Test>]
+let helloWorld2 () =
+    Oak() {
+        ModuleOrNamespace() {
+            for i = 0 to 2 do
+                Call("printfn", "\"%s\"", $"{i}")
+        }
+    }
+    |> check """
+printfn "%s" 0
+printfn "%s" 1
+printfn "%s" 2
 """
 
 [<Test>]
