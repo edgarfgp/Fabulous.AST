@@ -42,7 +42,7 @@ type RootAstBuilder() =
                     moduleDecl
             }
         }
-    
+        
 [<AutoOpen>]
-module ABC =
+module RootAstBuilder =
     let ast = RootAstBuilder()
