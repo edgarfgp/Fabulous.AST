@@ -1,6 +1,5 @@
 module Fabulous.AST.Tests
 
-open FSharp.Compiler.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
