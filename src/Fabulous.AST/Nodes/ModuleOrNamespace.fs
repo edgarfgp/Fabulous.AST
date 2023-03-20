@@ -12,13 +12,8 @@ module ModuleOrNamespace =
     
     let ModuleDecls = Attributes.defineWidgetCollection "ModuleDecls"
     
-    let WidgetKey = Widgets.register(fun (widget: Widget) ->
-        let struct (numberOfElements, moduleDecls) = Helpers.getWidgetCollectionValue widget ModuleDecls
-        let moduleDecls =
-            moduleDecls
-            |> Array.take(int numberOfElements)
-            |> Array.map(Helpers.createValueForWidget)
-            |> List.ofArray
+    let WidgetKey = Widgets.register "ModuleOrNamespace" (fun (widget: Widget) ->
+        let moduleDecls = Helpers.getWidgetCollectionValue widget ModuleDecls
         ModuleOrNamespaceNode(None, moduleDecls, Range.Zero)
     )
     
@@ -26,11 +21,11 @@ module ModuleOrNamespace =
 module ModuleOrNamespaceBuilders =
     type Fabulous.AST.Node with
         static member inline ModuleOrNamespace() =
-            CollectionBuilder<IFabModuleOrNamespace, IFabModuleOrNamespace>(ModuleOrNamespace.WidgetKey, ModuleOrNamespace.ModuleDecls) 
+            CollectionBuilder<IFabModuleOrNamespace, IFabNodeBase>(ModuleOrNamespace.WidgetKey, ModuleOrNamespace.ModuleDecls) 
             
 
 [<Extension>]
 type ModuleOrNamespaceYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<#IFabModuleOrNamespace, IFabModuleOrNamespace>, x: WidgetBuilder<#IFabModuleOrNamespace>) : Content =
+    static member inline Yield(_: CollectionBuilder<#IFabModuleOrNamespace, IFabNodeBase>, x: WidgetBuilder<IFabNodeBase>) : Content =
         { Widgets = MutStackArray1.One(x.Compile()) }

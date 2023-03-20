@@ -15,15 +15,9 @@ module Oak =
     
     let ModulesOrNamespaces = Attributes.defineWidgetCollection "ModulesOrNamespaces"
      
-    let WidgetKey = Widgets.register(fun (widget: Widget) ->
+    let WidgetKey = Widgets.register "Oak" (fun (widget: Widget) ->
         // let parsedHashDirectives = Helpers.getScalarValue widget ParsedHashDirectives
-        let struct (numberOfElements, modulesOrNamespaces) = Helpers.getWidgetCollectionValue widget ModulesOrNamespaces
-        let modulesOrNamespaces =
-            modulesOrNamespaces
-            |> Array.take(int numberOfElements)
-            |> Array.map(Helpers.createValueForWidget)
-            |> List.ofArray
-        
+        let modulesOrNamespaces = Helpers.getWidgetCollectionValue widget ModulesOrNamespaces        
         Oak([], modulesOrNamespaces, Range.Zero)
     )
     

@@ -1,11 +1,11 @@
 ﻿namespace Fabulous.AST
 
 module Widgets =
-    let register<'T> (createFn: Widget -> 'T) =
+    let register name (createFn: Widget -> 'T) =
         let key = WidgetDefinitionStore.getNextKey()
         let definition =
           { Key = key
-            Name = typeof<'T>.Name
+            Name = name
             CreateView = createFn >> box }
         
         WidgetDefinitionStore.set key definition

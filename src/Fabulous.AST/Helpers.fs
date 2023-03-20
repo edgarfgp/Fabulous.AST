@@ -47,4 +47,10 @@ module Helpers =
     let getWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match tryGetWidgetCollectionValue widget def with
         | ValueNone -> failwith $"Could not find widget collection attribute {def.Name} on widget {widget.DebugName}"
-        | ValueSome value -> value
+        | ValueSome value ->
+            let struct (count, elements) = value
+            
+            elements
+            |> Array.take (int count)
+            |> Array.map createValueForWidget
+            |> List.ofArray
