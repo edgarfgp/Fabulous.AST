@@ -20,11 +20,22 @@ let check (expected: string) (source: WidgetBuilder<IFabOak>)=
    Assert.AreEqual(expected.Trim(), res.Trim())
 
 [<Test>]
-let CanCompileBasicTree () =
+let CnCompileBasicTree () =
     ast {
         Let("hello", "World")
     }
     |> check "let hello = World"
+    
+[<Test>]
+let CanCompileBasicTree1 () =
+    ast {
+        Let("x", "\"hello, world\"")
+        Call("printfn", "\"%s\"", "x")
+    }
+    |> check """
+let x = "hello, world"
+printfn "%s" x
+"""
     
 [<Test>]
 let CanCompileBasicTree2 () =

@@ -23,6 +23,17 @@ type RootAstBuilder() =
         
         { ModuleDecls = [ builder ] }
         
+    member x.Yield(widget: WidgetBuilder<IFabCall>) =
+        let topLevelBinding = DeclExpr(widget)
+        
+        let builder =
+            WidgetBuilder<IFabNodeBase>(
+                topLevelBinding.Key,
+                topLevelBinding.Attributes
+            )
+        
+        { ModuleDecls = [ builder ] }
+        
     member x.For<'t>(sequence: 't seq, f: 't -> AstContent) : AstContent =
         let mutable res: AstContent = x.Zero()
 
