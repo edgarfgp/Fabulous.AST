@@ -34,7 +34,7 @@ type WidgetBuilder<'marker> =
 
             { Key = x.Key
 #if DEBUG
-              DebugName = $"{typeof<'marker>.Name}<{typeof<'msg>.Name}>"
+              DebugName = $"{typeof<'marker>.Name}"
 #endif
               ScalarAttributes =
                   match StackList.length &scalarAttributes with
@@ -117,12 +117,11 @@ type WidgetBuilder<'marker> =
     end
 
 
-
 [<Struct>]
-type Content<'msg> = { Widgets: MutStackArray1.T<Widget> }
+type Content = { Widgets: MutStackArray1.T<Widget> }
 
 [<Struct; NoComparison; NoEquality>]
-type CollectionBuilder<'msg, 'marker, 'itemMarker> =
+type CollectionBuilder<'marker, 'itemMarker> =
     struct
         val WidgetKey: WidgetKey
         val Scalars: StackList<ScalarAttribute>
@@ -151,7 +150,7 @@ type CollectionBuilder<'msg, 'marker, 'itemMarker> =
               Scalars = StackList.two(scalarA, scalarB)
               Attr = attr }
 
-        member inline x.Run(c: Content<'msg>) =
+        member inline x.Run(c: Content) =
             let attrValue =
                 match MutStackArray1.toArraySlice &c.Widgets with
                 | ValueNone -> ArraySlice.emptyWithNull()
@@ -162,18 +161,18 @@ type CollectionBuilder<'msg, 'marker, 'itemMarker> =
                 AttributesBundle(x.Scalars, ValueNone, ValueSome [| x.Attr.WithValue(attrValue) |])
             )
 
-        member inline _.Combine(a: Content<'msg>, b: Content<'msg>) : Content<'msg> =
+        member inline _.Combine(a: Content, b: Content) : Content =
             let res =
                 MutStackArray1.combineMut(&a.Widgets, b.Widgets)
 
             { Widgets = res }
 
-        member inline _.Zero() : Content<'msg> = { Widgets = MutStackArray1.Empty }
+        member inline _.Zero() : Content = { Widgets = MutStackArray1.Empty }
 
-        member inline _.Delay([<InlineIfLambda>] f) : Content<'msg> = f()
+        member inline _.Delay([<InlineIfLambda>] f) : Content = f()
 
-        member inline x.For<'t>(sequence: 't seq, f: 't -> Content<'msg>) : Content<'msg> =
-            let mutable res: Content<'msg> = x.Zero()
+        member inline x.For<'t>(sequence: 't seq, f: 't -> Content) : Content =
+            let mutable res: Content = x.Zero()
 
             // this is essentially Fold, not sure what is more optimal
             // handwritten version of via Seq.Fold
@@ -192,7 +191,7 @@ type AttributeCollectionBuilder<'msg, 'marker, 'itemMarker> =
         new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition) =
             { Widget = widget; Attr = attr }
 
-        member inline x.Run(c: Content<'msg>) =
+        member inline x.Run(c: Content) =
             let attrValue =
                 match MutStackArray1.toArraySlice &c.Widgets with
                 | ValueNone -> ArraySlice.emptyWithNull()
@@ -200,15 +199,15 @@ type AttributeCollectionBuilder<'msg, 'marker, 'itemMarker> =
 
             x.Widget.AddWidgetCollection(x.Attr.WithValue(attrValue))
 
-        member inline _.Combine(a: Content<'msg>, b: Content<'msg>) : Content<'msg> =
+        member inline _.Combine(a: Content, b: Content) : Content =
             { Widgets = MutStackArray1.combineMut(&a.Widgets, b.Widgets) }
 
-        member inline _.Zero() : Content<'msg> = { Widgets = MutStackArray1.Empty }
+        member inline _.Zero() : Content = { Widgets = MutStackArray1.Empty }
 
-        member inline _.Delay([<InlineIfLambda>] f) : Content<'msg> = f()
+        member inline _.Delay([<InlineIfLambda>] f) : Content = f()
 
-        member inline x.For<'t>(sequence: 't seq, [<InlineIfLambda>] f: 't -> Content<'msg>) : Content<'msg> =
-            let mutable res: Content<'msg> = x.Zero()
+        member inline x.For<'t>(sequence: 't seq, [<InlineIfLambda>] f: 't -> Content) : Content =
+            let mutable res: Content = x.Zero()
 
             // this is essentially Fold, not sure what is more optimal
             // handwritten version of via Seq.Fold

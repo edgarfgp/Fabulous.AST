@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fabulous.AST.ScalarAttributeDefinitions
 open Fabulous.AST.WidgetAttributeDefinitions
+open Fabulous.AST.WidgetCollectionAttributeDefinitions
 
 module Helpers =
     let createValueForWidget<'T> (widget: Widget) =
@@ -33,4 +34,17 @@ module Helpers =
     let getWidgetValue (widget: Widget) (def: WidgetAttributeDefinition) =
         match tryGetWidgetValue widget def with
         | ValueNone -> failwith $"Could not find widget attribute {def.Name} on widget {widget.DebugName}"
+        | ValueSome value -> value
+        
+    let tryGetWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
+        match widget.WidgetCollectionAttributes with
+        | ValueNone -> ValueNone
+        | ValueSome widgetCollectionAttrs ->
+            match Array.tryFind (fun (attr: WidgetCollectionAttribute) -> attr.Key = def.Key) widgetCollectionAttrs with
+            | None -> ValueNone
+            | Some attr -> ValueSome attr.Value
+        
+    let getWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
+        match tryGetWidgetCollectionValue widget def with
+        | ValueNone -> failwith $"Could not find widget collection attribute {def.Name} on widget {widget.DebugName}"
         | ValueSome value -> value

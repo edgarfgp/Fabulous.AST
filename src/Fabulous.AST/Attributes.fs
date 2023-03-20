@@ -14,3 +14,8 @@ module Attributes =
     let inline defineWidget name: WidgetAttributeDefinition =
         let key = AttributeDefinitionStore.getNextKeyForWidget()
         { Key = key; Name = name }
+        
+    let inline defineWidgetCollection name : WidgetCollectionAttributeDefinition =
+        let key =
+            AttributeDefinitionStore.getNextKeyForWidgetCollection()
+        { Key = key; Name = name }

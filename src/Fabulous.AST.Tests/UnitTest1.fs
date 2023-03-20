@@ -1,23 +1,34 @@
 module Fabulous.AST.Tests
 
+open FSharp.Compiler.Text
+open Fantomas.Core
+open Fantomas.Core.SyntaxOak
 open NUnit.Framework
 
 open Fabulous.AST
-open type Fabulous.AST.Node
+
+open type Node
 
 [<Test>]
 let CanCompileBasicTree () =
-    let tree =
-        ModuleOrNamespace(
-            Range("test.fs", Position(1, 2), Position(3, 4)),
-            []
-        )
+    let source = Oak(){
+        ModuleOrNamespace()
+    }
         
-    let rootNode = Tree.compile tree :?> Fantomas.Core.SyntaxOak.ModuleOrNamespaceNode
+    let compile = Tree.compile source
+    let rootNode =
+        compile
+        |> unbox<Oak>
+        |> CodeFormatter.FormatOakAsync
+        |> Async.RunSynchronously
     
-    Assert.NotNull(rootNode.Range)
-    Assert.AreEqual(rootNode.Range.FileName, "test.fs")
-    Assert.AreEqual(rootNode.Range.Start.Line, 1)
-    Assert.AreEqual(rootNode.Range.Start.Column, 2)
-    Assert.AreEqual(rootNode.Range.End.Line, 3)
-    Assert.AreEqual(rootNode.Range.End.Column, 4)
+    Assert.NotNull(rootNode)
+    
+[<Test>]
+let z () =
+    let source =
+        """
+let x = 2
+"""
+    let rootNode = CodeFormatter.ParseOakAsync(false, source) |> Async.RunSynchronously    
+    Assert.NotNull(rootNode)

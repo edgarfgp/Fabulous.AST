@@ -15,17 +15,15 @@
         <Compile Include="Attributes.fs" />
         <Compile Include="Helpers.fs" />
         <Compile Include="Nodes\_ValueBase.fs" />
-        <Compile Include="Nodes\Position.fs" />
-        <Compile Include="Nodes\Range.fs" />
         <Compile Include="Nodes\_NodeBase.fs" />
-        <Compile Include="Nodes\ModuleOrNamespaceHeaderNode.fs" />
-        <Compile Include="Nodes\ModuleDecl.fs" />
+        <Compile Include="Nodes\ModuleDecls.fs" />
         <Compile Include="Nodes\ModuleOrNamespaceNode.fs" />
+        <Compile Include="Nodes\Oak.fs" />
         <Compile Include="Tree.fs" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Fantomas.Core" Version="6.0.0-alpha-002" />
+      <PackageReference Include="Fantomas.Core" Version="6.0.0-alpha-006" />
     </ItemGroup>
 
 </Project>

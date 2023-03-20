@@ -48,8 +48,6 @@ module AttributeDefinitionStore =
     let mutable private _widgetsCount = 0
     let mutable private _widgetCollectionsCount = 0
     
-    let private _widgetCollections = ResizeArray<Widget>()
-
     let getNextKeyForScalar () : ScalarAttributeKey =
         let key = _scalarsCount * 1<scalarAttributeKey>
         _scalarsCount <- _scalarsCount + 1
@@ -64,8 +62,4 @@ module AttributeDefinitionStore =
         let key = _scalarsCount * 1<widgetCollectionAttributeKey>
         _scalarsCount <- _scalarsCount + 1
         key
-        
-    let registerWidgetCollection (data: Widget) : WidgetCollectionAttributeKey =
-        let index = _widgetCollections.Count
-        _widgetCollections.Add(data)
-        index * 1<widgetCollectionAttributeKey>
+       
