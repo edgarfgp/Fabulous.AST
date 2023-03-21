@@ -70,7 +70,7 @@ printfn "%s" 2
     let ``Produces if-then`` () =
         Oak() {
             ModuleOrNamespace() {
-                IfThen("x", "=", "12", UnitExpr(Unit()))
+                IfThen("x", "=", "12", Expr.For(Unit()))
             }
         }
         |> produces """

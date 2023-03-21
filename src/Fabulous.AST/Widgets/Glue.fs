@@ -24,7 +24,7 @@ module Glue =
     )
 
 [<AutoOpen>]
-module GlueBuilders =
+module internal GlueBuilders =
     type Fabulous.AST.Ast with
         static member inline TopLevelBinding(bindingWidget: WidgetBuilder<BindingNode>) =
             WidgetBuilder<ModuleDecl>(
@@ -55,3 +55,7 @@ module GlueBuilders =
                     ValueNone
                 )
             )
+            
+type Expr =
+    static member inline For(x: WidgetBuilder<UnitNode>) =
+        Ast.UnitExpr(x)
