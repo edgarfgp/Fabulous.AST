@@ -20,8 +20,12 @@
         <Compile Include="Nodes\MultipleTexts.fs" />
         <Compile Include="Nodes\IdentifierOrDot.fs" />
         <Compile Include="Nodes\IdentList.fs" />
+        <Compile Include="Nodes\Unit.fs" />
         <Compile Include="Nodes\Constant.fs" />
-        <Compile Include="Nodes\ExprAppNode.fs" />
+        <Compile Include="Nodes\ExprApp.fs" />
+        <Compile Include="Nodes\IfKeyword.fs" />
+        <Compile Include="Nodes\ExprIfThen.fs" />
+        <Compile Include="Nodes\ExprInfixApp.fs" />
         <Compile Include="Nodes\Expr.fs" />
         <Compile Include="Nodes\Binding.fs" />
         <Compile Include="Nodes\ModuleDecl.fs" />

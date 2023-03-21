@@ -14,7 +14,7 @@ module CommonNodes =
                     SingleText("let")
                 },
                 IdentList() {
-                    Ident(SingleText(name))
+                    IdentifierOrDot_Ident(SingleText(name))
                 },
                 SingleText("="),
                 Ast.ConstantTextExpr(value)

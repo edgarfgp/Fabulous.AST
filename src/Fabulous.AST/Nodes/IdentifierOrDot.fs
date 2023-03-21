@@ -25,7 +25,7 @@ module IdentifierOrDot =
 [<AutoOpen>]
 module IdentifierOrDotBuilders =
     type Fabulous.AST.Ast with
-        static member inline Ident(text: WidgetBuilder<#IFabSingleText>) =
+        static member inline IdentifierOrDot_Ident(text: WidgetBuilder<#IFabSingleText>) =
             WidgetBuilder<IFabIdentifierOrDot>(
                 IdentifierOrDot.IdentWidgetKey,
                 AttributesBundle(
@@ -35,7 +35,7 @@ module IdentifierOrDotBuilders =
                 )
             )
             
-        static member inline KnownDot(text: WidgetBuilder<#IFabSingleText>) =
+        static member inline IdentifierOrDot_KnownDot(text: WidgetBuilder<#IFabSingleText>) =
             WidgetBuilder<IFabIdentifierOrDot>(
                 IdentifierOrDot.KnownDotWidgetKey,
                 AttributesBundle(
@@ -45,7 +45,7 @@ module IdentifierOrDotBuilders =
                 )
             )
             
-        static member inline UnknownDot() =
+        static member inline IdentifierOrDot_UnknownDot() =
             WidgetBuilder<IFabIdentifierOrDot>(
                 IdentifierOrDot.UnknownDotWidgetKey,
                 AttributesBundle(

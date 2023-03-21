@@ -14,7 +14,7 @@ module ExprApp =
     let FunctionExpr = Attributes.defineWidget "FunctionExpr"
     let Arguments = Attributes.defineWidgetCollection "Arguments"
     
-    let WidgetKey = Widgets.register "ExprAppNode" (fun widget ->
+    let WidgetKey = Widgets.register "ExprApp" (fun widget ->
         let functionExpr = Helpers.getNodeFromWidget<Expr> widget FunctionExpr
         let arguments = Helpers.getNodesFromWidgetCollection<Expr> widget Arguments
         ExprAppNode(functionExpr, arguments, Range.Zero)

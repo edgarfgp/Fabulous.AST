@@ -1,5 +1,7 @@
 namespace Fabulous.AST.Tests
 
+open Fantomas.Core
+open Fantomas.Core.SyntaxOak
 open NUnit.Framework
 
 open Fabulous.AST
@@ -11,7 +13,16 @@ module NodesTests =
     let CanCompileBasicTree () =
         Oak() {
             ModuleOrNamespace() {
-                Let("hello", "\"World\"")
+                Binding(
+                    MultipleTexts() {
+                        SingleText("let")
+                    },
+                    IdentList() {
+                        IdentifierOrDot_Ident(SingleText("hello"))
+                    },
+                    SingleText("="),
+                    ConstantTextExpr("\"World\"")
+                )
             }
         }
         |> produces "let hello = \"World\""
@@ -24,3 +35,42 @@ module NodesTests =
             }
         }
         |> produces "let x = 123"
+        
+    [<Test>]
+    let ``Can produce if-then`` () =
+        Oak() {
+            ModuleOrNamespace() {
+                Expr(
+                    ExprIfThen(
+                        IfKeyword(SingleText("if")),
+                        Expr(
+                            ExprInfixApp(
+                                Expr_Ident(SingleText("x")),
+                                SingleText("="),
+                                Expr_Ident(SingleText("1"))
+                            )
+                        ),
+                        SingleText("then"),
+                        Expr(Constant(Unit()))
+                    )
+                )
+            }
+        }
+        |> produces """
+
+if x = 1 then
+    ()
+
+"""
+
+    [<Test>]
+    let z () =
+        let source =
+            """
+
+if x = 1 then
+    ()
+
+"""
+        let rootNode = CodeFormatter.ParseOakAsync(false, source) |> Async.RunSynchronously    
+        Assert.NotNull(rootNode)
