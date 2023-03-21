@@ -1,6 +1,7 @@
 namespace Fabulous.AST.Tests
 
 open Fantomas.Core
+open Fantomas.Core.SyntaxOak
 open NUnit.Framework
 
 open Fabulous.AST
@@ -10,8 +11,10 @@ open type Ast
 module WidgetTests =
     [<Test>]
     let ``Produces a top level let binding``() =
-        ImplicitModule() {
-            Let("x", "12")
+        Oak() {
+            ModuleOrNamespace() {
+                Let("x", "12")
+            }
         }
         |> produces """
         
@@ -21,8 +24,10 @@ let x = 12
         
     [<Test>]
     let ``Produces a simple hello world console app``() =
-        ImplicitModule() {
-            Call("printfn", "\"hello, world\"")
+        Oak() {
+            ModuleOrNamespace() {
+                Call("printfn", "\"hello, world\"")
+            }
         }
         |> produces """
         
@@ -32,9 +37,11 @@ printfn "hello, world"
 
     [<Test>]
     let ``Produces Hello world with a let binding``() =
-        ImplicitModule() {
-            Let("x", "\"hello, world\"")
-            Call("printfn", "\"%s\"", "x")
+        Oak() {
+            ModuleOrNamespace() {
+                Let("x", "\"hello, world\"")
+                Call("printfn", "\"%s\"", "x")
+            }
         }
         |> produces """
         
@@ -45,9 +52,11 @@ printfn "%s" x
 
     [<Test>]
     let ``Produces several Call nodes`` () =
-        ImplicitModule() {
-            for i = 0 to 2 do
-                Call("printfn", "\"%s\"", $"{i}")
+        Oak() {
+            ModuleOrNamespace() {
+                for i = 0 to 2 do
+                    Call("printfn", "\"%s\"", $"{i}")
+            }
         }
         |> produces """
         
@@ -59,8 +68,10 @@ printfn "%s" 2
         
     [<Test>]
     let ``Produces if-then`` () =
-        ImplicitModule() {
-            IfThen("x", "=", "12", UnitExpr(Unit()))
+        Oak() {
+            ModuleOrNamespace() {
+                IfThen("x", "=", "12", UnitExpr(Unit()))
+            }
         }
         |> produces """
 

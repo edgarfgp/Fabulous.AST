@@ -15,7 +15,8 @@
         <Compile Include="Core\Widgets.fs" />
         <Compile Include="Core\Attributes.fs" />
         <Compile Include="Widgets\Glue.fs" />
-        <Compile Include="Widgets\ImplicitModule.fs" />
+        <Compile Include="Widgets\ModuleOrNamespace.fs" />
+        <Compile Include="Widgets\Oak.fs" />
         <Compile Include="Widgets\Let.fs" />
         <Compile Include="Widgets\Call.fs" />
         <Compile Include="Widgets\IfThen.fs" />

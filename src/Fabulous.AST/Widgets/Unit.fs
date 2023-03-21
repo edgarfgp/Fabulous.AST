@@ -1,8 +1,11 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open FSharp.Compiler.Text
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+
+open type Fabulous.AST.Ast
 
 module Unit =
     let WidgetKey = Widgets.register "Unit" (fun _ ->

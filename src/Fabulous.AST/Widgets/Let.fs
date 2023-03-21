@@ -45,5 +45,5 @@ module LetBuilders =
 [<Extension>]
 type LetYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<Oak, ModuleDecl>, x: WidgetBuilder<BindingNode>) : Content =
+    static member inline Yield(_: CollectionBuilder<ModuleOrNamespaceNode, ModuleDecl>, x: WidgetBuilder<BindingNode>) : Content =
         { Widgets = MutStackArray1.One(TopLevelBinding(x).Compile()) }
