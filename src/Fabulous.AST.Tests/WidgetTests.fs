@@ -1,12 +1,15 @@
 namespace Fabulous.AST.Tests
 
-open Fabulous.AST
-open type Fabulous.AST.Ast
+open Fantomas.Core
 open NUnit.Framework
 
-module HighLevelNodesTests =
+open Fabulous.AST
+
+open type Ast
+
+module WidgetTests =
     [<Test>]
-    let ``Can create a top level let binding inside an implicit module``() =
+    let ``Produces a top level let binding``() =
         ImplicitModule() {
             Let("x", "12")
         }
@@ -15,9 +18,9 @@ module HighLevelNodesTests =
 let x = 12
 
 """
-
+        
     [<Test>]
-    let ``Can write a simple hello world console app``() =
+    let ``Produces a simple hello world console app``() =
         ImplicitModule() {
             Call("printfn", "\"hello, world\"")
         }
@@ -28,7 +31,7 @@ printfn "hello, world"
 """
 
     [<Test>]
-    let ``Hello world with a let binding``() =
+    let ``Produces Hello world with a let binding``() =
         ImplicitModule() {
             Let("x", "\"hello, world\"")
             Call("printfn", "\"%s\"", "x")
@@ -41,7 +44,7 @@ printfn "%s" x
 """
 
     [<Test>]
-    let CanCompileBasicTree11 () =
+    let ``Produces several Call nodes`` () =
         ImplicitModule() {
             for i = 0 to 2 do
                 Call("printfn", "\"%s\"", $"{i}")
@@ -53,3 +56,27 @@ printfn "%s" 1
 printfn "%s" 2
 
 """
+        
+    [<Test>]
+    let ``Produces if-then`` () =
+        ImplicitModule() {
+            IfThen("x", "=", "12", UnitExpr(Unit()))
+        }
+        |> produces """
+
+if x = 12 then
+    ()
+
+"""
+
+    [<Test>]
+    let z () =
+        let source =
+            """
+
+if x = 1 then
+    ()
+
+"""
+        let rootNode = CodeFormatter.ParseOakAsync(false, source) |> Async.RunSynchronously    
+        Assert.NotNull(rootNode)

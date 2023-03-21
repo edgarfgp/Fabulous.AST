@@ -14,27 +14,13 @@
         <Compile Include="Core\Helpers.fs" />
         <Compile Include="Core\Widgets.fs" />
         <Compile Include="Core\Attributes.fs" />
-        <Compile Include="Nodes\_ValueBase.fs" />
-        <Compile Include="Nodes\_NodeBase.fs" />
-        <Compile Include="Nodes\SingleText.fs" />
-        <Compile Include="Nodes\MultipleTexts.fs" />
-        <Compile Include="Nodes\IdentifierOrDot.fs" />
-        <Compile Include="Nodes\IdentList.fs" />
-        <Compile Include="Nodes\Unit.fs" />
-        <Compile Include="Nodes\Constant.fs" />
-        <Compile Include="Nodes\ExprApp.fs" />
-        <Compile Include="Nodes\IfKeyword.fs" />
-        <Compile Include="Nodes\ExprIfThen.fs" />
-        <Compile Include="Nodes\ExprInfixApp.fs" />
-        <Compile Include="Nodes\Expr.fs" />
-        <Compile Include="Nodes\Binding.fs" />
-        <Compile Include="Nodes\ModuleDecl.fs" />
-        <Compile Include="Nodes\ModuleOrNamespace.fs" />
-        <Compile Include="Nodes\Oak.fs" />
-        <Compile Include="HighLevelNodes\CommonNodes.fs" />
-        <Compile Include="HighLevelNodes\ImplicitModule.fs" />
+        <Compile Include="Widgets\Glue.fs" />
+        <Compile Include="Widgets\ImplicitModule.fs" />
+        <Compile Include="Widgets\Let.fs" />
+        <Compile Include="Widgets\Call.fs" />
+        <Compile Include="Widgets\IfThen.fs" />
+        <Compile Include="Widgets\Unit.fs" />
         <Compile Include="Tree.fs" />
-        <Compile Include="Playground.fs" />
     </ItemGroup>
 
     <ItemGroup>
