@@ -23,12 +23,12 @@ module ArraySlice =
 
     let inline emptyWithNull () : ArraySlice<'v> = (0us, null) // note null in here
 
-    let inline fromArrayOpt (arr: 'v [] option) : ArraySlice<'v> voption =
+    let inline fromArrayOpt (arr: 'v[] option) : ArraySlice<'v> voption =
         match arr with
         | None -> ValueNone
         | Some arr -> ValueSome(uint16 arr.Length, arr)
 
-    let inline fromArray (arr: 'v []) : ArraySlice<'v> voption =
+    let inline fromArray (arr: 'v[]) : ArraySlice<'v> voption =
         match arr.Length with
         | 0 -> ValueNone
         | size -> ValueSome(uint16 size, arr)
@@ -48,7 +48,7 @@ module ArraySlice =
 
 module Array =
     let inline appendOne (v: 'v) (arr: 'v array) =
-        let res = Array.zeroCreate(arr.Length + 1)
+        let res = Array.zeroCreate (arr.Length + 1)
         Array.blit arr 0 res 0 arr.Length
         res.[arr.Length] <- v
         res
@@ -58,7 +58,7 @@ module Array =
     /// 2. there are few elements, we expect to have only a handful of them per widget
     /// 3. stable, which is handy for duplicate attributes, e.g. we can choose which one to pick
     /// https://en.wikipedia.org/wiki/Insertion_sort
-    let inline sortInPlace<'T, 'V when 'V: comparison> ([<InlineIfLambda>] getKey: 'T -> 'V) (attrs: 'T []) : 'T [] =
+    let inline sortInPlace<'T, 'V when 'V: comparison> ([<InlineIfLambda>] getKey: 'T -> 'V) (attrs: 'T[]) : 'T[] =
         let N = attrs.GetLength(0)
 
         for i in [ 1 .. N - 1 ] do
@@ -109,7 +109,7 @@ module StackAllocatedCollections =
                 static member one(v: 'v) = StackList(1us, Items.one v, Empty)
 
                 static member two(v1: 'v, v2: 'v) =
-                    StackList(2us, Items.two(v1, v2), Empty)
+                    StackList(2us, Items.two (v1, v2), Empty)
 
                 static member three(v1: 'v, v2: 'v, v3: 'v) =
                     StackList(3us, Items(v1, v2, v3), Empty)
@@ -148,7 +148,7 @@ module StackAllocatedCollections =
                         while i >= 2 do
                             match leftToCopy with
                             | Empty -> i <- -1
-                            | Filled ((v0, v1, v2), before) ->
+                            | Filled((v0, v1, v2), before) ->
                                 arr.[i] <- v2
                                 arr.[i - 1] <- v1
                                 arr.[i - 2] <- v0
@@ -163,15 +163,15 @@ module StackAllocatedCollections =
 
                     match length with
                     | 0us -> StackList.one v
-                    | 1us -> StackList.two(v0, v)
-                    | 2us -> StackList.three(v0, v1, v)
+                    | 1us -> StackList.two (v0, v)
+                    | 2us -> StackList.three (v0, v1, v)
                     | size ->
                         match size % 3us with
                         | 0us -> StackList(size + 1us, Items.one v, Filled(data.items, data.before))
 
                         // still filling up the stack allocated part
                         // 1 item filled
-                        | 1us -> StackList(size + 1us, Items.two(v0, v), data.before)
+                        | 1us -> StackList(size + 1us, Items.two (v0, v), data.before)
 
                         // 2 items filled
                         | _ -> StackList(size + 1us, Items(v0, v1, v), data.before)
@@ -192,7 +192,7 @@ module StackAllocatedCollections =
                     let rec tryFindInPart (part: Part<'v>) (predicate: 'v -> bool) : 'v voption =
                         match part with
                         | Empty -> ValueNone
-                        | Filled (items, before) ->
+                        | Filled(items, before) ->
                             let struct (v0, v1, v2) = items
 
                             if predicate v0 then ValueSome v0
@@ -214,8 +214,8 @@ module StackAllocatedCollections =
 
                             match (size - 1us) % 3us with
                             | 0us when predicate v0 -> struct (true, Items.one v)
-                            | 1us when predicate v0 -> struct (true, Items.two(v, v1))
-                            | 1us when predicate v1 -> struct (true, Items.two(v0, v))
+                            | 1us when predicate v0 -> struct (true, Items.two (v, v1))
+                            | 1us when predicate v1 -> struct (true, Items.two (v0, v))
                             | 2us when predicate v0 -> struct (true, Items(v, v1, v2))
                             | 2us when predicate v1 -> struct (true, Items(v0, v, v2))
                             | 2us when predicate v2 -> struct (true, Items(v0, v1, v))
@@ -224,7 +224,7 @@ module StackAllocatedCollections =
                     let rec tryReplaceInPart (part: Part<'v>) predicate v : struct (bool * Part<'v>) =
                         match part with
                         | Empty -> struct (false, Empty)
-                        | Filled (items, before) ->
+                        | Filled(items, before) ->
                             let struct (v0, v1, v2) = items
 
                             if predicate v0 then
@@ -278,25 +278,25 @@ module StackAllocatedCollections =
 
         let add (arr: StackArray3<'v> inref, v: 'v) : StackArray3<'v> =
             match arr with
-            | Few (struct (size, v0, v1, v2)) ->
+            | Few(struct (size, v0, v1, v2)) ->
                 match size with
                 | Size.Zero -> one v
-                | Size.One -> two(v0, v)
-                | Size.Two -> three(v0, v1, v)
+                | Size.One -> two (v0, v)
+                | Size.Two -> three (v0, v1, v)
                 | Size.Three -> many [| v0; v1; v2; v |]
-                | _ -> empty() // should never happen but don't want to throw there
-            | Many arr -> many(Array.appendOne v arr)
+                | _ -> empty () // should never happen but don't want to throw there
+            | Many arr -> many (Array.appendOne v arr)
 
 
         let inline length (arr: StackArray3<'v> inref) : int =
             match arr with
-            | Few (struct (size, _, _, _)) -> int size
+            | Few(struct (size, _, _, _)) -> int size
             | Many arr -> arr.Length
 
 
         let get (arr: StackArray3<'v> inref) (index: int) : 'v =
             match arr with
-            | Few (struct (size, v0, v1, v2)) ->
+            | Few(struct (size, v0, v1, v2)) ->
                 if (index >= int size) then
                     IndexOutOfRangeException() |> raise
                 else
@@ -310,7 +310,7 @@ module StackAllocatedCollections =
 
         let find (test: 'v -> bool) (arr: StackArray3<'v> inref) : 'v =
             match arr with
-            | Few (struct (size, v0, v1, v2)) ->
+            | Few(struct (size, v0, v1, v2)) ->
                 match (size, test v0, test v1, test v2) with
                 | Size.One, true, _, _
                 | Size.Two, true, _, _
@@ -330,40 +330,36 @@ module StackAllocatedCollections =
             (arr: StackArray3<'T> inref)
             : StackArray3<'T> =
             match arr with
-            | Few (struct (size, v0, v1, v2)) ->
+            | Few(struct (size, v0, v1, v2)) ->
                 match size with
                 | Size.Zero
                 | Size.One -> arr
-                | Size.Two ->
-                    if (getKey v0 > getKey v1) then
-                        two(v1, v0)
-                    else
-                        arr
+                | Size.Two -> if (getKey v0 > getKey v1) then two (v1, v0) else arr
                 | Size.Three ->
                     match (getKey v0, getKey v1, getKey v1) with
                     // abc acb bac bca cba cab
 
                     //  a, c, b
-                    | a, b, c when a <= c && c <= b -> three(v0, v2, v1)
+                    | a, b, c when a <= c && c <= b -> three (v0, v2, v1)
 
                     //  b, a, c
-                    | a, b, c when b <= a && a <= c -> three(v1, v0, v2)
+                    | a, b, c when b <= a && a <= c -> three (v1, v0, v2)
 
                     //  b, c, a
-                    | a, b, c when b <= c && c <= a -> three(v1, v2, v0)
+                    | a, b, c when b <= c && c <= a -> three (v1, v2, v0)
 
                     //  c, b, a
-                    | a, b, c when c <= b && b <= a -> three(v2, v1, v0)
+                    | a, b, c when c <= b && b <= a -> three (v2, v1, v0)
 
                     //  c, a, b
-                    | a, b, c when c <= a && a <= b -> three(v2, v0, v1)
+                    | a, b, c when c <= a && a <= b -> three (v2, v0, v1)
 
                     // a, b, c left, thus already sorted
                     | _ -> arr
 
 
-                | _ -> empty() // should never happen but don't want to throw there
-            | Many arr -> many(Array.sortInPlace getKey arr)
+                | _ -> empty () // should never happen but don't want to throw there
+            | Many arr -> many (Array.sortInPlace getKey arr)
 
 
         let inline private arr0 () = [||]
@@ -373,24 +369,24 @@ module StackAllocatedCollections =
 
         let toArray (arr: StackArray3<'v> inref) : 'v array =
             match arr with
-            | Few (struct (size, v0, v1, v2)) ->
+            | Few(struct (size, v0, v1, v2)) ->
                 match size with
                 | Size.Zero -> Array.empty
                 | Size.One -> arr1 v0
-                | Size.Two -> arr2(v0, v1)
-                | _ -> arr3(v0, v1, v2)
+                | Size.Two -> arr2 (v0, v1)
+                | _ -> arr3 (v0, v1, v2)
             | Many arr -> arr
 
 
         let combine (a: StackArray3<'v>) (b: StackArray3<'v>) : StackArray3<'v> =
             match (a, b) with
-            | Few (struct (asize, a0, a1, a2)), Few (struct (bsize, b0, b1, b2)) ->
+            | Few(struct (asize, a0, a1, a2)), Few(struct (bsize, b0, b1, b2)) ->
                 match (asize, bsize) with
                 | Size.Zero, _ -> b
                 | _, Size.Zero -> a
-                | Size.One, Size.One -> two(a0, b0)
-                | Size.One, Size.Two -> three(a0, b0, b1)
-                | Size.Two, Size.One -> three(a0, a1, b0)
+                | Size.One, Size.One -> two (a0, b0)
+                | Size.One, Size.Two -> three (a0, b0, b1)
+                | Size.Two, Size.One -> three (a0, a1, b0)
                 // now many cases
                 | Size.One, Size.Three -> many [| a0; b0; b1; b2 |]
                 | Size.Three, Size.One -> many [| a0; a1; a2; b0 |]
@@ -399,9 +395,9 @@ module StackAllocatedCollections =
                 | Size.Two, Size.Three -> many [| a0; a1; b0; b1; b2 |]
                 | Size.Three, Size.Three -> many [| a0; a1; a2; b0; b1; b2 |]
                 | _ -> a // this should never happen because we exhausted all the other cases
-            | Few _, Many arr2 -> many(Array.append(toArray &a) arr2) // TODO optimize
-            | Many arr1, Few _ -> many(Array.append arr1 (toArray &b)) // TODO optimize
-            | Many arr1, Many arr2 -> many(Array.append arr1 arr2)
+            | Few _, Many arr2 -> many (Array.append (toArray &a) arr2) // TODO optimize
+            | Many arr1, Few _ -> many (Array.append arr1 (toArray &b)) // TODO optimize
+            | Many arr1, Many arr2 -> many (Array.append arr1 arr2)
 
 
 
@@ -415,18 +411,12 @@ module StackAllocatedCollections =
             | One of one: 'v
             | Many of ArraySlice<'v>
 
-        let inline private grow size = max((size * 3) / 2) size + 1
+        let inline private grow size = max ((size * 3) / 2) size + 1
 
         let addMut (arr: T<'v> inref, value: 'v) : T<'v> =
             match arr with
             | Empty -> One value
-            | One v ->
-                Many
-                    struct (2us,
-                            [| v
-                               value
-                               Unchecked.defaultof<'v>
-                               Unchecked.defaultof<'v> |])
+            | One v -> Many struct (2us, [| v; value; Unchecked.defaultof<'v>; Unchecked.defaultof<'v> |])
             | Many struct (count, mutArr) ->
                 if mutArr.Length > (int count) then
                     // we can fit it in
@@ -440,7 +430,7 @@ module StackAllocatedCollections =
                         // count is at least 2
                         // thus it is either going to grow at least by 1
                         // note that the growth rate is slower than ResizeArray
-                        Array.zeroCreate(grow mutArr.Length)
+                        Array.zeroCreate (grow mutArr.Length)
 
                     Array.blit mutArr 0 res 0 mutArr.Length
                     res.[countInt] <- value
@@ -450,7 +440,7 @@ module StackAllocatedCollections =
             match arr with
             | Empty -> Array.empty
             | One v -> [| v |]
-            | Many (struct (count, arr)) -> Array.take(int count) arr
+            | Many(struct (count, arr)) -> Array.take (int count) arr
 
         let inline fromArray (arr: 'v array) : T<'v> =
             match arr.Length with
@@ -468,12 +458,12 @@ module StackAllocatedCollections =
             match arr with
             | Empty -> 0
             | One _ -> 1
-            | Many (struct (count, _)) -> int count
+            | Many(struct (count, _)) -> int count
 
         let combineMut (a: T<'v> inref, b: T<'v>) : T<'v> =
             match b with
             | Empty -> a
-            | One bv -> addMut(&a, bv)
+            | One bv -> addMut (&a, bv)
             | Many sliceB ->
                 match a with
                 | Empty -> b
@@ -488,7 +478,7 @@ module StackAllocatedCollections =
                     else
                         // we need to allocate a new one more
                         // Note very scientific formula of growth
-                        let newArr = Array.zeroCreate(grow arr.Length)
+                        let newArr = Array.zeroCreate (grow arr.Length)
 
                         Array.blit arr 0 newArr 1 (int used)
                         newArr.[0] <- av
@@ -508,15 +498,14 @@ module StackAllocatedCollections =
                         Many(newSize, arrA)
                     elif arrB.Length >= usedB + usedA then
                         // b can fit both
-                        let arr =
-                            ArraySlice.shiftByMut &sliceB (uint16 usedA)
+                        let arr = ArraySlice.shiftByMut &sliceB (uint16 usedA)
 
                         Array.blit arrA 0 arr 0 usedA
                         Many(newSize, arrA)
                     else
                         // None of them can fit the result
                         // thus allocate a new one
-                        let newArr = Array.zeroCreate(grow(usedA + usedB))
+                        let newArr = Array.zeroCreate (grow (usedA + usedB))
 
                         Array.blit arrA 0 newArr 0 usedA
                         Array.blit arrB 0 newArr usedA usedB
@@ -578,9 +567,7 @@ module StackAllocatedCollections =
     open FSharp.NativeInterop
 
     let inline stackalloc<'a when 'a: unmanaged> (length: int) : Span<'a> =
-        let p =
-            NativePtr.stackalloc<'a> length
-            |> NativePtr.toVoidPtr
+        let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
 
         Span<'a>(p, length)
 
@@ -671,6 +658,6 @@ module StackAllocatedCollections =
             let res = Array.zeroCreate<'t> len
 
             for i = 0 to len - 1 do
-                res.[i] <- map(decode builder.ops.[i])
+                res.[i] <- map (decode builder.ops.[i])
 
             res
