@@ -21,6 +21,21 @@ module WidgetTests =
 let x = 12
 
 """
+    [<Test>]
+    let ``Produces a top level mutable let binding``() =
+        Oak() {
+            ModuleOrNamespace() {
+                Let("x", "12")
+                    .isMutable()
+                    
+                // MutableLet("x", "12")
+            }
+        }
+        |> produces """
+        
+let mutable x = 12
+
+"""
         
     [<Test>]
     let ``Produces a simple hello world console app``() =
@@ -81,12 +96,63 @@ if x = 12 then
 """
 
     [<Test>]
+    let ``Produces FizzBuzz`` () =
+        Oak() {
+            ModuleOrNamespace() {
+                Function("fizzBuzz", [| "i" |],
+                    Match(Expr.For("i")) {
+                        MatchClause("i", Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")), Call("printfn", "\"FizzBuzz\""))
+                        MatchClause("i", Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")), Call("printfn", "\"Buzz\""))
+                        MatchClause("i", Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")), Call("printfn", "\"Fizz\""))
+                        MatchClause("i", Call("printfn", "\"%i\"", "i"))
+                    }
+                )
+            }
+        }
+        |> produces """
+
+let fizzBuzz i =
+    match i with
+    | i when i % 15 = 0 -> printfn "FizzBuzz"
+    | i when i % 5 = 0 -> printfn "Buzz"
+    | i when i % 3 = 0 -> printfn "Fizz"
+    | i -> printfn "%i" i
+
+"""
+
+    
+    [<Test>]
+    let ``Produces inlined FizzBuzz`` () =
+        Oak() {
+            ModuleOrNamespace() {
+                Function("fizzBuzz", [| "i" |],
+                    Match(Expr.For("i")) {
+                        MatchClause("i", Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")), Call("printfn", "\"FizzBuzz\""))
+                        MatchClause("i", Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")), Call("printfn", "\"Buzz\""))
+                        MatchClause("i", Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")), Call("printfn", "\"Fizz\""))
+                        MatchClause("i", Call("printfn", "\"%i\"", "i"))
+                    }
+                )
+                    .isInlined()
+            }
+        }
+        |> produces """
+
+let inline fizzBuzz i =
+    match i with
+    | i when i % 15 = 0 -> printfn "FizzBuzz"
+    | i when i % 5 = 0 -> printfn "Buzz"
+    | i when i % 3 = 0 -> printfn "Fizz"
+    | i -> printfn "%i" i
+
+"""
+
+    [<Test>]
     let z () =
         let source =
             """
 
-if x = 1 then
-    ()
+let mutable x = 10
 
 """
         let rootNode = CodeFormatter.ParseOakAsync(false, source) |> Async.RunSynchronously    

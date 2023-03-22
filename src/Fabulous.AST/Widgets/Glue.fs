@@ -1,11 +1,13 @@
 namespace Fabulous.AST
 
+open FSharp.Compiler.Text
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 /// Glue are those widgets required to convert from one node type to another one,
 /// but are not really useful to use by themselves
 module Glue =
+    let GluedValue = Attributes.defineScalar<obj> "GluedValue"
     let GluedWidget = Attributes.defineWidget "GluedWidget"
     
     let TopLevelBindingWidgetKey = Widgets.register "Glue.TopLevelBinding" (fun widget ->
@@ -18,9 +20,14 @@ module Glue =
         ModuleDecl.DeclExpr gluedWidget
     )
     
-    let UnitExprWidgetKey = Widgets.register "Glue.UnitExpr" (fun widget ->
+    let UnitConstantExprWidgetKey = Widgets.register "Glue.UnitConstantExpr" (fun widget ->
         let gluedWidget = Helpers.getNodeFromWidget<UnitNode> widget GluedWidget
         Expr.Constant(Constant.Unit(gluedWidget))
+    )
+    
+    let TextConstantExprWidgetKey = Widgets.register "Glue.TextConstantExpr" (fun widget ->
+        let gluedValue = Helpers.getScalarValue widget GluedValue |> string
+        Expr.Constant(Constant.FromText(SingleTextNode(gluedValue, Range.Zero)))
     )
 
 [<AutoOpen>]
@@ -46,9 +53,9 @@ module internal GlueBuilders =
                 )
             )
             
-        static member inline UnitExpr(exprWidget: WidgetBuilder<UnitNode>) =
+        static member inline UnitConstantExpr(exprWidget: WidgetBuilder<UnitNode>) =
             WidgetBuilder<Expr>(
-                Glue.UnitExprWidgetKey,
+                Glue.UnitConstantExprWidgetKey,
                 AttributesBundle(
                     StackList.empty(),
                     ValueSome [| Glue.GluedWidget.WithValue(exprWidget.Compile()) |],
@@ -56,6 +63,15 @@ module internal GlueBuilders =
                 )
             )
             
+        static member inline TextConstantExpr(text: string) =
+            WidgetBuilder<Expr>(
+                Glue.TextConstantExprWidgetKey,
+                Glue.GluedValue.WithValue(text)
+            )
+            
 type Expr =
     static member inline For(x: WidgetBuilder<UnitNode>) =
-        Ast.UnitExpr(x)
+        Ast.UnitConstantExpr(x)
+        
+    static member inline For(x: string) =
+        Ast.TextConstantExpr(x)

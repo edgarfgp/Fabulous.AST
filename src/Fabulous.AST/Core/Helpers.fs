@@ -31,10 +31,15 @@ module Helpers =
             | None -> ValueNone
             | Some attr -> ValueSome attr.Value
             
-    let getNodeFromWidget<'T> (widget: Widget) (def: WidgetAttributeDefinition) =
+    let tryGetNodeFromWidget<'T> (widget: Widget) (def: WidgetAttributeDefinition) =
         match tryGetWidgetValue widget def with
+        | ValueNone -> ValueNone
+        | ValueSome value -> ValueSome (createValueForWidget<'T> value)
+        
+    let getNodeFromWidget<'T> (widget: Widget) (def: WidgetAttributeDefinition) =
+        match tryGetNodeFromWidget<'T> widget def with
         | ValueNone -> failwith $"Could not find widget attribute {def.Name} on widget {widget.DebugName}"
-        | ValueSome value -> createValueForWidget<'T> value
+        | ValueSome value -> value
         
     let tryGetWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match widget.WidgetCollectionAttributes with

@@ -10,16 +10,18 @@ open type Fabulous.AST.Ast
 module Let =
     let Name = Attributes.defineScalar "Name"
     let Value = Attributes.defineScalar "Value"
+    let IsMutable = Attributes.defineScalar<bool> "IsMutable"
     
     let WidgetKey = Widgets.register "Let" (fun widget ->
         let name = Helpers.getScalarValue widget Name
         let value = Helpers.getScalarValue widget Value
+        let isMutable = Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue false
         
         BindingNode(
             None,
             None,
             MultipleTextsNode([SingleTextNode("let", Range.Zero)], Range.Zero),
-            false,
+            isMutable,
             None,
             None,
             Choice1Of2 (IdentListNode([IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero))], Range.Zero)),
@@ -41,6 +43,12 @@ module LetBuilders =
                 Let.Name.WithValue(name),
                 Let.Value.WithValue(value)
             )
+            
+[<Extension>]
+type LetModifiers =
+    [<Extension>]
+    static member inline isMutable(this: WidgetBuilder<BindingNode>) =
+        this.AddScalar(Let.IsMutable.WithValue(true))
             
 [<Extension>]
 type LetYieldExtensions =

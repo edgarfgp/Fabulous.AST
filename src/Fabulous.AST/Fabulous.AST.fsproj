@@ -21,6 +21,10 @@
         <Compile Include="Widgets\Call.fs" />
         <Compile Include="Widgets\IfThen.fs" />
         <Compile Include="Widgets\Unit.fs" />
+        <Compile Include="Widgets\Match.fs" />
+        <Compile Include="Widgets\MatchClause.fs" />
+        <Compile Include="Widgets\Condition.fs" />
+        <Compile Include="Widgets\Function.fs" />
         <Compile Include="Tree.fs" />
     </ItemGroup>
 
