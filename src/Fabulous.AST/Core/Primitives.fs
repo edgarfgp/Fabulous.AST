@@ -101,25 +101,16 @@ type ScalarAttribute =
 /// Represents a single child of a widget
 and [<Struct>] WidgetAttribute =
     { Key: WidgetAttributeKey
-#if DEBUG
-      DebugName: string
-#endif
       Value: Widget }
 
 /// Represents a collection of children of a widget
 and [<Struct>] WidgetCollectionAttribute =
     { Key: WidgetCollectionAttributeKey
-#if DEBUG
-      DebugName: string
-#endif
       Value: ArraySlice<Widget> }
 
 /// Represents a virtual UI element such as a Label, a Button, etc.
 and [<Struct>] Widget =
     { Key: WidgetKey
-#if DEBUG
-      DebugName: string
-#endif
       ScalarAttributes: ScalarAttribute[] voption
       WidgetAttributes: WidgetAttribute[] voption
       WidgetCollectionAttributes: WidgetCollectionAttribute[] voption }

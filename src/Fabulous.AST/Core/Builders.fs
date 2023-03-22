@@ -33,13 +33,10 @@ type WidgetBuilder<'marker> =
                 x.Attributes
 
             { Key = x.Key
-#if DEBUG
-              DebugName = $"{typeof<'marker>.Name}"
-#endif
               ScalarAttributes =
-                  match StackList.length &scalarAttributes with
-                  | 0us -> ValueNone
-                  | _ -> ValueSome(Array.sortInPlace (fun a -> a.Key) (StackList.toArray &scalarAttributes))
+                match StackList.length &scalarAttributes with
+                | 0us -> ValueNone
+                | _ -> ValueSome(Array.sortInPlace (fun a -> a.Key) (StackList.toArray &scalarAttributes))
 
               WidgetAttributes = ValueOption.map (Array.sortInPlace (fun a -> a.Key)) widgetAttributes
 

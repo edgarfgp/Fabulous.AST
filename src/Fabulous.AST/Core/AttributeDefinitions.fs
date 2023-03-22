@@ -37,11 +37,7 @@ module WidgetCollectionAttributeDefinitions =
           Name: string }
 
         member inline x.WithValue(value: ArraySlice<Widget>) : WidgetCollectionAttribute =
-            { Key = x.Key
-#if DEBUG
-              DebugName = x.Name
-#endif
-              Value = value }
+            { Key = x.Key; Value = value }
 
 module AttributeDefinitionStore =
     let mutable private _scalarsCount = 0

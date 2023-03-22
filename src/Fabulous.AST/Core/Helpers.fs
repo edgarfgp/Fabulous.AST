@@ -20,7 +20,7 @@ module Helpers =
 
     let getScalarValue (widget: Widget) (def: SimpleScalarAttributeDefinition<'data>) =
         match tryGetScalarValue widget def with
-        | ValueNone -> failwith $"Could not find scalar attribute {def.Name} on widget {widget.DebugName}"
+        | ValueNone -> failwith $"Could not find scalar attribute {def.Name} on widget {widget}"
         | ValueSome value -> value
 
     let tryGetWidgetValue (widget: Widget) (def: WidgetAttributeDefinition) =
@@ -38,7 +38,7 @@ module Helpers =
 
     let getNodeFromWidget<'T> (widget: Widget) (def: WidgetAttributeDefinition) =
         match tryGetNodeFromWidget<'T> widget def with
-        | ValueNone -> failwith $"Could not find widget attribute {def.Name} on widget {widget.DebugName}"
+        | ValueNone -> failwith $"Could not find widget attribute {def.Name} on widget {widget}"
         | ValueSome value -> value
 
     let tryGetWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
@@ -51,7 +51,7 @@ module Helpers =
 
     let getWidgetsFromWidgetCollection (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match tryGetWidgetCollectionValue widget def with
-        | ValueNone -> failwith $"Could not find widget collection attribute {def.Name} on widget {widget.DebugName}"
+        | ValueNone -> failwith $"Could not find widget collection attribute {def.Name} on widget {widget}"
         | ValueSome value ->
             let struct (count, elements) = value
             elements |> Array.take (int count) |> List.ofArray
