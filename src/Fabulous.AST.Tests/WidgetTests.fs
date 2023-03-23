@@ -21,9 +21,7 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        AnonymousModule() {
-            Let("x", "12").isMutable ()
-        }
+        AnonymousModule() { Let("x", "12").isMutable() }
         |> produces
             """
         
@@ -151,7 +149,7 @@ let fizzBuzz i =
                     MatchClause("i", Call("printfn", "\"%i\"", "i"))
                 }
             )
-                .isInlined ()
+                .isInlined()
         }
         |> produces
             """

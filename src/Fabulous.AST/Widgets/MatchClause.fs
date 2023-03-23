@@ -42,7 +42,7 @@ module MatchClauseBuilders =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
                 AttributesBundle(
-                    StackList.one (MatchClause.PatternNamed.WithValue(patternNamed)),
+                    StackList.one(MatchClause.PatternNamed.WithValue(patternNamed)),
                     ValueSome
                         [| MatchClause.WhenExpr.WithValue(whenExpr.Compile())
                            MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
@@ -54,7 +54,7 @@ module MatchClauseBuilders =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
                 AttributesBundle(
-                    StackList.one (MatchClause.PatternNamed.WithValue(patternNamed)),
+                    StackList.one(MatchClause.PatternNamed.WithValue(patternNamed)),
                     ValueSome [| MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     ValueNone
                 )

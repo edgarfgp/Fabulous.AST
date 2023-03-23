@@ -2,7 +2,7 @@
 
 module Widgets =
     let register name (createFn: Widget -> 'T) =
-        let key = WidgetDefinitionStore.getNextKey ()
+        let key = WidgetDefinitionStore.getNextKey()
 
         let definition =
             { Key = key

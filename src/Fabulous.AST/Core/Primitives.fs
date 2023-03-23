@@ -61,7 +61,7 @@ module ScalarAttributeKey =
         | Code.Inline -> Inline
         | _ -> Boxed
 
-    let inline getKeyValue (key: ScalarAttributeKey) : int = int ((int key) &&& Code.KeyMask)
+    let inline getKeyValue (key: ScalarAttributeKey) : int = int((int key) &&& Code.KeyMask)
 
     let inline compare (a: ScalarAttributeKey) (b: ScalarAttributeKey) =
         let a = int a

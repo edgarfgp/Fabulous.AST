@@ -17,4 +17,4 @@ module UnitBuilders =
     type Fabulous.AST.Ast with
 
         static member inline Unit() =
-            WidgetBuilder<UnitNode>(Unit.WidgetKey, AttributesBundle(StackList.empty (), ValueNone, ValueNone))
+            WidgetBuilder<UnitNode>(Unit.WidgetKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))

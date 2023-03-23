@@ -38,7 +38,7 @@ module internal GlueBuilders =
             WidgetBuilder<ModuleDecl>(
                 Glue.TopLevelBindingWidgetKey,
                 AttributesBundle(
-                    StackList.empty (),
+                    StackList.empty(),
                     ValueSome [| Glue.GluedWidget.WithValue(bindingWidget.Compile()) |],
                     ValueNone
                 )
@@ -48,7 +48,7 @@ module internal GlueBuilders =
             WidgetBuilder<ModuleDecl>(
                 Glue.DeclExprWidgetKey,
                 AttributesBundle(
-                    StackList.empty (),
+                    StackList.empty(),
                     ValueSome [| Glue.GluedWidget.WithValue(exprWidget.Compile()) |],
                     ValueNone
                 )
@@ -58,7 +58,7 @@ module internal GlueBuilders =
             WidgetBuilder<Expr>(
                 Glue.UnitConstantExprWidgetKey,
                 AttributesBundle(
-                    StackList.empty (),
+                    StackList.empty(),
                     ValueSome [| Glue.GluedWidget.WithValue(exprWidget.Compile()) |],
                     ValueNone
                 )

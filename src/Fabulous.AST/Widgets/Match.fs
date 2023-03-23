@@ -34,7 +34,7 @@ module MatchBuilders =
         static member inline Match(matchExpr: WidgetBuilder<Expr>) =
             CollectionBuilder<Expr, MatchClauseNode>(
                 Match.WidgetKey,
-                StackList.empty (),
+                StackList.empty(),
                 ValueSome [| Match.MatchExpr.WithValue(matchExpr.Compile()) |],
                 Match.MatchClauses
             )

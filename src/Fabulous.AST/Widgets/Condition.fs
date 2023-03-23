@@ -25,7 +25,7 @@ module ConditionBuilders =
             WidgetBuilder<Expr>(
                 Condition.WidgetKey,
                 AttributesBundle(
-                    StackList.one (Condition.Operator.WithValue(operator)),
+                    StackList.one(Condition.Operator.WithValue(operator)),
                     ValueSome
                         [| Condition.LeftHandSide.WithValue(lhs.Compile())
                            Condition.RightHandSide.WithValue(rhs.Compile()) |],

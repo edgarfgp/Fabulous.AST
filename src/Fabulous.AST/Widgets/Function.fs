@@ -49,7 +49,7 @@ module FunctionBuilders =
             WidgetBuilder<BindingNode>(
                 Function.WidgetKey,
                 AttributesBundle(
-                    StackList.two (Function.Name.WithValue(name), Function.Parameters.WithValue(parameters)),
+                    StackList.two(Function.Name.WithValue(name), Function.Parameters.WithValue(parameters)),
                     ValueSome [| Function.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     ValueNone
                 )

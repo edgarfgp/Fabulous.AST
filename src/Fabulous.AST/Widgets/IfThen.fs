@@ -42,7 +42,7 @@ module IfThenBuilders =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
-                    StackList.three (
+                    StackList.three(
                         IfThen.LeftHandSide.WithValue(lhs),
                         IfThen.Operator.WithValue(operator),
                         IfThen.RightHandSide.WithValue(rhs)
