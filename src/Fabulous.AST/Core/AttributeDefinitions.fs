@@ -24,9 +24,7 @@ module WidgetAttributeDefinitions =
 
         member inline x.WithValue(value: Widget) : WidgetAttribute =
             { Key = x.Key
-#if DEBUG
               DebugName = x.Name
-#endif
               Value = value }
 
 module WidgetCollectionAttributeDefinitions =

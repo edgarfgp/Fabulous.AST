@@ -89,9 +89,7 @@ type ViewAdapterKey = int
 type ScalarAttribute =
     {
         Key: ScalarAttributeKey
-#if DEBUG
         DebugName: string
-#endif
         /// Stores the value as object (boxed), prefer NumericValue when possible
         Value: obj
         /// Stores the value in a numeric form for faster performance (no boxing)
@@ -101,6 +99,7 @@ type ScalarAttribute =
 /// Represents a single child of a widget
 and [<Struct>] WidgetAttribute =
     { Key: WidgetAttributeKey
+      DebugName: string
       Value: Widget }
 
 /// Represents a collection of children of a widget

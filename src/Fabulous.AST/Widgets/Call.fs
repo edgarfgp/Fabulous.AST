@@ -46,3 +46,7 @@ type CallYieldExtensions =
             x: WidgetBuilder<Expr>
         ) : Content =
         { Widgets = MutStackArray1.One(DeclExpr(x).Compile()) }
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<Expr>) : Content =
+        { Widgets = MutStackArray1.One(DeclExpr(x).Compile()) }

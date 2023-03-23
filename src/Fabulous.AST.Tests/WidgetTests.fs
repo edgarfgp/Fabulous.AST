@@ -11,7 +11,7 @@ open type Ast
 module WidgetTests =
     [<Test>]
     let ``Produces a top level let binding`` () =
-        Oak() { ModuleOrNamespace() { Let("x", "12") } }
+        AnonymousModule() { Let("x", "12") }
         |> produces
             """
         
@@ -21,12 +21,10 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        Oak() {
-            ModuleOrNamespace() {
-                Let("x", "12").isMutable ()
+        AnonymousModule() {
+            Let("x", "12").isMutable ()
 
-            // MutableLet("x", "12")
-            }
+        // MutableLet("x", "12")
         }
         |> produces
             """
@@ -37,7 +35,7 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a simple hello world console app`` () =
-        Oak() { ModuleOrNamespace() { Call("printfn", "\"hello, world\"") } }
+        AnonymousModule() { Call("printfn", "\"hello, world\"") }
         |> produces
             """
         
@@ -47,11 +45,9 @@ printfn "hello, world"
 
     [<Test>]
     let ``Produces Hello world with a let binding`` () =
-        Oak() {
-            ModuleOrNamespace() {
-                Let("x", "\"hello, world\"")
-                Call("printfn", "\"%s\"", "x")
-            }
+        AnonymousModule() {
+            Let("x", "\"hello, world\"")
+            Call("printfn", "\"%s\"", "x")
         }
         |> produces
             """
@@ -63,11 +59,9 @@ printfn "%s" x
 
     [<Test>]
     let ``Produces several Call nodes`` () =
-        Oak() {
-            ModuleOrNamespace() {
-                for i = 0 to 2 do
-                    Call("printfn", "\"%s\"", $"{i}")
-            }
+        AnonymousModule() {
+            for i = 0 to 2 do
+                Call("printfn", "\"%s\"", $"{i}")
         }
         |> produces
             """
@@ -80,7 +74,7 @@ printfn "%s" 2
 
     [<Test>]
     let ``Produces if-then`` () =
-        Oak() { ModuleOrNamespace() { IfThen("x", "=", "12", Expr.For(Unit())) } }
+        AnonymousModule() { IfThen("x", "=", "12", Expr.For(Unit())) }
         |> produces
             """
 
@@ -91,34 +85,32 @@ if x = 12 then
 
     [<Test>]
     let ``Produces FizzBuzz`` () =
-        Oak() {
-            ModuleOrNamespace() {
-                Function(
-                    "fizzBuzz",
-                    [| "i" |],
-                    Match(Expr.For("i")) {
-                        MatchClause(
-                            "i",
-                            Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")),
-                            Call("printfn", "\"FizzBuzz\"")
-                        )
+        AnonymousModule() {
+            Function(
+                "fizzBuzz",
+                [| "i" |],
+                Match(Expr.For("i")) {
+                    MatchClause(
+                        "i",
+                        Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")),
+                        Call("printfn", "\"FizzBuzz\"")
+                    )
 
-                        MatchClause(
-                            "i",
-                            Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")),
-                            Call("printfn", "\"Buzz\"")
-                        )
+                    MatchClause(
+                        "i",
+                        Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")),
+                        Call("printfn", "\"Buzz\"")
+                    )
 
-                        MatchClause(
-                            "i",
-                            Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")),
-                            Call("printfn", "\"Fizz\"")
-                        )
+                    MatchClause(
+                        "i",
+                        Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")),
+                        Call("printfn", "\"Fizz\"")
+                    )
 
-                        MatchClause("i", Call("printfn", "\"%i\"", "i"))
-                    }
-                )
-            }
+                    MatchClause("i", Call("printfn", "\"%i\"", "i"))
+                }
+            )
         }
         |> produces
             """
@@ -135,35 +127,33 @@ let fizzBuzz i =
 
     [<Test>]
     let ``Produces inlined FizzBuzz`` () =
-        Oak() {
-            ModuleOrNamespace() {
-                Function(
-                    "fizzBuzz",
-                    [| "i" |],
-                    Match(Expr.For("i")) {
-                        MatchClause(
-                            "i",
-                            Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")),
-                            Call("printfn", "\"FizzBuzz\"")
-                        )
+        AnonymousModule() {
+            Function(
+                "fizzBuzz",
+                [| "i" |],
+                Match(Expr.For("i")) {
+                    MatchClause(
+                        "i",
+                        Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")),
+                        Call("printfn", "\"FizzBuzz\"")
+                    )
 
-                        MatchClause(
-                            "i",
-                            Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")),
-                            Call("printfn", "\"Buzz\"")
-                        )
+                    MatchClause(
+                        "i",
+                        Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")),
+                        Call("printfn", "\"Buzz\"")
+                    )
 
-                        MatchClause(
-                            "i",
-                            Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")),
-                            Call("printfn", "\"Fizz\"")
-                        )
+                    MatchClause(
+                        "i",
+                        Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")),
+                        Call("printfn", "\"Fizz\"")
+                    )
 
-                        MatchClause("i", Call("printfn", "\"%i\"", "i"))
-                    }
-                )
-                    .isInlined ()
-            }
+                    MatchClause("i", Call("printfn", "\"%i\"", "i"))
+                }
+            )
+                .isInlined ()
         }
         |> produces
             """
