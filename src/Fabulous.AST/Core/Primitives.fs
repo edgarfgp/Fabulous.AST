@@ -61,7 +61,7 @@ module ScalarAttributeKey =
         | Code.Inline -> Inline
         | _ -> Boxed
 
-    let inline getKeyValue (key: ScalarAttributeKey) : int = int((int key) &&& Code.KeyMask)
+    let inline getKeyValue (key: ScalarAttributeKey) : int = int ((int key) &&& Code.KeyMask)
 
     let inline compare (a: ScalarAttributeKey) (b: ScalarAttributeKey) =
         let a = int a
@@ -87,37 +87,30 @@ type ViewAdapterKey = int
 /// Represents a value for a property of a widget
 [<Struct>]
 type ScalarAttribute =
-    { Key: ScalarAttributeKey
+    {
+        Key: ScalarAttributeKey
 #if DEBUG
-      DebugName: string
+        DebugName: string
 #endif
-      /// Stores the value as object (boxed), prefer NumericValue when possible
-      Value: obj
-      /// Stores the value in a numeric form for faster performance (no boxing)
-      NumericValue: uint64 }
+        /// Stores the value as object (boxed), prefer NumericValue when possible
+        Value: obj
+        /// Stores the value in a numeric form for faster performance (no boxing)
+        NumericValue: uint64
+    }
 
 /// Represents a single child of a widget
 and [<Struct>] WidgetAttribute =
     { Key: WidgetAttributeKey
-#if DEBUG
-      DebugName: string
-#endif
       Value: Widget }
 
 /// Represents a collection of children of a widget
 and [<Struct>] WidgetCollectionAttribute =
     { Key: WidgetCollectionAttributeKey
-#if DEBUG
-      DebugName: string
-#endif
       Value: ArraySlice<Widget> }
 
 /// Represents a virtual UI element such as a Label, a Button, etc.
 and [<Struct>] Widget =
     { Key: WidgetKey
-#if DEBUG
-      DebugName: string
-#endif
-      ScalarAttributes: ScalarAttribute [] voption
-      WidgetAttributes: WidgetAttribute [] voption
-      WidgetCollectionAttributes: WidgetCollectionAttribute [] voption }
+      ScalarAttributes: ScalarAttribute[] voption
+      WidgetAttributes: WidgetAttribute[] voption
+      WidgetCollectionAttributes: WidgetCollectionAttribute[] voption }

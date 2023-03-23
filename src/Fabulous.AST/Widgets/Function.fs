@@ -13,42 +13,43 @@ module Function =
     let Parameters = Attributes.defineScalar<string[]> "Value"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
-    
-    let WidgetKey = Widgets.register "Function" (fun widget ->
-        let name = Helpers.getScalarValue widget Name
-        let parameters = Helpers.getScalarValue widget Parameters
-        let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
-        let isInlined = Helpers.tryGetScalarValue widget IsInlined
-        
-        BindingNode(
-            None,
-            None,
-            MultipleTextsNode([SingleTextNode("let", Range.Zero)], Range.Zero),
-            false,
-            (match isInlined with ValueNone | ValueSome false -> None | ValueSome true -> Some (SingleTextNode("inline", Range.Zero))),
-            None,
-            Choice1Of2 (IdentListNode([IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero))], Range.Zero)),
-            None,
-            [ for param in parameters do
-                Pattern.Named(PatNamedNode(None, SingleTextNode(param, Range.Zero), Range.Zero)) ],
-            None,
-            SingleTextNode("=", Range.Zero),
-            bodyExpr,
-            Range.Zero
-        )
-    )
+
+    let WidgetKey =
+        Widgets.register "Function" (fun widget ->
+            let name = Helpers.getScalarValue widget Name
+            let parameters = Helpers.getScalarValue widget Parameters
+            let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
+            let isInlined = Helpers.tryGetScalarValue widget IsInlined
+
+            BindingNode(
+                None,
+                None,
+                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                false,
+                (match isInlined with
+                 | ValueNone
+                 | ValueSome false -> None
+                 | ValueSome true -> Some(SingleTextNode("inline", Range.Zero))),
+                None,
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+                None,
+                [ for param in parameters do
+                      Pattern.Named(PatNamedNode(None, SingleTextNode(param, Range.Zero), Range.Zero)) ],
+                None,
+                SingleTextNode("=", Range.Zero),
+                bodyExpr,
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module FunctionBuilders =
     type Fabulous.AST.Ast with
+
         static member inline Function(name: string, parameters: string[], bodyExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<BindingNode>(
                 Function.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        Function.Name.WithValue(name),
-                        Function.Parameters.WithValue(parameters)
-                    ),
+                    StackList.two (Function.Name.WithValue(name), Function.Parameters.WithValue(parameters)),
                     ValueSome [| Function.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     ValueNone
                 )
