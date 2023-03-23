@@ -23,8 +23,6 @@ let x = 12
     let ``Produces a top level mutable let binding`` () =
         AnonymousModule() {
             Let("x", "12").isMutable ()
-
-        // MutableLet("x", "12")
         }
         |> produces
             """
