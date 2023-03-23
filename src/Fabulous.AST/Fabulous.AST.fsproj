@@ -26,6 +26,7 @@
         <Compile Include="Widgets\Condition.fs" />
         <Compile Include="Widgets\Function.fs" />
         <Compile Include="Widgets\AnonymousModule.fs" />
+        <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Tree.fs" />
     </ItemGroup>
 

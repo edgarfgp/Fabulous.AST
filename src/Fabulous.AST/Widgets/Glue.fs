@@ -31,7 +31,7 @@ module Glue =
             Expr.Constant(Constant.FromText(SingleTextNode(gluedValue, Range.Zero))))
 
 [<AutoOpen>]
-module internal GlueBuilders =
+module GlueBuilders =
     type Fabulous.AST.Ast with
 
         static member inline TopLevelBinding(bindingWidget: WidgetBuilder<BindingNode>) =

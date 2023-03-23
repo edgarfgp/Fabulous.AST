@@ -1,5 +1,6 @@
 namespace Fabulous.AST.Tests
 
+open FSharp.Compiler.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
@@ -12,6 +13,58 @@ module WidgetTests =
     [<Test>]
     let ``Produces a top level let binding`` () =
         AnonymousModule() { Let("x", "12") }
+        |> produces
+            """
+        
+let x = 12
+
+"""
+
+    [<Test>]
+    let ``Produces a top level let binding from BindingNode`` () =
+        AnonymousModule() {
+            BindingNode(
+                None,
+                None,
+                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                false,
+                None,
+                None,
+                Choice1Of2(IdentListNode([IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero))], Range.Zero)),
+                None,
+                List.Empty,
+                None,
+                SingleTextNode("=", Range.Zero),
+                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                Range.Zero
+            )
+        }
+        |> produces
+            """
+        
+let x = 12
+
+"""
+
+    [<Test>]
+    let ``Inception`` () =
+        AnonymousModule() {
+            BindingNode(
+                None,
+                None,
+                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                false,
+                None,
+                None,
+                Choice1Of2(IdentListNode([IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero))], Range.Zero)),
+                None,
+                List.Empty,
+                None,
+                SingleTextNode("=", Range.Zero),
+                Tree.compile(Ast.TextConstantExpr("12")),
+                Range.Zero
+            )
+        }
         |> produces
             """
         
