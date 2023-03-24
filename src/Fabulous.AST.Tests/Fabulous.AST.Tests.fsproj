@@ -10,6 +10,8 @@
     <ItemGroup>
         <Compile Include="TestHelpers.fs" />
         <Compile Include="WidgetTests.fs" />
+        <Compile Include="AnonymousModuleTests.fs" />
+        <Compile Include="NestedModuleTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
