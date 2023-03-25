@@ -12,7 +12,7 @@ open type Ast
 module NestedModuleTests =
 
     [<Test>]
-    let ``Produces a NestedModule from NestedModuleNode`` () =
+    let ``Produces a NestedModule`` () =
         NestedModule("A") { Let("x", "12") }
         |> produces
             """
@@ -23,7 +23,7 @@ module A =
 """
 
     [<Test>]
-    let ``Produces a NestedModule from NestedModuleNode using escape hatch`` () =
+    let ``Produces a NestedModule using escape hatch`` () =
         NestedModule("A") {
             BindingNode(
                 None,
@@ -50,7 +50,7 @@ module A =
 """
 
     [<Test>]
-    let ``Produces a recursive NestedModule from NestedModuleNode`` () =
+    let ``Produces a recursive NestedModule`` () =
         (NestedModule("A") { Let("x", "12") }).isRecursive()
         |> produces
             """
@@ -61,7 +61,7 @@ module rec A =
 """
 
     [<Test>]
-    let ``Produces a private NestedModule from NestedModuleNode`` () =
+    let ``Produces a private NestedModule`` () =
         (NestedModule("A") { Let("x", "12") }).accessibility(AccessControl.Private)
         |> produces
             """
@@ -72,7 +72,7 @@ module private A =
 """
 
     [<Test>]
-    let ``Produces a internal NestedModule from NestedModuleNode`` () =
+    let ``Produces a internal NestedModule`` () =
         (NestedModule("A") { Let("x", "12") }).accessibility(AccessControl.Internal)
         |> produces
             """

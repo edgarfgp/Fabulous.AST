@@ -8,15 +8,10 @@ open Fantomas.Core
 open type Fabulous.AST.Ast
 open type Fantomas.Core.SyntaxOak.Oak
 
-type AccessControl =
-    | Public
-    | Private
-    | Internal
-
 module NestedModule =
     let Name = Attributes.defineScalar<string> "Name"
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
-    let Accessibility = Attributes.defineScalar<AccessControl> "IsPrivate"
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let ModuleDecls = Attributes.defineWidgetCollection "ModuleDecls"
 

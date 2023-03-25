@@ -14,6 +14,7 @@
         <Compile Include="Core\Helpers.fs" />
         <Compile Include="Core\Widgets.fs" />
         <Compile Include="Core\Attributes.fs" />
+        <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\Glue.fs" />
         <Compile Include="Widgets\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\Oak.fs" />
@@ -29,6 +30,7 @@
         <Compile Include="Widgets\AnonymousModule.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Tree.fs" />
+        <None Include="test.fsx" />
     </ItemGroup>
 
     <ItemGroup>

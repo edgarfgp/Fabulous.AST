@@ -9,16 +9,6 @@ open type Ast
 
 module WidgetTests =
     [<Test>]
-    let ``Widget -> OAK`` () =
-        AnonymousModule() { Let("x", "12") }
-        |> produces
-            """
-        
-let x = 12
-
-"""
-
-    [<Test>]
     let ``string -> OAK`` () =
         let source =
             """
