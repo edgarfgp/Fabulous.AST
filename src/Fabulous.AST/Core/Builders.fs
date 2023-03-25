@@ -42,7 +42,7 @@ type WidgetBuilder<'marker> =
 
 
               WidgetCollectionAttributes =
-                  widgetCollectionAttributes |> ValueOption.map(Array.sortInPlace(fun a -> a.Key)) }
+                widgetCollectionAttributes |> ValueOption.map(Array.sortInPlace(fun a -> a.Key)) }
 
         [<EditorBrowsable(EditorBrowsableState.Never)>]
         member inline x.AddScalar(attr: ScalarAttribute) =
