@@ -18,6 +18,7 @@
         <Compile Include="Widgets\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\Oak.fs" />
         <Compile Include="Widgets\Let.fs" />
+        <Compile Include="Widgets\NestedModule.fs" />
         <Compile Include="Widgets\Call.fs" />
         <Compile Include="Widgets\IfThen.fs" />
         <Compile Include="Widgets\Unit.fs" />
