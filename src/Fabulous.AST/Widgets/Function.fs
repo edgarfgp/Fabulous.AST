@@ -45,12 +45,13 @@ module Function =
 module FunctionBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline Function(name: string, parameters: string[], bodyExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<BindingNode>(
+        static member inline Function(name: string, parameters: string[]) =
+            SingleChildBuilder<BindingNode, Expr>(
                 Function.WidgetKey,
+                Function.BodyExpr,
                 AttributesBundle(
                     StackList.two(Function.Name.WithValue(name), Function.Parameters.WithValue(parameters)),
-                    ValueSome [| Function.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    ValueNone,
                     ValueNone
                 )
             )
@@ -58,5 +59,5 @@ module FunctionBuilders =
 [<Extension>]
 type FunctionModifiers =
     [<Extension>]
-    static member inline isInlined(this: WidgetBuilder<BindingNode>) =
+    static member inline isInlined(this: SingleChildBuilder<BindingNode, Expr>) =
         this.AddScalar(Function.IsInlined.WithValue(true))
