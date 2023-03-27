@@ -9,9 +9,7 @@ module ScalarAttributeDefinitions =
 
         member inline x.WithValue(value: 'T) : ScalarAttribute =
             { Key = x.Key
-#if DEBUG
               DebugName = x.Name
-#endif
               NumericValue = 0UL
               Value = value }
 
