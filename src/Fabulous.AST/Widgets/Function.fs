@@ -10,25 +10,26 @@ open type Fabulous.AST.Ast
 
 
 type FunctionNode(name, parameters, bodyExpr, isInlined) =
-    inherit BindingNode(
-        None,
-        None,
-        MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-        false,
-        (match isInlined with
-         | ValueNone
-         | ValueSome false -> None
-         | ValueSome true -> Some(SingleTextNode("inline", Range.Zero))),
-        None,
-        Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
-        None,
-        [ for param in parameters do
-              Pattern.Named(PatNamedNode(None, SingleTextNode(param, Range.Zero), Range.Zero)) ],
-        None,
-        SingleTextNode("=", Range.Zero),
-        bodyExpr,
-        Range.Zero
-    )
+    inherit
+        BindingNode(
+            None,
+            None,
+            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+            false,
+            (match isInlined with
+             | ValueNone
+             | ValueSome false -> None
+             | ValueSome true -> Some(SingleTextNode("inline", Range.Zero))),
+            None,
+            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+            None,
+            [ for param in parameters do
+                  Pattern.Named(PatNamedNode(None, SingleTextNode(param, Range.Zero), Range.Zero)) ],
+            None,
+            SingleTextNode("=", Range.Zero),
+            bodyExpr,
+            Range.Zero
+        )
 
 module Function =
     let Name = Attributes.defineScalar "Name"
@@ -42,8 +43,7 @@ module Function =
             let parameters = Helpers.getScalarValue widget Parameters
             let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
             let isInlined = Helpers.tryGetScalarValue widget IsInlined
-            FunctionNode(name, parameters, bodyExpr, isInlined)
-        )
+            FunctionNode(name, parameters, bodyExpr, isInlined))
 
 [<AutoOpen>]
 module FunctionBuilders =
@@ -65,7 +65,7 @@ type FunctionModifiers =
     [<Extension>]
     static member inline isInlined(this: SingleChildBuilder<FunctionNode, Expr>) =
         this.AddScalar(Function.IsInlined.WithValue(true))
-        
+
 [<Extension>]
 type FunctionYieldExtensions =
     [<Extension>]

@@ -69,14 +69,19 @@ module Let =
 
             let isMutable =
                 Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue false
-            let isInlined = Helpers.tryGetScalarValue widget IsInlined |> ValueOption.defaultValue false
+
+            let isInlined =
+                Helpers.tryGetScalarValue widget IsInlined |> ValueOption.defaultValue false
 
             BindingNode(
                 xmlDoc,
                 multipleAttributes,
                 MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
                 isMutable,
-                (if isInlined then Some(SingleTextNode("inline", Range.Zero)) else None),
+                (if isInlined then
+                     Some(SingleTextNode("inline", Range.Zero))
+                 else
+                     None),
                 accessControl,
                 Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
                 None,
