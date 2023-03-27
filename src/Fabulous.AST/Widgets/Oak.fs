@@ -31,5 +31,5 @@ type OakYieldExtensions =
         (
             _: CollectionBuilder<Oak, ModuleOrNamespaceNode>,
             x: WidgetBuilder<ModuleOrNamespaceNode>
-        ) : Content =
+        ) : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }

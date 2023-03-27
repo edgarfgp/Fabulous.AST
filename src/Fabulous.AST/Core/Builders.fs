@@ -3,6 +3,7 @@ namespace Fabulous.AST
 open System.ComponentModel
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
+open Fabulous.AST.WidgetAttributeDefinitions
 open Fabulous.AST.WidgetCollectionAttributeDefinitions
 
 type AttributesBundle =
@@ -119,69 +120,129 @@ type WidgetBuilder<'marker> =
     end
 
 
-[<Struct>]
-type Content = { Widgets: MutStackArray1.T<Widget> }
 
+[<Struct>]
+type SingleChildContent = { Child: Widget }
+
+/// A Computation Expression builder accepting a single child widget.
+[<Struct; NoComparison; NoEquality>]
+type SingleChildBuilder<'marker, 'childMarker> =
+    struct
+        val Key: WidgetKey
+        val Attributes: AttributesBundle
+        val Attr: WidgetAttributeDefinition
+
+        new(key: WidgetKey, attr: WidgetAttributeDefinition, attributes: AttributesBundle) =
+            { Key = key
+              Attributes = attributes
+              Attr = attr }
+
+        new(key: WidgetKey, attr: WidgetAttributeDefinition) =
+            { Key = key
+              Attributes = AttributesBundle(StackList.empty(), ValueNone, ValueNone)
+              Attr = attr }
+
+        /// Starts with a state equals to unit so we can force yield to only be used once.
+        member inline _.Zero() = ()
+
+        member inline _.Yield(child: WidgetBuilder<'childMarker>) = { Child = child.Compile() }
+
+        /// Combines only the Zero state with the first child.
+        /// Subsequent children won't be allowed thanks to the Unit initial state.
+        member inline _.Combine(_: unit, b: SingleChildContent) = b
+
+        member inline _.Delay([<InlineIfLambda>] f: unit -> SingleChildContent) = f()
+
+        /// Creates the current widget using the accumulated attributes and the child.
+        member inline x.Run(c: SingleChildContent) =
+            let struct (scalars, widgets, widgetCollections) = x.Attributes
+
+            let widgetAttr = x.Attr.WithValue(c.Child)
+
+            let widgets =
+                match widgets with
+                | ValueNone -> [| widgetAttr |]
+                | ValueSome widgets -> Array.append [| widgetAttr |] widgets
+
+            WidgetBuilder<'marker>(x.Key, AttributesBundle(scalars, ValueSome widgets, widgetCollections))
+
+        member inline x.AddScalar(attr: ScalarAttribute) =
+            let struct (scalarAttributes, widgetAttributes, widgetCollectionAttributes) =
+                x.Attributes
+
+            SingleChildBuilder<'marker, 'childMarker>(
+                x.Key,
+                x.Attr,
+                struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
+            )
+    end
+
+
+
+
+
+[<Struct>]
+type CollectionContent = { Widgets: MutStackArray1.T<Widget> }
+
+/// A Computation Expression builder accepting a collection of child widgets.
 [<Struct; NoComparison; NoEquality>]
 type CollectionBuilder<'marker, 'itemMarker> =
     struct
-        val WidgetKey: WidgetKey
-        val Scalars: StackList<ScalarAttribute>
-        val Widgets: WidgetAttribute[] voption
+        val Key: WidgetKey
+        val Attributes: AttributesBundle
         val Attr: WidgetCollectionAttributeDefinition
 
-        new(widgetKey: WidgetKey,
-            scalars: StackList<ScalarAttribute>,
-            widgets: WidgetAttribute[] voption,
-            attr: WidgetCollectionAttributeDefinition) =
-            { WidgetKey = widgetKey
-              Scalars = scalars
-              Widgets = widgets
+        new(key: WidgetKey, attr: WidgetCollectionAttributeDefinition, attributes: AttributesBundle) =
+            { Key = key
+              Attributes = attributes
               Attr = attr }
 
-        new(widgetKey: WidgetKey, attr: WidgetCollectionAttributeDefinition) =
-            { WidgetKey = widgetKey
-              Scalars = StackList.empty()
-              Widgets = ValueNone
+        new(key: WidgetKey, attr: WidgetCollectionAttributeDefinition) =
+            { Key = key
+              Attributes = AttributesBundle(StackList.empty(), ValueNone, ValueNone)
               Attr = attr }
 
-        new(widgetKey: WidgetKey, attr: WidgetCollectionAttributeDefinition, scalar: ScalarAttribute) =
-            { WidgetKey = widgetKey
-              Scalars = StackList.one scalar
-              Widgets = ValueNone
+        new(key: WidgetKey, attr: WidgetCollectionAttributeDefinition, scalar: ScalarAttribute) =
+            { Key = key
+              Attributes = AttributesBundle(StackList.one scalar, ValueNone, ValueNone)
               Attr = attr }
 
-        new(widgetKey: WidgetKey,
+        new(key: WidgetKey,
             attr: WidgetCollectionAttributeDefinition,
             scalarA: ScalarAttribute,
             scalarB: ScalarAttribute) =
-            { WidgetKey = widgetKey
-              Scalars = StackList.two(scalarA, scalarB)
-              Widgets = ValueNone
+            { Key = key
+              Attributes = AttributesBundle(StackList.two(scalarA, scalarB), ValueNone, ValueNone)
               Attr = attr }
 
-        member inline x.Run(c: Content) =
+        member inline x.Run(c: CollectionContent) =
+            let struct (scalars, widgets, widgetCollections) = x.Attributes
+
             let attrValue =
                 match MutStackArray1.toArraySlice &c.Widgets with
                 | ValueNone -> ArraySlice.emptyWithNull()
                 | ValueSome slice -> slice
 
-            WidgetBuilder<'marker>(
-                x.WidgetKey,
-                AttributesBundle(x.Scalars, x.Widgets, ValueSome [| x.Attr.WithValue(attrValue) |])
-            )
+            let widgetCollAttr = x.Attr.WithValue(attrValue)
 
-        member inline _.Combine(a: Content, b: Content) : Content =
+            let widgetCollections =
+                match widgetCollections with
+                | ValueNone -> [| widgetCollAttr |]
+                | ValueSome widgetCollections -> Array.append [| widgetCollAttr |] widgetCollections
+
+            WidgetBuilder<'marker>(x.Key, AttributesBundle(scalars, widgets, ValueSome widgetCollections))
+
+        member inline _.Combine(a: CollectionContent, b: CollectionContent) : CollectionContent =
             let res = MutStackArray1.combineMut(&a.Widgets, b.Widgets)
 
             { Widgets = res }
 
-        member inline _.Zero() : Content = { Widgets = MutStackArray1.Empty }
+        member inline _.Zero() : CollectionContent = { Widgets = MutStackArray1.Empty }
 
-        member inline _.Delay([<InlineIfLambda>] f) : Content = f()
+        member inline _.Delay([<InlineIfLambda>] f) : CollectionContent = f()
 
-        member inline x.For<'t>(sequence: 't seq, f: 't -> Content) : Content =
-            let mutable res: Content = x.Zero()
+        member inline x.For<'t>(sequence: 't seq, f: 't -> CollectionContent) : CollectionContent =
+            let mutable res: CollectionContent = x.Zero()
 
             // this is essentially Fold, not sure what is more optimal
             // handwritten version of via Seq.Fold
@@ -189,6 +250,19 @@ type CollectionBuilder<'marker, 'itemMarker> =
                 res <- x.Combine(res, f t)
 
             res
+
+
+
+
+        member inline x.AddScalar(attr: ScalarAttribute) =
+            let struct (scalarAttributes, widgetAttributes, widgetCollectionAttributes) =
+                x.Attributes
+
+            CollectionBuilder<'marker, 'childMarker>(
+                x.Key,
+                x.Attr,
+                struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
+            )
     end
 
 [<Struct>]
@@ -200,7 +274,7 @@ type AttributeCollectionBuilder<'msg, 'marker, 'itemMarker> =
         new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition) =
             { Widget = widget; Attr = attr }
 
-        member inline x.Run(c: Content) =
+        member inline x.Run(c: CollectionContent) =
             let attrValue =
                 match MutStackArray1.toArraySlice &c.Widgets with
                 | ValueNone -> ArraySlice.emptyWithNull()
@@ -208,15 +282,15 @@ type AttributeCollectionBuilder<'msg, 'marker, 'itemMarker> =
 
             x.Widget.AddWidgetCollection(x.Attr.WithValue(attrValue))
 
-        member inline _.Combine(a: Content, b: Content) : Content =
+        member inline _.Combine(a: CollectionContent, b: CollectionContent) : CollectionContent =
             { Widgets = MutStackArray1.combineMut(&a.Widgets, b.Widgets) }
 
-        member inline _.Zero() : Content = { Widgets = MutStackArray1.Empty }
+        member inline _.Zero() : CollectionContent = { Widgets = MutStackArray1.Empty }
 
-        member inline _.Delay([<InlineIfLambda>] f) : Content = f()
+        member inline _.Delay([<InlineIfLambda>] f) : CollectionContent = f()
 
-        member inline x.For<'t>(sequence: 't seq, [<InlineIfLambda>] f: 't -> Content) : Content =
-            let mutable res: Content = x.Zero()
+        member inline x.For<'t>(sequence: 't seq, [<InlineIfLambda>] f: 't -> CollectionContent) : CollectionContent =
+            let mutable res: CollectionContent = x.Zero()
 
             // this is essentially Fold, not sure what is more optimal
             // handwritten version of via Seq.Fold

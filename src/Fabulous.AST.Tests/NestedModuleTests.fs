@@ -51,7 +51,7 @@ module A =
 
     [<Test>]
     let ``Produces a recursive NestedModule`` () =
-        (NestedModule("A") { Let("x", "12") }).isRecursive()
+        NestedModule("A").isRecursive() { Let("x", "12") }
         |> produces
             """
 
@@ -62,7 +62,7 @@ module rec A =
 
     [<Test>]
     let ``Produces a private NestedModule`` () =
-        (NestedModule("A") { Let("x", "12") }).accessibility(AccessControl.Private)
+        NestedModule("A").accessibility(AccessControl.Private) { Let("x", "12") }
         |> produces
             """
 
@@ -73,7 +73,7 @@ module private A =
 
     [<Test>]
     let ``Produces a internal NestedModule`` () =
-        (NestedModule("A") { Let("x", "12") }).accessibility(AccessControl.Internal)
+        NestedModule("A").accessibility(AccessControl.Internal) { Let("x", "12") }
         |> produces
             """
 

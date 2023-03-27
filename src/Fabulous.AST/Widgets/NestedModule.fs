@@ -70,11 +70,9 @@ module NestedModuleBuilders =
 [<Extension>]
 type NestedModuleModifiers =
     [<Extension>]
-    static member inline isRecursive(this: WidgetBuilder<Oak>) =
+    static member inline isRecursive(this: CollectionBuilder<Oak, ModuleDecl>) =
         this.AddScalar(NestedModule.IsRecursive.WithValue(true))
 
     [<Extension>]
-    static member inline accessibility(this: WidgetBuilder<Oak>, ?value: AccessControl) =
-        match value with
-        | Some value -> this.AddScalar(NestedModule.Accessibility.WithValue(value))
-        | None -> this.AddScalar(NestedModule.Accessibility.WithValue(AccessControl.Public))
+    static member inline accessibility(this: CollectionBuilder<Oak, ModuleDecl>, value: AccessControl) =
+        this.AddScalar(NestedModule.Accessibility.WithValue(value))

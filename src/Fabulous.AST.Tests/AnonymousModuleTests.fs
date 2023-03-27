@@ -63,9 +63,7 @@ if x = 12 then
     [<Test>]
     let ``Produces FizzBuzz`` () =
         AnonymousModule() {
-            Function(
-                "fizzBuzz",
-                [| "i" |],
+            Function("fizzBuzz", [| "i" |]) {
                 Match(Expr.For("i")) {
                     MatchClause(
                         "i",
@@ -87,7 +85,7 @@ if x = 12 then
 
                     MatchClause("i", Call("printfn", "\"%i\"", "i"))
                 }
-            )
+            }
         }
         |> produces
             """
@@ -104,9 +102,7 @@ let fizzBuzz i =
     [<Test>]
     let ``Produces inlined FizzBuzz`` () =
         AnonymousModule() {
-            Function(
-                "fizzBuzz",
-                [| "i" |],
+            Function("fizzBuzz", [| "i" |]).isInlined() {
                 Match(Expr.For("i")) {
                     MatchClause(
                         "i",
@@ -128,8 +124,7 @@ let fizzBuzz i =
 
                     MatchClause("i", Call("printfn", "\"%i\"", "i"))
                 }
-            )
-                .isInlined()
+            }
         }
         |> produces
             """
