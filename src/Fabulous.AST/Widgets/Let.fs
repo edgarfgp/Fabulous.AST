@@ -12,8 +12,6 @@ module Let =
     let Value = Attributes.defineScalar "Value"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
 
-    let IsInlined = Attributes.defineScalar<bool> "IsInlined"
-
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
@@ -71,17 +69,12 @@ module Let =
             let isMutable =
                 Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue false
 
-            let isInlined = Helpers.tryGetScalarValue widget IsInlined
-
             BindingNode(
                 xmlDoc,
                 multipleAttributes,
                 MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
                 isMutable,
-                (match isInlined with
-                 | ValueNone
-                 | ValueSome false -> None
-                 | ValueSome true -> Some(SingleTextNode("inline", Range.Zero))),
+                None,
                 accessControl,
                 Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
                 None,
@@ -118,10 +111,6 @@ type LetModifiers =
         match value with
         | Some value -> this.AddScalar(Let.Accessibility.WithValue(value))
         | None -> this.AddScalar(Let.Accessibility.WithValue(AccessControl.Public))
-
-    [<Extension>]
-    static member inline isInlined(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(Let.IsInlined.WithValue(true))
 
 [<Extension>]
 type LetYieldExtensions =
