@@ -7,6 +7,11 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST", "src\Fabulou
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Tests", "src\Fabulous.AST.Tests\Fabulous.AST.Tests.fsproj", "{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution items", "_Solution items", "{C816B161-0A41-44E3-A3D3-3EFD8B82DC96}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

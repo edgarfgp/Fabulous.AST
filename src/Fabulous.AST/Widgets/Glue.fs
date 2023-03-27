@@ -34,7 +34,7 @@ module Glue =
 module GlueBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline TopLevelBinding(bindingWidget: WidgetBuilder<BindingNode>) =
+        static member inline TopLevelBinding(bindingWidget: WidgetBuilder<#BindingNode>) =
             WidgetBuilder<ModuleDecl>(
                 Glue.TopLevelBindingWidgetKey,
                 AttributesBundle(

@@ -23,15 +23,15 @@ let x = 12
     /// TODO: Having isInlined both on Let and Function widgets is currently conflicting
     /// because both of those widgets resolves to WidgetBuilder<BindingNode>
 
-    //     [<Test>]
-    //     let ``Simple Let binding inlined`` () =
-    //         AnonymousModule() { Let("x", "12").isInlined() }
-    //         |> produces
-    //             """
-    //
-    // let inline x = 12
-    //
-    // """
+    [<Test>]
+    let ``Simple Let binding inlined`` () =
+        AnonymousModule() { Let("x", "12").isInlined() }
+        |> produces
+            """
+
+let inline x = 12
+
+"""
 
     [<Test>]
     let ``Simple Let private binding`` () =
