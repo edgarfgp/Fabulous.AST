@@ -7,7 +7,7 @@ open NUnit.Framework
 
 [<AutoOpen>]
 module TestHelpers =
-    let produces (expected: string) (source: WidgetBuilder<Oak>) =
+    let produces (expected: string) (source: WidgetBuilder<#Oak>) =
         let oak = Tree.compile source
 
         let config =

@@ -16,8 +16,6 @@
         <Compile Include="Core\Attributes.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\Glue.fs" />
-        <Compile Include="Widgets\AnonymousModule.fs" />
-        <Compile Include="Widgets\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\Oak.fs" />
         <Compile Include="Widgets\Let.fs" />
         <Compile Include="Widgets\NestedModule.fs" />
@@ -29,6 +27,8 @@
         <Compile Include="Widgets\Condition.fs" />
         <Compile Include="Widgets\Function.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
+        <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
+        <Compile Include="Widgets\Namespaces\Namespace.fs" />
         <Compile Include="Tree.fs" />
         <None Include="test.fsx" />
     </ItemGroup>
