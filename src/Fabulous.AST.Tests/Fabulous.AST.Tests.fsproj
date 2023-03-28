@@ -13,6 +13,8 @@
         <Compile Include="LetBindingTests.fs" />
         <Compile Include="AnonymousModuleTests.fs" />
         <Compile Include="NestedModuleTests.fs" />
+        <Compile Include="OpenDirectives\OpenTests.fs" />
+        <Compile Include="OpenDirectives\OpenTypeTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

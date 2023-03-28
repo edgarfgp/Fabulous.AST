@@ -13,7 +13,7 @@ module WidgetTests =
         let source =
             """
 
-let mutable x = 10
+open type ABC
 
 """
 
