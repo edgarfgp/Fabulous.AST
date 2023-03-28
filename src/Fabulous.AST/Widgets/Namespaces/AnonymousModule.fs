@@ -4,11 +4,7 @@ open FSharp.Compiler.Text
 open Fantomas.Core.SyntaxOak
 
 type AnonymousModuleNode(decls) =
-    inherit Oak(
-        List.Empty,
-        [ ModuleOrNamespaceNode(None, decls, Range.Zero) ],
-        Range.Zero
-    )
+    inherit Oak(List.Empty, [ ModuleOrNamespaceNode(None, decls, Range.Zero) ], Range.Zero)
 
 module AnonymousModule =
     let Decls = Attributes.defineWidgetCollection "Decls"
@@ -16,8 +12,7 @@ module AnonymousModule =
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
             let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-            AnonymousModuleNode(decls)
-        )
+            AnonymousModuleNode(decls))
 
 [<AutoOpen>]
 module AnonymousModuleBuilders =
