@@ -14,6 +14,7 @@
         <Compile Include="Core\Helpers.fs" />
         <Compile Include="Core\Widgets.fs" />
         <Compile Include="Core\Attributes.fs" />
+        <Compile Include="Tree.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\Glue.fs" />
         <Compile Include="Widgets\Oak.fs" />
@@ -29,7 +30,8 @@
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
         <Compile Include="Widgets\Namespaces\Namespace.fs" />
-        <Compile Include="Tree.fs" />
+        <Compile Include="Widgets\OpenDirectives\Open.fs" />
+        <Compile Include="Widgets\OpenDirectives\OpenType.fs" />
         <None Include="test.fsx" />
     </ItemGroup>
 
