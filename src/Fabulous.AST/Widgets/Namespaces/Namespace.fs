@@ -33,15 +33,17 @@ type NamespaceNode(identList: IdentListNode, decls: ModuleDecl list, isRecursive
 module Namespace =
     let Decls = Attributes.defineWidgetCollection "Decls"
     let IdentList = Attributes.defineWidget "IdentList"
-    
+
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
 
     let WidgetKey =
         Widgets.register "Namespace" (fun widget ->
             let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
             let identList = Helpers.getNodeFromWidget<IdentListNode> widget IdentList
+
             let isRecursive =
                 Helpers.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+
             NamespaceNode(identList, decls, isRecursive))
 
 [<AutoOpen>]
@@ -63,7 +65,7 @@ module NamespaceBuilders =
 
         static member inline Namespace(name: string) =
             Ast.Namespace(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
-            
+
 [<Extension>]
 type NamespaceModifiers =
     [<Extension>]
