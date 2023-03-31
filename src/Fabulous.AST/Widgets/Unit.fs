@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
 open FSharp.Compiler.Text
+open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
@@ -18,3 +19,17 @@ module UnitBuilders =
 
         static member inline Unit() =
             WidgetBuilder<UnitNode>(Unit.WidgetKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))
+
+
+[<Extension>]
+type UnitYieldExtensions =
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<'parent, ModuleDecl>,
+            x: WidgetBuilder<UnitNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        let moduleDecl = ModuleDecl.DeclExpr(Expr.Constant(Constant.Unit(node)))
+        let widget = Ast.EscapeHatch(moduleDecl).Compile()
+        { Widgets = MutStackArray1.One(widget) }

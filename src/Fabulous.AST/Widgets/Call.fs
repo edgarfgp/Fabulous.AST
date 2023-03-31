@@ -40,13 +40,8 @@ module CallBuilders =
 [<Extension>]
 type CallYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<ModuleOrNamespaceNode, ModuleDecl>,
-            x: WidgetBuilder<Expr>
-        ) : CollectionContent =
-        { Widgets = MutStackArray1.One(DeclExpr(x).Compile()) }
-
-    [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<Expr>) : CollectionContent =
-        { Widgets = MutStackArray1.One(DeclExpr(x).Compile()) }
+        let node = Tree.compile x
+        let moduleDecl = ModuleDecl.DeclExpr node
+        let widget = Ast.EscapeHatch(moduleDecl).Compile()
+        { Widgets = MutStackArray1.One(widget) }

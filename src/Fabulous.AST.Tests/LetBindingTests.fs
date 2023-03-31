@@ -147,7 +147,7 @@ let x = 12
                 List.Empty,
                 None,
                 SingleTextNode("=", Range.Zero),
-                Tree.compile(Ast.TextConstantExpr("12")),
+                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
                 Range.Zero
             )
         }
