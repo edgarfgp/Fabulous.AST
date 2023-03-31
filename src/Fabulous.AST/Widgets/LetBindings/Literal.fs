@@ -7,7 +7,7 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-type ConstantNode(xmlDoc: XmlDocNode option, accessControl: SingleTextNode option, name: string, value: string) =
+type LiteralNode(xmlDoc: XmlDocNode option, accessControl: SingleTextNode option, name: string, value: string) =
     inherit
         BindingNode(
             xmlDoc,
@@ -43,7 +43,7 @@ type ConstantNode(xmlDoc: XmlDocNode option, accessControl: SingleTextNode optio
             Range.Zero
         )
 
-module Constant =
+module Literal =
     let Name = Attributes.defineScalar "Name"
     let Value = Attributes.defineScalar "Value"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
@@ -71,30 +71,26 @@ module Constant =
                 | ValueSome value -> Some(XmlDocNode((value |> Array.ofList), Range.Zero))
                 | ValueNone -> None
 
-            ConstantNode(xmlDoc, accessControl, name, value))
+            LiteralNode(xmlDoc, accessControl, name, value))
 
 [<AutoOpen>]
-module ConstantBuilders =
+module LiteralBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline Constant(name: string, value: string) =
-            WidgetBuilder<ConstantNode>(
-                Constant.WidgetKey,
-                Constant.Name.WithValue(name),
-                Constant.Value.WithValue(value)
-            )
+        static member inline Literal(name: string, value: string) =
+            WidgetBuilder<LiteralNode>(Literal.WidgetKey, Literal.Name.WithValue(name), Literal.Value.WithValue(value))
 
 [<Extension>]
 type ConstantModifiers =
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ConstantNode>, xmlDocs: string list) =
-        this.AddScalar(Constant.XmlDocs.WithValue(xmlDocs))
+    static member inline xmlDocs(this: WidgetBuilder<LiteralNode>, xmlDocs: string list) =
+        this.AddScalar(Literal.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline accessibility(this: WidgetBuilder<ConstantNode>, ?value: AccessControl) =
+    static member inline accessibility(this: WidgetBuilder<LiteralNode>, ?value: AccessControl) =
         match value with
-        | Some value -> this.AddScalar(Constant.Accessibility.WithValue(value))
-        | None -> this.AddScalar(Constant.Accessibility.WithValue(AccessControl.Public))
+        | Some value -> this.AddScalar(Literal.Accessibility.WithValue(value))
+        | None -> this.AddScalar(Literal.Accessibility.WithValue(AccessControl.Public))
 
 [<Extension>]
 type ConstantYieldExtensions =
@@ -102,7 +98,7 @@ type ConstantYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ConstantNode>
+            x: WidgetBuilder<LiteralNode>
         ) : CollectionContent =
         let node = Tree.compile x
         let moduleDecl = ModuleDecl.TopLevelBinding node

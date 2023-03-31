@@ -17,7 +17,7 @@
         <Compile Include="OpenDirectives\Open.fs" />
         <Compile Include="OpenDirectives\OpenType.fs" />
         <Compile Include="LetBindings\Let.fs" />
-        <Compile Include="LetBindings\Constant.fs" />
+        <Compile Include="LetBindings\Literal.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

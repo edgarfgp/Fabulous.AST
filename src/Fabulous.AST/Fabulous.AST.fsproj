@@ -30,7 +30,7 @@
         <Compile Include="Widgets\OpenDirectives\Open.fs" />
         <Compile Include="Widgets\OpenDirectives\OpenType.fs" />
         <Compile Include="Widgets\LetBindings\Let.fs" />
-        <Compile Include="Widgets\LetBindings\Constant.fs" />
+        <Compile Include="Widgets\LetBindings\Literal.fs" />
         <Compile Include="Widgets\LetBindings\Function.fs" />
         <None Include="test.fsx" />
     </ItemGroup>

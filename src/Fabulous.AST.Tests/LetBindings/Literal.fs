@@ -9,10 +9,10 @@ open Fabulous.AST
 
 open type Ast
 
-module Constant =
+module Literal =
     [<Test>]
     let ``Produces a Literal constant`` () =
-        AnonymousModule() { Constant("x", "12") }
+        AnonymousModule() { Literal("x", "12") }
         |> produces
             """
 [<Literal>]
@@ -30,7 +30,7 @@ let x = 12
 
         AnonymousModule() {
             for name, value in images do
-                Constant(name, $"\"{value}\"")
+                Literal(name, $"\"{value}\"")
         }
         |> produces
             """
@@ -50,7 +50,7 @@ let Sunflower = "sunflower.png"
 
     [<Test>]
     let ``Produces a Literal constant with xml docs`` () =
-        AnonymousModule() { Constant("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        AnonymousModule() { Literal("x", "12").xmlDocs([ "/// This is a comment" ]) }
         |> produces
             """
 /// This is a comment
@@ -61,7 +61,7 @@ let x = 12
 
     [<Test>]
     let ``Produces Literal constant with an access control `` () =
-        AnonymousModule() { Constant("x", "12").accessibility(AccessControl.Internal) }
+        AnonymousModule() { Literal("x", "12").accessibility(AccessControl.Internal) }
         |> produces
             """
 

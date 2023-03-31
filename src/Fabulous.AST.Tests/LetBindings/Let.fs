@@ -98,7 +98,7 @@ let x = 12
 
     [<Test>]
     let ``Produces a Literal constant`` () =
-        AnonymousModule() { Constant("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        AnonymousModule() { Literal("x", "12").xmlDocs([ "/// This is a comment" ]) }
         |> produces
             """
 /// This is a comment
