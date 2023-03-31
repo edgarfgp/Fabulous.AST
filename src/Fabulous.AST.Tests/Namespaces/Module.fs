@@ -1,5 +1,6 @@
-namespace Fabulous.AST.Tests
+namespace Fabulous.AST.Tests.Namespaces
 
+open Fabulous.AST.Tests
 open FSharp.Compiler.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
@@ -9,33 +10,30 @@ open Fabulous.AST
 
 open type Ast
 
-module NamespacesTests =
+module Module =
     [<Test>]
-    let ``Produces a namespace with binding`` () =
-        Namespace("Fabulous.AST") { Let("x", "3") }
+    let ``Produces a module with binding`` () =
+        Module("Fabulous.AST") { Let("x", "3") }
         |> produces
             """
-namespace Fabulous.AST
+module Fabulous.AST
 
 let x = 3
-
 """
 
     [<Test>]
-    let ``Produces a namespace  with unit`` () =
-        Namespace("Fabulous.AST") { Unit() }
+    let ``Produces a module with unit`` () =
+        Module("Fabulous.AST") { Unit() }
         |> produces
             """
-namespace Fabulous.AST
+module Fabulous.AST
 
 ()
-
 """
 
     [<Test>]
-    let ``Produces a namespace with IdentListNode`` () =
-
-        Namespace(
+    let ``Produces a module with IdentListNode`` () =
+        Module(
             IdentListNode(
                 [ IdentifierOrDot.Ident(SingleTextNode("Fabulous", Range.Zero))
                   IdentifierOrDot.KnownDot(SingleTextNode(".", Range.Zero))
@@ -47,16 +45,14 @@ namespace Fabulous.AST
         }
         |> produces
             """
-namespace Fabulous.AST
+module Fabulous.AST
 
 let x = 3
-
 """
 
     [<Test>]
-    let ``Produces a namespace with IdentListNode and BindingNode`` () =
-
-        Namespace(
+    let ``Produces a module with IdentListNode and BindingNode`` () =
+        Module(
             IdentListNode(
                 [ IdentifierOrDot.Ident(SingleTextNode("Fabulous", Range.Zero))
                   IdentifierOrDot.KnownDot(SingleTextNode(".", Range.Zero))
@@ -82,15 +78,14 @@ let x = 3
         }
         |> produces
             """
-namespace Fabulous.AST
+module Fabulous.AST
 
 let x = 12
-
 """
 
     [<Test>]
-    let ``Produces a namespace with nested module`` () =
-        Namespace("Fabulous") {
+    let ``Produces a module with nested module`` () =
+        Module("Fabulous") {
             NestedModule("Fabulous.AST") {
                 BindingNode(
                     None,
@@ -112,9 +107,8 @@ let x = 12
 
         |> produces
             """
-namespace Fabulous
+module Fabulous
 
 module Fabulous.AST =
     let x = 12
-
 """

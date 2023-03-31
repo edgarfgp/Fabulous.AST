@@ -1,15 +1,13 @@
-namespace Fabulous.AST.Tests
+namespace Fabulous.AST.Tests.Namespaces
 
-open FSharp.Compiler.Text
-open Fantomas.Core
-open Fantomas.Core.SyntaxOak
+open Fabulous.AST.Tests
 open NUnit.Framework
 
 open Fabulous.AST
 
 open type Ast
 
-module AnonymousModuleTests =
+module AnonymousModule =
     [<Test>]
     let ``Produces a simple hello world console app`` () =
         AnonymousModule() { Call("printfn", "\"hello, world\"") }

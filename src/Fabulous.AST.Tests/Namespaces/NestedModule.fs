@@ -1,5 +1,6 @@
-namespace Fabulous.AST.Tests
+namespace Fabulous.AST.Tests.Namespaces
 
+open Fabulous.AST.Tests
 open FSharp.Compiler.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
@@ -9,7 +10,7 @@ open Fabulous.AST
 
 open type Ast
 
-module NestedModuleTests =
+module NestedModule =
 
     [<Test>]
     let ``Produces a NestedModule`` () =
