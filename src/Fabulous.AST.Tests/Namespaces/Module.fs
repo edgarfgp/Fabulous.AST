@@ -13,7 +13,9 @@ open type Ast
 module Module =
     [<Test>]
     let ``Produces a module with binding`` () =
-        Module("Fabulous.AST") { Let("x", "3") }
+        Module("Fabulous.AST") {
+            Let("x", "3")
+        }
         |> produces
             """
 module Fabulous.AST
@@ -85,8 +87,8 @@ let x = 12
 
     [<Test>]
     let ``Produces a module with nested module`` () =
-        Module("Fabulous") {
-            NestedModule("Fabulous.AST") {
+        Module("Fabulous.AST") {
+            NestedModule("Foo") {
                 BindingNode(
                     None,
                     None,
@@ -107,8 +109,46 @@ let x = 12
 
         |> produces
             """
-module Fabulous
+module Fabulous.AST
 
-module Fabulous.AST =
+module Foo =
     let x = 12
+"""
+
+    [<Test>]
+    let ``Produces a module with multiple nested module`` () =
+        Module("Fabulous.AST") {
+            NestedModule("Foo") {
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                    Range.Zero
+                )
+            }
+
+            NestedModule("Bar") {
+                Let("x", "12")
+            }
+        }
+
+        |> produces
+            """
+module Fabulous.AST
+
+module Foo =
+    let x = 12
+
+module Bar =
+    let x = 12
+
 """

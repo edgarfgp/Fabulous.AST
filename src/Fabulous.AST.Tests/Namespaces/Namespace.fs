@@ -22,6 +22,16 @@ let x = 3
 """
 
     [<Test>]
+    let ``Produces a rec namespace with binding`` () =
+        Namespace("Fabulous.AST").isRecursive() { Let("x", "3") }
+        |> produces
+            """
+namespace rec Fabulous.AST
+
+let x = 3
+"""
+
+    [<Test>]
     let ``Produces a namespace  with unit`` () =
         Namespace("Fabulous.AST") { Unit() }
         |> produces
