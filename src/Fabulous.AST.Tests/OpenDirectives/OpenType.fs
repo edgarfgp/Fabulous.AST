@@ -1,7 +1,7 @@
-namespace Fabulous.AST.Tests
+namespace Fabulous.AST.Tests.OpenDirectives
 
+open Fabulous.AST.Tests
 open FSharp.Compiler.Text
-open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
 
@@ -9,7 +9,7 @@ open Fabulous.AST
 
 open type Ast
 
-module OpenTypeTests =
+module OpenType =
 
     [<Test>]
     let ``Produces a simple open type directive from a string`` () =

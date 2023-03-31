@@ -8,7 +8,7 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-type NamespaceNode(identList: IdentListNode, decls: ModuleDecl list) =
+type ModuleNode(identList: IdentListNode, decls: ModuleDecl list) =
     inherit
         Oak(
             List.Empty,
@@ -17,7 +17,7 @@ type NamespaceNode(identList: IdentListNode, decls: ModuleDecl list) =
                       ModuleOrNamespaceHeaderNode(
                           None,
                           None,
-                          MultipleTextsNode([ SingleTextNode("namespace", Range.Zero) ], Range.Zero),
+                          MultipleTextsNode([ SingleTextNode("module", Range.Zero) ], Range.Zero),
                           None,
                           false,
                           Some(identList),
@@ -30,32 +30,32 @@ type NamespaceNode(identList: IdentListNode, decls: ModuleDecl list) =
             Range.Zero
         )
 
-module Namespace =
+module Module =
     let Decls = Attributes.defineWidgetCollection "Decls"
     let IdentList = Attributes.defineWidget "IdentList"
 
     let WidgetKey =
-        Widgets.register "Namespace" (fun widget ->
+        Widgets.register "Module" (fun widget ->
             let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
             let identList = Helpers.getNodeFromWidget<IdentListNode> widget IdentList
-            NamespaceNode(identList, decls))
+            ModuleNode(identList, decls))
 
 [<AutoOpen>]
-module NamespaceBuilders =
+module ModuleBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline Namespace(identList: WidgetBuilder<#IdentListNode>) =
-            CollectionBuilder<NamespaceNode, ModuleDecl>(
-                Namespace.WidgetKey,
-                Namespace.Decls,
+        static member inline Module(identList: WidgetBuilder<#IdentListNode>) =
+            CollectionBuilder<ModuleNode, ModuleDecl>(
+                Module.WidgetKey,
+                Module.Decls,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| Namespace.IdentList.WithValue(identList.Compile()) |],
+                    ValueSome [| Module.IdentList.WithValue(identList.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member inline Namespace(node: IdentListNode) = Ast.Namespace(Ast.EscapeHatch(node))
+        static member inline Module(node: IdentListNode) = Ast.Module(Ast.EscapeHatch(node))
 
-        static member inline Namespace(name: string) =
-            Ast.Namespace(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
+        static member inline Module(name: string) =
+            Ast.Module(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))

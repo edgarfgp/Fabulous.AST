@@ -26,8 +26,9 @@
         <Compile Include="Widgets\Condition.fs" />
         <Compile Include="Widgets\Function.fs" />
         <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
-        <Compile Include="Widgets\Namespaces\NestedModule.fs" />
         <Compile Include="Widgets\Namespaces\Namespace.fs" />
+        <Compile Include="Widgets\Namespaces\Module.fs" />
+        <Compile Include="Widgets\Namespaces\NestedModule.fs" />
         <Compile Include="Widgets\OpenDirectives\Open.fs" />
         <Compile Include="Widgets\OpenDirectives\OpenType.fs" />
         <None Include="test.fsx" />

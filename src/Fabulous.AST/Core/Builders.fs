@@ -232,6 +232,9 @@ type CollectionBuilder<'marker, 'itemMarker> =
 
             WidgetBuilder<'marker>(x.Key, AttributesBundle(scalars, widgets, ValueSome widgetCollections))
 
+        member inline _.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
+            { Widgets = MutStackArray1.One(widget.Compile()) }
+
         member inline _.Combine(a: CollectionContent, b: CollectionContent) : CollectionContent =
             let res = MutStackArray1.combineMut(&a.Widgets, b.Widgets)
 
@@ -260,9 +263,6 @@ type CollectionBuilder<'marker, 'itemMarker> =
                 x.Attr,
                 struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
             )
-
-        member inline x.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
-            { Widgets = MutStackArray1.One(widget.Compile()) }
     end
 
 [<Struct>]
@@ -281,6 +281,9 @@ type AttributeCollectionBuilder<'msg, 'marker, 'itemMarker> =
                 | ValueSome slice -> slice
 
             x.Widget.AddWidgetCollection(x.Attr.WithValue(attrValue))
+
+        member inline _.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
+            { Widgets = MutStackArray1.One(widget.Compile()) }
 
         member inline _.Combine(a: CollectionContent, b: CollectionContent) : CollectionContent =
             { Widgets = MutStackArray1.combineMut(&a.Widgets, b.Widgets) }
