@@ -17,20 +17,20 @@
         <Compile Include="Tree.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
-        <Compile Include="Widgets\Let.fs" />
         <Compile Include="Widgets\Call.fs" />
         <Compile Include="Widgets\IfThen.fs" />
         <Compile Include="Widgets\Unit.fs" />
         <Compile Include="Widgets\Match.fs" />
         <Compile Include="Widgets\MatchClause.fs" />
         <Compile Include="Widgets\Condition.fs" />
-        <Compile Include="Widgets\Function.fs" />
         <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
         <Compile Include="Widgets\Namespaces\Namespace.fs" />
         <Compile Include="Widgets\Namespaces\Module.fs" />
         <Compile Include="Widgets\Namespaces\NestedModule.fs" />
         <Compile Include="Widgets\OpenDirectives\Open.fs" />
         <Compile Include="Widgets\OpenDirectives\OpenType.fs" />
+        <Compile Include="Widgets\LetBindings\Let.fs" />
+        <Compile Include="Widgets\LetBindings\Function.fs" />
         <None Include="test.fsx" />
     </ItemGroup>
 

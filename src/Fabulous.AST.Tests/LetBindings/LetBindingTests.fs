@@ -1,9 +1,11 @@
-namespace Fabulous.AST.Tests
+namespace Fabulous.AST.Tests.LetBinding
 
 open FSharp.Compiler.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
+
+open Fabulous.AST.Tests
 
 open Fabulous.AST
 

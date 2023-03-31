@@ -10,13 +10,13 @@
     <ItemGroup>
         <Compile Include="TestHelpers.fs" />
         <Compile Include="WidgetTests.fs" />
-        <Compile Include="LetBindingTests.fs" />
         <Compile Include="Namespaces\AnonymousModule.fs" />
         <Compile Include="Namespaces\Namespace.fs" />
         <Compile Include="Namespaces\Module.fs" />
         <Compile Include="Namespaces\NestedModule.fs" />
         <Compile Include="OpenDirectives\Open.fs" />
         <Compile Include="OpenDirectives\OpenType.fs" />
+        <Compile Include="LetBindings\LetBindingTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
