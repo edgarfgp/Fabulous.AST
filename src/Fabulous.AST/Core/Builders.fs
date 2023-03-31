@@ -251,9 +251,6 @@ type CollectionBuilder<'marker, 'itemMarker> =
 
             res
 
-
-
-
         member inline x.AddScalar(attr: ScalarAttribute) =
             let struct (scalarAttributes, widgetAttributes, widgetCollectionAttributes) =
                 x.Attributes
@@ -263,6 +260,9 @@ type CollectionBuilder<'marker, 'itemMarker> =
                 x.Attr,
                 struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
             )
+
+        member inline x.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
+            { Widgets = MutStackArray1.One(widget.Compile()) }
     end
 
 [<Struct>]

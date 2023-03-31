@@ -74,4 +74,7 @@ type FunctionYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<FunctionNode>
         ) : CollectionContent =
-        { Widgets = MutStackArray1.One(TopLevelBinding(x).Compile()) }
+        let node = Tree.compile x
+        let moduleDecl = ModuleDecl.TopLevelBinding node
+        let widget = Ast.EscapeHatch(moduleDecl).Compile()
+        { Widgets = MutStackArray1.One(widget) }
