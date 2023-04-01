@@ -4,14 +4,13 @@ open FSharp.Compiler.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
-
 open Fabulous.AST.Tests
 
 open Fabulous.AST
 
 open type Ast
 
-module LetBindingTests =
+module Let =
     [<Test>]
     let ``Simple Let binding`` () =
         AnonymousModule() { Let("x", "12") }
@@ -92,6 +91,17 @@ let x = 12
         }
         |> produces
             """
+[<Literal>]
+let x = 12
+
+"""
+
+    [<Test>]
+    let ``Produces a Literal constant`` () =
+        AnonymousModule() { Literal("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        |> produces
+            """
+/// This is a comment
 [<Literal>]
 let x = 12
 
