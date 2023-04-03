@@ -53,6 +53,7 @@ type Colors =
     | Yellow
 
 """
+
     [<Test>]
     let ``Produces an union using Widget and escape hatch`` () =
         AnonymousModule() {
