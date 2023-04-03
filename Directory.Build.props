@@ -1,0 +1,19 @@
+<Project>
+
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/edgarfgp/Fabulous.AST</RepositoryUrl>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+  </PropertyGroup>
+
+  <!-- Shared NuGet Package info -->
+  <PropertyGroup>
+    <Authors>Edgar Gonzalez, Timothé Larivière</Authors>
+    <PackageTags>F#;Declarative;AST;Fantomas</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/edgarfgp/Fabulous.AST</PackageProjectUrl>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+</Project>
