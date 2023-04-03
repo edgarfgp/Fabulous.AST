@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open FSharp.Compiler.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -29,16 +28,3 @@ module UnionCaseBuilders =
 
         static member inline UnionCase(name: string) =
             Ast.UnionCase(SingleTextNode(name, Range.Zero))
-
-[<Extension>]
-type UnionCaseYieldExtensions =
-    [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<'parent, UnionCaseNode>,
-            x: WidgetBuilder<TypeDefnUnionNode>
-        ) : CollectionContent =
-        let node = Tree.compile x
-        let typeDefn = ModuleDecl.TypeDefn(TypeDefn.Union(node))
-        let widget = Ast.EscapeHatch(typeDefn).Compile()
-        { Widgets = MutStackArray1.One(widget) }

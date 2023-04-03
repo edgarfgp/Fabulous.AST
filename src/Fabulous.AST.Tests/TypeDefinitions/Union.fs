@@ -33,3 +33,25 @@ type Colors =
     | Yellow
 
 """
+
+    [<Test>]
+    let ``Produces an union with SingleTextNode`` () =
+        AnonymousModule() {
+            Union(SingleTextNode("Colors", Range.Zero)) {
+                UnionCase("Red")
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            }
+        }
+
+        |> produces
+            """
+
+type Colors =
+    | Red
+    | Green
+    | Blue
+    | Yellow
+
+"""
