@@ -52,6 +52,7 @@ let x = 12
 Now let's take a look at same example using Fabulous.AST:
 
 ```fsharp
+open type Fabulous.AST.Ast
 
 let source = 
     AnonymousModule() { 
