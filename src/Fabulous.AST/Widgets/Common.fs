@@ -6,5 +6,5 @@ type AccessControl =
     | Internal
 
 type FieldType =
-    | Type of name: string
+    | Named of name: string
     | NameAndType of name: string * string

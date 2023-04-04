@@ -37,7 +37,11 @@ type Colors =
     let ``Produces an union with fields`` () =
         AnonymousModule() {
             Union("Colors") {
-                UnionCase("Red", [ Type(nameof(string)); NameAndType("b", nameof(int)) ])
+                UnionParameterizedCase("Red") {
+                    Field("a", "string")
+                    Field("b", "int")
+                }
+
                 UnionCase("Green")
                 UnionCase("Blue")
                 UnionCase("Yellow")
@@ -48,13 +52,12 @@ type Colors =
             """
 
 type Colors =
-    | Red of string * b: int
+    | Red of a: string * b: int
     | Green
     | Blue
     | Yellow
 
 """
-
 
     [<Test>]
     let ``Produces an union with SingleTextNode`` () =
@@ -80,7 +83,7 @@ type Colors =
     [<Test>]
     let ``Produces an union using Widget and escape hatch`` () =
         AnonymousModule() {
-            Union(SingleTextNode("Colors", Range.Zero)) {
+            Union("Colors") {
                 UnionCase("Red")
                 UnionCase("Green")
                 UnionCase("Blue")

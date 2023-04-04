@@ -68,12 +68,3 @@ type UnionYieldExtensions =
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>,
-            x: UnionCaseNode
-        ) : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
-        { Widgets = MutStackArray1.One(widget) }
