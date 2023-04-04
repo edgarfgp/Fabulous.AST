@@ -7,7 +7,7 @@ open NUnit.Framework
 
 open Fabulous.AST
 
-open type Ast
+open type Fabulous.AST.Ast
 
 module Union =
 
@@ -32,6 +32,29 @@ type Colors =
     | Yellow
 
 """
+
+    [<Test>]
+    let ``Produces an union with fields`` () =
+        AnonymousModule() {
+            Union("Colors") {
+                UnionCase("Red", [ Type(nameof(string)); NameAndType("b", nameof(int)) ])
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            }
+        }
+
+        |> produces
+            """
+
+type Colors =
+    | Red of string * b: int
+    | Green
+    | Blue
+    | Yellow
+
+"""
+
 
     [<Test>]
     let ``Produces an union with SingleTextNode`` () =
