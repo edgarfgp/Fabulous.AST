@@ -40,9 +40,8 @@ jobs:
           name: Packages
           path: nupkgs/
       - name: Upload docs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: Docs
           path: output/
       - name: Push
         run: dotnet nuget push "nupkgs/*" -s https://nuget.pkg.github.com/edgarfgp/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
@@ -57,5 +56,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
-        with:
-          artifact_name: Docs
