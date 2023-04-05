@@ -61,7 +61,7 @@ Now let's take a look at same example using Fabulous.AST:
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-let source = AnonymousModule() { Let("x", "12") }
+let source = AnonymousModule() { Value("x", "12") }
 
 let oak = Tree.compile source
 CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously |> printfn "%s"
@@ -95,7 +95,7 @@ let topLevelBinding: ModuleDecl =
 
 let sourceWithEscapeHatch =
     AnonymousModule() {
-        Let("a", "11")
+        Value("a", "11")
         EscapeHatch(topLevelBinding)
     }
 

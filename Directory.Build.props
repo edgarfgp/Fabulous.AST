@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <RepositoryUrl>https://github.com/edgarfgp/Fabulous.AST</RepositoryUrl>
+    <PackageProjectUrl>https://edgarfgp.github.io/Fabulous.AST/</PackageProjectUrl>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
     <!-- Example ultra-simple styling and generation settings for FsDocs default template-->
