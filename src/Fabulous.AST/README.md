@@ -56,7 +56,7 @@ open type Fabulous.AST.Ast
 
 let source = 
     AnonymousModule() { 
-        Let("x", "12")
+        Value("x", "12")
     }
 
 open Fantomas.Core
@@ -78,7 +78,7 @@ open type Fabulous.AST.Ast
 
 let source = 
     AnonymousModule() { 
-        Let("a", "11")
+        Value("a", "11")
         BindingNode(
             None,
             None,
