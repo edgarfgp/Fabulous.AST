@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Tests.LetBinding
+namespace Fabulous.AST.Tests.LetBindings
 
 open FSharp.Compiler.Text
 open Fantomas.Core

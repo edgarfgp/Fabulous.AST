@@ -7,7 +7,28 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-module Let =
+type ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, name, value) =
+    inherit
+        BindingNode(
+            xmlDoc,
+            multipleAttributes,
+            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+            isMutable,
+            (if isInlined then
+                 Some(SingleTextNode("inline", Range.Zero))
+             else
+                 None),
+            accessControl,
+            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+            None,
+            List.Empty,
+            None,
+            SingleTextNode("=", Range.Zero),
+            Expr.Constant(Constant.FromText(SingleTextNode(value, Range.Zero))),
+            Range.Zero
+        )
+
+module Value =
     let Name = Attributes.defineScalar "Name"
     let Value = Attributes.defineScalar "Value"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
@@ -20,7 +41,7 @@ module Let =
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
 
     let WidgetKey =
-        Widgets.register "Let" (fun widget ->
+        Widgets.register "Value" (fun widget ->
             let name = Helpers.getScalarValue widget Name
             let value = Helpers.getScalarValue widget Value
 
@@ -73,63 +94,46 @@ module Let =
             let isInlined =
                 Helpers.tryGetScalarValue widget IsInlined |> ValueOption.defaultValue false
 
-            BindingNode(
-                xmlDoc,
-                multipleAttributes,
-                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                isMutable,
-                (if isInlined then
-                     Some(SingleTextNode("inline", Range.Zero))
-                 else
-                     None),
-                accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
-                None,
-                List.Empty,
-                None,
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode(value, Range.Zero))),
-                Range.Zero
-            ))
+            ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, name, value))
 
 [<AutoOpen>]
-module LetBuilders =
+module ValueBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline Let(name: string, value: string) =
-            WidgetBuilder<BindingNode>(Let.WidgetKey, Let.Name.WithValue(name), Let.Value.WithValue(value))
+        static member inline Value(name: string, value: string) =
+            WidgetBuilder<ValueNode>(Value.WidgetKey, Value.Name.WithValue(name), Value.Value.WithValue(value))
 
 [<Extension>]
-type LetModifiers =
+type ValueModifiers =
     [<Extension>]
-    static member inline isMutable(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(Let.IsMutable.WithValue(true))
+    static member inline isMutable(this: WidgetBuilder<ValueNode>) =
+        this.AddScalar(Value.IsMutable.WithValue(true))
 
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
-        this.AddScalar(Let.XmlDocs.WithValue(xmlDocs))
+    static member inline xmlDocs(this: WidgetBuilder<ValueNode>, xmlDocs: string list) =
+        this.AddScalar(Value.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: string list) =
-        this.AddScalar(Let.MultipleAttributes.WithValue(attributes))
+    static member inline attributes(this: WidgetBuilder<ValueNode>, attributes: string list) =
+        this.AddScalar(Value.MultipleAttributes.WithValue(attributes))
 
     [<Extension>]
-    static member inline accessibility(this: WidgetBuilder<BindingNode>, ?value: AccessControl) =
+    static member inline accessibility(this: WidgetBuilder<ValueNode>, ?value: AccessControl) =
         match value with
-        | Some value -> this.AddScalar(Let.Accessibility.WithValue(value))
-        | None -> this.AddScalar(Let.Accessibility.WithValue(AccessControl.Public))
+        | Some value -> this.AddScalar(Value.Accessibility.WithValue(value))
+        | None -> this.AddScalar(Value.Accessibility.WithValue(AccessControl.Public))
 
     [<Extension>]
-    static member inline isInlined(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(Let.IsInlined.WithValue(true))
+    static member inline isInlined(this: WidgetBuilder<ValueNode>) =
+        this.AddScalar(Value.IsInlined.WithValue(true))
 
 [<Extension>]
-type LetYieldExtensions =
+type ValueYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<BindingNode>
+            x: WidgetBuilder<ValueNode>
         ) : CollectionContent =
         let node = Tree.compile x
         let moduleDecl = ModuleDecl.TopLevelBinding node

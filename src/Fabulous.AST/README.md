@@ -56,7 +56,7 @@ open type Fabulous.AST.Ast
 
 let source = 
     AnonymousModule() { 
-        Let("x", "12")
+        Value("x", "12")
     }
 
 open Fantomas.Core
@@ -78,7 +78,7 @@ open type Fabulous.AST.Ast
 
 let source = 
     AnonymousModule() { 
-        Let("a", "11")
+        Value("a", "11")
         BindingNode(
             None,
             None,
@@ -135,11 +135,11 @@ Fabulous.AST is a powerful tool for anyone who works with code and wants to auto
 
 #### Let bindings
 
-| Widget          | Description           | F# code                         |
-|-----------------|-----------------------|---------------------------------|
-| Value           | A let binding         | ```let x = 12```                |
-| Constant        | A constant definition | ```[<Literal>] let x = 12```    |
-| Function        | A function definition | ```let f x = x + 1```           |
+| Widget   | Description           | F# code                         |
+|----------|-----------------------|---------------------------------|
+| Value    | A let binding         | ```let x = 12```                |
+| Literal  | A literal definition  | ```[<Literal>] let x = 12```    |
+| Function | A function definition | ```let f x = x + 1```           |
 
 #### Type definitions
 

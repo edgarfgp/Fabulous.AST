@@ -41,13 +41,14 @@
         <Compile Include="Widgets\Match.fs" />
         <Compile Include="Widgets\MatchClause.fs" />
         <Compile Include="Widgets\Condition.fs" />
+        <Compile Include="Widgets\CommonYieldExtensions.fs" />
         <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
         <Compile Include="Widgets\Namespaces\Namespace.fs" />
         <Compile Include="Widgets\Namespaces\Module.fs" />
         <Compile Include="Widgets\Namespaces\NestedModule.fs" />
         <Compile Include="Widgets\OpenDirectives\Open.fs" />
         <Compile Include="Widgets\OpenDirectives\OpenType.fs" />
-        <Compile Include="Widgets\LetBindings\Let.fs" />
+        <Compile Include="Widgets\LetBindings\Value.fs" />
         <Compile Include="Widgets\LetBindings\Literal.fs" />
         <Compile Include="Widgets\LetBindings\Function.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
@@ -56,7 +57,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fantomas.Core"/>
+        <PackageReference Include="Fantomas.Core" />
     </ItemGroup>
 
 </Project>

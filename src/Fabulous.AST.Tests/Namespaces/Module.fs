@@ -13,7 +13,7 @@ open type Ast
 module Module =
     [<Test>]
     let ``Produces a module with binding`` () =
-        Module("Fabulous.AST") { Let("x", "3") }
+        Module("Fabulous.AST") { Value("x", "3") }
         |> produces
             """
 module Fabulous.AST
@@ -41,7 +41,7 @@ module Fabulous.AST
                 Range.Zero
             )
         ) {
-            Let("x", "3")
+            Value("x", "3")
         }
         |> produces
             """
@@ -134,7 +134,7 @@ module Foo =
                 )
             }
 
-            NestedModule("Bar") { Let("x", "12") }
+            NestedModule("Bar") { Value("x", "12") }
         }
 
         |> produces
