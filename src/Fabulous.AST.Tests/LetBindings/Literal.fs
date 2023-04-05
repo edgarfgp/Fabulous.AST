@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Tests.LetBinding
+namespace Fabulous.AST.Tests.LetBindings
 
 open FSharp.Compiler.Text
 open Fantomas.Core
@@ -10,6 +10,17 @@ open Fabulous.AST
 open type Ast
 
 module Literal =
+    [<Test>]
+    let ``Produces a Literal constant 2`` () =
+        AnonymousModule() { Literal("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        |> produces
+            """
+/// This is a comment
+[<Literal>]
+let x = 12
+
+"""
+
     [<Test>]
     let ``Produces a Literal constant`` () =
         AnonymousModule() { Literal("x", "12") }

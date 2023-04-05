@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Tests.LetBinding
+namespace Fabulous.AST.Tests.LetBindings
 
 open FSharp.Compiler.Text
 open Fantomas.Core
@@ -10,10 +10,10 @@ open Fabulous.AST
 
 open type Ast
 
-module Let =
+module Value =
     [<Test>]
     let ``Simple Let binding`` () =
-        AnonymousModule() { Let("x", "12") }
+        AnonymousModule() { Value("x", "12") }
         |> produces
             """
 
@@ -23,7 +23,7 @@ let x = 12
 
     [<Test>]
     let ``Simple Let binding inlined`` () =
-        AnonymousModule() { Let("x", "12").isInlined() }
+        AnonymousModule() { Value("x", "12").isInlined() }
         |> produces
             """
 
@@ -33,7 +33,7 @@ let inline x = 12
 
     [<Test>]
     let ``Simple Let private binding`` () =
-        AnonymousModule() { Let("x", "12").accessibility(AccessControl.Private) }
+        AnonymousModule() { Value("x", "12").accessibility(AccessControl.Private) }
         |> produces
             """
 
@@ -43,7 +43,7 @@ let private x = 12
 
     [<Test>]
     let ``Simple Let internal binding`` () =
-        AnonymousModule() { Let("x", "12").accessibility(AccessControl.Internal) }
+        AnonymousModule() { Value("x", "12").accessibility(AccessControl.Internal) }
         |> produces
             """
 
@@ -53,7 +53,7 @@ let internal x = 12
 
     [<Test>]
     let ``Simple Let binding with a single xml doc`` () =
-        AnonymousModule() { Let("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        AnonymousModule() { Value("x", "12").xmlDocs([ "/// This is a comment" ]) }
         |> produces
             """
 
@@ -65,7 +65,7 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with multiline xml doc`` () =
         AnonymousModule() {
-            Let("x", "12")
+            Value("x", "12")
                 .xmlDocs(
                     [ "/// This is a fist comment"
                       "/// This is a second comment"
@@ -86,34 +86,23 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with multiline with a single attribute`` () =
         AnonymousModule() {
-            Let("x", "12").attributes([ "Literal" ])
+            Value("x", "12").attributes([ "Obsolete" ])
 
         }
         |> produces
             """
-[<Literal>]
-let x = 12
-
-"""
-
-    [<Test>]
-    let ``Produces a Literal constant`` () =
-        AnonymousModule() { Literal("x", "12").xmlDocs([ "/// This is a comment" ]) }
-        |> produces
-            """
-/// This is a comment
-[<Literal>]
+[<Obsolete>]
 let x = 12
 
 """
 
     [<Test>]
     let ``Simple Let binding with multiline with a multiple attributes`` () =
-        AnonymousModule() { Let("x", "12").attributes([ "Literal"; "Obsolete" ]) }
+        AnonymousModule() { Value("x", "12").attributes([ "EditorBrowsable"; "Obsolete" ]) }
         |> produces
             """
             
-[<Literal; Obsolete>]
+[<EditorBrowsable; Obsolete>]
 let x = 12
 
 """
@@ -172,7 +161,7 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        AnonymousModule() { Let("x", "12").isMutable() }
+        AnonymousModule() { Value("x", "12").isMutable() }
         |> produces
             """
         

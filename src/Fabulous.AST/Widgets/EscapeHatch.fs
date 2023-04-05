@@ -20,11 +20,3 @@ module EscapeHatchBuilders =
 
         static member inline EscapeHatch(node: 'T) =
             WidgetBuilder<'T>(EscapeHatch.WidgetKey, EscapeHatch.Node.WithValue(node))
-
-[<Extension>]
-type EscapeHatchYieldExtensions =
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, node: BindingNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.TopLevelBinding node
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }

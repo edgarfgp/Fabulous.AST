@@ -15,7 +15,7 @@
         <Compile Include="Namespaces\NestedModule.fs" />
         <Compile Include="OpenDirectives\Open.fs" />
         <Compile Include="OpenDirectives\OpenType.fs" />
-        <Compile Include="LetBindings\Let.fs" />
+        <Compile Include="LetBindings\Value.fs" />
         <Compile Include="LetBindings\Literal.fs" />
         <Compile Include="LetBindings\Function.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />

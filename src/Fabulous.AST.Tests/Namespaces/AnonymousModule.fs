@@ -21,7 +21,7 @@ printfn "hello, world"
     [<Test>]
     let ``Produces Hello world with a let binding`` () =
         AnonymousModule() {
-            Let("x", "\"hello, world\"")
+            Value("x", "\"hello, world\"")
             Call("printfn", "\"%s\"", "x")
         }
         |> produces
