@@ -34,8 +34,8 @@ pipeline "ci" {
     }
 
     stage "docs" {
-        run "dotnet publish src/Fabulous.AST -c Release"
-        run "dotnet fsdocs build --eval --strict"
+        run $"dotnet publish src/Fabulous.AST -c {config}"
+        run $"dotnet fsdocs build --properties Configuration={config} --eval --strict"
     }
 
     stage "pack" { run $"dotnet pack {sln} -c {config} -p:PackageOutputPath=\"%s{nupkgs}\" {versionProperty}" }
