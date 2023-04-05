@@ -32,19 +32,30 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
-      - name: Restore
-        run: dotnet restore ${SLN_FILE}
       - name: Build
-        run: dotnet build ${SLN_FILE} -p:Version=${NIGHTLY_VERSION} -c ${CONFIG} --no-restore
-      - name: Test
-        run: dotnet test ${SLN_FILE} -p:Version=${NIGHTLY_VERSION} -c ${CONFIG} --no-build
-      - name: Pack
-        run: |
-          dotnet pack ${SLN_FILE} -p:Version=${NIGHTLY_VERSION} -c ${CONFIG} --property PackageOutputPath=${PWD}/${NUPKG_FOLDER}
+        run: dotnet fsi build.fsx
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Packages
           path: nupkgs/
+      - name: Upload docs
+        uses: actions/upload-artifact@v3
+        with:
+          name: Docs
+          path: output/
       - name: Push
         run: dotnet nuget push "nupkgs/*" -s https://nuget.pkg.github.com/edgarfgp/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+        with:
+          artifact_name: Docs

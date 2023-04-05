@@ -4,6 +4,11 @@
     <RepositoryUrl>https://github.com/edgarfgp/Fabulous.AST</RepositoryUrl>
     <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
     <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+    <!-- Example ultra-simple styling and generation settings for FsDocs default template-->
+    <FsDocsLogoLink>https://github.com/edgarfgp/Fabulous.AST</FsDocsLogoLink>
+    <FsDocsLogoSource>https://github.com/edgarfgp.png</FsDocsLogoSource>
+    <FsDocsLicenseLink>https://github.com/edgarfgp/Fabulous.AST/blob/main/LICENSE</FsDocsLicenseLink>
+    <FsDocsReleaseNotesLink>https://github.com/edgarfgp/Fabulous.AST/blob/main/CHANGELOG.md</FsDocsReleaseNotesLink>
   </PropertyGroup>
 
   <!-- Shared NuGet Package info -->

@@ -351,3 +351,8 @@ MigrationBackup/
 
 .idea/
 .DS_Store
+
+# FSharp.Formatting
+.fsdocs/
+tmp/
+output/

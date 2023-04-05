@@ -15,13 +15,5 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
-    - name: Check code formatting
-      run: |
-        dotnet tool restore
-        dotnet fantomas --check src
-    - name: Restore
-      run: dotnet restore ${SLN_FILE}
-    - name: Build
-      run: dotnet build ${SLN_FILE} -c ${CONFIG} --no-restore
-    - name: Test
-      run: dotnet test ${SLN_FILE} -c ${CONFIG} --no-build
+    - name: CI
+      run: dotnet fsi build.fsx
