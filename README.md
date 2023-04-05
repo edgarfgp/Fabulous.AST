@@ -115,7 +115,7 @@ Using Fabulous.AST, you can easily create and manipulate ASTs like this one usin
 
 Fabulous.AST is a powerful tool for anyone who works with code and wants to automate or streamline their development workflow. Whether you're a compiler writer, a code generator, or just someone who wants to write better code faster, Fabulous.AST can help you achieve your goals.
 
-### Available widgets
+### WIP widgets
 
 #### Namespaces and modules
 
