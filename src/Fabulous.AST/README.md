@@ -1,4 +1,5 @@
 # Fabulous.AST
+[![build](https://img.shields.io/github/actions/workflow/status/edgarfgp/Fabulous.AST/build.yml?branch=main)](https://github.com/edgarfgp/Fabulous.AST/actions/workflows/build.yml) [![NuGet version](https://img.shields.io/nuget/v/Fabulous.AST)](https://www.nuget.org/packages/Fabulous.Avalonia) [![NuGet downloads](https://img.shields.io/nuget/dt/Fabulous.AST)](https://www.nuget.org/packages/Fabulous.AST)
 
 Welcome to the Fabulous.AST, an Abstract Syntax Tree (AST) Domain Specific Language (DSL) for F#.
 
@@ -61,10 +62,8 @@ let source =
 open Fantomas.Core
 
 let oak = Tree.compile source
-
-CodeFormatter.FormatOakAsync(oak)
-|> Async.RunSynchronously
-|> printfn $"%s{res}"
+let res = CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously
+printfn $"%s{res}"
 ```
 produces the following code:
 
@@ -72,7 +71,45 @@ produces the following code:
 let x = 12
 ```
 
-In this example, we have an anonymous module that contains a single let binding, which assigns the value "12" to the variable "x". The AST is represented as a series of nested function calls, starting with AnonymousModule() and ending with Let("x", "12").
+You can use an `Escape Hatch` to generate code that is not supported by Fabulous.AST yet. For example, the following code:
+
+```fsharp
+open type Fabulous.AST.Ast
+
+let source = 
+    AnonymousModule() { 
+        Let("a", "11")
+        BindingNode(
+            None,
+            None,
+            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+            false,
+            None,
+            None,
+            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+            None,
+            List.Empty,
+            None,
+            SingleTextNode("=", Range.Zero),
+            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+            Range.Zero
+        )
+    }
+
+open Fantomas.Core
+
+let oak = Tree.compile source
+
+let oak = Tree.compile source
+let res = CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously
+printfn $"%s{res}"
+```
+produces the following code:
+
+```fsharp
+let a = 11
+let x = 12
+```
 
 Using Fabulous.AST, you can easily create and manipulate ASTs like this one using F# functions. For example, you can add new nodes to the AST, modify existing nodes, or traverse the AST to perform analysis or transformation tasks.
 
