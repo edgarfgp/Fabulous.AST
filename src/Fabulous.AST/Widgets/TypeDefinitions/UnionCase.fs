@@ -6,6 +6,7 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
+
 module UnionCase =
 
     let Name = Attributes.defineWidget "SingleTextNode"
@@ -29,13 +30,3 @@ module UnionCaseBuilders =
 
         static member inline UnionCase(name: string) =
             Ast.UnionCase(SingleTextNode(name, Range.Zero))
-
-[<Extension>]
-type UnionCaseYieldExtensions =
-    [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>,
-            x: WidgetBuilder<UnionCaseNode>
-        ) : CollectionContent =
-        { Widgets = MutStackArray1.One(x.Compile()) }

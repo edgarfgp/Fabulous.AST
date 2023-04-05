@@ -51,9 +51,10 @@
         <Compile Include="Widgets\LetBindings\Value.fs" />
         <Compile Include="Widgets\LetBindings\Literal.fs" />
         <Compile Include="Widgets\LetBindings\Function.fs" />
+        <Compile Include="Widgets\TypeDefinitions\Field.fs" />
+        <Compile Include="Widgets\TypeDefinitions\UnionParameterizedCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
-        <None Include="test.fsx" />
     </ItemGroup>
 
     <ItemGroup>

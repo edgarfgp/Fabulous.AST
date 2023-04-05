@@ -11,3 +11,8 @@ type CommonYieldExtensions =
         let moduleDecl = ModuleDecl.TopLevelBinding node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, 'child>, x: 'child) : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
+        { Widgets = MutStackArray1.One(widget) }

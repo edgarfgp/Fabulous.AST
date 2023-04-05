@@ -7,7 +7,7 @@ open NUnit.Framework
 
 open Fabulous.AST
 
-open type Ast
+open type Fabulous.AST.Ast
 
 module Union =
 
@@ -27,6 +27,32 @@ module Union =
 
 type Colors =
     | Red
+    | Green
+    | Blue
+    | Yellow
+
+"""
+
+    [<Test>]
+    let ``Produces an union with fields`` () =
+        AnonymousModule() {
+            Union("Colors") {
+                UnionParameterizedCase("Red") {
+                    Field("a", "string")
+                    Field("b", "int")
+                }
+
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            }
+        }
+
+        |> produces
+            """
+
+type Colors =
+    | Red of a: string * b: int
     | Green
     | Blue
     | Yellow
@@ -57,7 +83,7 @@ type Colors =
     [<Test>]
     let ``Produces an union using Widget and escape hatch`` () =
         AnonymousModule() {
-            Union(SingleTextNode("Colors", Range.Zero)) {
+            Union("Colors") {
                 UnionCase("Red")
                 UnionCase("Green")
                 UnionCase("Blue")
