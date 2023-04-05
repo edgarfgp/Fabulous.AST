@@ -19,6 +19,7 @@
         <Compile Include="LetBindings\Literal.fs" />
         <Compile Include="LetBindings\Function.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
+        <Compile Include="TypeDefinitions\Record.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

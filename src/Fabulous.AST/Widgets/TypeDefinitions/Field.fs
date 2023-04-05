@@ -19,7 +19,7 @@ module Field =
 
 [<AutoOpen>]
 module FieldBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Field(name: WidgetBuilder<#SingleTextNode>, filedType: Type) =
             WidgetBuilder<FieldNode>(
@@ -31,8 +31,8 @@ module FieldBuilders =
                 )
             )
 
-        static member inline Field(name: SingleTextNode, fieldType: SingleTextNode) =
-            Ast.Field(Ast.EscapeHatch(name), Type.Var(fieldType))
+        static member inline Field(name: SingleTextNode, fieldType: Type) =
+            Ast.Field(Ast.EscapeHatch(name), fieldType)
 
-        static member inline Field(name: string, fieldType: string) =
-            Ast.Field(SingleTextNode(name, Range.Zero), SingleTextNode(fieldType, Range.Zero))
+        static member inline Field(name: string, fieldType: Type) =
+            Ast.Field(SingleTextNode(name, Range.Zero), fieldType)
