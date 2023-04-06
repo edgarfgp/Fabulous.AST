@@ -38,8 +38,8 @@ type Colors =
         AnonymousModule() {
             Union("Colors") {
                 UnionParameterizedCase("Red") {
-                    Field("a", "string")
-                    Field("b", "int")
+                    Field("a", Type.FromString "string")
+                    Field("b", Type.FromString "int")
                 }
 
                 UnionCase("Green")

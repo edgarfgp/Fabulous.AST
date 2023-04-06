@@ -55,6 +55,8 @@
         <Compile Include="Widgets\TypeDefinitions\UnionParameterizedCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
+        <Compile Include="Widgets\TypeDefinitions\Record.fs" />
+        <None Include="test.fsx" />
     </ItemGroup>
 
     <ItemGroup>

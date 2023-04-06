@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Target netstandard2.1
 * Use fixed version of Fantomas.Core
 
+### Added
+* Add initial support for Record TypeDeclaration.
+
 ## [0.1.0]
 
 Initial release
