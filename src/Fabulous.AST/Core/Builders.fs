@@ -266,7 +266,7 @@ type CollectionBuilder<'marker, 'itemMarker> =
     end
 
 [<Struct>]
-type AttributeCollectionBuilder<'msg, 'marker, 'itemMarker> =
+type AttributeCollectionBuilder<'marker, 'itemMarker> =
     struct
         val Widget: WidgetBuilder<'marker>
         val Attr: WidgetCollectionAttributeDefinition

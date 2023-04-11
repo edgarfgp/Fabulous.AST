@@ -12,12 +12,21 @@ module Union =
 
     let Name = Attributes.defineWidget "SingleTextNode"
 
+    let Members = Attributes.defineWidgetCollection "Members"
+
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
 
             let unionCaseNode =
                 Helpers.getNodesFromWidgetCollection<UnionCaseNode> widget UnionCaseNode
+
+            let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+
+            let members =
+                match members with
+                | Some members -> members
+                | None -> []
 
             TypeDefnUnionNode(
                 TypeNameNode(
@@ -35,7 +44,7 @@ module Union =
                 ),
                 None,
                 unionCaseNode,
-                [],
+                members,
                 Range.Zero
             ))
 
@@ -54,6 +63,12 @@ module UnionBuilders =
 
         static member inline Union(name: string) =
             Ast.Union(SingleTextNode(name, Range.Zero))
+
+[<Extension>]
+type UnionModifiers =
+    [<Extension>]
+    static member inline members(this: WidgetBuilder<TypeDefnUnionNode>) =
+        AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
 
 [<Extension>]
 type UnionYieldExtensions =

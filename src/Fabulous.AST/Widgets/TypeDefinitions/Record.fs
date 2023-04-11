@@ -5,6 +5,7 @@ open FSharp.Compiler.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
+open Microsoft.FSharp.Collections
 
 module Record =
 
@@ -12,11 +13,18 @@ module Record =
 
     let Name = Attributes.defineWidget "SingleTextNode"
 
+    let Members = Attributes.defineWidgetCollection "Members"
+
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
-
             let fields = Helpers.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
+            let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+
+            let members =
+                match members with
+                | Some members -> members
+                | None -> []
 
             TypeDefnRecordNode(
                 TypeNameNode(
@@ -36,7 +44,7 @@ module Record =
                 SingleTextNode("{", Range.Zero),
                 fields,
                 SingleTextNode("}", Range.Zero),
-                [],
+                members,
                 Range.Zero
             ))
 
@@ -55,6 +63,12 @@ module RecordBuilders =
 
         static member inline Record(name: string) =
             Ast.Record(SingleTextNode(name, Range.Zero))
+
+[<Extension>]
+type RecordModifiers =
+    [<Extension>]
+    static member inline members(this: WidgetBuilder<TypeDefnRecordNode>) =
+        AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
 
 [<Extension>]
 type RecordYieldExtensions =
