@@ -74,3 +74,81 @@ type Colors =
 type Colors = { Red: int; Green: int; Blue: int }
 
 """
+
+    [<Test>]
+    let ``Produces a record with static member`` () =
+        let memberNode =
+            MemberDefn.Member(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode(
+                        [ SingleTextNode("static", Range.Zero); SingleTextNode("member", Range.Zero) ],
+                        Range.Zero
+                    ),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("A", Range.Zero)) ], Range.Zero)),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
+                    Range.Zero
+                )
+            )
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", Type.FromString "string") }).members() { EscapeHatch(memberNode) }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    static member A = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with member`` () =
+        let memberNode =
+            MemberDefn.Member(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(
+                        IdentListNode(
+                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode("A", Range.Zero)) ],
+                            Range.Zero
+                        )
+                    ),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
+                    Range.Zero
+                )
+            )
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", Type.FromString "string") }).members() { EscapeHatch(memberNode) }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    member this.A = ""
+
+"""
