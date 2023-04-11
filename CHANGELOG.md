@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.3.0] - 2023-04-11
+### Added
+- Add initial support for members in Record and Unions
+
+### Changed
+- Update `Fantomas.Core` 6.0.0-beta-001
+
 ## [0.2.0] - 2023-04-06
 ### Added
 - Add initial support for Record TypeDeclaration. @nojaf
