@@ -54,6 +54,8 @@
         <Compile Include="Widgets\TypeDefinitions\Field.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionParameterizedCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
+        <Compile Include="Widgets\TypeDefinitions\EnumCase.fs" />
+        <Compile Include="Widgets\TypeDefinitions\Enum.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />
     </ItemGroup>
