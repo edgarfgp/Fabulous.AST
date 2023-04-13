@@ -7,9 +7,9 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 
 module Field =
 
-    let Name = Attributes.defineWidget "SingleTextNode"
+    let Name = Attributes.defineWidget "Name"
 
-    let FieldType = Attributes.defineScalar<Type> "SingleTextNode"
+    let FieldType = Attributes.defineScalar<Type> "FieldType"
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->

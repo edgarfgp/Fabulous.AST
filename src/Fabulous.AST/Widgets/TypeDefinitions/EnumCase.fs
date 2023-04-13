@@ -7,9 +7,9 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 
 module EnumCase =
 
-    let Name = Attributes.defineWidget "SingleTextNode"
+    let Name = Attributes.defineWidget "Name"
 
-    let Value = Attributes.defineWidget "SingleTextNode"
+    let Value = Attributes.defineWidget "Value"
 
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
