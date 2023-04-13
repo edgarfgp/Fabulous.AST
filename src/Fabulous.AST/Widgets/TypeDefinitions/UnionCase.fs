@@ -9,7 +9,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 
 module UnionCase =
 
-    let Name = Attributes.defineWidget "SingleTextNode"
+    let Name = Attributes.defineWidget "Name"
 
     let WidgetKey =
         Widgets.register "UnionCase" (fun widget ->

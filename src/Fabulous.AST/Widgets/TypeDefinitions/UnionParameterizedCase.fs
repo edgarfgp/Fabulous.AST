@@ -11,7 +11,7 @@ type UnionParameterizedCaseNode(name, fields) =
 
 module UnionParameterizedCase =
 
-    let Name = Attributes.defineWidget "SingleTextNode"
+    let Name = Attributes.defineWidget "Name"
 
     let Fields = Attributes.defineWidgetCollection "Fields"
 

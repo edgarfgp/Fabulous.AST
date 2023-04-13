@@ -10,7 +10,7 @@ module Enum =
 
     let EnumCaseNode = Attributes.defineWidgetCollection "UnionCaseNode"
 
-    let Name = Attributes.defineWidget "SingleTextNode"
+    let Name = Attributes.defineWidget "Name"
 
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->

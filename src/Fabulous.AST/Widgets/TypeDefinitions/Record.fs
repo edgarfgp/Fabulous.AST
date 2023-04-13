@@ -11,7 +11,7 @@ module Record =
 
     let RecordCaseNode = Attributes.defineWidgetCollection "RecordCaseNode"
 
-    let Name = Attributes.defineWidget "SingleTextNode"
+    let Name = Attributes.defineWidget "Name"
 
     let Members = Attributes.defineWidgetCollection "Members"
 

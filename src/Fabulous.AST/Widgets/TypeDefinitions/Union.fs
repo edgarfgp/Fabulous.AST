@@ -10,7 +10,7 @@ module Union =
 
     let UnionCaseNode = Attributes.defineWidgetCollection "UnionCaseNode"
 
-    let Name = Attributes.defineWidget "SingleTextNode"
+    let Name = Attributes.defineWidget "Name"
 
     let Members = Attributes.defineWidgetCollection "Members"
 
