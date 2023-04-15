@@ -22,6 +22,7 @@
         <Compile Include="TypeDefinitions\Alias.fs" />
         <Compile Include="TypeDefinitions\Enum.fs" />
         <Compile Include="TypeDefinitions\Record.fs" />
+        <Compile Include="ControlFlow\IfThen.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
