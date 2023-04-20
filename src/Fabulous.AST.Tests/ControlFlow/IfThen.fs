@@ -14,7 +14,7 @@ module IfThen =
     let ``Produces if-then expression`` () =
         AnonymousModule() {
             IfThen("x", "=", "12") {
-                //Value("x", "4")
+                Value("x", "4")
                 Unit()
             }
         }
