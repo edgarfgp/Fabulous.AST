@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.5.0] - 2023-04-21
+### Added
+- Add initial support for `IfThen` expression
+
+### Changed
+- Rename `Alias` to `Abbrev` to match AST
+
 ## [0.4.0] - 2023-04-13
 ### Added
 - Add initial support for enums and type aliases
@@ -34,7 +41,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous/compare/0.4.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.5.0
 [0.4.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.4.0
 [0.3.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.3.0
 [0.2.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.2.0
