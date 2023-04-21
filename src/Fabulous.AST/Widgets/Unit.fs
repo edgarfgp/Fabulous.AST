@@ -33,17 +33,3 @@ type UnitYieldExtensions =
         let moduleDecl = ModuleDecl.DeclExpr(Expr.Constant(Constant.Unit(node)))
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ComputationExpressionStatement>,
-            x: WidgetBuilder<UnitNode>
-        ) : CollectionContent =
-        let node = Tree.compile x
-
-        let moduleDecl =
-            ComputationExpressionStatement.OtherStatement(Expr.Constant(Constant.Unit(node)))
-
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }

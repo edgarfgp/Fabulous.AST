@@ -22,17 +22,18 @@ module IfThen =
                 )
             )
 
+        let thenExpr =
+            Expr.Constant(
+                Constant.Unit(UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero))
+            )
+
         AnonymousModule() {
-            IfThen(EscapeHatch(ifExp)) {
-                Value("x", "4")
-                Unit()
-            }
+            IfThen(EscapeHatch(ifExp)) { EscapeHatch(ComputationExpressionStatement.OtherStatement(thenExpr)) }
         }
         |> produces
             """
 
 if x = 12 then
-    let x = 4
     ()
 """
 
@@ -55,15 +56,11 @@ if x = 12 then
 
         AnonymousModule() {
 
-            IfThen(EscapeHatch(ifExp)) {
-                Value("x", "4")
-                EscapeHatch(ComputationExpressionStatement.OtherStatement(thenExpr))
-            }
+            IfThen(EscapeHatch(ifExp)) { EscapeHatch(ComputationExpressionStatement.OtherStatement(thenExpr)) }
         }
         |> produces
             """
 
 if x = 12 then
-    let x = 4
     ()
 """

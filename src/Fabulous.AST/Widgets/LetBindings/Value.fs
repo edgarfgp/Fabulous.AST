@@ -139,15 +139,3 @@ type ValueYieldExtensions =
         let moduleDecl = ModuleDecl.TopLevelBinding node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ComputationExpressionStatement>,
-            x: WidgetBuilder<ValueNode>
-        ) : CollectionContent =
-        let node = Tree.compile x
-        let letOrUseNode = ExprLetOrUseNode(node, None, Range.Zero)
-        let comp = ComputationExpressionStatement.LetOrUseStatement letOrUseNode
-        let widget = Ast.EscapeHatch(comp).Compile()
-        { Widgets = MutStackArray1.One(widget) }
