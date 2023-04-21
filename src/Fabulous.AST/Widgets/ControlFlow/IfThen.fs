@@ -7,23 +7,19 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module IfThen =
-    let LeftHandSide = Attributes.defineWidget "LeftHandSide"
-    let Operator = Attributes.defineWidget "Operator"
-    let RightHandSide = Attributes.defineWidget "RightHandSide"
     let ThenExpr = Attributes.defineWidgetCollection "ThenExpr"
+    let IfExpr = Attributes.defineWidget "IfExpr"
 
     let WidgetKey =
         Widgets.register "IfThen" (fun widget ->
-            let lhs = Helpers.getNodeFromWidget<SingleTextNode> widget LeftHandSide
-            let operator = Helpers.getNodeFromWidget<SingleTextNode> widget Operator
-            let rhs = Helpers.getNodeFromWidget<SingleTextNode> widget RightHandSide
+            let ifExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
 
             let thenExpr =
                 Helpers.getNodesFromWidgetCollection<ComputationExpressionStatement> widget ThenExpr
 
             ExprIfThenNode(
                 IfKeywordNode.SingleWord(SingleTextNode("if", Range.Zero)),
-                Expr.InfixApp(ExprInfixAppNode(Expr.Ident(lhs), operator, Expr.Ident(rhs), Range.Zero)),
+                ifExpr,
                 SingleTextNode("then", Range.Zero),
                 Expr.CompExprBody(ExprCompExprBodyNode(thenExpr, Range.Zero)),
                 Range.Zero
@@ -33,30 +29,11 @@ module IfThen =
 module IfThenBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline IfThen
-            (
-                lhs: WidgetBuilder<SingleTextNode>,
-                operator: WidgetBuilder<SingleTextNode>,
-                rhs: WidgetBuilder<SingleTextNode>
-            ) =
+        static member inline IfThen(exp: WidgetBuilder<Expr>) =
             CollectionBuilder<ExprIfThenNode, ComputationExpressionStatement>(
                 IfThen.WidgetKey,
                 IfThen.ThenExpr,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome
-                        [| IfThen.LeftHandSide.WithValue(lhs.Compile())
-                           IfThen.Operator.WithValue(operator.Compile())
-                           IfThen.RightHandSide.WithValue(rhs.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member inline IfThen(lhs: string, operator: string, rhs: string) =
-            Ast.IfThen(
-                Ast.EscapeHatch(SingleTextNode(lhs, Range.Zero)),
-                Ast.EscapeHatch(SingleTextNode(operator, Range.Zero)),
-                Ast.EscapeHatch(SingleTextNode(rhs, Range.Zero))
+                AttributesBundle(StackList.empty(), ValueSome [| IfThen.IfExpr.WithValue(exp.Compile()) |], ValueNone)
             )
 
 [<Extension>]
