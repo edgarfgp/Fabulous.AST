@@ -7,21 +7,20 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module IfThen =
-    let ThenExpr = Attributes.defineWidgetCollection "ThenExpr"
     let IfExpr = Attributes.defineWidget "IfExpr"
+    let ThenExpr = Attributes.defineWidget "ThenExpr"
 
     let WidgetKey =
         Widgets.register "IfThen" (fun widget ->
             let ifExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
 
-            let thenExpr =
-                Helpers.getNodesFromWidgetCollection<ComputationExpressionStatement> widget ThenExpr
+            let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
 
             ExprIfThenNode(
                 IfKeywordNode.SingleWord(SingleTextNode("if", Range.Zero)),
                 ifExpr,
                 SingleTextNode("then", Range.Zero),
-                Expr.CompExprBody(ExprCompExprBodyNode(thenExpr, Range.Zero)),
+                thenExpr,
                 Range.Zero
             ))
 
@@ -29,11 +28,16 @@ module IfThen =
 module IfThenBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline IfThen(exp: WidgetBuilder<Expr>) =
-            CollectionBuilder<ExprIfThenNode, ComputationExpressionStatement>(
+        static member inline IfThen(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+            WidgetBuilder<ExprIfThenNode>(
                 IfThen.WidgetKey,
-                IfThen.ThenExpr,
-                AttributesBundle(StackList.empty(), ValueSome [| IfThen.IfExpr.WithValue(exp.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThen.IfExpr.WithValue(ifExpr.Compile())
+                           IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
+                    ValueNone
+                )
             )
 
 [<Extension>]

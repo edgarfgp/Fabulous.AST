@@ -26,10 +26,12 @@ module IfThen =
                 Constant.Unit(UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero))
             )
 
-        AnonymousModule() {
+        let thenExpr =
+            Expr.CompExprBody(
+                ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.Zero)
+            )
 
-            IfThen(EscapeHatch(ifExp)) { EscapeHatch(ComputationExpressionStatement.OtherStatement(thenExpr)) }
-        }
+        AnonymousModule() { IfThen(EscapeHatch(ifExp), EscapeHatch(thenExpr)) }
         |> produces
             """
 
