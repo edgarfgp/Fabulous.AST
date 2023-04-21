@@ -1,22 +1,15 @@
 namespace Fabulous.AST.Tests.LetBindings
 
+open FSharp.Compiler.Text
 open Fabulous.AST
+open Fabulous.AST.Tests
 
 open type Ast
+open Fantomas.Core.SyntaxOak
+open NUnit.Framework
 
 module Function =
     ()
-//     [<Test>]
-//     let ``Produces if-then`` () =
-//         AnonymousModule() { IfThen("x", "=", "12", Expr.For(Unit())) }
-//         |> produces
-//             """
-//
-// if x = 12 then
-//     ()
-//
-// """
-
 //     [<Test>]
 //     let ``Produces FizzBuzz`` () =
 //         AnonymousModule() {

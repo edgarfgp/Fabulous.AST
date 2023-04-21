@@ -19,9 +19,10 @@
         <Compile Include="LetBindings\Literal.fs" />
         <Compile Include="LetBindings\Function.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
-        <Compile Include="TypeDefinitions\Alias.fs" />
+        <Compile Include="TypeDefinitions\Abbrev.fs" />
         <Compile Include="TypeDefinitions\Enum.fs" />
         <Compile Include="TypeDefinitions\Record.fs" />
+        <Compile Include="ControlFlow\IfThen.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
