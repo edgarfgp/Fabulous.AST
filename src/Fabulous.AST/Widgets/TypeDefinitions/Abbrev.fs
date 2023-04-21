@@ -6,7 +6,7 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
-module Alias =
+module Abbrev =
 
     let Name = Attributes.defineWidget "Name"
 
@@ -38,27 +38,27 @@ module Alias =
             ))
 
 [<AutoOpen>]
-module AliasBuilders =
+module AbbrevBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline Alias(name: WidgetBuilder<#SingleTextNode>, aliasType: Type) =
+        static member inline Abbrev(name: WidgetBuilder<#SingleTextNode>, aliasType: Type) =
             WidgetBuilder<TypeDefnAbbrevNode>(
-                Alias.WidgetKey,
+                Abbrev.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Alias.AliasType.WithValue(aliasType)),
-                    ValueSome [| Alias.Name.WithValue(name.Compile()) |],
+                    StackList.one(Abbrev.AliasType.WithValue(aliasType)),
+                    ValueSome [| Abbrev.Name.WithValue(name.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member inline Alias(name: SingleTextNode, aliasType: Type) =
-            Ast.Alias(Ast.EscapeHatch(name), aliasType)
+        static member inline Abbrev(name: SingleTextNode, aliasType: Type) =
+            Ast.Abbrev(Ast.EscapeHatch(name), aliasType)
 
-        static member inline Alias(name: string, aliasType: Type) =
-            Ast.Alias(SingleTextNode(name, Range.Zero), aliasType)
+        static member inline Abbrev(name: string, aliasType: Type) =
+            Ast.Abbrev(SingleTextNode(name, Range.Zero), aliasType)
 
 [<Extension>]
-type AliasYieldExtensions =
+type AbbrevYieldExtensions =
     [<Extension>]
     static member inline Yield
         (

@@ -9,11 +9,11 @@ open Fabulous.AST
 
 open type Fabulous.AST.Ast
 
-module Alias =
+module Abbrev =
 
     [<Test>]
-    let ``Produces type alias`` () =
-        AnonymousModule() { Alias("MyInt", Type.FromString("int")) }
+    let ``Produces type Abbrev`` () =
+        AnonymousModule() { Abbrev("MyInt", Type.FromString("int")) }
 
         |> produces
             """
@@ -23,7 +23,7 @@ type MyInt = int
 """
 
     [<Test>]
-    let ``Produces type alias using an escape hatch`` () =
+    let ``Produces type Abbrev using an escape hatch`` () =
         let alias =
             TypeDefnAbbrevNode(
                 TypeNameNode(
@@ -45,7 +45,7 @@ type MyInt = int
             )
 
         AnonymousModule() {
-            Alias("MyInt", Type.FromString("int"))
+            Abbrev("MyInt", Type.FromString("int"))
             EscapeHatch(alias)
         }
 
@@ -58,9 +58,9 @@ type MyFloat = float
 """
 
     [<Test>]
-    let ``Produces type alias with TypeDefnAbbrevNode`` () =
+    let ``Produces type Abbrev with TypeDefnAbbrevNode`` () =
         AnonymousModule() {
-            Alias("MyInt", Type.FromString("int"))
+            Abbrev("MyInt", Type.FromString("int"))
 
             TypeDefnAbbrevNode(
                 TypeNameNode(
