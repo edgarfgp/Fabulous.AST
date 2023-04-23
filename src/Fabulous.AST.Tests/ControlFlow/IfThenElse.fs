@@ -53,5 +53,6 @@ module IfThenElse =
         |> produces
             """
 
-if x = 12 then () else ()
+if x = 12 then ()
+else ()
 """
