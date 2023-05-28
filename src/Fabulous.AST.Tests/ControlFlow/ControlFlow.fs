@@ -48,7 +48,7 @@ module ControlFlow =
                     Range.Zero
                 )
             )
-        
+
         let ifElifExp =
             Expr.InfixApp(
                 ExprInfixAppNode(
@@ -74,10 +74,8 @@ module ControlFlow =
             )
 
         AnonymousModule() {
-            IfThen(EscapeHatch(ifExp)) {
-                EscapeHatch(thenExpr)
-            }
-            
+            IfThen(EscapeHatch(ifExp)) { EscapeHatch(thenExpr) }
+
             ElIfElse(EscapeHatch(elseExpr)) { EscapeHatch([ elifExpr ]) }
         }
         |> produces
@@ -89,5 +87,3 @@ if x = 12 then
 elif x = 0 then ()
 else ()
 """
-
-
