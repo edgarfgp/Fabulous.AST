@@ -132,7 +132,7 @@ module Fabulous.AST =
     let ``Produces a namespace with nested module using yield bang`` () =
         let records =
             [ { typename = "Person"
-                props = [ ("Name", [ "string" ]) ] |> Map.ofList } ]
+                props = [ ("Age", [ "int" ]); ("Name", [ "string" ]) ] |> Map.ofList } ]
 
         let recordTypes =
             records
@@ -153,7 +153,7 @@ module Fabulous.AST =
 
                     Record(name) {
                         for KeyValue(key, value) in props do
-                            Field(key, mkType value)
+                            yield! Field(key, mkType value)
                     }
                     |> Tree.compile
                     |> TypeDefn.Record
@@ -161,11 +161,11 @@ module Fabulous.AST =
 
         Namespace("Json") {
             for recordType in recordTypes do
-                yield! EscapeHatch(recordType)
+                EscapeHatch(recordType)
         }
         |> produces
             """
 namespace Json
 
-type Person = { Name: string } 
+type Person = { Age: int; Name: string } 
 """
