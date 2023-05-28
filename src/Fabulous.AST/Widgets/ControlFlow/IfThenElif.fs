@@ -7,22 +7,17 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module IfThenElif =
-    let IfExpr = Attributes.defineWidget "IfExpr"
-    let ThenExpr = Attributes.defineWidget "ThenExpr"
-    let IfTenElifExpr = Attributes.defineScalar<ExprIfThenNode list> "IfTenElifExpr"
+    let ElifExpr = Attributes.defineWidget "ElifExpr"
 
     let ElseExpr = Attributes.defineWidget "ElseExpr"
 
     let WidgetKey =
         Widgets.register "IfThen" (fun widget ->
-            let ifExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
 
-            let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
-
-            let ifTenElifExpr = Helpers.tryGetScalarValue widget IfTenElifExpr
+            let elifExpr = Helpers.tryGetNodeFromWidget<ExprIfThenNode list> widget ElifExpr
 
             let ifTenElifExpr =
-                match ifTenElifExpr with
+                match elifExpr with
                 | ValueSome ifTenElifExpr -> ifTenElifExpr
                 | ValueNone -> []
 
@@ -34,14 +29,7 @@ module IfThenElif =
                 | ValueNone -> None
 
             ExprIfThenElifNode(
-                [ ExprIfThenNode(
-                      IfKeywordNode.SingleWord(SingleTextNode("if", Range.Zero)),
-                      ifExpr,
-                      SingleTextNode("then", Range.Zero),
-                      thenExpr,
-                      Range.Zero
-                  )
-                  for elifExpr in ifTenElifExpr do
+                [ for elifExpr in ifTenElifExpr do
                       elifExpr ],
                 elseExpr,
                 Range.Zero
@@ -51,68 +39,13 @@ module IfThenElif =
 module IfThenElifBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline IfThen(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<ExprIfThenElifNode>(
+        static member inline ElIfElse(elseExpr: WidgetBuilder<Expr>) =
+            SingleChildBuilder<ExprIfThenElifNode, ExprIfThenNode list>(
                 IfThenElif.WidgetKey,
+                IfThenElif.ElifExpr,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| IfThenElif.IfExpr.WithValue(ifExpr.Compile())
-                           IfThenElif.ThenExpr.WithValue(thenExpr.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member inline IfThenElIf
-            (
-                ifExpr: WidgetBuilder<Expr>,
-                thenExpr: WidgetBuilder<Expr>,
-                elifExpr: ExprIfThenNode list
-            ) =
-            WidgetBuilder<ExprIfThenElifNode>(
-                IfThenElif.WidgetKey,
-                AttributesBundle(
-                    StackList.one(IfThenElif.IfTenElifExpr.WithValue(elifExpr)),
-                    ValueSome
-                        [| IfThenElif.IfExpr.WithValue(ifExpr.Compile())
-                           IfThenElif.ThenExpr.WithValue(thenExpr.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member inline IfThenElIfElse
-            (
-                ifExpr: WidgetBuilder<Expr>,
-                thenExpr: WidgetBuilder<Expr>,
-                elifExpr: ExprIfThenNode list,
-                elseExpr: WidgetBuilder<Expr>
-            ) =
-            WidgetBuilder<ExprIfThenElifNode>(
-                IfThenElif.WidgetKey,
-                AttributesBundle(
-                    StackList.one(IfThenElif.IfTenElifExpr.WithValue(elifExpr)),
-                    ValueSome
-                        [| IfThenElif.IfExpr.WithValue(ifExpr.Compile())
-                           IfThenElif.ThenExpr.WithValue(thenExpr.Compile())
-                           IfThenElif.ElseExpr.WithValue(elseExpr.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member inline IfThenElse
-            (
-                ifExpr: WidgetBuilder<Expr>,
-                thenExpr: WidgetBuilder<Expr>,
-                elseExpr: WidgetBuilder<Expr>
-            ) =
-            WidgetBuilder<ExprIfThenElifNode>(
-                IfThenElif.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome
-                        [| IfThenElif.IfExpr.WithValue(ifExpr.Compile())
-                           IfThenElif.ThenExpr.WithValue(thenExpr.Compile())
-                           IfThenElif.ElseExpr.WithValue(elseExpr.Compile()) |],
+                    ValueSome [| IfThenElif.ElseExpr.WithValue(elseExpr.Compile()) |],
                     ValueNone
                 )
             )

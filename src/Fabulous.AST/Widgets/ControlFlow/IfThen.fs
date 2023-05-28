@@ -28,14 +28,13 @@ module IfThen =
 module IfThenBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline IfThen(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<ExprIfThenNode>(
+        static member inline IfThen(ifExpr: WidgetBuilder<Expr>) =
+            SingleChildBuilder<ExprIfThenNode, Expr>(
                 IfThen.WidgetKey,
+                IfThen.ThenExpr,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| IfThen.IfExpr.WithValue(ifExpr.Compile())
-                           IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
+                    ValueSome [| IfThen.IfExpr.WithValue(ifExpr.Compile()) |],
                     ValueNone
                 )
             )

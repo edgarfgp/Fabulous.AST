@@ -31,7 +31,7 @@ module IfThen =
                 ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.Zero)
             )
 
-        AnonymousModule() { IfThen(EscapeHatch(ifExp), EscapeHatch(thenExpr)) }
+        AnonymousModule() { IfThen(EscapeHatch(ifExp)) { EscapeHatch(thenExpr) } }
         |> produces
             """
 
