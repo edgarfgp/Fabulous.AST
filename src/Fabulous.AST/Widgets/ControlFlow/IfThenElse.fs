@@ -6,49 +6,54 @@ open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
-module IfThen =
+module IfThenElse =
     let IfExpr = Attributes.defineWidget "IfExpr"
     let ThenExpr = Attributes.defineWidget "ThenExpr"
+    let ElseExpr = Attributes.defineWidget "ElseExpr"
 
     let WidgetKey =
-        Widgets.register "IfThen" (fun widget ->
+        Widgets.register "IfThenElse" (fun widget ->
             let ifExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
-
             let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
+            let elseExpr = Helpers.getNodeFromWidget<Expr> widget ElseExpr
 
-            ExprIfThenNode(
+            ExprIfThenElseNode(
                 IfKeywordNode.SingleWord(SingleTextNode("if", Range.Zero)),
                 ifExpr,
                 SingleTextNode("then", Range.Zero),
                 thenExpr,
+                SingleTextNode("else", Range.Zero),
+                elseExpr,
                 Range.Zero
             ))
 
 [<AutoOpen>]
-module IfThenBuilders =
+module IfThenElseBuilders =
     type Fabulous.AST.Ast with
 
-        static member inline IfThen(ifExpr: WidgetBuilder<Expr>) =
-            SingleChildBuilder<ExprIfThenNode, Expr>(
-                IfThen.WidgetKey,
-                IfThen.ThenExpr,
+        static member inline IfThenElse(ifExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>) =
+            SingleChildBuilder<ExprIfThenElseNode, Expr>(
+                IfThenElse.WidgetKey,
+                IfThenElse.ThenExpr,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| IfThen.IfExpr.WithValue(ifExpr.Compile()) |],
+                    ValueSome
+                        [| IfThenElse.IfExpr.WithValue(ifExpr.Compile())
+                           IfThenElse.ElseExpr.WithValue(elseExpr.Compile()) |],
                     ValueNone
                 )
             )
 
 [<Extension>]
-type IfThenYieldExtensions =
+type IfThenElseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ExprIfThenNode>
+            x: WidgetBuilder<ExprIfThenElseNode>
         ) : CollectionContent =
         let node = Tree.compile x
-        let expIfThen = Expr.IfThen(node)
+        let expIfThen = Expr.IfThenElse(node)
         let moduleDecl = ModuleDecl.DeclExpr expIfThen
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }

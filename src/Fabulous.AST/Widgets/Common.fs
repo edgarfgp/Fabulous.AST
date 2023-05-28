@@ -22,6 +22,6 @@ module Auxiliary =
             // TODO: consider validating the input here.
             // If something complex was passed in, it would be nice to throw an exception.
             // For now, we just assume that the input is valid.
-            // Bad example would be: "int -> int", use Type.Funs instead.
+            // Bad example would be: "int -> int", use Type.Fun instead.
             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(typeName, Range.Zero)) ], Range.Zero)
             |> Type.LongIdent
