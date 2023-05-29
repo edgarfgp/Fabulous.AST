@@ -9,7 +9,7 @@ open Microsoft.FSharp.Collections
 
 module Class =
     let Name = Attributes.defineWidget "Name"
-    let Parameters = Attributes.defineScalar "Constructor"
+    let Parameters = Attributes.defineScalar<SimplePatNode list> "Parameters"
     let Members = Attributes.defineWidgetCollection "Members"
 
     let WidgetKey =
@@ -25,20 +25,21 @@ module Class =
 
             let implicitConstructor =
                 match parameters with
-                | ValueSome parameters ->
+                | ValueNone -> None
+                | ValueSome parameters when parameters.IsEmpty -> None
+                | ValueSome simplePatNodes ->
                     Some(
                         ImplicitConstructorNode(
                             None,
                             None,
                             None,
                             SingleTextNode("(", Range.Zero),
-                            parameters,
+                            simplePatNodes,
                             SingleTextNode(")", Range.Zero),
                             None,
                             Range.Zero
                         )
                     )
-                | ValueNone -> None
 
             TypeDefnRegularNode(
                 TypeNameNode(
