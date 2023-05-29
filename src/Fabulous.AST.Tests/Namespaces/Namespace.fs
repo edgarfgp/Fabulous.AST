@@ -151,10 +151,10 @@ module Fabulous.AST =
                             TypeAppPostFixNode(mkType tail, Type.FromString head, Range.Zero)
                             |> Type.AppPostfix
 
-                    Record(name) {
-                        for KeyValue(key, value) in props do
-                            yield! Field(key, mkType value)
-                    }
+                    let myFields =
+                        props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))
+
+                    Record(name) { yield! myFields }
                     |> Tree.compile
                     |> TypeDefn.Record
                     |> ModuleDecl.TypeDefn)

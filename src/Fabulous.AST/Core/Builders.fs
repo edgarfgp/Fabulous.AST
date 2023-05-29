@@ -229,8 +229,12 @@ type CollectionBuilder<'marker, 'itemMarker> =
         member inline _.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
             { Widgets = MutStackArray1.One(widget.Compile()) }
 
-        member inline _.YieldFrom(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
-            { Widgets = MutStackArray1.One(widget.Compile()) }
+        member inline _.YieldFrom(widgets: WidgetBuilder<'itemMarker> seq) : CollectionContent =
+            { Widgets =
+                widgets
+                |> Seq.map(fun widget -> widget.Compile())
+                |> Seq.toArray
+                |> MutStackArray1.fromArray }
 
         member inline _.Combine(a: CollectionContent, b: CollectionContent) : CollectionContent =
             let res = MutStackArray1.combineMut(&a.Widgets, b.Widgets)
