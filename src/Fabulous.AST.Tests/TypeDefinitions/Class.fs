@@ -36,12 +36,8 @@ module Class =
                     Range.Zero
                 )
             )
-            
-        AnonymousModule() {
-            Class("Person", List.Empty) {
-                EscapeHatch(memberNode)
-            }
-        }
+
+        AnonymousModule() { Class("Person", List.Empty) { EscapeHatch(memberNode) } }
         |> produces
             """
 type Person =
@@ -76,15 +72,11 @@ type Person =
                     Range.Zero
                 )
             )
-            
+
         let param =
             SimplePatNode(None, false, SingleTextNode("name", Range.Zero), None, Range.Zero)
 
-        AnonymousModule() {
-            Class("Person", [ param ]) {
-                EscapeHatch(memberNode)
-            }
-        }
+        AnonymousModule() { Class("Person", [ param ]) { EscapeHatch(memberNode) } }
         |> produces
             """
 type Person (name) =

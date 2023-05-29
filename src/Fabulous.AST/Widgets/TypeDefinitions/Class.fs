@@ -39,7 +39,7 @@ module Class =
                         )
                     )
                 | ValueNone -> None
-                
+
             TypeDefnRegularNode(
                 TypeNameNode(
                     None,
@@ -69,10 +69,12 @@ module ClassBuilders =
                 AttributesBundle(
                     StackList.one(Class.Parameters.WithValue(parameters)),
                     ValueSome [| Class.Name.WithValue(name.Compile()) |],
-                    ValueNone)
+                    ValueNone
+                )
             )
 
-        static member inline Class(node: SingleTextNode, parameters: SimplePatNode list) = Ast.Class(Ast.EscapeHatch(node), parameters)
+        static member inline Class(node: SingleTextNode, parameters: SimplePatNode list) =
+            Ast.Class(Ast.EscapeHatch(node), parameters)
 
         static member inline Class(name: string, parameters: SimplePatNode list) =
             Ast.Class(SingleTextNode(name, Range.Zero), parameters)
@@ -98,6 +100,10 @@ type ClassYieldExtensions =
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<TypeDefnRegularNode, MemberDefn>, x: MemberDefn) : CollectionContent =
+    static member inline Yield
+        (
+            _: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
+            x: MemberDefn
+        ) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
