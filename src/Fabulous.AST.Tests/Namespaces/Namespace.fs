@@ -123,3 +123,49 @@ namespace Fabulous
 module Fabulous.AST =
     let x = 12
 """
+
+    type Person =
+        { typename: string
+          props: Map<string, string list> }
+
+    [<Test>]
+    let ``Produces a namespace with nested module using yield bang`` () =
+        let records =
+            [ { typename = "Person"
+                props = [ ("Age", [ "int" ]); ("Name", [ "string" ]) ] |> Map.ofList } ]
+
+        let recordTypes =
+            records
+            |> List.map(fun { typename = name; props = props } ->
+                if Map.isEmpty props then
+                    Abbrev(name, Type.FromString "obj")
+                    |> Tree.compile
+                    |> TypeDefn.Abbrev
+                    |> ModuleDecl.TypeDefn
+                else
+                    let rec mkType value =
+                        match value with
+                        | [] -> failwith "unexpected"
+                        | [ single ] -> Type.FromString single
+                        | head :: tail ->
+                            TypeAppPostFixNode(mkType tail, Type.FromString head, Range.Zero)
+                            |> Type.AppPostfix
+
+                    let myFields =
+                        props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))
+
+                    Record(name) { yield! myFields }
+                    |> Tree.compile
+                    |> TypeDefn.Record
+                    |> ModuleDecl.TypeDefn)
+
+        Namespace("Json") {
+            for recordType in recordTypes do
+                EscapeHatch(recordType)
+        }
+        |> produces
+            """
+namespace Json
+
+type Person = { Age: int; Name: string } 
+"""

@@ -119,8 +119,6 @@ type WidgetBuilder<'marker> =
             WidgetBuilder<'marker>(x.Key, struct (scalarAttributes, widgetAttributes, ValueSome res))
     end
 
-
-
 [<Struct>]
 type SingleChildContent = { Child: Widget }
 
@@ -177,10 +175,6 @@ type SingleChildBuilder<'marker, 'childMarker> =
             )
     end
 
-
-
-
-
 [<Struct>]
 type CollectionContent = { Widgets: MutStackArray1.T<Widget> }
 
@@ -234,6 +228,13 @@ type CollectionBuilder<'marker, 'itemMarker> =
 
         member inline _.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
             { Widgets = MutStackArray1.One(widget.Compile()) }
+
+        member inline _.YieldFrom(widgets: WidgetBuilder<'itemMarker> seq) : CollectionContent =
+            { Widgets =
+                widgets
+                |> Seq.map(fun widget -> widget.Compile())
+                |> Seq.toArray
+                |> MutStackArray1.fromArray }
 
         member inline _.Combine(a: CollectionContent, b: CollectionContent) : CollectionContent =
             let res = MutStackArray1.combineMut(&a.Widgets, b.Widgets)
