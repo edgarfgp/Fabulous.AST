@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.6.0] - 2023-05-29
+### Added
+- Add initial support for `IfThen` expression
+- Add initial support for `IfThenElse` expression
+- Add initial support for `IfThenElIf` expression
+- Add supprt for `yield!` expression for `CollectionBuilder`
+
+### Changed
+- Update `Fantomas.Core` 6.0.3
+
 ## [0.5.0] - 2023-04-21
 ### Added
 - Add initial support for `IfThen` expression
@@ -41,7 +51,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous/compare/0.5.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.0
 [0.5.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.5.0
 [0.4.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.4.0
 [0.3.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.3.0
