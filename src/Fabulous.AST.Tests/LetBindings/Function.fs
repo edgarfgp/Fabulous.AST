@@ -9,81 +9,18 @@ open Fantomas.Core.SyntaxOak
 open NUnit.Framework
 
 module Function =
-    ()
-//     [<Test>]
-//     let ``Produces FizzBuzz`` () =
-//         AnonymousModule() {
-//             Function("fizzBuzz", [| "i" |]) {
-//                 Match(Expr.For("i")) {
-//                     MatchClause(
-//                         "i",
-//                         Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")),
-//                         Call("printfn", "\"FizzBuzz\"")
-//                     )
-//
-//                     MatchClause(
-//                         "i",
-//                         Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")),
-//                         Call("printfn", "\"Buzz\"")
-//                     )
-//
-//                     MatchClause(
-//                         "i",
-//                         Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")),
-//                         Call("printfn", "\"Fizz\"")
-//                     )
-//
-//                     MatchClause("i", Call("printfn", "\"%i\"", "i"))
-//                 }
-//             }
-//         }
-//         |> produces
-//             """
-//
-// let fizzBuzz i =
-//     match i with
-//     | i when i % 15 = 0 -> printfn "FizzBuzz"
-//     | i when i % 5 = 0 -> printfn "Buzz"
-//     | i when i % 3 = 0 -> printfn "Fizz"
-//     | i -> printfn "%i" i
-//
-// """
 
-//     [<Test>]
-//     let ``Produces inlined FizzBuzz`` () =
-//         AnonymousModule() {
-//             Function("fizzBuzz", [| "i" |]).isInlined() {
-//                 Match(Expr.For("i")) {
-//                     MatchClause(
-//                         "i",
-//                         Condition(Condition(Expr.For("i"), "%", Expr.For("15")), "=", Expr.For("0")),
-//                         Call("printfn", "\"FizzBuzz\"")
-//                     )
-//
-//                     MatchClause(
-//                         "i",
-//                         Condition(Condition(Expr.For("i"), "%", Expr.For("5")), "=", Expr.For("0")),
-//                         Call("printfn", "\"Buzz\"")
-//                     )
-//
-//                     MatchClause(
-//                         "i",
-//                         Condition(Condition(Expr.For("i"), "%", Expr.For("3")), "=", Expr.For("0")),
-//                         Call("printfn", "\"Fizz\"")
-//                     )
-//
-//                     MatchClause("i", Call("printfn", "\"%i\"", "i"))
-//                 }
-//             }
-//         }
-//         |> produces
-//             """
-//
-// let inline fizzBuzz i =
-//     match i with
-//     | i when i % 15 = 0 -> printfn "FizzBuzz"
-//     | i when i % 5 = 0 -> printfn "Buzz"
-//     | i when i % 3 = 0 -> printfn "Fizz"
-//     | i -> printfn "%i" i
-//
-// """
+    [<Test>]
+    let ``Produces FizzBuzz`` () =
+        let thenExpr =
+            Expr.Constant(
+                Constant.Unit(UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero))
+            )
+
+        AnonymousModule() { Function("x", [| "i" |]) { EscapeHatch(thenExpr) } }
+        |> produces
+            """
+
+let x i = ()
+
+"""
