@@ -9,7 +9,7 @@ open Microsoft.FSharp.Collections
 
 module Class =
     let Name = Attributes.defineWidget "Name"
-    let Parameters = Attributes.defineScalar<SimplePatNode list> "Parameters"
+    let Parameters = Attributes.defineScalar<SimplePatNode list option> "Parameters"
     let Members = Attributes.defineWidgetCollection "Members"
 
     let WidgetKey =
@@ -26,8 +26,21 @@ module Class =
             let implicitConstructor =
                 match parameters with
                 | ValueNone -> None
-                | ValueSome parameters when parameters.IsEmpty -> None
-                | ValueSome simplePatNodes ->
+                | ValueSome None -> None
+                | ValueSome(Some(parameters)) when parameters.IsEmpty ->
+                    Some(
+                        ImplicitConstructorNode(
+                            None,
+                            None,
+                            None,
+                            SingleTextNode("(", Range.Zero),
+                            [],
+                            SingleTextNode(")", Range.Zero),
+                            None,
+                            Range.Zero
+                        )
+                    )
+                | ValueSome(Some(simplePatNodes)) ->
                     Some(
                         ImplicitConstructorNode(
                             None,
@@ -63,7 +76,7 @@ module Class =
 module ClassBuilders =
     type Ast with
 
-        static member inline Class(name: WidgetBuilder<#SingleTextNode>, parameters: SimplePatNode list) =
+        static member inline Class(name: WidgetBuilder<#SingleTextNode>, parameters: SimplePatNode list option) =
             CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
                 Class.WidgetKey,
                 Class.Members,
@@ -74,17 +87,13 @@ module ClassBuilders =
                 )
             )
 
-        static member inline Class(node: SingleTextNode, parameters: SimplePatNode list) =
-            Ast.Class(Ast.EscapeHatch(node), parameters)
+        static member inline Class(node: SingleTextNode, parameters: SimplePatNode list option) =
+            match parameters with
+            | None -> Ast.Class(Ast.EscapeHatch(node), None)
+            | Some parameters -> Ast.Class(Ast.EscapeHatch(node), Some parameters)
 
-        static member inline Class(name: string, parameters: SimplePatNode list) =
+        static member inline Class(name: string, ?parameters: SimplePatNode list) =
             Ast.Class(SingleTextNode(name, Range.Zero), parameters)
-
-// [<Extension>]
-// type ClassModifiers =
-//     [<Extension>]
-//     static member inline members(this: WidgetBuilder<TypeDefnRecordNode>) =
-//         AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
 
 [<Extension>]
 type ClassYieldExtensions =

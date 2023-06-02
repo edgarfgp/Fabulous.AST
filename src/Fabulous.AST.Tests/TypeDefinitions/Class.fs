@@ -37,7 +37,7 @@ module Class =
                 )
             )
 
-        AnonymousModule() { Class("Person", List.Empty) { EscapeHatch(memberNode) } }
+        AnonymousModule() { Class("Person") { EscapeHatch(memberNode) } }
         |> produces
             """
 type Person =
@@ -46,7 +46,43 @@ type Person =
 """
 
     [<Test>]
-    let ``Produces a class explicit constructor`` () =
+    let ``Produces a class explicit constructor with no params`` () =
+        let memberNode =
+            MemberDefn.Member(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(
+                        IdentListNode(
+                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode("Name", Range.Zero)) ],
+                            Range.Zero
+                        )
+                    ),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
+                    Range.Zero
+                )
+            )
+
+        AnonymousModule() { Class("Person", []) { EscapeHatch(memberNode) } }
+        |> produces
+            """
+type Person () =
+    member this.Name = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a class explicit constructor with params`` () =
         let memberNode =
             MemberDefn.Member(
                 BindingNode(
@@ -80,6 +116,45 @@ type Person =
         |> produces
             """
 type Person (name) =
+    member this.Name = name
+
+"""
+
+    [<Test>]
+    let ``Produces a class explicit constructor with typed params`` () =
+        let memberNode =
+            MemberDefn.Member(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(
+                        IdentListNode(
+                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode("Name", Range.Zero)) ],
+                            Range.Zero
+                        )
+                    ),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero))),
+                    Range.Zero
+                )
+            )
+
+        let param =
+            SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(Type.FromString("string")), Range.Zero)
+
+        AnonymousModule() { Class("Person", [ param ]) { EscapeHatch(memberNode) } }
+        |> produces
+            """
+type Person (name: string) =
     member this.Name = name
 
 """
