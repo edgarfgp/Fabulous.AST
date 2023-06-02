@@ -11,12 +11,38 @@ module Class =
     let Name = Attributes.defineWidget "Name"
     let Parameters = Attributes.defineScalar<SimplePatNode list option> "Parameters"
     let Members = Attributes.defineWidgetCollection "Members"
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Class" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
             let parameters = Helpers.tryGetScalarValue widget Parameters
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values ->
+                    MultipleAttributeListNode(
+                        [ AttributeListNode(
+                              SingleTextNode("[<", Range.Zero),
+                              [ for v in values do
+                                    AttributeNode(
+                                        IdentListNode(
+                                            [ IdentifierOrDot.Ident(SingleTextNode(v, Range.Zero)) ],
+                                            Range.Zero
+                                        ),
+                                        None,
+                                        None,
+                                        Range.Zero
+                                    ) ],
+                              SingleTextNode(">]", Range.Zero),
+                              Range.Zero
+                          ) ],
+                        Range.Zero
+                    )
+                    |> Some
+                | ValueNone -> None
 
             let members =
                 match members with
@@ -57,7 +83,7 @@ module Class =
             TypeDefnRegularNode(
                 TypeNameNode(
                     None,
-                    None,
+                    multipleAttributes,
                     SingleTextNode("type", Range.Zero),
                     Some(name),
                     IdentListNode([], Range.Zero),
@@ -94,6 +120,16 @@ module ClassBuilders =
 
         static member inline Class(name: string, ?parameters: SimplePatNode list) =
             Ast.Class(SingleTextNode(name, Range.Zero), parameters)
+
+[<Extension>]
+type ClassModifiers =
+    [<Extension>]
+    static member inline isStruct(this: WidgetBuilder<TypeDefnRegularNode>) =
+        this.AddScalar(Class.MultipleAttributes.WithValue([ "Struct" ]))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attributes) =
+        this.AddScalar(Class.MultipleAttributes.WithValue(attributes))
 
 [<Extension>]
 type ClassYieldExtensions =
