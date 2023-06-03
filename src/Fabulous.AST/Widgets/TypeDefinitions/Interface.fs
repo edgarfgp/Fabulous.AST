@@ -84,7 +84,7 @@ module InterfaceBuilders =
 
         static member inline Interface(node: SingleTextNode) = Ast.Interface(Ast.EscapeHatch(node))
 
-        static member inline Interface(name: string, ?parameters: SimplePatNode list) =
+        static member inline Interface(name: string) =
             Ast.Interface(SingleTextNode(name, Range.Zero))
 
 [<Extension>]
