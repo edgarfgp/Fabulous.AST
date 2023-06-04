@@ -82,3 +82,39 @@ type MyInterface =
     abstract member Area: float with get, set
 
 """
+
+    [<Test>]
+    let ``Produces a class that implements an interface`` () =
+        let method =
+            MemberDefnAbstractSlotNode.Method(
+                "Add",
+                [ (Type.FromString("int"), SingleTextNode("->", Range.Zero))
+                  (Type.FromString("int"), SingleTextNode("->", Range.Zero)) ],
+                Type.FromString("int")
+            )
+
+        let property = MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
+
+        let getSetProperty =
+            MemberDefnAbstractSlotNode.GetSet("Area", Type.FromString("float"))
+
+        let interfaceWidget () =
+            Interface("MyInterface") {
+                EscapeHatch(method)
+                EscapeHatch(property)
+                EscapeHatch(getSetProperty)
+            }
+
+        AnonymousModule() {
+            Class'("MyClass").implements(interfaceWidget())
+
+        }
+        |> produces
+            """
+type MyClass =
+    interface MyInterface with
+        abstract member Add: int -> int -> int
+        abstract member Pi: float
+        abstract member Area: float with get, set
+
+"""

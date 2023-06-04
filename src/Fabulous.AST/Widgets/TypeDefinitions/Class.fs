@@ -11,6 +11,9 @@ module Class =
     let Name = Attributes.defineWidget "Name"
     let Parameters = Attributes.defineScalar<SimplePatNode list option> "Parameters"
     let Members = Attributes.defineWidgetCollection "Members"
+
+    let Interface = Attributes.defineWidgetCollection "Interface"
+
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
     let WidgetKey =
@@ -20,15 +23,88 @@ module Class =
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
 
+            let interfaceWidget =
+                Helpers.tryGetNodesFromWidgetCollection<TypeDefnRegularNode> widget Interface
+
+            let interfaceMembers =
+                match interfaceWidget with
+                | None -> None
+                | Some defnRegularNode ->
+                    let abstractsSlots = defnRegularNode |> List.map(fun x -> x.Children)
+                    let members = abstractsSlots |> List.map(List.ofArray) |> List.concat
+                    Some members
+
             let multipleAttributes =
                 match attributes with
                 | ValueSome values -> TypeHelpers.createAttributes values |> Some
                 | ValueNone -> None
 
             let members =
-                match members with
-                | Some members -> members
-                | None -> []
+                match members, interfaceMembers with
+                | Some members, None -> members
+                | Some members, Some interfaceMembers ->
+                    let name =
+                        interfaceMembers
+                        |> List.choose(fun x ->
+                            match x with
+                            | :? TypeNameNode as node -> Some(node.Accessibility.Value.Text)
+                            | _ -> None)
+                        |> List.head
+
+                    let members =
+                        interfaceMembers
+                        |> List.choose(fun x ->
+                            match x with
+                            | :? MemberDefnAbstractSlotNode as node -> Some(MemberDefn.AbstractSlot(node))
+                            | _ -> None)
+
+                    let interfaceMemberDefn =
+                        MemberDefn.Interface(
+                            MemberDefnInterfaceNode(
+                                SingleTextNode("interface", Range.Zero),
+                                Type.FromString(name),
+                                Some(SingleTextNode("with", Range.Zero)),
+                                members,
+                                Range.Zero
+                            )
+                        )
+
+                    members @ [ interfaceMemberDefn ]
+                | None, Some interfaceMembers ->
+                    let textNode =
+                        interfaceMembers
+                        |> List.choose(fun x ->
+                            match x with
+                            | :? TypeNameNode as node -> node.Accessibility
+                            | _ -> None)
+                        |> List.tryHead
+
+
+                    let members =
+                        interfaceMembers
+                        |> List.choose(fun x ->
+                            match x with
+                            | :? MemberDefnAbstractSlotNode as node -> Some(MemberDefn.AbstractSlot(node))
+                            | _ -> None)
+
+                    let name =
+                        match textNode with
+                        | Some textNode -> textNode.Text
+                        | None -> failwith "No accessibility found"
+
+                    let interfaceMemberDefn =
+                        MemberDefn.Interface(
+                            MemberDefnInterfaceNode(
+                                SingleTextNode("interface", Range.Zero),
+                                Type.FromString(name),
+                                Some(SingleTextNode("with", Range.Zero)),
+                                members,
+                                Range.Zero
+                            )
+                        )
+
+                    [ interfaceMemberDefn ]
+                | None, None -> []
 
             let implicitConstructor =
                 match parameters with
@@ -94,13 +170,31 @@ module ClassBuilders =
                 )
             )
 
+        static member inline Class'(name: WidgetBuilder<#SingleTextNode>, parameters: SimplePatNode list option) =
+            WidgetBuilder<TypeDefnRegularNode>(
+                Class.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Class.Parameters.WithValue(parameters)),
+                    ValueSome [| Class.Name.WithValue(name.Compile()) |],
+                    ValueNone
+                )
+            )
+
         static member inline Class(node: SingleTextNode, parameters: SimplePatNode list option) =
             match parameters with
             | None -> Ast.Class(Ast.EscapeHatch(node), None)
             | Some parameters -> Ast.Class(Ast.EscapeHatch(node), Some parameters)
 
+        static member inline Class'(node: SingleTextNode, parameters: SimplePatNode list option) =
+            match parameters with
+            | None -> Ast.Class'(Ast.EscapeHatch(node), None)
+            | Some parameters -> Ast.Class'(Ast.EscapeHatch(node), Some parameters)
+
         static member inline Class(name: string, ?parameters: SimplePatNode list) =
             Ast.Class(SingleTextNode(name, Range.Zero), parameters)
+
+        static member inline Class'(name: string, ?parameters: SimplePatNode list) =
+            Ast.Class'(SingleTextNode(name, Range.Zero), parameters)
 
 [<Extension>]
 type ClassModifiers =
@@ -111,6 +205,18 @@ type ClassModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attributes) =
         this.AddScalar(Class.MultipleAttributes.WithValue(attributes))
+
+    [<Extension>]
+    static member inline implements(this: WidgetBuilder<TypeDefnRegularNode>) =
+        AttributeCollectionBuilder(this, Class.Interface)
+
+    [<Extension>]
+    static member inline implements
+        (
+            this: WidgetBuilder<TypeDefnRegularNode>,
+            content: WidgetBuilder<TypeDefnRegularNode>
+        ) =
+        AttributeCollectionBuilder(this, Class.Interface) { content }
 
 [<Extension>]
 type ClassYieldExtensions =
