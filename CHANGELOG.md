@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.6.1] - 2023-06-04
+### Added
+- Add initial support for Classes
+
+### Fixed
+- Fix Multiple for loops in builder causes crash
+
 ## [0.6.0] - 2023-05-29
 ### Added
 - Add initial support for `IfThen` expression
@@ -51,7 +58,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.6.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.6.1...HEAD
+[0.6.1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.1
 [0.6.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.0
 [0.5.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.5.0
 [0.4.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.4.0
