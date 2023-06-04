@@ -9,6 +9,7 @@
     <ItemGroup>
         <Compile Include="TestHelpers.fs" />
         <Compile Include="WidgetTests.fs" />
+        <Compile Include="Core\CollectionBuilder.fs" />
         <Compile Include="Namespaces\AnonymousModule.fs" />
         <Compile Include="Namespaces\Namespace.fs" />
         <Compile Include="Namespaces\Module.fs" />
