@@ -1,5 +1,7 @@
 namespace Fabulous.AST.Tests.Core
 
+open System
+open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core
 open NUnit.Framework
 
@@ -9,10 +11,10 @@ open Fabulous.AST
 
 open type Fabulous.AST.Ast
 
-module CollectionBuilder =
+module APISketchTests =
 
     [<Test>]
-    let ``stress test`` () =
+    let ``Multiple Widgets for loops in builder`` () =
         let result =
             Namespace("DummyNamespace").isRecursive() {
                 Abbrev($"Foo", Type.FromString "string")
@@ -34,7 +36,7 @@ module CollectionBuilder =
         Assert.NotNull result
 
     [<Test>]
-    let ``stress test2`` () =
+    let ``Multiple for loops in builder`` () =
         let result =
             Namespace("DummyNamespace").isRecursive() {
                 for i = 0 to 10 do
