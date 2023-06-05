@@ -12,6 +12,8 @@ module Enum =
 
     let Name = Attributes.defineWidget "Name"
 
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -19,10 +21,17 @@ module Enum =
             let enumCaseNodes =
                 Helpers.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
 
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueNone -> None
+
             TypeDefnEnumNode(
                 TypeNameNode(
                     None,
-                    None,
+                    multipleAttributes,
                     SingleTextNode("type", Range.Zero),
                     Some(name),
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
@@ -53,6 +62,12 @@ module EnumBuilders =
 
         static member inline Enum(name: string) =
             Ast.Enum(SingleTextNode(name, Range.Zero))
+
+[<Extension>]
+type EnumModifiers =
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<TypeDefnEnumNode>, attributes: string list) =
+        this.AddScalar(Enum.MultipleAttributes.WithValue(attributes))
 
 [<Extension>]
 type EnumYieldExtensions =

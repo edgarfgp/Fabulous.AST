@@ -177,3 +177,13 @@ type Colors =
     member this.A = ""
 
 """
+
+    [<Test>]
+    let ``Produces an union with attribute`` () =
+        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attributes([ "Test" ]) }
+        |> produces
+            """
+
+[<Test>]
+type Colors = | Red
+"""
