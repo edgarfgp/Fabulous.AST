@@ -180,7 +180,7 @@ type Colors =
 
     [<Test>]
     let ``Produces an union with attribute`` () =
-        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attributes(["Test"])  }
+        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attributes([ "Test" ]) }
         |> produces
             """
 
