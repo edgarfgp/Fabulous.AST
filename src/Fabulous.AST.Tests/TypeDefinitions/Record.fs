@@ -159,7 +159,8 @@ type Colors =
             (Record("Colors") {
                 for colour in [ "Red"; "Green"; "Blue" ] do
                     Field(colour, Type.FromString "int")
-            }).attributes(["Serializable"]) 
+            })
+                .attributes([ "Serializable" ])
         }
         |> produces
             """
@@ -168,11 +169,12 @@ type Colors =
 type Colors = { Red: int; Green: int; Blue: int }
 
 """
+
     [<Test>]
     let ``Produces a record field with an attribute`` () =
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", Type.FromString "int").attributes(["Obsolete"])
+                Field("Red", Type.FromString "int").attributes([ "Obsolete" ])
                 Field("Green", Type.FromString "int")
                 Field("Blue", Type.FromString "int")
             }

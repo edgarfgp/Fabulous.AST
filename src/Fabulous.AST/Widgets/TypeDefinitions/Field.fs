@@ -24,6 +24,7 @@ module Field =
                 match attributes with
                 | ValueSome values -> TypeHelpers.createAttributes values |> Some
                 | ValueNone -> None
+
             FieldNode(None, multipleAttributes, None, false, None, Some name, fieldType, Range.Zero))
 
 [<AutoOpen>]
@@ -45,10 +46,9 @@ module FieldBuilders =
 
         static member inline Field(name: string, fieldType: Type) =
             Ast.Field(SingleTextNode(name, Range.Zero), fieldType)
-            
+
 [<Extension>]
 type FieldModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: string list) =
         this.AddScalar(Field.MultipleAttributes.WithValue(attributes))
-
