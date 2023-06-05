@@ -157,3 +157,23 @@ type Colors =
     | Black = 3
 
 """
+
+    [<Test>]
+    let ``Produces an enum case with attributes`` () =
+        AnonymousModule() {
+            (Enum(SingleTextNode("Colors", Range.Zero)) {
+                EnumCase("Red", "0").attributes([ "Obsolete"; "MyAttribute" ])
+                EnumCase("Green", "1")
+                EnumCase("Blue", "2")
+            })
+                .attributes([ "FlagsAttribute" ])
+        }
+        |> produces
+            """
+[<FlagsAttribute>]
+type Colors =
+    | [<Obsolete; MyAttribute>] Red = 0
+    | Green = 1
+    | Blue = 2
+
+"""

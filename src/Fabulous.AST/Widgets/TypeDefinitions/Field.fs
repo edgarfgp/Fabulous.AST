@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open FSharp.Compiler.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -11,11 +12,19 @@ module Field =
 
     let FieldType = Attributes.defineScalar<Type> "FieldType"
 
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
             let fieldType = Helpers.getScalarValue widget FieldType
-            FieldNode(None, None, None, false, None, Some name, fieldType, Range.Zero))
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueNone -> None
+            FieldNode(None, multipleAttributes, None, false, None, Some name, fieldType, Range.Zero))
 
 [<AutoOpen>]
 module FieldBuilders =
@@ -36,3 +45,10 @@ module FieldBuilders =
 
         static member inline Field(name: string, fieldType: Type) =
             Ast.Field(SingleTextNode(name, Range.Zero), fieldType)
+            
+[<Extension>]
+type FieldModifiers =
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: string list) =
+        this.AddScalar(Field.MultipleAttributes.WithValue(attributes))
+
