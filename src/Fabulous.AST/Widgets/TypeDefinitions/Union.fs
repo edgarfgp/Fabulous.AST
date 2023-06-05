@@ -16,6 +16,8 @@ module Union =
 
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
+    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -34,20 +36,37 @@ module Union =
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueNone -> None
+
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values ->
+                    TyparDeclsPostfixListNode(
+                        SingleTextNode.lessThan,
+                        [ for v in values do
+                              TyparDeclNode(None, SingleTextNode.Create v, Range.Zero) ],
+                        [],
+                        SingleTextNode.greaterThan,
+                        Range.Zero
+                    )
+                    |> TyparDecls.PostfixList
+                    |> Some
                 | ValueNone -> None
 
             TypeDefnUnionNode(
                 TypeNameNode(
                     None,
                     multipleAttributes,
-                    SingleTextNode("type", Range.Zero),
-                    Some(name),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                    SingleTextNode.``type``,
                     None,
+                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    typeParams,
                     [],
                     None,
-                    None,
+                    Some(SingleTextNode.equals),
                     None,
                     Range.Zero
                 ),
@@ -82,6 +101,10 @@ type UnionModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes: string list) =
         this.AddScalar(Union.MultipleAttributes.WithValue(attributes))
+
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<TypeDefnUnionNode>, typeParams) =
+        this.AddScalar(Union.TypeParams.WithValue(typeParams))
 
 [<Extension>]
 type UnionYieldExtensions =

@@ -26,21 +26,32 @@ module Auxiliary =
             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(typeName, Range.Zero)) ], Range.Zero)
             |> Type.LongIdent
 
+    type SingleTextNode =
+        static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)
 
-module internal TypeHelpers =
-    let inline createAttributes values =
-        MultipleAttributeListNode(
-            [ AttributeListNode(
-                  SingleTextNode("[<", Range.Zero),
-                  [ for v in values do
-                        AttributeNode(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(v, Range.Zero)) ], Range.Zero),
-                            None,
-                            None,
-                            Range.Zero
-                        ) ],
-                  SingleTextNode(">]", Range.Zero),
-                  Range.Zero
-              ) ],
-            Range.Zero
-        )
+    module SingleTextNode =
+
+        let lessThan = SingleTextNode.Create "<"
+        let greaterThan = SingleTextNode.Create ">"
+        let equals = SingleTextNode.Create "="
+        let ``type`` = SingleTextNode.Create "type"
+        let leftAttribute = SingleTextNode.Create "[<"
+        let rightAttribute = SingleTextNode.Create ">]"
+
+    type MultipleAttributeListNode =
+        static member inline Create(values: string list) =
+            MultipleAttributeListNode(
+                [ AttributeListNode(
+                      SingleTextNode.leftAttribute,
+                      [ for v in values do
+                            AttributeNode(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create v) ], Range.Zero),
+                                None,
+                                None,
+                                Range.Zero
+                            ) ],
+                      SingleTextNode.rightAttribute,
+                      Range.Zero
+                  ) ],
+                Range.Zero
+            )
