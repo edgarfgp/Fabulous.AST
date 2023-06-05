@@ -14,6 +14,8 @@ module Union =
 
     let Members = Attributes.defineWidgetCollection "Members"
 
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -28,10 +30,17 @@ module Union =
                 | Some members -> members
                 | None -> []
 
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueNone -> None
+
             TypeDefnUnionNode(
                 TypeNameNode(
                     None,
-                    None,
+                    multipleAttributes,
                     SingleTextNode("type", Range.Zero),
                     Some(name),
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
@@ -69,6 +78,10 @@ type UnionModifiers =
     [<Extension>]
     static member inline members(this: WidgetBuilder<TypeDefnUnionNode>) =
         AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes) =
+        this.AddScalar(Union.MultipleAttributes.WithValue(attributes))
 
 [<Extension>]
 type UnionYieldExtensions =

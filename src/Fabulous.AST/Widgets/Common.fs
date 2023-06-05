@@ -25,3 +25,22 @@ module Auxiliary =
             // Bad example would be: "int -> int", use Type.Fun instead.
             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(typeName, Range.Zero)) ], Range.Zero)
             |> Type.LongIdent
+
+
+module internal TypeHelpers =
+    let inline createAttributes values =
+        MultipleAttributeListNode(
+            [ AttributeListNode(
+                  SingleTextNode("[<", Range.Zero),
+                  [ for v in values do
+                        AttributeNode(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(v, Range.Zero)) ], Range.Zero),
+                            None,
+                            None,
+                            Range.Zero
+                        ) ],
+                  SingleTextNode(">]", Range.Zero),
+                  Range.Zero
+              ) ],
+            Range.Zero
+        )

@@ -66,26 +66,7 @@ module Value =
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values ->
-                    MultipleAttributeListNode(
-                        [ AttributeListNode(
-                              SingleTextNode("[<", Range.Zero),
-                              [ for v in values do
-                                    AttributeNode(
-                                        IdentListNode(
-                                            [ IdentifierOrDot.Ident(SingleTextNode(v, Range.Zero)) ],
-                                            Range.Zero
-                                        ),
-                                        None,
-                                        None,
-                                        Range.Zero
-                                    ) ],
-                              SingleTextNode(">]", Range.Zero),
-                              Range.Zero
-                          ) ],
-                        Range.Zero
-                    )
-                    |> Some
+                | ValueSome values -> TypeHelpers.createAttributes values |> Some
                 | ValueNone -> None
 
             let isMutable =

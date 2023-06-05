@@ -132,3 +132,28 @@ type Colors =
     | Black = 3
 
 """
+
+
+    [<Test>]
+    let ``Produces an enum with attribute`` () =
+        let colors = [ "Red"; "Green"; "Blue"; "Black" ]
+
+        AnonymousModule() {
+            (Enum("Colors") {
+                for i = 0 to colors.Length - 1 do
+                    EnumCase(colors.[i], $"{i}")
+            })
+                .attributes([ "FlagsAttribute" ])
+
+        }
+        |> produces
+            """
+
+[<FlagsAttribute>]
+type Colors =
+    | Red = 0
+    | Green = 1
+    | Blue = 2
+    | Black = 3
+
+"""
