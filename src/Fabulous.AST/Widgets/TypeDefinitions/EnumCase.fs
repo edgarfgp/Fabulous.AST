@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open FSharp.Compiler.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -11,15 +12,23 @@ module EnumCase =
 
     let Value = Attributes.defineWidget "Value"
 
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
             let value = Helpers.getNodeFromWidget<SingleTextNode> widget Value
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueNone -> None
 
             EnumCaseNode(
                 None,
                 None,
-                None,
+                multipleAttributes,
                 name,
                 SingleTextNode("=", Range.Zero),
                 Expr.Constant(Constant.FromText(value)),
@@ -37,9 +46,7 @@ module EnumCaseBuilders =
                     StackList.empty(),
                     ValueSome
                         [| EnumCase.Name.WithValue(name.Compile())
-                           EnumCase.Value.WithValue(value.Compile())
-
-                           |],
+                           EnumCase.Value.WithValue(value.Compile()) |],
                     ValueNone
                 )
             )
@@ -49,3 +56,9 @@ module EnumCaseBuilders =
 
         static member inline EnumCase(name: string, value: string) =
             Ast.EnumCase(SingleTextNode(name, Range.Zero), SingleTextNode(value, Range.Zero))
+
+[<Extension>]
+type EnumCaseModifiers =
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: string list) =
+        this.AddScalar(EnumCase.MultipleAttributes.WithValue(attributes))

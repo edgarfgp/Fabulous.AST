@@ -15,6 +15,8 @@ module Record =
 
     let Members = Attributes.defineWidgetCollection "Members"
 
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -26,10 +28,17 @@ module Record =
                 | Some members -> members
                 | None -> []
 
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueNone -> None
+
             TypeDefnRecordNode(
                 TypeNameNode(
                     None,
-                    None,
+                    multipleAttributes,
                     SingleTextNode("type", Range.Zero),
                     Some(name),
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
@@ -69,6 +78,10 @@ type RecordModifiers =
     [<Extension>]
     static member inline members(this: WidgetBuilder<TypeDefnRecordNode>) =
         AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<TypeDefnRecordNode>, attributes: string list) =
+        this.AddScalar(Record.MultipleAttributes.WithValue(attributes))
 
 [<Extension>]
 type RecordYieldExtensions =

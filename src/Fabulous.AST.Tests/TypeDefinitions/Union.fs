@@ -88,7 +88,7 @@ type Colors =
                 UnionCase("Green")
                 UnionCase("Blue")
                 UnionCase("Yellow")
-                UnionCaseNode(None, None, None, SingleTextNode("Black", Range.Zero), [], Range.Zero)
+                EscapeHatch(UnionCaseNode(None, None, None, SingleTextNode("Black", Range.Zero), [], Range.Zero))
 
             }
         }
@@ -186,4 +186,17 @@ type Colors =
 
 [<Test>]
 type Colors = | Red
+"""
+
+    [<Test>]
+    let ``Produces an union case with attributes`` () =
+        AnonymousModule() {
+            (Union("Colors") { UnionCase("Red").attributes([ "Obsolete"; "Test" ]) })
+                .attributes([ "Test" ])
+        }
+        |> produces
+            """
+
+[<Test>]
+type Colors = | [<Obsolete; Test>] Red
 """

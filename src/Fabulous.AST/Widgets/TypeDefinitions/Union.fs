@@ -59,7 +59,7 @@ module Union =
 
 [<AutoOpen>]
 module UnionBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Union(name: WidgetBuilder<#SingleTextNode>) =
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
@@ -80,7 +80,7 @@ type UnionModifiers =
         AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes) =
+    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes: string list) =
         this.AddScalar(Union.MultipleAttributes.WithValue(attributes))
 
 [<Extension>]

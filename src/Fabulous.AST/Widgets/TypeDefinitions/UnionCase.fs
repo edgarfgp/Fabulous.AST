@@ -11,14 +11,23 @@ module UnionCase =
 
     let Name = Attributes.defineWidget "Name"
 
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "UnionCase" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
-            UnionCaseNode(None, None, None, name, [], Range.Zero))
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueNone -> None
+
+            UnionCaseNode(None, multipleAttributes, None, name, [], Range.Zero))
 
 [<AutoOpen>]
 module UnionCaseBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline UnionCase(name: WidgetBuilder<#SingleTextNode>) =
             WidgetBuilder<UnionCaseNode>(
@@ -30,3 +39,9 @@ module UnionCaseBuilders =
 
         static member inline UnionCase(name: string) =
             Ast.UnionCase(SingleTextNode(name, Range.Zero))
+
+[<Extension>]
+type UnionCaseModifiers =
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: string list) =
+        this.AddScalar(UnionCase.MultipleAttributes.WithValue(attributes))
