@@ -200,3 +200,29 @@ type Colors = | Red
 [<Test>]
 type Colors = | [<Obsolete; Test>] Red
 """
+
+    [<Test>]
+    let ``Produces an union with TypeParams`` () =
+        AnonymousModule() {
+            Union("Colors", [ "'other" ]) {
+                UnionParameterizedCase("Red") {
+                    Field("a", Type.FromString "string")
+                    Field("b", Type.FromString "'other")
+                }
+
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    | Red of a: string * b: 'other
+    | Green
+    | Blue
+    | Yellow
+
+"""
