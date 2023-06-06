@@ -50,7 +50,8 @@ module Auxiliary =
         static member inline Create(attributes: Fantomas.Core.SyntaxOak.AttributeNode list) =
             AttributeListNode(SingleTextNode.leftAttribute, attributes, SingleTextNode.rightAttribute, Range.Zero)
 
-    type MultipleAttributeListNode =
+    type MultipleAttributeListNode with
+
         static member inline Create(attributeLists: Fantomas.Core.SyntaxOak.AttributeListNode list) =
             MultipleAttributeListNode(attributeLists, Range.Zero)
 
