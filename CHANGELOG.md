@@ -10,9 +10,9 @@ _No unreleased changes_
 
 ## [0.6.2] - 2023-06-07
 ### Added
-- Attributes for Unions and Emums @TheAngryByrd
-- Enum, DU, Records fields attributes support @edgarfgp
-- TypeArgs for Unions and Records @TheAngryByrd
+- Attributes for Unions and Emums
+- Enum, DU, Records fields attributes support
+- TypeArgs for Unions and Records
 
 ## [0.6.1] - 2023-06-04
 ### Added
