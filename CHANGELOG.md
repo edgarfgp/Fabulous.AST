@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.6.2] - 2023-06-07
+### Added
+- Attributes for Unions and Emums @TheAngryByrd
+- Enum, DU, Records fields attributes support @edgarfgp
+- TypeArgs for Unions and Records @TheAngryByrd
+
 ## [0.6.1] - 2023-06-04
 ### Added
 - Add initial support for Classes
@@ -58,7 +64,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.6.1...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.6.2...HEAD
+[0.6.2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.2
 [0.6.1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.1
 [0.6.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.0
 [0.5.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.5.0

@@ -1,7 +1,5 @@
 namespace Fabulous.AST.Tests.Core
 
-open System
-open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core
 open NUnit.Framework
 
