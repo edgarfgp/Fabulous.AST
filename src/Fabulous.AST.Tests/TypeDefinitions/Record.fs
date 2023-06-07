@@ -189,3 +189,23 @@ type Colors =
       Blue: int }
 
 """
+
+    [<Test>]
+    let ``Produces a record with TypeParams`` () =
+        AnonymousModule() {
+            Record("Colors", [ "'other" ]) {
+                Field("Green", Type.FromString "string")
+                Field("Blue", Type.FromString "'other")
+                Field("Yellow", Type.FromString "int")
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+"""

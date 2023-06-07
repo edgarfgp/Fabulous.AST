@@ -23,6 +23,8 @@ module Auxiliary =
         let ``type`` = SingleTextNode.Create "type"
         let leftAttribute = SingleTextNode.Create "[<"
         let rightAttribute = SingleTextNode.Create ">]"
+        let leftCurlyBrace = SingleTextNode.Create "{"
+        let rightCurlyBrace = SingleTextNode.Create "}"
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =
