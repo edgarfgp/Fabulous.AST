@@ -16,6 +16,8 @@ module Union =
 
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
+    let TypeParams = Attributes.defineScalar<string list option> "TypeParams"
+
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -34,20 +36,40 @@ module Union =
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueNone -> None
+
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values ->
+                    match values with
+                    | None -> None
+                    | Some values ->
+                        TyparDeclsPostfixListNode(
+                            SingleTextNode.lessThan,
+                            [ for v in values do
+                                  TyparDeclNode(None, SingleTextNode.Create v, Range.Zero) ],
+                            [],
+                            SingleTextNode.greaterThan,
+                            Range.Zero
+                        )
+                        |> TyparDecls.PostfixList
+                        |> Some
                 | ValueNone -> None
 
             TypeDefnUnionNode(
                 TypeNameNode(
                     None,
                     multipleAttributes,
-                    SingleTextNode("type", Range.Zero),
-                    Some(name),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                    SingleTextNode.``type``,
                     None,
+                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    typeParams,
                     [],
                     None,
-                    None,
+                    Some(SingleTextNode.equals),
                     None,
                     Range.Zero
                 ),
@@ -61,17 +83,24 @@ module Union =
 module UnionBuilders =
     type Ast with
 
-        static member inline Union(name: WidgetBuilder<#SingleTextNode>) =
+        static member inline Union(name: WidgetBuilder<#SingleTextNode>, typeParams: string list option) =
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                AttributesBundle(StackList.empty(), ValueSome [| Union.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.one(Union.TypeParams.WithValue(typeParams)),
+                    ValueSome [| Union.Name.WithValue(name.Compile()) |],
+                    ValueNone
+                )
             )
 
-        static member inline Union(node: SingleTextNode) = Ast.Union(Ast.EscapeHatch(node))
+        static member inline Union(node: SingleTextNode, typeParams: string list option) =
+            Ast.Union(Ast.EscapeHatch(node), typeParams)
 
-        static member inline Union(name: string) =
-            Ast.Union(SingleTextNode(name, Range.Zero))
+        static member inline Union(node: SingleTextNode) = Ast.Union(Ast.EscapeHatch(node), None)
+
+        static member inline Union(name: string, ?typeParams: string list) =
+            Ast.Union(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
 type UnionModifiers =

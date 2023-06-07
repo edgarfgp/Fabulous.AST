@@ -22,7 +22,7 @@ module EnumCase =
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
             EnumCaseNode(

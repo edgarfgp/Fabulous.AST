@@ -17,6 +17,8 @@ module Record =
 
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
+    let TypeParams = Attributes.defineScalar<string list option> "TypeParams"
+
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -32,27 +34,47 @@ module Record =
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> TypeHelpers.createAttributes values |> Some
+                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueNone -> None
+
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values ->
+                    match values with
+                    | None -> None
+                    | Some values ->
+                        TyparDeclsPostfixListNode(
+                            SingleTextNode.lessThan,
+                            [ for v in values do
+                                  TyparDeclNode(None, SingleTextNode.Create v, Range.Zero) ],
+                            [],
+                            SingleTextNode.greaterThan,
+                            Range.Zero
+                        )
+                        |> TyparDecls.PostfixList
+                        |> Some
                 | ValueNone -> None
 
             TypeDefnRecordNode(
                 TypeNameNode(
                     None,
                     multipleAttributes,
-                    SingleTextNode("type", Range.Zero),
-                    Some(name),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                    SingleTextNode.``type``,
                     None,
+                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    typeParams,
                     [],
                     None,
-                    None,
+                    Some(SingleTextNode.equals),
                     None,
                     Range.Zero
                 ),
                 None,
-                SingleTextNode("{", Range.Zero),
+                SingleTextNode.leftCurlyBrace,
                 fields,
-                SingleTextNode("}", Range.Zero),
+                SingleTextNode.rightCurlyBrace,
                 members,
                 Range.Zero
             ))
@@ -61,17 +83,22 @@ module Record =
 module RecordBuilders =
     type Ast with
 
-        static member inline Record(name: WidgetBuilder<#SingleTextNode>) =
+        static member inline Record(name: WidgetBuilder<#SingleTextNode>, typeParams: string list option) =
             CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
-                AttributesBundle(StackList.empty(), ValueSome [| Record.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.one(Record.TypeParams.WithValue(typeParams)),
+                    ValueSome [| Record.Name.WithValue(name.Compile()) |],
+                    ValueNone
+                )
             )
 
-        static member inline Record(node: SingleTextNode) = Ast.Record(Ast.EscapeHatch(node))
+        static member inline Record(name: SingleTextNode, typeParams: string list option) =
+            Ast.Record(Ast.EscapeHatch(name), typeParams)
 
-        static member inline Record(name: string) =
-            Ast.Record(SingleTextNode(name, Range.Zero))
+        static member inline Record(name: string, ?typeParams: string list) =
+            Ast.Record(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
 type RecordModifiers =
