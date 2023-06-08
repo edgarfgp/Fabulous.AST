@@ -47,7 +47,7 @@ jobs:
         run: dotnet test ${SLN_FILE} -p:Version=${RELEASE_VERSION} -c ${CONFIG} --no-build
       - name: Pack
         run: |
-          dotnet pack ${SLN_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="${{ steps.changelog_reader.outputs.changes }}" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${SLN_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="${{ each step in steps.changelog_reader.outputs.changes }}: ${{step}}:" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs          
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
