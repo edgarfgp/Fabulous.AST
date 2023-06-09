@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
 open System
-open FSharp.Compiler.Text
+open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
 type AccessControl =

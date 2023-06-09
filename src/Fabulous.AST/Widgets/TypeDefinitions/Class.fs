@@ -1,7 +1,7 @@
-﻿namespace Fabulous.AST
+namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open FSharp.Compiler.Text
+open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -54,7 +54,7 @@ module Class =
                             None,
                             None,
                             SingleTextNode("(", Range.Zero),
-                            simplePatNodes,
+                            List.map Choice1Of2 simplePatNodes,
                             SingleTextNode(")", Range.Zero),
                             None,
                             Range.Zero

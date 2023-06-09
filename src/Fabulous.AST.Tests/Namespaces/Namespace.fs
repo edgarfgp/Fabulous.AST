@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.Namespaces
 
 open Fabulous.AST.Tests
-open FSharp.Compiler.Text
+open Fantomas.FCS.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework

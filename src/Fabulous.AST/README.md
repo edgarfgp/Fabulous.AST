@@ -8,7 +8,7 @@ Fabulous.AST uses [Fantomas](https://fsprojects.github.io/fantomas/docs/end-user
 Let's take a look at an AST example in Fantomas:
 
 ```fsharp
-open FSharp.Compiler.Text
+open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
 let implementationSyntaxTree =
