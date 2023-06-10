@@ -81,7 +81,7 @@ module Class =
                               for p in tail do
                                   yield Choice2Of2 SingleTextNode.comma
                                   yield Choice1Of2 p ]
-
+               
                     Some(
                         ImplicitConstructorNode(
                             None,
