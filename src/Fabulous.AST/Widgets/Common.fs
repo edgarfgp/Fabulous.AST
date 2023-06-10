@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
@@ -11,7 +10,6 @@ type AccessControl =
 
 [<AutoOpen>]
 module Auxiliary =
-
     type SingleTextNode =
         static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)
 
@@ -25,6 +23,11 @@ module Auxiliary =
         let rightAttribute = SingleTextNode.Create ">]"
         let leftCurlyBrace = SingleTextNode.Create "{"
         let rightCurlyBrace = SingleTextNode.Create "}"
+        let ``abstract`` = SingleTextNode.Create "abstract"
+        let ``member`` = SingleTextNode.Create "member"
+        let rightArrow = SingleTextNode.Create "->"
+        let lefArrow = SingleTextNode.Create "<-"
+        let star = SingleTextNode.Create "*"
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =
@@ -72,6 +75,81 @@ module Auxiliary =
                       AttributeNode.Create(IdentListNode.Create(IdentifierOrDot.CreateIdent v)) ]
             )
 
+    type TypeSignatureParameterNode with
+
+        static member Create(identifier: string, ``type``: Type) =
+            TypeSignatureParameterNode(None, Some(SingleTextNode.Create(identifier)), ``type``, Range.Zero)
+
+    type MultipleTextsNode with
+
+        static member Create(texts: string list) =
+            MultipleTextsNode(
+                [ for v in texts do
+                      SingleTextNode.Create(v) ],
+                Range.Zero
+            )
+
+    type MemberDefnAbstractSlotNode with
+
+        static member Method(identifier: string, parameters: Type) =
+            MemberDefnAbstractSlotNode(
+                None,
+                None,
+                MultipleTextsNode.Create([ "abstract"; "member" ]),
+                SingleTextNode(identifier, Range.Zero),
+                None,
+                parameters,
+                None,
+                Range.Zero
+            )
+
+        static member Property(identifier: string, returnType: Type) =
+            MemberDefnAbstractSlotNode(
+                None,
+                None,
+                MultipleTextsNode.Create([ "abstract"; "member" ]),
+                SingleTextNode(identifier, Range.Zero),
+                None,
+                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
+                None,
+                Range.Zero
+            )
+
+        static member GetSet(identifier, returnType) =
+            MemberDefnAbstractSlotNode(
+                None,
+                None,
+                MultipleTextsNode.Create([ "abstract"; "member" ]),
+                SingleTextNode(identifier, Range.Zero),
+                None,
+                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
+                Some(MultipleTextsNode.Create([ "with"; "get,"; "set" ])),
+                Range.Zero
+            )
+
+        static member Get(identifier, returnType) =
+            MemberDefnAbstractSlotNode(
+                None,
+                None,
+                MultipleTextsNode.Create([ "abstract"; "member" ]),
+                SingleTextNode.Create(identifier),
+                None,
+                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
+                Some(MultipleTextsNode.Create([ "with"; "get" ])),
+                Range.Zero
+            )
+
+        static member Set(identifier, returnType) =
+            MemberDefnAbstractSlotNode(
+                None,
+                None,
+                MultipleTextsNode.Create([ "abstract"; "member" ]),
+                SingleTextNode.Create(identifier),
+                None,
+                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
+                Some(MultipleTextsNode.Create([ "with"; "set" ])),
+                Range.Zero
+            )
 
     type Type with
 

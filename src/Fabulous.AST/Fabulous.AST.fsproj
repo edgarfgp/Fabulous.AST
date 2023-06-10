@@ -59,6 +59,8 @@
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />
+        <Compile Include="Widgets\TypeDefinitions\Interface.fs" />
+        <Compile Include="Widgets\TypeDefinitions\GenericInterface.fs" />
         <Compile Include="Widgets\ControlFlow\IfThen.fs" />
         <Compile Include="Widgets\ControlFlow\IfThenElif.fs" />
         <Compile Include="Widgets\ControlFlow\IfThenElse.fs" />
