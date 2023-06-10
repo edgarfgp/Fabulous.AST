@@ -20,6 +20,7 @@
         <Compile Include="LetBindings\Value.fs" />
         <Compile Include="LetBindings\Literal.fs" />
         <Compile Include="LetBindings\Function.fs" />
+        <Compile Include="Members\Method.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
         <Compile Include="TypeDefinitions\Abbrev.fs" />
         <Compile Include="TypeDefinitions\Enum.fs" />

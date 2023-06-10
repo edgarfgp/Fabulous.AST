@@ -106,29 +106,10 @@ type Colors =
 
     [<Test>]
     let ``Produces an union with static member`` () =
-        let memberNode =
-            MemberDefn.Member(
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode(
-                        [ SingleTextNode("static", Range.Zero); SingleTextNode("member", Range.Zero) ],
-                        Range.Zero
-                    ),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("A", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
-                    Range.Zero
-                )
-            )
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+        let memberNode = (Method("A") { EscapeHatch(expr) }).isStatic()
 
-        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).members() { EscapeHatch(memberNode) } }
+        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).members() { memberNode } }
         |> produces
             """
 

@@ -77,31 +77,10 @@ type Colors = { Red: int; Green: int; Blue: int }
 
     [<Test>]
     let ``Produces a record with static member`` () =
-        let memberNode =
-            MemberDefn.Member(
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode(
-                        [ SingleTextNode("static", Range.Zero); SingleTextNode("member", Range.Zero) ],
-                        Range.Zero
-                    ),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("A", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
-                    Range.Zero
-                )
-            )
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+        let memberNode = (Method("A") { EscapeHatch(expr) }).isStatic()
 
-        AnonymousModule() {
-            (Record("Colors") { Field("X", Type.FromString "string") }).members() { EscapeHatch(memberNode) }
-        }
+        AnonymousModule() { (Record("Colors") { Field("X", Type.FromString "string") }).members() { memberNode } }
         |> produces
             """
 

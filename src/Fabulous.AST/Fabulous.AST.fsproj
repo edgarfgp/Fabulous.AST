@@ -37,6 +37,7 @@
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\Call.fs" />
         <Compile Include="Widgets\Unit.fs" />
+        <Compile Include="Widgets\Pattern.fs" />
         <Compile Include="Widgets\Match.fs" />
         <Compile Include="Widgets\MatchClause.fs" />
         <Compile Include="Widgets\Condition.fs" />
@@ -50,6 +51,7 @@
         <Compile Include="Widgets\LetBindings\Value.fs" />
         <Compile Include="Widgets\LetBindings\Literal.fs" />
         <Compile Include="Widgets\LetBindings\Function.fs" />
+        <Compile Include="Widgets\Members\Method.fs" />
         <Compile Include="Widgets\TypeDefinitions\Field.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionParameterizedCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
@@ -61,6 +63,7 @@
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />
         <Compile Include="Widgets\TypeDefinitions\Interface.fs" />
         <Compile Include="Widgets\TypeDefinitions\GenericInterface.fs" />
+        <Compile Include="Widgets\TypeDefinitions\Augment.fs" />
         <Compile Include="Widgets\ControlFlow\IfThen.fs" />
         <Compile Include="Widgets\ControlFlow\IfThenElif.fs" />
         <Compile Include="Widgets\ControlFlow\IfThenElse.fs" />

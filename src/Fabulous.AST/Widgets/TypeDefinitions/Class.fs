@@ -6,6 +6,7 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
+open Helpers
 
 module Class =
     let Name = Attributes.defineWidget "Name"
@@ -34,27 +35,19 @@ module Class =
                 match parameters with
                 | ValueNone -> None
                 | ValueSome None -> None
-                | ValueSome(Some(parameters)) when parameters.IsEmpty ->
-                    Some(
-                        ImplicitConstructorNode(
-                            None,
-                            None,
-                            None,
-                            SingleTextNode("(", Range.Zero),
-                            [],
-                            SingleTextNode(")", Range.Zero),
-                            None,
-                            Range.Zero
-                        )
-                    )
                 | ValueSome(Some(simplePatNodes)) ->
+                    let parameters =
+                        simplePatNodes
+                        |> List.map Choice1Of2
+                        |> List.intersperse(Choice2Of2(SingleTextNode(",", Range.Zero)))
+
                     Some(
                         ImplicitConstructorNode(
                             None,
                             None,
                             None,
                             SingleTextNode("(", Range.Zero),
-                            List.map Choice1Of2 simplePatNodes,
+                            parameters,
                             SingleTextNode(")", Range.Zero),
                             None,
                             Range.Zero
