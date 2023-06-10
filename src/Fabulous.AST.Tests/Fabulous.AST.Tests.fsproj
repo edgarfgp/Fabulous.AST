@@ -25,6 +25,7 @@
         <Compile Include="TypeDefinitions\Enum.fs" />
         <Compile Include="TypeDefinitions\Record.fs" />
         <Compile Include="TypeDefinitions\Class.fs" />
+        <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="ControlFlow\IfThen.fs" />
         <Compile Include="ControlFlow\IfThenElif.fs" />
         <Compile Include="ControlFlow\IfThenElse.fs" />
