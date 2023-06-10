@@ -2,7 +2,7 @@ namespace Fabulous.AST
 
 open System
 open System.Runtime.CompilerServices
-open FSharp.Compiler.Text
+open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 

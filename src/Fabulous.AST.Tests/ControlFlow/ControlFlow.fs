@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.ControlFlow
 
 open NUnit.Framework
-open FSharp.Compiler.Text
+open Fantomas.FCS.Text
 open Fabulous.AST
 open Fabulous.AST.Tests
 

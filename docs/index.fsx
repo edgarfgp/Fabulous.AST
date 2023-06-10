@@ -15,7 +15,7 @@ Let's take a look at an AST example in Fantomas:
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 
-open FSharp.Compiler.Text
+open Fantomas.FCS.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 
