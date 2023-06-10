@@ -6,8 +6,14 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
+
 type GeneticInterfaceTypeDefnRegularNode
-    (name: SingleTextNode, typeParams: TyparDecls option, multipleAttributes: MultipleAttributeListNode option, members: MemberDefn list) =
+    (
+        name: SingleTextNode,
+        typeParams: TyparDecls option,
+        multipleAttributes: MultipleAttributeListNode option,
+        members: MemberDefn list
+    ) =
     inherit
         TypeDefnRegularNode(
             TypeNameNode(
@@ -26,6 +32,7 @@ type GeneticInterfaceTypeDefnRegularNode
             members,
             Range.Zero
         )
+
 module GenericInterface =
     let Name = Attributes.defineWidget "Name"
     let Parameters = Attributes.defineScalar<SimplePatNode list option> "Parameters"
@@ -71,6 +78,7 @@ module GenericInterface =
                     |> TyparDecls.PostfixList
                     |> Some
                 | ValueNone -> None
+
             GeneticInterfaceTypeDefnRegularNode(name, typeParams, multipleAttributes, members))
 
 [<AutoOpen>]
