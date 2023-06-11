@@ -73,7 +73,7 @@ type Person =
                 )
             )
 
-        AnonymousModule() { Class("Person", []) { EscapeHatch(memberNode) } }
+        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).parameters([]) }
         |> produces
             """
 type Person () =
@@ -110,12 +110,13 @@ type Person () =
             )
 
         let param =
-            SimplePatNode(None, false, SingleTextNode("name", Range.Zero), None, Range.Zero)
+            [ "name"; "lastName"; "age" ]
+            |> List.map(fun n -> SimplePatNode(None, false, SingleTextNode(n, Range.Zero), None, Range.Zero))
 
-        AnonymousModule() { Class("Person", [ param ]) { EscapeHatch(memberNode) } }
+        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).parameters(param) }
         |> produces
             """
-type Person (name) =
+type Person (name, lastName, age) =
     member this.Name = name
 
 """
@@ -149,14 +150,23 @@ type Person (name) =
             )
 
         let param =
-            SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(Type.FromString("string")), Range.Zero)
+            [ ("name", "string"); ("lastName", "string"); ("age", "int") ]
+            |> List.map(fun n ->
+                let isOpt = fst n = "age"
 
-        AnonymousModule() { Class("Person", [ param ]) { EscapeHatch(memberNode) } }
+                SimplePatNode(
+                    None,
+                    isOpt,
+                    SingleTextNode(fst n, Range.Zero),
+                    Some(Type.FromString($"{snd n}")),
+                    Range.Zero
+                ))
+
+        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).parameters(param) }
         |> produces
             """
-type Person (name: string) =
+type Person (name: string, lastName: string, ?age: int) =
     member this.Name = name
-
 """
 
     [<Test>]
@@ -190,7 +200,7 @@ type Person (name: string) =
         let param =
             SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(Type.FromString("string")), Range.Zero)
 
-        AnonymousModule() { (Class("Person", [ param ]) { EscapeHatch(memberNode) }).isStruct() }
+        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).isStruct().parameters([ param ]) }
         |> produces
             """
 [<Struct>]
@@ -228,8 +238,9 @@ type Person (name: string) =
             )
 
         AnonymousModule() {
-            (Class("Person", []) { EscapeHatch(memberNode) })
+            (Class("Person") { EscapeHatch(memberNode) })
                 .attributes([ "Sealed"; "AbstractClass" ])
+                .parameters([])
         }
         |> produces
             """
@@ -237,4 +248,42 @@ type Person (name: string) =
 type Person () =
     member this.Name = ""
 
+"""
+
+    [<Test>]
+    let ``Produces a class that implements an interface`` () =
+        let parameters =
+            [ (Type.FromString("int"), SingleTextNode.rightArrow)
+              (Type.FromString("int"), SingleTextNode.rightArrow) ]
+
+        let method =
+            MemberDefnAbstractSlotNode.Method(
+                "Add",
+                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
+            )
+
+        let property = MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
+
+        let getSetProperty =
+            MemberDefnAbstractSlotNode.GetSet("Area", Type.FromString("float"))
+
+        let interfaceWidget () =
+            Interface("MyInterface") {
+                EscapeHatch(method)
+                EscapeHatch(property)
+                EscapeHatch(getSetProperty)
+            }
+
+        AnonymousModule() {
+            EmptyClass("MyClass").implements(interfaceWidget())
+
+        }
+        |> produces
+            """
+type MyClass =
+    interface MyInterface with
+        member this.Add(var0) (var1)= var0 + var1
+        member this.Area = 4.
+        member this.Area with set value = ()
+        member this.Pi = 3.14
 """
