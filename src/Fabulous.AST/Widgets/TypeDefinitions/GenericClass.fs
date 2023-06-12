@@ -7,12 +7,13 @@ open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
-type ClassTypeDefnRegularNode
+type GenericClassTypeDefnRegularNode
     (
         name: SingleTextNode,
+        multipleAttributes: MultipleAttributeListNode option,
         implicitConstructor: ImplicitConstructorNode option,
-        members: MemberDefn list,
-        multipleAttributes: MultipleAttributeListNode option
+        typeParams: TyparDecls option,
+        members: MemberDefn list
     ) =
     inherit
         TypeDefnRegularNode(
@@ -22,7 +23,7 @@ type ClassTypeDefnRegularNode
                 SingleTextNode.``type``,
                 Some(name),
                 IdentListNode([], Range.Zero),
-                None,
+                typeParams,
                 [],
                 implicitConstructor,
                 Some(SingleTextNode.equals),
@@ -33,14 +34,15 @@ type ClassTypeDefnRegularNode
             Range.Zero
         )
 
-module Class =
+module GenericClass =
     let Name = Attributes.defineWidget "Name"
     let Parameters = Attributes.defineScalar<SimplePatNode list> "Parameters"
     let Members = Attributes.defineWidgetCollection "Members"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
     let WidgetKey =
-        Widgets.register "Class" (fun widget ->
+        Widgets.register "GenericClass" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
             let parameters = Helpers.tryGetScalarValue widget Parameters
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
@@ -51,15 +53,33 @@ module Class =
                 | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values when values.IsEmpty -> None
+                | ValueNone -> None
+                | ValueSome values ->
+                    TyparDeclsPostfixListNode(
+                        SingleTextNode.lessThan,
+                        [ for v in values do
+                              TyparDeclNode(None, SingleTextNode.Create v, Range.Zero) ],
+                        [],
+                        SingleTextNode.greaterThan,
+                        Range.Zero
+                    )
+                    |> TyparDecls.PostfixList
+                    |> Some
+
             let members =
                 match members with
-                | None -> []
                 | Some members -> members
+                | None -> []
 
             let implicitConstructor =
                 match parameters with
                 | ValueNone -> None
-                | ValueSome(parameters) when parameters.IsEmpty ->
+                | ValueSome parameters when parameters.IsEmpty ->
                     Some(
                         ImplicitConstructorNode(
                             None,
@@ -72,7 +92,7 @@ module Class =
                             Range.Zero
                         )
                     )
-                | ValueSome(simplePatNodes) ->
+                | ValueSome simplePatNodes ->
                     let simplePats =
                         match simplePatNodes with
                         | [] -> []
@@ -95,59 +115,55 @@ module Class =
                         )
                     )
 
-            ClassTypeDefnRegularNode(name, implicitConstructor, members, multipleAttributes))
+            GenericClassTypeDefnRegularNode(name, multipleAttributes, implicitConstructor, typeParams, members))
 
 [<AutoOpen>]
-module ClassBuilders =
+module GenericClassBuilders =
     type Ast with
 
-        static member inline Class(name: WidgetBuilder<#SingleTextNode>) =
-            CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>(
-                Class.WidgetKey,
-                Class.Members,
-                AttributesBundle(StackList.empty(), ValueSome [| Class.Name.WithValue(name.Compile()) |], ValueNone)
+        static member inline GenericClass(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
+            CollectionBuilder<GenericClassTypeDefnRegularNode, MemberDefn>(
+                GenericClass.WidgetKey,
+                GenericClass.Members,
+                AttributesBundle(
+                    StackList.one(GenericClass.TypeParams.WithValue(typeParams)),
+                    ValueSome [| GenericClass.Name.WithValue(name.Compile()) |],
+                    ValueNone
+                )
             )
 
-        static member inline EmptyClass(name: WidgetBuilder<#SingleTextNode>) =
-            WidgetBuilder<ClassTypeDefnRegularNode>(
-                Class.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| Class.Name.WithValue(name.Compile()) |], ValueNone)
-            )
+        static member inline GenericClass(node: SingleTextNode, typeParams: string list) =
+            Ast.GenericClass(Ast.EscapeHatch(node), typeParams)
 
-        static member inline Class(node: SingleTextNode) = Ast.Class(Ast.EscapeHatch(node))
-
-        static member inline EmptyClass(node: SingleTextNode) = Ast.EmptyClass(Ast.EscapeHatch(node))
-
-        static member inline Class(name: string) = Ast.Class(SingleTextNode.Create(name))
-
-        static member inline EmptyClass(name: string) =
-            Ast.EmptyClass(SingleTextNode.Create(name))
+        static member inline GenericClass(name: string, typeParams: string list) =
+            Ast.GenericClass(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
-type ClassModifiers =
-    [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ClassTypeDefnRegularNode>, attributes: string list) =
-        this.AddScalar(Class.MultipleAttributes.WithValue(attributes))
+type GenericClassModifiers =
 
     [<Extension>]
-    static member inline isStruct(this: WidgetBuilder<ClassTypeDefnRegularNode>) =
-        ClassModifiers.attributes(this, [ "Struct" ])
+    static member inline attributes(this: WidgetBuilder<GenericClassTypeDefnRegularNode>, attributes: string list) =
+        this.AddScalar(GenericClass.MultipleAttributes.WithValue(attributes))
+
+    [<Extension>]
+    static member isStruct(this: WidgetBuilder<GenericClassTypeDefnRegularNode>) =
+        GenericClassModifiers.attributes(this, [ "Struct" ])
 
     [<Extension>]
     static member inline implicitConstructorParameters
         (
-            this: WidgetBuilder<ClassTypeDefnRegularNode>,
+            this: WidgetBuilder<GenericClassTypeDefnRegularNode>,
             parameters: SimplePatNode list
         ) =
-        this.AddScalar(Class.Parameters.WithValue(parameters))
+        this.AddScalar(GenericClass.Parameters.WithValue(parameters))
 
 [<Extension>]
-type ClassYieldExtensions =
+type GenericClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ClassTypeDefnRegularNode>
+            x: WidgetBuilder<GenericClassTypeDefnRegularNode>
         ) : CollectionContent =
         let node = Tree.compile x
         let typeDefn = TypeDefn.Regular(node)
@@ -158,7 +174,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            _: CollectionBuilder<GenericClassTypeDefnRegularNode, MemberDefn>,
             x: MemberDefn
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()

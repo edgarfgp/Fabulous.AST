@@ -79,6 +79,10 @@ type InterfaceModifiers =
     static member inline attributes(this: WidgetBuilder<InterfaceTypeDefnRegularNode>, attributes: string list) =
         this.AddScalar(Interface.MultipleAttributes.WithValue(attributes))
 
+    [<Extension>]
+    static member inline isStruct(this: WidgetBuilder<InterfaceTypeDefnRegularNode>) =
+        InterfaceModifiers.attributes(this, [ "Struct" ])
+
 [<Extension>]
 type InterfaceYieldExtensions =
     [<Extension>]

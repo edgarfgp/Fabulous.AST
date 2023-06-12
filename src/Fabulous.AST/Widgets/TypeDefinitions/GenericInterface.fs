@@ -38,7 +38,6 @@ module GenericInterface =
     let Parameters = Attributes.defineScalar<SimplePatNode list option> "Parameters"
     let Members = Attributes.defineWidgetCollection "Members"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
-
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
     let WidgetKey =
@@ -107,6 +106,10 @@ type GenericInterfaceModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<GeneticInterfaceTypeDefnRegularNode>, attributes: string list) =
         this.AddScalar(GenericInterface.MultipleAttributes.WithValue(attributes))
+
+    [<Extension>]
+    static member inline isStruct(this: WidgetBuilder<GeneticInterfaceTypeDefnRegularNode>) =
+        GenericInterfaceModifiers.attributes(this, [ "Struct" ])
 
 [<Extension>]
 type GenericInterfaceBuildersYieldExtensions =

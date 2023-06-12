@@ -73,7 +73,7 @@ type Person =
                 )
             )
 
-        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).parameters([]) }
+        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).implicitConstructorParameters([]) }
         |> produces
             """
 type Person () =
@@ -113,7 +113,10 @@ type Person () =
             [ "name"; "lastName"; "age" ]
             |> List.map(fun n -> SimplePatNode(None, false, SingleTextNode(n, Range.Zero), None, Range.Zero))
 
-        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).parameters(param) }
+        AnonymousModule() {
+            (Class("Person") { EscapeHatch(memberNode) })
+                .implicitConstructorParameters(param)
+        }
         |> produces
             """
 type Person (name, lastName, age) =
@@ -162,7 +165,10 @@ type Person (name, lastName, age) =
                     Range.Zero
                 ))
 
-        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).parameters(param) }
+        AnonymousModule() {
+            (Class("Person") { EscapeHatch(memberNode) })
+                .implicitConstructorParameters(param)
+        }
         |> produces
             """
 type Person (name: string, lastName: string, ?age: int) =
@@ -200,7 +206,11 @@ type Person (name: string, lastName: string, ?age: int) =
         let param =
             SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(Type.FromString("string")), Range.Zero)
 
-        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).isStruct().parameters([ param ]) }
+        AnonymousModule() {
+            (Class("Person") { EscapeHatch(memberNode) })
+                .isStruct()
+                .implicitConstructorParameters([ param ])
+        }
         |> produces
             """
 [<Struct>]
@@ -240,7 +250,7 @@ type Person (name: string) =
         AnonymousModule() {
             (Class("Person") { EscapeHatch(memberNode) })
                 .attributes([ "Sealed"; "AbstractClass" ])
-                .parameters([])
+                .implicitConstructorParameters([])
         }
         |> produces
             """
@@ -251,39 +261,177 @@ type Person () =
 """
 
     [<Test>]
-    let ``Produces a class that implements an interface`` () =
-        let parameters =
-            [ (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("int"), SingleTextNode.rightArrow) ]
-
-        let method =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
+    let ``Produces a generic class`` () =
+        let memberNode =
+            MemberDefn.Member(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(
+                        IdentListNode(
+                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode("Name", Range.Zero)) ],
+                            Range.Zero
+                        )
+                    ),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
+                    Range.Zero
+                )
             )
 
-        let property = MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
-
-        let getSetProperty =
-            MemberDefnAbstractSlotNode.GetSet("Area", Type.FromString("float"))
-
-        let interfaceWidget () =
-            Interface("MyInterface") {
-                EscapeHatch(method)
-                EscapeHatch(property)
-                EscapeHatch(getSetProperty)
-            }
-
         AnonymousModule() {
-            EmptyClass("MyClass").implements(interfaceWidget())
+            GenericClass("Person", [ "'a"; "'b" ]) { EscapeHatch(memberNode) }
 
         }
         |> produces
             """
-type MyClass =
-    interface MyInterface with
-        member this.Add(var0) (var1)= var0 + var1
-        member this.Area = 4.
-        member this.Area with set value = ()
-        member this.Pi = 3.14
+type Person <'a, 'b> =
+    member this.Name = ""
+
 """
+
+    [<Test>]
+    let ``Produces a generic class with a constructor`` () =
+        let memberNode =
+            MemberDefn.Member(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(
+                        IdentListNode(
+                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode("Name", Range.Zero)) ],
+                            Range.Zero
+                        )
+                    ),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
+                    Range.Zero
+                )
+            )
+
+        AnonymousModule() {
+            (GenericClass("Person", [ "'a"; "'b" ]) { EscapeHatch(memberNode) })
+                .implicitConstructorParameters([])
+
+        }
+        |> produces
+            """
+type Person <'a, 'b>() =
+    member this.Name = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a struct generic class with a constructor`` () =
+        let memberNode =
+            MemberDefn.Member(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(
+                        IdentListNode(
+                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
+                              IdentifierOrDot.Ident(SingleTextNode("Name", Range.Zero)) ],
+                            Range.Zero
+                        )
+                    ),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
+                    Range.Zero
+                )
+            )
+
+        AnonymousModule() {
+            (GenericClass("Person", [ "'a"; "'b" ]) { EscapeHatch(memberNode) })
+                .isStruct()
+                .implicitConstructorParameters([])
+
+        }
+        |> produces
+            """
+[<Struct>]
+type Person <'a, 'b>() =
+    member this.Name = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a class end`` () =
+        AnonymousModule() { ClassEnd("MyClass") }
+        |> produces
+            """
+type MyClass =
+    class
+    end
+            """
+
+    [<Test>]
+    let ``Produces a class end with constructor`` () =
+        AnonymousModule() { ClassEnd("MyClass").implicitConstructorParameters([]) }
+        |> produces
+            """
+type MyClass () =
+    class
+    end
+            """
+
+    [<Test>]
+    let ``Produces a class end with constructor and attributes`` () =
+        AnonymousModule() {
+            ClassEnd("MyClass")
+                .attributes([ "Sealed"; "AbstractClass" ])
+                .implicitConstructorParameters([])
+        }
+        |> produces
+            """
+[<Sealed; AbstractClass>]
+type MyClass () =
+    class
+    end
+            """
+
+    [<Test>]
+    let ``Produces a class end with type params`` () =
+        AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ]) }
+        |> produces
+            """
+type MyClass <'a, 'b> =
+    class
+    end
+            """
+
+    [<Test>]
+    let ``Produces a class end with constructor and  type params`` () =
+        AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ]).implicitConstructorParameters([]) }
+        |> produces
+            """
+type MyClass <'a, 'b>() =
+    class
+    end
+            """
