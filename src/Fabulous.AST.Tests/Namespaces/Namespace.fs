@@ -154,10 +154,9 @@ module Fabulous.AST =
                     let myFields =
                         props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))
 
-                    Record(name) { yield! myFields }
-                    |> Tree.compile
-                    |> TypeDefn.Record
-                    |> ModuleDecl.TypeDefn)
+                    let fields = Record(name) { yield! myFields } |> Tree.compile
+                    let record = TypeDefn.Record(fields)
+                    ModuleDecl.TypeDefn(record))
 
         Namespace("Json") {
             for recordType in recordTypes do

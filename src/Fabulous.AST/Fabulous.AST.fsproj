@@ -57,7 +57,9 @@
         <Compile Include="Widgets\TypeDefinitions\Enum.fs" />
         <Compile Include="Widgets\TypeDefinitions\Abbrev.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
+        <Compile Include="Widgets\TypeDefinitions\GenericUnion.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />
+        <Compile Include="Widgets\TypeDefinitions\GenericRecord.fs" />
         <Compile Include="Widgets\TypeDefinitions\Interface.fs" />
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />
         <Compile Include="Widgets\TypeDefinitions\GenericClass.fs" />

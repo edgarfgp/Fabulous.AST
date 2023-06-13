@@ -41,13 +41,3 @@ module UnionParameterizedCaseBuilders =
 
         static member inline UnionParameterizedCase(name: string) =
             Ast.UnionParameterizedCase(SingleTextNode(name, Range.Zero))
-
-[<Extension>]
-type UnionParameterizedCaseYieldExtensions =
-    [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>,
-            x: WidgetBuilder<UnionParameterizedCaseNode>
-        ) : CollectionContent =
-        { Widgets = MutStackArray1.One(x.Compile()) }
