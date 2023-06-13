@@ -32,19 +32,19 @@ module NestedModule =
             let accessControl =
                 match accessControl with
                 | Public -> None
-                | Private -> Some(SingleTextNode("private", Range.Zero))
-                | Internal -> Some(SingleTextNode("internal", Range.Zero))
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
 
 
             let nestedModuleNode =
                 NestedModuleNode(
                     None,
                     None,
-                    SingleTextNode("module", Range.Zero),
+                    SingleTextNode.``module``,
                     accessControl,
                     isRecursive,
                     identList,
-                    SingleTextNode("=", Range.Zero),
+                    SingleTextNode.equals,
                     moduleDecls,
                     Range.Zero
                 )
@@ -53,7 +53,7 @@ module NestedModule =
 
 [<AutoOpen>]
 module NestedModuleBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline NestedModule(identList: WidgetBuilder<#IdentListNode>) =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(

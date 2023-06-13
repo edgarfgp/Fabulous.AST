@@ -22,9 +22,9 @@ module Abbrev =
                 TypeNameNode(
                     None,
                     None,
-                    SingleTextNode("type", Range.Zero),
+                    SingleTextNode.``type``,
                     Some(name),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
                     None,
                     [],
                     None,

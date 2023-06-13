@@ -17,7 +17,7 @@ type ModuleNode(identList: IdentListNode, decls: ModuleDecl list) =
                       ModuleOrNamespaceHeaderNode(
                           None,
                           None,
-                          MultipleTextsNode([ SingleTextNode("module", Range.Zero) ], Range.Zero),
+                          MultipleTextsNode([ SingleTextNode.``module`` ], Range.Zero),
                           None,
                           false,
                           Some(identList),
@@ -42,7 +42,7 @@ module Module =
 
 [<AutoOpen>]
 module ModuleBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Module(identList: WidgetBuilder<#IdentListNode>) =
             CollectionBuilder<ModuleNode, ModuleDecl>(

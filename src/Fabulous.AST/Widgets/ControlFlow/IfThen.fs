@@ -17,16 +17,16 @@ module IfThen =
             let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
 
             ExprIfThenNode(
-                IfKeywordNode.SingleWord(SingleTextNode("if", Range.Zero)),
+                IfKeywordNode.SingleWord(SingleTextNode.``if``),
                 ifExpr,
-                SingleTextNode("then", Range.Zero),
+                SingleTextNode.``then``,
                 thenExpr,
                 Range.Zero
             ))
 
 [<AutoOpen>]
 module IfThenBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline IfThen(ifExpr: WidgetBuilder<Expr>) =
             SingleChildBuilder<ExprIfThenNode, Expr>(

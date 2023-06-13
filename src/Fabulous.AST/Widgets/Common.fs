@@ -35,6 +35,16 @@ module Auxiliary =
         let rightArrow = SingleTextNode.Create "->"
         let lefArrow = SingleTextNode.Create "<-"
         let star = SingleTextNode.Create "*"
+        let ``if`` = SingleTextNode.Create "if"
+        let ``elif`` = SingleTextNode.Create "elif"
+        let ``then`` = SingleTextNode.Create "then"
+        let ``else`` = SingleTextNode.Create "else"
+        let ``let`` = SingleTextNode.Create "let"
+        let ``private`` = SingleTextNode.Create "private"
+        let ``internal`` = SingleTextNode.Create "internal"
+        let ``inline`` = SingleTextNode.Create "inline"
+        let ``namespace`` = SingleTextNode.Create "namespace"
+        let ``module`` = SingleTextNode.Create "module"
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =

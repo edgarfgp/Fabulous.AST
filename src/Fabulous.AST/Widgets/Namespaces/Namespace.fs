@@ -17,7 +17,7 @@ type NamespaceNode(identList: IdentListNode, decls: ModuleDecl list, isRecursive
                       ModuleOrNamespaceHeaderNode(
                           None,
                           None,
-                          MultipleTextsNode([ SingleTextNode("namespace", Range.Zero) ], Range.Zero),
+                          MultipleTextsNode([ SingleTextNode.``namespace`` ], Range.Zero),
                           None,
                           isRecursive,
                           Some(identList),
@@ -48,7 +48,7 @@ module Namespace =
 
 [<AutoOpen>]
 module NamespaceBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Namespace(identList: WidgetBuilder<#IdentListNode>) =
             CollectionBuilder<NamespaceNode, ModuleDecl>(
