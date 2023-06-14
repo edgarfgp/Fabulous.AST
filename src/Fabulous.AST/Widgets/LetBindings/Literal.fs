@@ -11,26 +11,8 @@ type LiteralNode(xmlDoc: XmlDocNode option, accessControl: SingleTextNode option
     inherit
         BindingNode(
             xmlDoc,
-            Some(
-                MultipleAttributeListNode(
-                    [ AttributeListNode(
-                          SingleTextNode("[<", Range.Zero),
-                          [ AttributeNode(
-                                IdentListNode(
-                                    [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.Zero)) ],
-                                    Range.Zero
-                                ),
-                                None,
-                                None,
-                                Range.Zero
-                            ) ],
-                          SingleTextNode(">]", Range.Zero),
-                          Range.Zero
-                      ) ],
-                    Range.Zero
-                )
-            ),
-            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+            Some(MultipleAttributeListNode.Create([ "Literal" ])),
+            MultipleTextsNode([ SingleTextNode.``let`` ], Range.Zero),
             false,
             None,
             accessControl,
@@ -38,7 +20,7 @@ type LiteralNode(xmlDoc: XmlDocNode option, accessControl: SingleTextNode option
             None,
             List.Empty,
             None,
-            SingleTextNode("=", Range.Zero),
+            SingleTextNode.equals,
             Expr.Constant(Constant.FromText(SingleTextNode(value, Range.Zero))),
             Range.Zero
         )
@@ -61,8 +43,8 @@ module Literal =
             let accessControl =
                 match accessControl with
                 | Public -> None
-                | Private -> Some(SingleTextNode("private", Range.Zero))
-                | Internal -> Some(SingleTextNode("internal", Range.Zero))
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
 
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
@@ -75,7 +57,7 @@ module Literal =
 
 [<AutoOpen>]
 module LiteralBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Literal(name: string, value: string) =
             WidgetBuilder<LiteralNode>(Literal.WidgetKey, Literal.Name.WithValue(name), Literal.Value.WithValue(value))

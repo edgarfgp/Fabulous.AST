@@ -25,7 +25,7 @@ module IfThenElif =
 
             let elseExpr =
                 match elseExpr with
-                | ValueSome elseExpr -> Some(SingleTextNode("else", Range.Zero), elseExpr)
+                | ValueSome elseExpr -> Some(SingleTextNode.``else``, elseExpr)
                 | ValueNone -> None
 
             ExprIfThenElifNode(

@@ -18,18 +18,18 @@ module IfThenElse =
             let elseExpr = Helpers.getNodeFromWidget<Expr> widget ElseExpr
 
             ExprIfThenElseNode(
-                IfKeywordNode.SingleWord(SingleTextNode("if", Range.Zero)),
+                IfKeywordNode.SingleWord(SingleTextNode.``if``),
                 ifExpr,
-                SingleTextNode("then", Range.Zero),
+                SingleTextNode.``then``,
                 thenExpr,
-                SingleTextNode("else", Range.Zero),
+                SingleTextNode.``else``,
                 elseExpr,
                 Range.Zero
             ))
 
 [<AutoOpen>]
 module IfThenElseBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline IfThenElse(ifExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>) =
             SingleChildBuilder<ExprIfThenElseNode, Expr>(

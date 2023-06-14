@@ -193,7 +193,7 @@ type Colors =
     [<Test>]
     let ``Produces a record with TypeParams`` () =
         AnonymousModule() {
-            Record("Colors", [ "'other" ]) {
+            GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", Type.FromString "string")
                 Field("Blue", Type.FromString "'other")
                 Field("Yellow", Type.FromString "int")
@@ -203,6 +203,27 @@ type Colors =
         |> produces
             """
 
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+"""
+
+    [<Test>]
+    let ``Produces a  struct record with TypeParams`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", Type.FromString "string")
+                Field("Blue", Type.FromString "'other")
+                Field("Yellow", Type.FromString "int")
+            })
+                .isStruct()
+        }
+
+        |> produces
+            """
+[<Struct>]
 type Colors<'other> =
     { Green: string
       Blue: 'other

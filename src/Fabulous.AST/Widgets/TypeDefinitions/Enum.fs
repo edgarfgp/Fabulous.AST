@@ -32,7 +32,7 @@ module Enum =
                 TypeNameNode(
                     None,
                     multipleAttributes,
-                    SingleTextNode("type", Range.Zero),
+                    SingleTextNode.``type``,
                     Some(name),
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
                     None,

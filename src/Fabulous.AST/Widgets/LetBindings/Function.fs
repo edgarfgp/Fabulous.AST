@@ -15,19 +15,19 @@ type FunctionNode(name, parameters, bodyExpr, isInlined) =
         BindingNode(
             None,
             None,
-            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+            MultipleTextsNode([ SingleTextNode.``let`` ], Range.Zero),
             false,
             (match isInlined with
              | ValueNone
              | ValueSome false -> None
-             | ValueSome true -> Some(SingleTextNode("inline", Range.Zero))),
+             | ValueSome true -> Some(SingleTextNode.``inline``)),
             None,
             Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
             None,
             [ for param in parameters do
                   Pattern.Named(PatNamedNode(None, SingleTextNode(param, Range.Zero), Range.Zero)) ],
             None,
-            SingleTextNode("=", Range.Zero),
+            SingleTextNode.equals,
             bodyExpr,
             Range.Zero
         )
@@ -48,7 +48,7 @@ module Function =
 
 [<AutoOpen>]
 module FunctionBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Function(name: string, parameters: string[]) =
             SingleChildBuilder<FunctionNode, Expr>(

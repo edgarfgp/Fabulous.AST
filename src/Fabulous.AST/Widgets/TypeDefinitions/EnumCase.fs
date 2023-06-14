@@ -30,7 +30,7 @@ module EnumCase =
                 None,
                 multipleAttributes,
                 name,
-                SingleTextNode("=", Range.Zero),
+                SingleTextNode.equals,
                 Expr.Constant(Constant.FromText(value)),
                 Range.Zero
             ))

@@ -204,7 +204,7 @@ type Colors = | [<Obsolete; Test>] Red
     [<Test>]
     let ``Produces an union with TypeParams`` () =
         AnonymousModule() {
-            Union("Colors", [ "'other" ]) {
+            GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
                     Field("a", Type.FromString "string")
                     Field("b", Type.FromString "'other")
@@ -219,6 +219,33 @@ type Colors = | [<Obsolete; Test>] Red
         |> produces
             """
 
+type Colors<'other> =
+    | Red of a: string * b: 'other
+    | Green
+    | Blue
+    | Yellow
+
+"""
+
+    [<Test>]
+    let ``Produces an struct union with TypeParams`` () =
+        AnonymousModule() {
+            (GenericUnion("Colors", [ "'other" ]) {
+                UnionParameterizedCase("Red") {
+                    Field("a", Type.FromString "string")
+                    Field("b", Type.FromString "'other")
+                }
+
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            })
+                .isStruct()
+        }
+
+        |> produces
+            """
+[<Struct>]
 type Colors<'other> =
     | Red of a: string * b: 'other
     | Green
