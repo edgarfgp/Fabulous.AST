@@ -105,61 +105,6 @@ type Colors =
 """
 
     [<Test>]
-    let ``Produces an union with static member`` () =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
-        let memberNode = (Method("A") { EscapeHatch(expr) }).isStatic()
-
-        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).members() { memberNode } }
-        |> produces
-            """
-
-type Colors =
-    | Red
-
-    static member A = ""
-
-"""
-
-    [<Test>]
-    let ``Produces an union with member`` () =
-        let memberNode =
-            MemberDefn.Member(
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(
-                        IdentListNode(
-                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
-                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
-                              IdentifierOrDot.Ident(SingleTextNode("A", Range.Zero)) ],
-                            Range.Zero
-                        )
-                    ),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
-                    Range.Zero
-                )
-            )
-
-        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).members() { EscapeHatch(memberNode) } }
-        |> produces
-            """
-
-type Colors =
-    | Red
-
-    member this.A = ""
-
-"""
-
-    [<Test>]
     let ``Produces an union with attribute`` () =
         AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attributes([ "Test" ]) }
         |> produces

@@ -12,12 +12,9 @@ type ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, 
         BindingNode(
             xmlDoc,
             multipleAttributes,
-            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+            MultipleTextsNode([ SingleTextNode.``let`` ], Range.Zero),
             isMutable,
-            (if isInlined then
-                 Some(SingleTextNode("inline", Range.Zero))
-             else
-                 None),
+            (if isInlined then Some(SingleTextNode.``inline``) else None),
             accessControl,
             Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
             None,
@@ -47,13 +44,15 @@ module Value =
 
             let accessControl =
                 Helpers.tryGetScalarValue widget Accessibility
-                |> ValueOption.defaultValue AccessControl.Public
+                |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
                 match accessControl with
-                | Public -> None
+                | Public -> Some(SingleTextNode("public", Range.Zero))
                 | Private -> Some(SingleTextNode("private", Range.Zero))
                 | Internal -> Some(SingleTextNode("internal", Range.Zero))
+                | Unknown -> None
+
 
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
@@ -79,7 +78,7 @@ module Value =
 
 [<AutoOpen>]
 module ValueBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Value(name: string, value: string) =
             WidgetBuilder<ValueNode>(Value.WidgetKey, Value.Name.WithValue(name), Value.Value.WithValue(value))

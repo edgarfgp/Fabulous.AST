@@ -7,6 +7,7 @@ type AccessControl =
     | Public
     | Private
     | Internal
+    | Unknown
 
 [<AutoOpen>]
 module Auxiliary =
@@ -40,11 +41,13 @@ module Auxiliary =
         let ``then`` = SingleTextNode.Create "then"
         let ``else`` = SingleTextNode.Create "else"
         let ``let`` = SingleTextNode.Create "let"
+        let ``public`` = SingleTextNode.Create "public"
         let ``private`` = SingleTextNode.Create "private"
         let ``internal`` = SingleTextNode.Create "internal"
         let ``inline`` = SingleTextNode.Create "inline"
         let ``namespace`` = SingleTextNode.Create "namespace"
         let ``module`` = SingleTextNode.Create "module"
+        let colon = SingleTextNode.Create ":"
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =
@@ -167,6 +170,14 @@ module Auxiliary =
                 Some(MultipleTextsNode.Create([ "with"; "set" ])),
                 Range.Zero
             )
+
+    type XmlDocNode with
+
+        static member Create(content: string list) =
+            content
+            |> List.map(fun v -> $"/// {v}")
+            |> Array.ofList
+            |> fun v -> XmlDocNode(v, Range.Zero)
 
     type Type with
 

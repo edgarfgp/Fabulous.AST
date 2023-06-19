@@ -77,7 +77,7 @@ module Helpers =
 
 module List =
     //  Copied from FSharpPlus
-    let intersperse (separator) (source: List<'T>) =
+    let intersperse separator (source: List<'T>) =
         let mutable coll = new ListCollector<'T>()
         let mutable notFirst = false
 

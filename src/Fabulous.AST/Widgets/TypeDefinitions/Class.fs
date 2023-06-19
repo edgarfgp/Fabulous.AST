@@ -81,7 +81,7 @@ module Class =
                               for p in tail do
                                   yield Choice2Of2 SingleTextNode.comma
                                   yield Choice1Of2 p ]
-               
+
                     Some(
                         ImplicitConstructorNode(
                             None,
@@ -152,6 +152,7 @@ type ClassYieldExtensions =
         let node = Tree.compile x
         let typeDefn = TypeDefn.Regular(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
+
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
@@ -159,7 +160,34 @@ type ClassYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
-            x: MemberDefn
+            x: MethodMemberNode
         ) : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            x: WidgetBuilder<MethodMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        ClassYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            x: PropertyMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            x: WidgetBuilder<PropertyMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        ClassYieldExtensions.Yield(this, node)

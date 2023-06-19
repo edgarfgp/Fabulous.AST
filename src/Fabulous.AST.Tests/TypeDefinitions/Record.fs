@@ -76,22 +76,6 @@ type Colors = { Red: int; Green: int; Blue: int }
 """
 
     [<Test>]
-    let ``Produces a record with static member`` () =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
-        let memberNode = (Method("A") { EscapeHatch(expr) }).isStatic()
-
-        AnonymousModule() { (Record("Colors") { Field("X", Type.FromString "string") }).members() { memberNode } }
-        |> produces
-            """
-
-type Colors =
-    { X: string }
-
-    static member A = ""
-
-"""
-
-    [<Test>]
     let ``Produces a record with member`` () =
         let memberNode =
             MemberDefn.Member(

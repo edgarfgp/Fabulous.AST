@@ -137,8 +137,52 @@ type GenericUnionYieldExtensions =
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
-[<Extension>]
-type GenericUnionParameterizedCaseYieldExtensions =
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: MethodMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: WidgetBuilder<MethodMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericUnionYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: PropertyMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: WidgetBuilder<PropertyMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericUnionYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: WidgetBuilder<PropertyMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
     [<Extension>]
     static member inline Yield
         (
