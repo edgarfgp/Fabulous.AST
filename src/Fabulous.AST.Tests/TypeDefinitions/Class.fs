@@ -201,30 +201,6 @@ type Person (name: string, age: int) =
 """
 
     [<Test>]
-    let ``Produces a class explicit constructor with multiple typed params`` () =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
-        let memberNode = Method("Name") { EscapeHatch(expr) }
-
-        let param =
-            [ SimplePatNode(
-                  None,
-                  false,
-                  SingleTextNode("name", Range.Zero),
-                  Some(Type.FromString("string")),
-                  Range.Zero
-              )
-              SimplePatNode(None, false, SingleTextNode("age", Range.Zero), Some(Type.FromString("int")), Range.Zero) ]
-
-        AnonymousModule() { Class("Person", param) { memberNode } }
-        |> produces
-            """
-type Person (name: string, age: int) =
-    member this.Name = name
-
-"""
-
-
-    [<Test>]
     let ``Produces a class marked as a Struct explicit constructor with typed params`` () =
         let memberNode =
             MemberDefn.Member(
