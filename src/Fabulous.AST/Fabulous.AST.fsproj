@@ -37,6 +37,7 @@
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\Call.fs" />
         <Compile Include="Widgets\Unit.fs" />
+        <Compile Include="Widgets\Pattern.fs" />
         <Compile Include="Widgets\Match.fs" />
         <Compile Include="Widgets\MatchClause.fs" />
         <Compile Include="Widgets\Condition.fs" />
