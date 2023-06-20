@@ -103,7 +103,7 @@ type Person () =
                     None,
                     List.Empty,
                     None,
-                    SingleTextNode("=", Range.Zero),
+                    SingleTextNode.equals,
                     Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero))),
                     Range.Zero
                 )
@@ -173,6 +173,31 @@ type Person (name, lastName, age) =
             """
 type Person (name: string, lastName: string, ?age: int) =
     member this.Name = name
+"""
+
+    [<Test>]
+    let ``Produces a class explicit constructor with multiple typed params`` () =
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
+
+        let param =
+            [ SimplePatNode(
+                  None,
+                  false,
+                  SingleTextNode("name", Range.Zero),
+                  Some(Type.FromString("string")),
+                  Range.Zero
+              )
+              SimplePatNode(None, false, SingleTextNode("age", Range.Zero), Some(Type.FromString("int")), Range.Zero) ]
+
+        AnonymousModule() {
+            (Class("Person") { PropertyMember("this.Name") { EscapeHatch(expr) } })
+                .implicitConstructorParameters(param)
+        }
+        |> produces
+            """
+type Person (name: string, age: int) =
+    member this.Name = name
+
 """
 
     [<Test>]

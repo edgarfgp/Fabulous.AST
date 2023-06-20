@@ -179,3 +179,39 @@ type GenericClassYieldExtensions =
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<GenericClassTypeDefnRegularNode, MemberDefn>,
+            x: MethodMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<GenericClassTypeDefnRegularNode, MemberDefn>,
+            x: WidgetBuilder<MethodMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericClassYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<GenericClassTypeDefnRegularNode, MemberDefn>,
+            x: PropertyMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<GenericClassTypeDefnRegularNode, MemberDefn>,
+            x: WidgetBuilder<PropertyMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericClassYieldExtensions.Yield(this, node)

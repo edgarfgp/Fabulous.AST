@@ -27,13 +27,14 @@ module NestedModule =
 
             let accessControl =
                 Helpers.tryGetScalarValue widget Accessibility
-                |> ValueOption.defaultValue AccessControl.Public
+                |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
                 match accessControl with
-                | Public -> None
+                | Public -> Some(SingleTextNode.``public``)
                 | Private -> Some(SingleTextNode.``private``)
                 | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
 
 
             let nestedModuleNode =

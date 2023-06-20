@@ -119,3 +119,50 @@ type RecordYieldExtensions =
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            x: MethodMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            x: WidgetBuilder<MethodMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        RecordYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            x: PropertyMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            x: WidgetBuilder<PropertyMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        RecordYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            x: WidgetBuilder<PropertyMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
+        { Widgets = MutStackArray1.One(widget) }

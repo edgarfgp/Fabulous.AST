@@ -3,6 +3,7 @@ namespace Fabulous.AST
 open Fabulous.AST.ScalarAttributeDefinitions
 open Fabulous.AST.WidgetAttributeDefinitions
 open Fabulous.AST.WidgetCollectionAttributeDefinitions
+open FSharp.Core.CompilerServices
 
 module Helpers =
     let createValueForWidget<'T> (widget: Widget) =
@@ -73,3 +74,19 @@ module Helpers =
 
     let createNodeFromBuilder (builder: WidgetBuilder<'T>) : 'U =
         builder.Compile() |> createValueForWidget<'U>
+
+module List =
+    //  Copied from FSharpPlus
+    let intersperse separator (source: List<'T>) =
+        let mutable coll = new ListCollector<'T>()
+        let mutable notFirst = false
+
+        source
+        |> List.iter(fun element ->
+            if notFirst then
+                coll.Add separator
+
+            coll.Add element
+            notFirst <- true)
+
+        coll.Close()
