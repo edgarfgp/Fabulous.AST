@@ -13,7 +13,7 @@ module Abbrev =
 
     [<Test>]
     let ``Produces type Abbrev`` () =
-        AnonymousModule() { Abbrev("MyInt", Type.FromString("int")) }
+        AnonymousModule() { Abbrev("MyInt", CommonType.int) }
 
         |> produces
             """
@@ -39,13 +39,13 @@ type MyInt = int
                     None,
                     Range.Zero
                 ),
-                Type.FromString("float"),
+                CommonType.float,
                 [],
                 Range.Zero
             )
 
         AnonymousModule() {
-            Abbrev("MyInt", Type.FromString("int"))
+            Abbrev("MyInt", CommonType.int)
             EscapeHatch(alias)
         }
 
@@ -60,7 +60,7 @@ type MyFloat = float
     [<Test>]
     let ``Produces type Abbrev with TypeDefnAbbrevNode`` () =
         AnonymousModule() {
-            Abbrev("MyInt", Type.FromString("int"))
+            Abbrev("MyInt", CommonType.int)
 
             TypeDefnAbbrevNode(
                 TypeNameNode(
@@ -76,7 +76,7 @@ type MyFloat = float
                     None,
                     Range.Zero
                 ),
-                Type.FromString("float"),
+                CommonType.float,
                 [],
                 Range.Zero
             )

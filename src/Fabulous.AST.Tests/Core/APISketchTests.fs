@@ -3,8 +3,6 @@ namespace Fabulous.AST.Tests.Core
 open Fantomas.Core
 open NUnit.Framework
 
-open Fantomas.Core.SyntaxOak
-
 open Fabulous.AST
 
 open type Fabulous.AST.Ast
@@ -15,17 +13,17 @@ module APISketchTests =
     let ``Multiple Widgets for loops in builder`` () =
         let result =
             Namespace("DummyNamespace").isRecursive() {
-                Abbrev($"Foo", Type.FromString "string")
-                Abbrev($"bar", Type.FromString "string")
+                Abbrev("Foo", CommonType.string)
+                Abbrev("bar", CommonType.string)
 
                 for i = 0 to 10 do
-                    Abbrev($"T{i}", Type.FromString "string")
+                    Abbrev($"T{i}", CommonType.string)
 
                 for i = 10 to 20 do
-                    Abbrev($"T{i}", Type.FromString "string")
+                    Abbrev($"T{i}", CommonType.string)
 
                 for i = 20 to 30 do
-                    Abbrev($"T{i}", Type.FromString "string")
+                    Abbrev($"T{i}", CommonType.string)
             }
             |> Tree.compile
             |> CodeFormatter.FormatOakAsync
@@ -38,13 +36,13 @@ module APISketchTests =
         let result =
             Namespace("DummyNamespace").isRecursive() {
                 for i = 0 to 10 do
-                    Abbrev($"T{i}", Type.FromString "string")
+                    Abbrev($"T{i}", CommonType.string)
 
                 for i = 10 to 20 do
-                    Abbrev($"T{i}", Type.FromString "string")
+                    Abbrev($"T{i}", CommonType.string)
 
                 for i = 20 to 30 do
-                    Abbrev($"T{i}", Type.FromString "string")
+                    Abbrev($"T{i}", CommonType.string)
             }
             |> Tree.compile
             |> CodeFormatter.FormatOakAsync

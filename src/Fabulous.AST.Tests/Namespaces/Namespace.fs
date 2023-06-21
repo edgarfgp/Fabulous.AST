@@ -138,7 +138,7 @@ module Fabulous.AST =
             records
             |> List.map(fun { typename = name; props = props } ->
                 if Map.isEmpty props then
-                    Abbrev(name, Type.FromString "obj")
+                    Abbrev(name, CommonType.obj)
                     |> Tree.compile
                     |> TypeDefn.Abbrev
                     |> ModuleDecl.TypeDefn
@@ -146,9 +146,9 @@ module Fabulous.AST =
                     let rec mkType value =
                         match value with
                         | [] -> failwith "unexpected"
-                        | [ single ] -> Type.FromString single
+                        | [ single ] -> CommonType.mkType single
                         | head :: tail ->
-                            TypeAppPostFixNode(mkType tail, Type.FromString head, Range.Zero)
+                            TypeAppPostFixNode(mkType tail, CommonType.mkType head, Range.Zero)
                             |> Type.AppPostfix
 
                     let myFields =

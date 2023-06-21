@@ -75,7 +75,8 @@ type Person =
                       "Age", AccessControl.Private
                       "Address", AccessControl.Internal
                       "PostalCode", AccessControl.Unknown ] do
-                    (PropertyMember($"this.{name}") { EscapeHatch(constExpr) }).accessibility(acc)
+                    (PropertyMember($"this.{name}") { EscapeHatch(constExpr) })
+                        .accessibility(acc)
             }
         }
         |> produces
@@ -93,7 +94,7 @@ type Person =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode.Create("23")))
 
         AnonymousModule() {
-            (Class("Person") { PropertyMember("this.Name", Type.FromString("int")) { EscapeHatch(expr) } })
+            (Class("Person") { PropertyMember("this.Name", CommonType.int) { EscapeHatch(expr) } })
                 .implicitConstructorParameters([])
         }
         |> produces
@@ -106,7 +107,12 @@ type Person () =
     let ``Produces a class with a member property inlined`` () =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
-        AnonymousModule() { Class("Person") { (PropertyMember("this.Name") { EscapeHatch(constExpr) }).isInlined() } }
+        AnonymousModule() {
+            Class("Person") {
+                (PropertyMember("this.Name") { EscapeHatch(constExpr) })
+                    .isInlined()
+            }
+        }
         |> produces
             """
 type Person =
@@ -119,7 +125,10 @@ type Person =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode.Create("23")))
 
         AnonymousModule() {
-            (Class("Person") { (PropertyMember("this.Name") { EscapeHatch(expr) }).attributes([ "Obsolete" ]) })
+            (Class("Person") {
+                (PropertyMember("this.Name") { EscapeHatch(expr) })
+                    .attributes([ "Obsolete" ])
+            })
                 .implicitConstructorParameters([])
         }
         |> produces
@@ -134,7 +143,8 @@ type Person () =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
         AnonymousModule() {
-            (Record("Person") { Field("Name", Type.FromString("string")) }).members() {
+            (Record("Person") { Field("Name", CommonType.string) })
+                .members() {
                 PropertyMember("this.Name") { EscapeHatch(constExpr) }
             }
 
@@ -153,7 +163,7 @@ type Person =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
         AnonymousModule() {
-            (GenericRecord("Person", [ "'other" ]) { Field("Name", Type.FromString("'other")) })
+            (GenericRecord("Person", [ "'other" ]) { Field("Name", CommonType.mkType("'other")) })
                 .members() {
                 PropertyMember("this.Name") { EscapeHatch(constExpr) }
             }
@@ -192,8 +202,8 @@ type Person =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
-                    Field("a", Type.FromString "string")
-                    Field("b", Type.FromString "'other")
+                    Field("a", CommonType.string)
+                    Field("b", CommonType.mkType "'other")
                 }
 
                 UnionCase("Green")

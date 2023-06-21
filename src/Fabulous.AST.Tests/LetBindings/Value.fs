@@ -98,7 +98,10 @@ let x = 12
 
     [<Test>]
     let ``Simple Let binding with multiline with a multiple attributes`` () =
-        AnonymousModule() { Value("x", "12").attributes([ "EditorBrowsable"; "Obsolete" ]) }
+        AnonymousModule() {
+            Value("x", "12")
+                .attributes([ "EditorBrowsable"; "Obsolete" ])
+        }
         |> produces
             """
             

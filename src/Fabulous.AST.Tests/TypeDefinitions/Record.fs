@@ -14,9 +14,9 @@ module Record =
 
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", Type.FromString "int")
-                Field("Green", Type.FromString "int")
-                Field("Blue", Type.FromString "int")
+                Field("Red", CommonType.int)
+                Field("Green", CommonType.int)
+                Field("Blue", CommonType.int)
             }
         }
         |> produces
@@ -36,15 +36,15 @@ type Colors = { Red: int; Green: int; Blue: int }
                 false,
                 None,
                 Some(SingleTextNode("Green", Range.Zero)),
-                Type.FromString "int",
+                CommonType.int,
                 Range.Zero
             )
 
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", Type.FromString "int")
+                Field("Red", CommonType.int)
                 EscapeHatch(customField)
-                Field("Blue", Type.FromString "int")
+                Field("Blue", CommonType.int)
             }
         }
         |> produces
@@ -65,7 +65,7 @@ type Colors =
         AnonymousModule() {
             Record("Colors") {
                 for colour in [ "Red"; "Green"; "Blue" ] do
-                    Field(colour, Type.FromString "int")
+                    Field(colour, CommonType.int)
             }
         }
         |> produces
@@ -104,7 +104,10 @@ type Colors = { Red: int; Green: int; Blue: int }
             )
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", Type.FromString "string") }).members() { EscapeHatch(memberNode) }
+            (Record("Colors") { Field("X", CommonType.string) })
+                .members() {
+                EscapeHatch(memberNode)
+            }
         }
         |> produces
             """
@@ -121,7 +124,7 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") {
                 for colour in [ "Red"; "Green"; "Blue" ] do
-                    Field(colour, Type.FromString "int")
+                    Field(colour, CommonType.int)
             })
                 .attributes([ "Serializable" ])
         }
@@ -137,9 +140,9 @@ type Colors = { Red: int; Green: int; Blue: int }
     let ``Produces a record field with an attribute`` () =
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", Type.FromString "int").attributes([ "Obsolete" ])
-                Field("Green", Type.FromString "int")
-                Field("Blue", Type.FromString "int")
+                Field("Red", CommonType.int).attributes([ "Obsolete" ])
+                Field("Green", CommonType.int)
+                Field("Blue", CommonType.int)
             }
         }
         |> produces
@@ -157,9 +160,9 @@ type Colors =
     let ``Produces a record with TypeParams`` () =
         AnonymousModule() {
             GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", Type.FromString "string")
-                Field("Blue", Type.FromString "'other")
-                Field("Yellow", Type.FromString "int")
+                Field("Green", CommonType.string)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.int)
             }
         }
 
@@ -177,9 +180,9 @@ type Colors<'other> =
     let ``Produces a  struct record with TypeParams`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", Type.FromString "string")
-                Field("Blue", Type.FromString "'other")
-                Field("Yellow", Type.FromString "int")
+                Field("Green", CommonType.string)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.int)
             })
                 .isStruct()
         }

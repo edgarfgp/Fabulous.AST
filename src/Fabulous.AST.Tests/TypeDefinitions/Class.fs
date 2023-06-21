@@ -73,7 +73,10 @@ type Person =
                 )
             )
 
-        AnonymousModule() { (Class("Person") { EscapeHatch(memberNode) }).implicitConstructorParameters([]) }
+        AnonymousModule() {
+            (Class("Person") { EscapeHatch(memberNode) })
+                .implicitConstructorParameters([])
+        }
         |> produces
             """
 type Person () =
@@ -161,7 +164,7 @@ type Person (name, lastName, age) =
                     None,
                     isOpt,
                     SingleTextNode(fst n, Range.Zero),
-                    Some(Type.FromString($"{snd n}")),
+                    Some(CommonType.mkType($"{snd n}")),
                     Range.Zero
                 ))
 
@@ -180,14 +183,8 @@ type Person (name: string, lastName: string, ?age: int) =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
 
         let param =
-            [ SimplePatNode(
-                  None,
-                  false,
-                  SingleTextNode("name", Range.Zero),
-                  Some(Type.FromString("string")),
-                  Range.Zero
-              )
-              SimplePatNode(None, false, SingleTextNode("age", Range.Zero), Some(Type.FromString("int")), Range.Zero) ]
+            [ SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(CommonType.string), Range.Zero)
+              SimplePatNode(None, false, SingleTextNode("age", Range.Zero), Some(CommonType.int), Range.Zero) ]
 
         AnonymousModule() {
             (Class("Person") { PropertyMember("this.Name") { EscapeHatch(expr) } })
@@ -229,7 +226,7 @@ type Person (name: string, age: int) =
             )
 
         let param =
-            SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(Type.FromString("string")), Range.Zero)
+            SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(CommonType.string), Range.Zero)
 
         AnonymousModule() {
             (Class("Person") { EscapeHatch(memberNode) })
@@ -453,7 +450,10 @@ type MyClass <'a, 'b> =
 
     [<Test>]
     let ``Produces a class end with constructor and  type params`` () =
-        AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ]).implicitConstructorParameters([]) }
+        AnonymousModule() {
+            ClassEnd("MyClass", [ "'a"; "'b" ])
+                .implicitConstructorParameters([])
+        }
         |> produces
             """
 type MyClass <'a, 'b>() =
