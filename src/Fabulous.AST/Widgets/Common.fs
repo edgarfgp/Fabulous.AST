@@ -178,19 +178,3 @@ module Auxiliary =
             |> List.map(fun v -> $"/// {v}")
             |> Array.ofList
             |> fun v -> XmlDocNode(v, Range.Zero)
-
-    type Type with
-
-        /// <summary>Create a type from a string.</summary>
-        /// <exception cref="System.InvalidOperationException">
-        /// Your input should be a single string text identifier.
-        /// Nothing more complex.
-        /// </exception>
-        static member inline FromString(typeName: string) : Type =
-            // TODO: consider validating the input here.
-            // If something complex was passed in, it would be nice to throw an exception.
-            // For now, we just assume that the input is valid.
-            // Bad example would be: "int -> int", use Type.Fun instead.
-            [ IdentifierOrDot.CreateIdent(typeName) ]
-            |> IdentListNode.Create
-            |> Type.LongIdent

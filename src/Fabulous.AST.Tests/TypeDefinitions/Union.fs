@@ -38,8 +38,8 @@ type Colors =
         AnonymousModule() {
             Union("Colors") {
                 UnionParameterizedCase("Red") {
-                    Field("a", Type.FromString "string")
-                    Field("b", Type.FromString "int")
+                    Field("a", CommonType.String)
+                    Field("b", CommonType.Int32)
                 }
 
                 UnionCase("Green")
@@ -106,7 +106,10 @@ type Colors =
 
     [<Test>]
     let ``Produces an union with attribute`` () =
-        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attributes([ "Test" ]) }
+        AnonymousModule() {
+            (Union("Colors") { UnionCase("Red") })
+                .attributes([ "Test" ])
+        }
         |> produces
             """
 
@@ -132,8 +135,8 @@ type Colors = | [<Obsolete; Test>] Red
         AnonymousModule() {
             GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
-                    Field("a", Type.FromString "string")
-                    Field("b", Type.FromString "'other")
+                    Field("a", CommonType.String)
+                    Field("b", CommonType.mkType("'other"))
                 }
 
                 UnionCase("Green")
@@ -158,8 +161,8 @@ type Colors<'other> =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
-                    Field("a", Type.FromString "string")
-                    Field("b", Type.FromString "'other")
+                    Field("a", CommonType.String)
+                    Field("b", CommonType.mkType("'other"))
                 }
 
                 UnionCase("Green")

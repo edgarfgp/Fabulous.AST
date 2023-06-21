@@ -28,7 +28,7 @@ type Person () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         let parameters =
-            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("params"), Some(Type.FromString("string"))) ]
+            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("params"), Some(CommonType.String)) ]
 
         AnonymousModule() {
             (Class("Person") { MethodMember("this.Name", parameters) { EscapeHatch(expr) } })
@@ -46,9 +46,9 @@ type Person () =
 
         let parameters =
             Pattern.CreateTupleParameters(
-                [ Pattern.CreateParameter(Pattern.CreateNamed("name"), Some(Type.FromString("string")))
+                [ Pattern.CreateParameter(Pattern.CreateNamed("name"), Some(CommonType.String))
 
-                  Pattern.CreateParameter(Pattern.CreateNamed("age"), Some(Type.FromString("int"))) ]
+                  Pattern.CreateParameter(Pattern.CreateNamed("age"), Some(CommonType.Int32)) ]
             )
 
         AnonymousModule() {
@@ -70,9 +70,9 @@ type Person () =
 
         let parameters =
             Pattern.CreateCurriedParameters(
-                [ Pattern.CreateParameter(Pattern.CreateNamed("name"), Some(Type.FromString("string")))
+                [ Pattern.CreateParameter(Pattern.CreateNamed("name"), Some(CommonType.String))
 
-                  Pattern.CreateParameter(Pattern.CreateNamed("age"), Some(Type.FromString("int"))) ]
+                  Pattern.CreateParameter(Pattern.CreateNamed("age"), Some(CommonType.Int32)) ]
             )
 
         AnonymousModule() {
@@ -90,7 +90,10 @@ type Person () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode.Create("23")))
 
         AnonymousModule() {
-            (Class("Person") { (MethodMember("this.Name") { EscapeHatch(expr) }).attributes([ "Obsolete" ]) })
+            (Class("Person") {
+                (MethodMember("this.Name") { EscapeHatch(expr) })
+                    .attributes([ "Obsolete" ])
+            })
                 .implicitConstructorParameters([])
         }
         |> produces
@@ -106,7 +109,10 @@ type Person () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         AnonymousModule() {
-            (Class("Person") { (MethodMember("this.Name") { EscapeHatch(expr) }).isInlined() })
+            (Class("Person") {
+                (MethodMember("this.Name") { EscapeHatch(expr) })
+                    .isInlined()
+            })
                 .implicitConstructorParameters([])
         }
         |> produces

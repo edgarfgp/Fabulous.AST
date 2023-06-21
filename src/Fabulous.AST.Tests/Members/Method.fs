@@ -98,7 +98,9 @@ type Person () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         let memberNode =
-            (Method("Name") { EscapeHatch(expr) }).attributes([ "Extension" ]).isStatic()
+            (Method("Name") { EscapeHatch(expr) })
+                .attributes([ "Extension" ])
+                .isStatic()
 
         AnonymousModule() { Class("Person", []) { memberNode } }
         |> produces
@@ -112,7 +114,10 @@ type Person () =
     let ``An inline member`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
-        let memberNode = (Method("Name") { EscapeHatch(expr) }).isInlined().isStatic()
+        let memberNode =
+            (Method("Name") { EscapeHatch(expr) })
+                .isInlined()
+                .isStatic()
 
         AnonymousModule() { Class("Person", []) { memberNode } }
         |> produces

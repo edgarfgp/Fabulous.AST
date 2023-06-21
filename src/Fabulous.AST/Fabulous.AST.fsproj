@@ -34,6 +34,7 @@
         <Compile Include="Core\Attributes.fs" />
         <Compile Include="Tree.fs" />
         <Compile Include="Widgets\Common.fs" />
+        <Compile Include="Widgets\CommonType.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\Call.fs" />
         <Compile Include="Widgets\Unit.fs" />

@@ -12,24 +12,18 @@ module Interfaces =
     [<Test>]
     let ``Produces an interface abstract method`` () =
         let parameters =
-            [ (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("int"), SingleTextNode.rightArrow) ]
+            [ (CommonType.Int32, SingleTextNode.rightArrow)
+              (CommonType.Int32, SingleTextNode.rightArrow) ]
 
         let abstractNode =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
-            )
+            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters, CommonType.Int32, Range.Zero)))
 
         let parameters =
-            [ (Type.FromString("int"), SingleTextNode.star)
-              (Type.FromString("int"), SingleTextNode.rightArrow) ]
+            [ (CommonType.Int32, SingleTextNode.star)
+              (CommonType.Int32, SingleTextNode.rightArrow) ]
 
         let abstractNode1 =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
-            )
+            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters, CommonType.Int32, Range.Zero)))
 
         AnonymousModule() {
             Interface("INumericFSharp") { EscapeHatch(abstractNode) }
@@ -49,28 +43,21 @@ type INumericDotNet =
     [<Test>]
     let ``Produces interfaces abstract methods with named parameters`` () =
         let parameters =
-            [ (Type.SignatureParameter(TypeSignatureParameterNode.Create("a", Type.FromString("int"))),
+            [ (Type.SignatureParameter(TypeSignatureParameterNode.Create("a", CommonType.Int32)),
                SingleTextNode.rightArrow)
-              (Type.SignatureParameter(TypeSignatureParameterNode.Create("b", Type.FromString("int"))),
+              (Type.SignatureParameter(TypeSignatureParameterNode.Create("b", CommonType.Int32)),
                SingleTextNode.rightArrow) ]
 
         let abstractNode =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
-            )
+            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters, CommonType.Int32, Range.Zero)))
 
         let parameters1 =
-            [ (Type.SignatureParameter(TypeSignatureParameterNode.Create("a", Type.FromString("int"))),
-               SingleTextNode.star)
-              (Type.SignatureParameter(TypeSignatureParameterNode.Create("b", Type.FromString("int"))),
+            [ (Type.SignatureParameter(TypeSignatureParameterNode.Create("a", CommonType.Int32)), SingleTextNode.star)
+              (Type.SignatureParameter(TypeSignatureParameterNode.Create("b", CommonType.Int32)),
                SingleTextNode.rightArrow) ]
 
         let abstractNode1 =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters1, Type.FromString("int"), Range.Zero))
-            )
+            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters1, CommonType.Int32, Range.Zero)))
 
         AnonymousModule() {
             Interface("INumericFSharp") { EscapeHatch(abstractNode) }
@@ -89,8 +76,7 @@ type INumericDotNet =
 
     [<Test>]
     let ``Produces an interface abstract property`` () =
-        let abstractProperty =
-            MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
+        let abstractProperty = MemberDefnAbstractSlotNode.Property("Pi", CommonType.Float)
 
         AnonymousModule() { Interface("MyInterface") { EscapeHatch(abstractProperty) } }
         |> produces
@@ -102,8 +88,7 @@ type MyInterface =
 
     [<Test>]
     let ``Produces an interface with attributes and abstract property`` () =
-        let abstractProperty =
-            MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
+        let abstractProperty = MemberDefnAbstractSlotNode.Property("Pi", CommonType.Float)
 
         AnonymousModule() {
             (Interface("MyInterface") { EscapeHatch(abstractProperty) })
@@ -120,7 +105,7 @@ type MyInterface =
     [<Test>]
     let ``Produces an interface abstract with get`` () =
         let abstractGetSetProperty =
-            MemberDefnAbstractSlotNode.Get("Area", Type.FromString("float"))
+            MemberDefnAbstractSlotNode.Get("Area", CommonType.Float)
 
         AnonymousModule() { Interface("MyInterface") { EscapeHatch(abstractGetSetProperty) } }
         |> produces
@@ -133,7 +118,7 @@ type MyInterface =
     [<Test>]
     let ``Produces an interface abstract with set`` () =
         let abstractGetSetProperty =
-            MemberDefnAbstractSlotNode.Set("Area", Type.FromString("float"))
+            MemberDefnAbstractSlotNode.Set("Area", CommonType.Float)
 
         AnonymousModule() { Interface("MyInterface") { EscapeHatch(abstractGetSetProperty) } }
         |> produces
@@ -146,7 +131,7 @@ type MyInterface =
     [<Test>]
     let ``Produces an interface abstract with get set`` () =
         let abstractGetSetProperty =
-            MemberDefnAbstractSlotNode.GetSet("Area", Type.FromString("float"))
+            MemberDefnAbstractSlotNode.GetSet("Area", CommonType.Float)
 
         AnonymousModule() { Interface("MyInterface") { EscapeHatch(abstractGetSetProperty) } }
         |> produces
@@ -159,20 +144,16 @@ type MyInterface =
     [<Test>]
     let ``Produces an interface abstract methods, properties and get set`` () =
         let parameters =
-            [ (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("string"), SingleTextNode.rightArrow) ]
+            [ (CommonType.Int32, SingleTextNode.rightArrow)
+              (CommonType.Int32, SingleTextNode.rightArrow)
+              (CommonType.String, SingleTextNode.rightArrow) ]
 
         let method =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
-            )
+            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters, CommonType.Int32, Range.Zero)))
 
-        let property = MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
+        let property = MemberDefnAbstractSlotNode.Property("Pi", CommonType.Float)
 
-        let getSetProperty =
-            MemberDefnAbstractSlotNode.GetSet("Area", Type.FromString("float"))
+        let getSetProperty = MemberDefnAbstractSlotNode.GetSet("Area", CommonType.Float)
 
         AnonymousModule() {
             Interface("MyInterface") {
@@ -193,20 +174,16 @@ type MyInterface =
     [<Test>]
     let ``Produces a generic interface with TypeParams`` () =
         let parameters =
-            [ (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("string"), SingleTextNode.rightArrow) ]
+            [ (CommonType.Int32, SingleTextNode.rightArrow)
+              (CommonType.Int32, SingleTextNode.rightArrow)
+              (CommonType.String, SingleTextNode.rightArrow) ]
 
         let method =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
-            )
+            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters, CommonType.Int32, Range.Zero)))
 
-        let property = MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
+        let property = MemberDefnAbstractSlotNode.Property("Pi", CommonType.Float)
 
-        let getSetProperty =
-            MemberDefnAbstractSlotNode.GetSet("Area", Type.FromString("float"))
+        let getSetProperty = MemberDefnAbstractSlotNode.GetSet("Area", CommonType.Float)
 
         AnonymousModule() {
             GenericInterface("MyInterface", [ "'other"; "'another" ]) {
@@ -228,20 +205,16 @@ type MyInterface <'other, 'another> =
     [<Test>]
     let ``Produces a genetic interface with attributes and TypeParams`` () =
         let parameters =
-            [ (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("int"), SingleTextNode.rightArrow)
-              (Type.FromString("string"), SingleTextNode.rightArrow) ]
+            [ (CommonType.Int32, SingleTextNode.rightArrow)
+              (CommonType.Int32, SingleTextNode.rightArrow)
+              (CommonType.String, SingleTextNode.rightArrow) ]
 
         let method =
-            MemberDefnAbstractSlotNode.Method(
-                "Add",
-                Type.Funs(TypeFunsNode(parameters, Type.FromString("int"), Range.Zero))
-            )
+            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters, CommonType.Int32, Range.Zero)))
 
-        let property = MemberDefnAbstractSlotNode.Property("Pi", Type.FromString("float"))
+        let property = MemberDefnAbstractSlotNode.Property("Pi", CommonType.Float)
 
-        let getSetProperty =
-            MemberDefnAbstractSlotNode.GetSet("Area", Type.FromString("float"))
+        let getSetProperty = MemberDefnAbstractSlotNode.GetSet("Area", CommonType.Float)
 
         AnonymousModule() {
             (GenericInterface("MyInterface", [ "'other"; "'another" ]) {
