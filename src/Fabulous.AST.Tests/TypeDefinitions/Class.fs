@@ -183,8 +183,8 @@ type Person (name: string, lastName: string, ?age: int) =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
 
         let param =
-            [ SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(CommonType.string), Range.Zero)
-              SimplePatNode(None, false, SingleTextNode("age", Range.Zero), Some(CommonType.int), Range.Zero) ]
+            [ SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(CommonType.String), Range.Zero)
+              SimplePatNode(None, false, SingleTextNode("age", Range.Zero), Some(CommonType.Int32), Range.Zero) ]
 
         AnonymousModule() {
             (Class("Person") { PropertyMember("this.Name") { EscapeHatch(expr) } })
@@ -226,7 +226,7 @@ type Person (name: string, age: int) =
             )
 
         let param =
-            SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(CommonType.string), Range.Zero)
+            SimplePatNode(None, false, SingleTextNode("name", Range.Zero), Some(CommonType.String), Range.Zero)
 
         AnonymousModule() {
             (Class("Person") { EscapeHatch(memberNode) })

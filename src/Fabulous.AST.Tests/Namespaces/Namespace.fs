@@ -138,7 +138,7 @@ module Fabulous.AST =
             records
             |> List.map(fun { typename = name; props = props } ->
                 if Map.isEmpty props then
-                    Abbrev(name, CommonType.obj)
+                    Abbrev(name, CommonType.Obj)
                     |> Tree.compile
                     |> TypeDefn.Abbrev
                     |> ModuleDecl.TypeDefn

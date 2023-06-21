@@ -14,9 +14,9 @@ module Record =
 
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", CommonType.int)
-                Field("Green", CommonType.int)
-                Field("Blue", CommonType.int)
+                Field("Red", CommonType.Int32)
+                Field("Green", CommonType.Int32)
+                Field("Blue", CommonType.Int32)
             }
         }
         |> produces
@@ -36,15 +36,15 @@ type Colors = { Red: int; Green: int; Blue: int }
                 false,
                 None,
                 Some(SingleTextNode("Green", Range.Zero)),
-                CommonType.int,
+                CommonType.Int32,
                 Range.Zero
             )
 
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", CommonType.int)
+                Field("Red", CommonType.Int32)
                 EscapeHatch(customField)
-                Field("Blue", CommonType.int)
+                Field("Blue", CommonType.Int32)
             }
         }
         |> produces
@@ -65,7 +65,7 @@ type Colors =
         AnonymousModule() {
             Record("Colors") {
                 for colour in [ "Red"; "Green"; "Blue" ] do
-                    Field(colour, CommonType.int)
+                    Field(colour, CommonType.Int32)
             }
         }
         |> produces
@@ -104,7 +104,7 @@ type Colors = { Red: int; Green: int; Blue: int }
             )
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.string) })
+            (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
                 EscapeHatch(memberNode)
             }
@@ -124,7 +124,7 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") {
                 for colour in [ "Red"; "Green"; "Blue" ] do
-                    Field(colour, CommonType.int)
+                    Field(colour, CommonType.Int32)
             })
                 .attributes([ "Serializable" ])
         }
@@ -140,9 +140,9 @@ type Colors = { Red: int; Green: int; Blue: int }
     let ``Produces a record field with an attribute`` () =
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", CommonType.int).attributes([ "Obsolete" ])
-                Field("Green", CommonType.int)
-                Field("Blue", CommonType.int)
+                Field("Red", CommonType.Int32).attributes([ "Obsolete" ])
+                Field("Green", CommonType.Int32)
+                Field("Blue", CommonType.Int32)
             }
         }
         |> produces
@@ -160,9 +160,9 @@ type Colors =
     let ``Produces a record with TypeParams`` () =
         AnonymousModule() {
             GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.string)
+                Field("Green", CommonType.String)
                 Field("Blue", CommonType.mkType("'other"))
-                Field("Yellow", CommonType.int)
+                Field("Yellow", CommonType.Int32)
             }
         }
 
@@ -180,9 +180,9 @@ type Colors<'other> =
     let ``Produces a  struct record with TypeParams`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.string)
+                Field("Green", CommonType.String)
                 Field("Blue", CommonType.mkType("'other"))
-                Field("Yellow", CommonType.int)
+                Field("Yellow", CommonType.Int32)
             })
                 .isStruct()
         }

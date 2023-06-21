@@ -38,8 +38,8 @@ type Colors =
         AnonymousModule() {
             Union("Colors") {
                 UnionParameterizedCase("Red") {
-                    Field("a", CommonType.string)
-                    Field("b", CommonType.int)
+                    Field("a", CommonType.String)
+                    Field("b", CommonType.Int32)
                 }
 
                 UnionCase("Green")
@@ -135,7 +135,7 @@ type Colors = | [<Obsolete; Test>] Red
         AnonymousModule() {
             GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
-                    Field("a", CommonType.string)
+                    Field("a", CommonType.String)
                     Field("b", CommonType.mkType("'other"))
                 }
 
@@ -161,7 +161,7 @@ type Colors<'other> =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
-                    Field("a", CommonType.string)
+                    Field("a", CommonType.String)
                     Field("b", CommonType.mkType("'other"))
                 }
 

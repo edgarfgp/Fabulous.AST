@@ -94,7 +94,7 @@ type Person =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode.Create("23")))
 
         AnonymousModule() {
-            (Class("Person") { PropertyMember("this.Name", CommonType.int) { EscapeHatch(expr) } })
+            (Class("Person") { PropertyMember("this.Name", CommonType.Int32) { EscapeHatch(expr) } })
                 .implicitConstructorParameters([])
         }
         |> produces
@@ -143,7 +143,7 @@ type Person () =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
         AnonymousModule() {
-            (Record("Person") { Field("Name", CommonType.string) })
+            (Record("Person") { Field("Name", CommonType.String) })
                 .members() {
                 PropertyMember("this.Name") { EscapeHatch(constExpr) }
             }
@@ -202,7 +202,7 @@ type Person =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
-                    Field("a", CommonType.string)
+                    Field("a", CommonType.String)
                     Field("b", CommonType.mkType "'other")
                 }
 
