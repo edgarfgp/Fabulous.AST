@@ -13,11 +13,12 @@ module Interfaces =
     let ``Produces an interface abstract method`` () =
         AnonymousModule() {
             Interface("INumericFSharp") {
-                AbstractMethodMember("Add", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
+                AbstractCurriedMethodMember("Add", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
             }
 
-        // TODO int * int -> int
-        //Interface("INumericDotNet") { EscapeHatch(abstractNode1) }
+            Interface("INumericDotNet") {
+                AbstractTupledMethodMember("Add", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
+            }
         }
         |> produces
             """
@@ -31,27 +32,14 @@ type INumericDotNet =
 
     [<Test>]
     let ``Produces interfaces abstract methods with named parameters`` () =
-        let parameters =
-            [ (Type.SignatureParameter(TypeSignatureParameterNode.Create("a", CommonType.Int32)),
-               SingleTextNode.rightArrow)
-              (Type.SignatureParameter(TypeSignatureParameterNode.Create("b", CommonType.Int32)),
-               SingleTextNode.rightArrow) ]
+        let parameters = [ ("a", CommonType.Int32); ("b", CommonType.Int32) ]
 
-        let abstractNode =
-            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters, CommonType.Int32, Range.Zero)))
-
-        let parameters1 =
-            [ (Type.SignatureParameter(TypeSignatureParameterNode.Create("a", CommonType.Int32)), SingleTextNode.star)
-              (Type.SignatureParameter(TypeSignatureParameterNode.Create("b", CommonType.Int32)),
-               SingleTextNode.rightArrow) ]
-
-        let abstractNode1 =
-            MemberDefnAbstractSlotNode.Method("Add", Type.Funs(TypeFunsNode(parameters1, CommonType.Int32, Range.Zero)))
+        let parameters1 = [ ("a", CommonType.Int32); ("b", CommonType.Int32) ]
 
         AnonymousModule() {
-            Interface("INumericFSharp") { EscapeHatch(abstractNode) }
+            Interface("INumericFSharp") { AbstractCurriedMethodMember("Add", parameters, CommonType.Int32) }
 
-            Interface("INumericDotNet") { EscapeHatch(abstractNode1) }
+            Interface("INumericDotNet") { AbstractTupledMethodMember("Add", parameters1, CommonType.Int32) }
         }
         |> produces
             """
@@ -122,7 +110,8 @@ type MyInterface =
     let ``Produces an interface abstract methods, properties and get set`` () =
         AnonymousModule() {
             Interface("MyInterface") {
-                AbstractMethodMember("Add", [ CommonType.Int32; CommonType.Int32; CommonType.String ], CommonType.Int32)
+                let parameters = [ CommonType.Int32; CommonType.Int32; CommonType.String ]
+                AbstractCurriedMethodMember("Add", parameters, CommonType.Int32)
                 AbstractPropertyMember("Pi", CommonType.Float)
                 AbstractGetSetMember("Area", CommonType.Float)
             }
@@ -140,7 +129,8 @@ type MyInterface =
     let ``Produces a generic interface with TypeParams`` () =
         AnonymousModule() {
             GenericInterface("MyInterface", [ "'other"; "'another" ]) {
-                AbstractMethodMember("Add", [ CommonType.Int32; CommonType.Int32; CommonType.String ], CommonType.Int32)
+                let parameters = [ CommonType.Int32; CommonType.Int32; CommonType.String ]
+                AbstractCurriedMethodMember("Add", parameters, CommonType.Int32)
                 AbstractPropertyMember("Pi", CommonType.Float)
                 AbstractGetSetMember("Area", CommonType.Float)
             }
@@ -159,7 +149,8 @@ type MyInterface <'other, 'another> =
     let ``Produces a genetic interface with attributes and TypeParams`` () =
         AnonymousModule() {
             (GenericInterface("MyInterface", [ "'other"; "'another" ]) {
-                AbstractMethodMember("Add", [ CommonType.Int32; CommonType.Int32; CommonType.String ], CommonType.Int32)
+                let parameters = [ CommonType.Int32; CommonType.Int32; CommonType.String ]
+                AbstractCurriedMethodMember("Add", parameters, CommonType.Int32)
                 AbstractPropertyMember("Pi", CommonType.Float)
                 AbstractGetSetMember("Area", CommonType.Float)
             })
