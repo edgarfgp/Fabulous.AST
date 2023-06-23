@@ -2,7 +2,7 @@ namespace Fabulous.AST
 
 open Fantomas.Core.SyntaxOak
 
-[<AutoOpen>]
+[<RequireQualifiedAccess>]
 module CommonType =
     let mkType (typ: string) : Type =
         [ IdentifierOrDot.CreateIdent(typ) ] |> IdentListNode.Create |> Type.LongIdent

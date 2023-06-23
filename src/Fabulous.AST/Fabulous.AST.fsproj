@@ -55,6 +55,8 @@
         <Compile Include="Widgets\Patterns\Pattern.fs" />
         <Compile Include="Widgets\Members\PropertyMember.fs" />
         <Compile Include="Widgets\Members\MethodMember.fs" />
+        <Compile Include="Widgets\Members\InterfaceMember.fs" />
+        <Compile Include="Widgets\Members\AbstractMember.fs" />
         <Compile Include="Widgets\TypeDefinitions\Field.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionParameterizedCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />

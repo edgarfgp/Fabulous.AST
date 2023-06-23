@@ -22,6 +22,8 @@
         <Compile Include="LetBindings\Function.fs" />
         <Compile Include="Members\PropertyMember.fs" />
         <Compile Include="Members\MethodMember.fs" />
+        <Compile Include="Members\InterfaceMember.fs" />
+        <Compile Include="Members\AbstractMember.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
         <Compile Include="TypeDefinitions\Abbrev.fs" />
         <Compile Include="TypeDefinitions\Enum.fs" />
