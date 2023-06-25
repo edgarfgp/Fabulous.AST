@@ -16,8 +16,6 @@ type InterfaceMemberNode(``type``: Type, members: MemberDefn list) =
             Range.Zero
         )
 
-
-
 module InterfaceMember =
     let Type = Attributes.defineScalar<Type> "Type"
 

@@ -76,37 +76,14 @@ type Colors = { Red: int; Green: int; Blue: int }
 """
 
     [<Test>]
-    let ``Produces a record with member`` () =
-        let memberNode =
-            MemberDefn.Member(
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("member", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(
-                        IdentListNode(
-                            [ IdentifierOrDot.Ident(SingleTextNode("this", Range.Zero))
-                              IdentifierOrDot.Ident(SingleTextNode(".", Range.Zero))
-                              IdentifierOrDot.Ident(SingleTextNode("A", Range.Zero)) ],
-                            Range.Zero
-                        )
-                    ),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero))),
-                    Range.Zero
-                )
-            )
+    let ``Produces a record with property member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                EscapeHatch(memberNode)
+                PropertyMember("this.A") { EscapeHatch(expr) }
             }
         }
         |> produces
@@ -117,6 +94,109 @@ type Colors =
 
     member this.A = ""
 
+"""
+
+    [<Test>]
+    let ``Produces a record with static property member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                StaticPropertyMember("A") { EscapeHatch(expr) }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    static member A = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with method member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        let parameters =
+            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                MethodMember("this.A", parameters) { EscapeHatch(expr) }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    member this.A(p: string) = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with static method member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        let parameters =
+            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                StaticMethodMember("A", parameters) { EscapeHatch(expr) }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    static member A(p: string) = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with interface member`` () =
+
+        AnonymousModule() {
+            Interface("IMyInterface") {
+                let parameters = [ CommonType.Unit ]
+                AbstractCurriedMethodMember("GetValue", parameters, CommonType.String)
+            }
+
+            (Record("MyRecord") {
+                Field("MyField1", CommonType.Int32)
+                Field("MyField2", CommonType.String)
+            })
+                .members() {
+                let expr =
+                    Expr.Constant(Constant.FromText(SingleTextNode("x.MyField2", Range.Zero)))
+
+                InterfaceMember(CommonType.mkType("IMyInterface")) { MethodMember("x.GetValue") { EscapeHatch(expr) } }
+            }
+        }
+        |> produces
+            """
+
+type IMyInterface =
+    abstract member GetValue: unit -> string
+
+type MyRecord =
+    { MyField1: int
+      MyField2: string }
+
+    interface IMyInterface with
+        member x.GetValue() = x.MyField2
 """
 
     [<Test>]

@@ -26,3 +26,4 @@ module CommonType =
     let Char = mkType "char"
     let String = mkType "string"
     let Obj = mkType "obj"
+    let Unit = mkType "unit"

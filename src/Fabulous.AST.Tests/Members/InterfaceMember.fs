@@ -14,9 +14,7 @@ module InterfaceMembers =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"23\"", Range.Zero)))
 
         AnonymousModule() {
-            Interface("Meh") {
-                AbstractPropertyMember("Name", CommonType.String)
-            }
+            Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
 
             (Class("Person") {
                 InterfaceMember(CommonType.mkType("Meh")) { PropertyMember("this.Name") { EscapeHatch(expr) } }

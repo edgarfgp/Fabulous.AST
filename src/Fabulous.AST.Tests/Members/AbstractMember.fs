@@ -12,10 +12,9 @@ module AbstractMembers =
     [<Test>]
     let ``Produces a classes with a interface member`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"23\"", Range.Zero)))
-        let property = MemberDefnAbstractSlotNode.Property("Name", CommonType.String)
 
         AnonymousModule() {
-            Interface("Meh") { EscapeHatch(property) }
+            Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
 
             (Class("Person") {
                 InterfaceMember(CommonType.mkType("Meh")) { PropertyMember("this.Name") { EscapeHatch(expr) } }

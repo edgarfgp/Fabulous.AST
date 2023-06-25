@@ -128,9 +128,18 @@ type GenericInterfaceBuildersYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<GeneticInterfaceTypeDefnRegularNode, MemberDefnAbstractSlotNode>,
+            _: CollectionBuilder<GeneticInterfaceTypeDefnRegularNode, MemberDefn>,
             x: MemberDefnAbstractSlotNode
         ) : CollectionContent =
         let x = MemberDefn.AbstractSlot(x)
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<GeneticInterfaceTypeDefnRegularNode, MemberDefn>,
+            x: WidgetBuilder<MemberDefnAbstractSlotNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericInterfaceBuildersYieldExtensions.Yield(this, node)
