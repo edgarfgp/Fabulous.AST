@@ -257,7 +257,155 @@ type Colors<'other> =
 """
 
     [<Test>]
-    let ``Produces a  struct record with TypeParams`` () =
+    let ``Produces a record with TypeParams and property member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+                PropertyMember("this.A") { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    member this.A = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with TypeParams and static property member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+                StaticPropertyMember("A") { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    static member A = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with TypeParams and method member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+                let parameters =
+                    [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+                MethodMember("this.A", parameters) { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    member this.A(p: string) = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with TypeParams and static method member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+                let parameters =
+                    [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+                StaticMethodMember("A", parameters) { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    static member A(p: string) = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with TypeParams and interface member`` () =
+        AnonymousModule() {
+            Interface("IMyInterface") {
+                let parameters = [ CommonType.Unit ]
+                AbstractCurriedMethodMember("GetValue", parameters, CommonType.String)
+            }
+
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr =
+                    Expr.Constant(Constant.FromText(SingleTextNode("x.MyField2", Range.Zero)))
+
+                InterfaceMember(CommonType.mkType("IMyInterface")) { MethodMember("x.GetValue") { EscapeHatch(expr) } }
+            }
+        }
+
+        |> produces
+            """
+type IMyInterface =
+    abstract member GetValue: unit -> string
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    interface IMyInterface with
+        member x.GetValue() = x.MyField2
+
+"""
+
+    [<Test>]
+    let ``Produces a struct record with TypeParams`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)

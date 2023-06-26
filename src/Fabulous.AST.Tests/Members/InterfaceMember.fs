@@ -10,7 +10,7 @@ open NUnit.Framework
 module InterfaceMembers =
 
     [<Test>]
-    let ``Produces a classes with a interface member`` () =
+    let ``Produces a class with a interface member`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"23\"", Range.Zero)))
 
         AnonymousModule() {
