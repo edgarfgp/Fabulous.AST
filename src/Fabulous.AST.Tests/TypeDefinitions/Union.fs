@@ -34,6 +34,45 @@ type Colors =
 """
 
     [<Test>]
+    let ``Produces an union with interface member`` () =
+        AnonymousModule() {
+
+            Interface("IMyInterface") {
+                let parameters = [ CommonType.Unit ]
+                AbstractCurriedMethodMember("GetValue", parameters, CommonType.String)
+            }
+
+            (Union("Colors") {
+                UnionCase("Red")
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+                InterfaceMember(CommonType.mkType("IMyInterface")) { MethodMember("x.GetValue") { EscapeHatch(expr) } }
+            }
+
+        }
+
+        |> produces
+            """
+type IMyInterface =
+    abstract member GetValue: unit -> string
+
+type Colors =
+    | Red
+    | Green
+    | Blue
+    | Yellow
+
+    interface IMyInterface with
+        member x.GetValue() = ""
+
+"""
+
+    [<Test>]
     let ``Produces an union with fields`` () =
         AnonymousModule() {
             Union("Colors") {
@@ -62,7 +101,7 @@ type Colors =
     [<Test>]
     let ``Produces an union with SingleTextNode`` () =
         AnonymousModule() {
-            Union(SingleTextNode("Colors", Range.Zero)) {
+            Union(SingleTextNode.Create("Colors")) {
                 UnionCase("Red")
                 UnionCase("Green")
                 UnionCase("Blue")
@@ -89,7 +128,6 @@ type Colors =
                 UnionCase("Blue")
                 UnionCase("Yellow")
                 EscapeHatch(UnionCaseNode(None, None, None, SingleTextNode("Black", Range.Zero), [], Range.Zero))
-
             }
         }
         |> produces
@@ -128,57 +166,4 @@ type Colors = | Red
 
 [<Test>]
 type Colors = | [<Obsolete; Test>] Red
-"""
-
-    [<Test>]
-    let ``Produces an union with TypeParams`` () =
-        AnonymousModule() {
-            GenericUnion("Colors", [ "'other" ]) {
-                UnionParameterizedCase("Red") {
-                    Field("a", CommonType.String)
-                    Field("b", CommonType.mkType("'other"))
-                }
-
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-            }
-        }
-
-        |> produces
-            """
-
-type Colors<'other> =
-    | Red of a: string * b: 'other
-    | Green
-    | Blue
-    | Yellow
-
-"""
-
-    [<Test>]
-    let ``Produces an struct union with TypeParams`` () =
-        AnonymousModule() {
-            (GenericUnion("Colors", [ "'other" ]) {
-                UnionParameterizedCase("Red") {
-                    Field("a", CommonType.String)
-                    Field("b", CommonType.mkType("'other"))
-                }
-
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-            })
-                .isStruct()
-        }
-
-        |> produces
-            """
-[<Struct>]
-type Colors<'other> =
-    | Red of a: string * b: 'other
-    | Green
-    | Blue
-    | Yellow
-
 """

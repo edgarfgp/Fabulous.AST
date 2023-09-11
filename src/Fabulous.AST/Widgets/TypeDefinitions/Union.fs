@@ -166,3 +166,39 @@ type UnionParameterizedCaseYieldExtensions =
         let node = Tree.compile x
         let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            x: MethodMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            x: WidgetBuilder<MethodMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        UnionParameterizedCaseYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            x: InterfaceMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            x: WidgetBuilder<InterfaceMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        UnionParameterizedCaseYieldExtensions.Yield(this, node)
