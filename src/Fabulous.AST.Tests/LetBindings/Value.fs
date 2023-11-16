@@ -164,10 +164,7 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        AnonymousModule() {
-            Value("x", "12")
-                .isMutable()
-        }
+        AnonymousModule() { Value("x", "12").isMutable() }
         |> produces
             """
         

@@ -15,9 +15,7 @@ module ClassEnd =
         AnonymousModule() { ClassEnd("MyClass") }
         |> produces
             """
-type MyClass =
-    class
-    end
+type MyClass = class end
             """
 
     [<Test>]
@@ -25,9 +23,7 @@ type MyClass =
         AnonymousModule() { ClassEnd("MyClass").implicitConstructorParameters([]) }
         |> produces
             """
-type MyClass () =
-    class
-    end
+type MyClass () = class end
             """
 
     [<Test>]
@@ -40,9 +36,7 @@ type MyClass () =
         |> produces
             """
 [<Sealed; AbstractClass>]
-type MyClass () =
-    class
-    end
+type MyClass () = class end
             """
 
     [<Test>]
@@ -50,9 +44,7 @@ type MyClass () =
         AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ]) }
         |> produces
             """
-type MyClass <'a, 'b> =
-    class
-    end
+type MyClass <'a, 'b> = class end
             """
 
     [<Test>]
@@ -63,7 +55,5 @@ type MyClass <'a, 'b> =
         }
         |> produces
             """
-type MyClass <'a, 'b>() =
-    class
-    end
+type MyClass <'a, 'b>() = class end
             """

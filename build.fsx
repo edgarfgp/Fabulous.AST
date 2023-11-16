@@ -1,4 +1,4 @@
-#r "nuget: Fun.Build, 0.3.8"
+#r "nuget: Fun.Build, 1.0.3"
 
 open System
 open System.IO
@@ -34,7 +34,7 @@ pipeline "ci" {
     }
 
     stage "docs" {
-        run $"dotnet publish src/Fabulous.AST -c {config}"
+        run $"dotnet publish src/Fabulous.AST -f netstandard2.1 -c {config}"
         run $"dotnet fsdocs build --properties Configuration={config} --eval --strict"
     }
 
@@ -45,7 +45,7 @@ pipeline "ci" {
 
 pipeline "docs" {
     description "Run the documentation website"
-    stage "build" { run "dotnet publish src/Fabulous.AST -c Release" }
+    stage "build" { run "dotnet publish src/Fabulous.AST -f netstandard2.1 -c Release" }
     stage "watch" { run "dotnet fsdocs watch --eval --clean" }
     runIfOnlySpecified true
 }

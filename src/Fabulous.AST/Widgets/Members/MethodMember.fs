@@ -118,7 +118,8 @@ module MethodMember =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, Range.Zero) ],
+                              // FIXME - Update
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
                         Range.Zero
