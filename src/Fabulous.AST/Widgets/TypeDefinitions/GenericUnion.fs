@@ -77,7 +77,8 @@ module GenericUnion =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, Range.Zero) ],
+                              // FIXME - Update
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
                         Range.Zero
@@ -190,3 +191,40 @@ type GenericUnionYieldExtensions =
             x: WidgetBuilder<UnionParameterizedCaseNode>
         ) : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }
+
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: MethodMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: AttributeCollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: WidgetBuilder<MethodMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericUnionYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: InterfaceMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: AttributeCollectionBuilder<GenericUnionTypeDefnUnionNode, MemberDefn>,
+            x: WidgetBuilder<InterfaceMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericUnionYieldExtensions.Yield(this, node)

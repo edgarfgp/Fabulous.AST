@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
         <IsPackable>true</IsPackable>
     </PropertyGroup>
     <!-- NuGet Package -->
@@ -55,6 +55,8 @@
         <Compile Include="Widgets\Patterns\Pattern.fs" />
         <Compile Include="Widgets\Members\PropertyMember.fs" />
         <Compile Include="Widgets\Members\MethodMember.fs" />
+        <Compile Include="Widgets\Members\InterfaceMember.fs" />
+        <Compile Include="Widgets\Members\AbstractMember.fs" />
         <Compile Include="Widgets\TypeDefinitions\Field.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionParameterizedCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />

@@ -4,9 +4,104 @@ open Fabulous.AST
 open Fabulous.AST.Tests
 open Fantomas.Core.SyntaxOak
 open type Ast
+open Fantomas.FCS.Text
 open NUnit.Framework
 
 module PropertyMember =
+    [<Test>]
+    let ``Produces a record with property member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                PropertyMember("this.A") { EscapeHatch(expr) }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    member this.A = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with static property member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                StaticPropertyMember("A") { EscapeHatch(expr) }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    static member A = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with TypeParams and property member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+                PropertyMember("this.A") { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    member this.A = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with TypeParams and static property member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+                StaticPropertyMember("A") { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    static member A = ""
+
+"""
+
 
     [<Test>]
     let ``Produces a class with a static and not static member property `` () =
@@ -196,6 +291,25 @@ type Person =
 """
 
     [<Test>]
+    let ``Produces a union with a static member property `` () =
+        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
+
+        AnonymousModule() {
+            (Union("Person") { UnionCase("Name") }).members() {
+                StaticPropertyMember("Name") { EscapeHatch(constExpr) }
+            }
+
+        }
+        |> produces
+            """
+type Person =
+    | Name
+
+    static member Name = "name"
+
+"""
+
+    [<Test>]
     let ``Produces a generic union with a member property `` () =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
@@ -224,5 +338,37 @@ type Colors<'other> =
     | Yellow
 
     member this.Name = "name"
+
+"""
+
+    [<Test>]
+    let ``Produces a generic union with a static member property `` () =
+        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
+
+        AnonymousModule() {
+            (GenericUnion("Colors", [ "'other" ]) {
+                UnionParameterizedCase("Red") {
+                    Field("a", CommonType.String)
+                    Field("b", CommonType.mkType "'other")
+                }
+
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            })
+                .members() {
+                StaticPropertyMember("Name") { EscapeHatch(constExpr) }
+            }
+
+        }
+        |> produces
+            """
+type Colors<'other> =
+    | Red of a: string * b: 'other
+    | Green
+    | Blue
+    | Yellow
+
+    static member Name = "name"
 
 """

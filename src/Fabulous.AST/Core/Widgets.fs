@@ -22,6 +22,4 @@ module Widgets =
 
 
 [<AbstractClass; Sealed>]
-type Ast =
-    class
-    end
+type Ast = class end

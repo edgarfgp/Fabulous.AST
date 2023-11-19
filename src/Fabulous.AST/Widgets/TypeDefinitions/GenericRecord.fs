@@ -76,7 +76,8 @@ module GenericRecord =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, Range.Zero) ],
+                              // FIXME - Update
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
                         Range.Zero
@@ -190,3 +191,39 @@ type GenericRecordYieldExtensions =
         let node = Tree.compile x
         let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<GenericRecordTypeDefnRecordNode, MemberDefn>,
+            x: MethodMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: AttributeCollectionBuilder<GenericRecordTypeDefnRecordNode, MemberDefn>,
+            x: WidgetBuilder<MethodMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericRecordYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<GenericRecordTypeDefnRecordNode, MemberDefn>,
+            x: InterfaceMemberNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: AttributeCollectionBuilder<GenericRecordTypeDefnRecordNode, MemberDefn>,
+            x: WidgetBuilder<InterfaceMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        GenericRecordYieldExtensions.Yield(this, node)

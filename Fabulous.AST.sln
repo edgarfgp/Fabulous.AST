@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution items", "_Solutio
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 		CHANGELOG.md = CHANGELOG.md
+		build.fsx = build.fsx
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\pull_request.yml = .github\workflows\pull_request.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Global

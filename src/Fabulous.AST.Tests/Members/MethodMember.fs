@@ -10,6 +10,115 @@ open NUnit.Framework
 module MethodMembers =
 
     [<Test>]
+    let ``Produces a record with TypeParams and method member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+                let parameters =
+                    [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+                MethodMember("this.A", parameters) { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    member this.A(p: string) = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with TypeParams and static method member`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkType("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .members() {
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+                let parameters =
+                    [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+                StaticMethodMember("A", parameters) { EscapeHatch(expr) }
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+    static member A(p: string) = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with method member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        let parameters =
+            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                MethodMember("this.A", parameters) { EscapeHatch(expr) }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    member this.A(p: string) = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with static method member`` () =
+
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        let parameters =
+            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                StaticMethodMember("A", parameters) { EscapeHatch(expr) }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    static member A(p: string) = ""
+
+"""
+
+
+    [<Test>]
     let ``Produces a classes with a method member`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
@@ -137,3 +246,52 @@ type Person () =
 type Person () =
     member this.Name<'other>() = 23
             """
+
+    [<Test>]
+    let ``Produces a union with a method member `` () =
+        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
+
+        AnonymousModule() {
+            (Union("Person") { UnionCase("Name") }).members() { MethodMember("this.Name") { EscapeHatch(constExpr) } }
+
+        }
+        |> produces
+            """
+type Person =
+    | Name
+
+    member this.Name() = "name"
+
+"""
+
+    [<Test>]
+    let ``Produces a generic union with a method member`` () =
+        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
+
+        AnonymousModule() {
+            (GenericUnion("Colors", [ "'other" ]) {
+                UnionParameterizedCase("Red") {
+                    Field("a", CommonType.String)
+                    Field("b", CommonType.mkType "'other")
+                }
+
+                UnionCase("Green")
+                UnionCase("Blue")
+                UnionCase("Yellow")
+            })
+                .members() {
+                MethodMember("this.Name") { EscapeHatch(constExpr) }
+            }
+
+        }
+        |> produces
+            """
+type Colors<'other> =
+    | Red of a: string * b: 'other
+    | Green
+    | Blue
+    | Yellow
+
+    member this.Name() = "name"
+
+"""
