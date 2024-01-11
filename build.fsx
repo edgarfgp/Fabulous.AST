@@ -49,3 +49,5 @@ pipeline "docs" {
     stage "watch" { run "dotnet fsdocs watch --eval --clean" }
     runIfOnlySpecified true
 }
+
+tryPrintPipelineCommandHelp ()
