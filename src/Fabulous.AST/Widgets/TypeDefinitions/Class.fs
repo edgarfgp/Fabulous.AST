@@ -6,7 +6,6 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
-open Helpers
 
 type ClassTypeDefnRegularNode
     (

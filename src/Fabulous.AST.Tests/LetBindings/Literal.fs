@@ -1,7 +1,6 @@
 namespace Fabulous.AST.Tests.LetBindings
 
 open Fantomas.FCS.Text
-open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
 open Fabulous.AST.Tests

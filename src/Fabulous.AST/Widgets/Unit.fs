@@ -15,7 +15,7 @@ module Unit =
 
 [<AutoOpen>]
 module UnitBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Unit() =
             WidgetBuilder<UnitNode>(Unit.WidgetKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))

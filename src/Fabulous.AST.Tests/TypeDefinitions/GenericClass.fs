@@ -1,6 +1,5 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
-open System.Data
 open Fantomas.FCS.Text
 open Fabulous.AST.Tests
 open Fantomas.Core.SyntaxOak

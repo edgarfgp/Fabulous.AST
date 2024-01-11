@@ -31,7 +31,7 @@ module MatchClause =
 
 [<AutoOpen>]
 module MatchClauseBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline MatchClause
             (

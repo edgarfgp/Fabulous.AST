@@ -37,7 +37,7 @@ module IfThenElif =
 
 [<AutoOpen>]
 module IfThenElifBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline ElIfElse(elseExpr: WidgetBuilder<Expr>) =
             SingleChildBuilder<ExprIfThenElifNode, ExprIfThenNode list>(

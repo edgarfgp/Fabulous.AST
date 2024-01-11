@@ -4,9 +4,7 @@ open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS
 open Fantomas.FCS.Text
-open Fantomas.FCS.Syntax
 open type Fabulous.AST.Ast
 
 

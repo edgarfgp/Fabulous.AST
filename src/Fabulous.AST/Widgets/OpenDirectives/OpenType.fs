@@ -19,7 +19,7 @@ module OpenType =
 
 [<AutoOpen>]
 module OpenTypeBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline OpenType(identList: WidgetBuilder<#IdentListNode>) =
             WidgetBuilder<OpenTypeNode>(

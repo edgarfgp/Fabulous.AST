@@ -49,7 +49,7 @@ module Enum =
 
 [<AutoOpen>]
 module EnumBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Enum(name: WidgetBuilder<#SingleTextNode>) =
             CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>(

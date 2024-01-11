@@ -39,7 +39,7 @@ module Abbrev =
 
 [<AutoOpen>]
 module AbbrevBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Abbrev(name: WidgetBuilder<#SingleTextNode>, aliasType: Type) =
             WidgetBuilder<TypeDefnAbbrevNode>(

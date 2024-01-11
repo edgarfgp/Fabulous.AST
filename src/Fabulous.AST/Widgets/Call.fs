@@ -28,7 +28,7 @@ module Call =
 
 [<AutoOpen>]
 module CallBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Call(functionName: string, [<ParamArray>] args: string[]) =
             WidgetBuilder<Expr>(

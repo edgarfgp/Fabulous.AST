@@ -4,7 +4,6 @@ open System
 open Fabulous.AST.StackAllocatedCollections
 open NUnit.Framework
 
-open Fabulous.AST
 
 open type Fabulous.AST.Ast
 

@@ -29,7 +29,7 @@ module Match =
 
 [<AutoOpen>]
 module MatchBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Match(matchExpr: WidgetBuilder<Expr>) =
             CollectionBuilder<Expr, MatchClauseNode>(

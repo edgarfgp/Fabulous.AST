@@ -19,7 +19,7 @@ module Condition =
 
 [<AutoOpen>]
 module ConditionBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline Condition(lhs: WidgetBuilder<Expr>, operator: string, rhs: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(

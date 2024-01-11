@@ -1,8 +1,5 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections
-open Fantomas.Core.SyntaxOak
 
 // This widget holds a direct reference to a manually created node so it can be composed in the widget tree
 module EscapeHatch =
@@ -16,7 +13,7 @@ module EscapeHatch =
 
 [<AutoOpen>]
 module EscapeHatchBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline EscapeHatch(node: 'T) =
             WidgetBuilder<'T>(EscapeHatch.WidgetKey, EscapeHatch.Node.WithValue(node))

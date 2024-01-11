@@ -16,7 +16,7 @@ module AnonymousModule =
 
 [<AutoOpen>]
 module AnonymousModuleBuilders =
-    type Fabulous.AST.Ast with
+    type Ast with
 
         static member inline AnonymousModule() =
             CollectionBuilder<AnonymousModuleNode, ModuleDecl>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
