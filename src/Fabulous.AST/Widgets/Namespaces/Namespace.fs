@@ -8,10 +8,12 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-type NamespaceNode(identList: IdentListNode, decls: ModuleDecl list, isRecursive: bool) =
+type NamespaceNode
+    (identList: IdentListNode, decls: ModuleDecl list, isRecursive: bool, hashDirectives: ParsedHashDirectiveNode list)
+    =
     inherit
         Oak(
-            List.Empty,
+            hashDirectives,
             [ ModuleOrNamespaceNode(
                   Some(
                       ModuleOrNamespaceHeaderNode(
@@ -36,15 +38,19 @@ module Namespace =
 
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
 
+    let ParsedHashDirectives = Attributes.defineWidgetCollection "ParsedHashDirectives"
+
     let WidgetKey =
         Widgets.register "Namespace" (fun widget ->
             let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-            let identList = Helpers.getNodeFromWidget<IdentListNode> widget IdentList
+            let identList = Helpers.getNodeFromWidget widget IdentList
+            let isRecursive = Helpers.getScalarValue widget IsRecursive
 
-            let isRecursive =
-                Helpers.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+            let parsedHashDirectives =
+                Helpers.tryGetNodesFromWidgetCollection widget ParsedHashDirectives
+                |> Option.defaultValue []
 
-            NamespaceNode(identList, decls, isRecursive))
+            NamespaceNode(identList, decls, isRecursive, parsedHashDirectives))
 
 [<AutoOpen>]
 module NamespaceBuilders =
@@ -55,7 +61,7 @@ module NamespaceBuilders =
                 Namespace.WidgetKey,
                 Namespace.Decls,
                 AttributesBundle(
-                    StackList.empty(),
+                    StackList.one(Namespace.IsRecursive.WithValue(false)),
                     ValueSome [| Namespace.IdentList.WithValue(identList.Compile()) |],
                     ValueNone
                 )
@@ -66,8 +72,40 @@ module NamespaceBuilders =
         static member inline Namespace(name: string) =
             Ast.Namespace(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
 
+        static member inline RecNamespace(identList: WidgetBuilder<#IdentListNode>) =
+            CollectionBuilder<NamespaceNode, ModuleDecl>(
+                Namespace.WidgetKey,
+                Namespace.Decls,
+                AttributesBundle(
+                    StackList.one(Namespace.IsRecursive.WithValue(true)),
+                    ValueSome [| Namespace.IdentList.WithValue(identList.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline RecNamespace(node: IdentListNode) = Ast.RecNamespace(Ast.EscapeHatch(node))
+
+        static member inline RecNamespace(name: string) =
+            Ast.RecNamespace(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
+
 [<Extension>]
 type NamespaceModifiers =
     [<Extension>]
-    static member inline isRecursive(this: CollectionBuilder<NamespaceNode, ModuleDecl>) =
-        this.AddScalar(Namespace.IsRecursive.WithValue(true))
+    static member inline hashDirectives(this: WidgetBuilder<NamespaceNode>) =
+        AttributeCollectionBuilder<NamespaceNode, HashDirectiveNode>(this, Namespace.ParsedHashDirectives)
+
+    [<Extension>]
+    static member inline hashDirective(this: WidgetBuilder<NamespaceNode>, value: WidgetBuilder<HashDirectiveNode>) =
+        AttributeCollectionBuilder<NamespaceNode, HashDirectiveNode>(this, Namespace.ParsedHashDirectives) { value }
+
+[<Extension>]
+type NameSpaceExtensions =
+    [<Extension>]
+    static member inline Yield
+        (
+            _: AttributeCollectionBuilder<NamespaceNode, HashDirectiveNode>,
+            x: WidgetBuilder<HashDirectiveNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        let widget = Ast.EscapeHatch(node).Compile()
+        { Widgets = MutStackArray1.One(widget) }

@@ -31,17 +31,7 @@ let x = 3
 """
 
     [<Test>]
-    let ``Produces a namespace  with unit`` () =
-        Namespace("Fabulous.AST") { Unit() }
-        |> produces
-            """
-namespace Fabulous.AST
-
-()
-"""
-
-    [<Test>]
-    let ``Produces a namespace with IdentListNode and BindingNode`` () =
+    let ``Produces a namespace using the EscapeHatch widget`` () =
         Namespace(
             EscapeHatch(
                 IdentListNode(
@@ -78,7 +68,7 @@ let x = 12
     [<Test>]
     let ``Produces a namespace with nested module`` () =
         Namespace("Fabulous") {
-            NestedModule("Fabulous.AST") {
+            NestedModule("AST") {
                 BindingNode(
                     None,
                     None,
@@ -101,7 +91,7 @@ let x = 12
             """
 namespace Fabulous
 
-module Fabulous.AST =
+module AST =
     let x = 12
 """
 

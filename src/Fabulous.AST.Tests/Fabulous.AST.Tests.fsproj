@@ -12,6 +12,7 @@
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
         <Compile Include="Namespaces\AnonymousModule.fs" />
+        <Compile Include="Namespaces\HashDirectives.fs" />
         <Compile Include="Namespaces\Namespace.fs" />
         <Compile Include="Namespaces\Module.fs" />
         <Compile Include="Namespaces\NestedModule.fs" />

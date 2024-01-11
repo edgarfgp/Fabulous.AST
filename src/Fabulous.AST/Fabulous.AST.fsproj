@@ -43,6 +43,7 @@
         <Compile Include="Widgets\MatchClause.fs" />
         <Compile Include="Widgets\Condition.fs" />
         <Compile Include="Widgets\CommonYieldExtensions.fs" />
+        <Compile Include="Widgets\Namespaces\ParsedHashDirective.fs" />
         <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
         <Compile Include="Widgets\Namespaces\Namespace.fs" />
         <Compile Include="Widgets\Namespaces\Module.fs" />
