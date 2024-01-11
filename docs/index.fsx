@@ -5,9 +5,13 @@ category: docs
 index: 0
 ---
 
+# Fabulous.AST
+
 Welcome to the Fabulous.AST, an Abstract Syntax Tree (AST) Domain Specific Language (DSL) for F#.
 
 Fabulous.AST uses [Fantomas](https://fsprojects.github.io/fantomas/docs/end-users/GeneratingCode.html) to generate F# code from AST. This means that you can use Fabulous.AST to generate F# code that is formatted according to the Fantomas style guide. It's designed to provide a simple and expressive way to represent code as a tree of nodes. This makes it easier to manipulate and analyze code programmatically.
+
+## Plain Fantomas
 
 Let's take a look at an AST example in Fantomas:
 *)
@@ -53,6 +57,9 @@ CodeFormatter.FormatOakAsync(implementationSyntaxTree)
 (*** include-output ***)
 
 (**
+
+## Using Fabulous.AST
+
 Now let's take a look at same example using Fabulous.AST:
 *)
 
@@ -69,7 +76,11 @@ CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously |> printfn "%s"
 // produces the following code:
 (*** include-output ***)
 
-(** You can use an `Escape Hatch` to generate code that is not supported by Fabulous.AST yet by constructing the raw [Fantomas.SyntaxOak](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak.html) node.
+(** 
+
+### Escape Hatch
+
+You can use an `Escape Hatch` to generate code that is not supported by Fabulous.AST yet by constructing the raw [Fantomas.SyntaxOak](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak.html) node.
 For example, the following code: *)
 
 open type Fabulous.AST.Ast
@@ -107,6 +118,9 @@ Tree.compile sourceWithEscapeHatch
 // produces the following code:
 (*** include-output ***)
 (**
+
+## Key takeaway
+
 Using Fabulous.AST, you can easily create and manipulate ASTs like this one using F# functions. For example, you can add new nodes to the AST, modify existing nodes, or traverse the AST to perform analysis or transformation tasks.
 
 Fabulous.AST is a powerful tool for anyone who works with code and wants to automate or streamline their development workflow. Whether you're a compiler writer, a code generator, or just someone who wants to write better code faster, Fabulous.AST can help you achieve your goals.
