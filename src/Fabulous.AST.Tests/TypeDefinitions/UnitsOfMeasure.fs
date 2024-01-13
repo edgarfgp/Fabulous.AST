@@ -11,9 +11,7 @@ module UnitsOfMeasure =
 
     [<Test>]
     let ``Produces type Unit of measure`` () =
-        AnonymousModule() {
-            UnitsOfMeasure("cm")
-        }
+        AnonymousModule() { UnitsOfMeasure("cm") }
 
         |> produces
             """

@@ -13,6 +13,7 @@ module UnitsOfMeasure =
     let WidgetKey =
         Widgets.register "UnitsOfMeasure" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+
             TypeNameNode(
                 None,
                 Some(MultipleAttributeListNode.Create([ "Measure" ])),
