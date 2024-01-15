@@ -18,14 +18,16 @@ module InterfaceMembers =
 
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkType("'other"))
+                Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
                 let expr =
                     Expr.Constant(Constant.FromText(SingleTextNode("x.MyField2", Range.Zero)))
 
-                InterfaceMember(CommonType.mkType("IMyInterface")) { MethodMember("x.GetValue") { EscapeHatch(expr) } }
+                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
+                    MethodMember("x.GetValue") { EscapeHatch(expr) }
+                }
             }
         }
 
@@ -61,7 +63,9 @@ type Colors<'other> =
                 let expr =
                     Expr.Constant(Constant.FromText(SingleTextNode("x.MyField2", Range.Zero)))
 
-                InterfaceMember(CommonType.mkType("IMyInterface")) { MethodMember("x.GetValue") { EscapeHatch(expr) } }
+                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
+                    MethodMember("x.GetValue") { EscapeHatch(expr) }
+                }
             }
         }
         |> produces
@@ -86,7 +90,7 @@ type MyRecord =
             Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
 
             (Class("Person") {
-                InterfaceMember(CommonType.mkType("Meh")) { PropertyMember("this.Name") { EscapeHatch(expr) } }
+                InterfaceMember(CommonType.mkLongIdent("Meh")) { PropertyMember("this.Name") { EscapeHatch(expr) } }
             })
                 .implicitConstructorParameters([])
         }

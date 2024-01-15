@@ -13,7 +13,7 @@ module WidgetTests =
         let source =
             """
 
-open type ABC
+[<Measure>] type ml = cm^3
 
 """
 

@@ -1,29 +1,30 @@
 namespace Fabulous.AST
 
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
 
 [<RequireQualifiedAccess>]
 module CommonType =
-    let mkType (typ: string) : Type =
-        [ IdentifierOrDot.CreateIdent(typ) ] |> IdentListNode.Create |> Type.LongIdent
+    let mkLongIdent (typ: string) : Type =
+        Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(typ) ]))
 
-    let Boolean = mkType "bool"
-    let Byte = mkType "byte"
-    let SByte = mkType "sbyte"
-    let Int16 = mkType "int16"
-    let Uint16 = mkType "uint16"
-    let Int32 = mkType "int"
-    let UInt32 = mkType "uint"
-    let Int64 = mkType "int64"
-    let Uint64 = mkType "uint64"
-    let IntPtr = mkType "nativeint"
-    let UIntPtr = mkType "unativeint"
-    let Decimal = mkType "decimal"
-    let Float = mkType "float"
-    let Double = mkType "double"
-    let Float32 = mkType "float32"
-    let Single = mkType "single"
-    let Char = mkType "char"
-    let String = mkType "string"
-    let Obj = mkType "obj"
-    let Unit = mkType "unit"
+    let Boolean = mkLongIdent "bool"
+    let Byte = mkLongIdent "byte"
+    let SByte = mkLongIdent "sbyte"
+    let Int16 = mkLongIdent "int16"
+    let Uint16 = mkLongIdent "uint16"
+    let Int32 = mkLongIdent "int"
+    let UInt32 = mkLongIdent "uint"
+    let Int64 = mkLongIdent "int64"
+    let Uint64 = mkLongIdent "uint64"
+    let IntPtr = mkLongIdent "nativeint"
+    let UIntPtr = mkLongIdent "unativeint"
+    let Decimal = mkLongIdent "decimal"
+    let Float = mkLongIdent "float"
+    let Double = mkLongIdent "double"
+    let Float32 = mkLongIdent "float32"
+    let Single = mkLongIdent "single"
+    let Char = mkLongIdent "char"
+    let String = mkLongIdent "string"
+    let Obj = mkLongIdent "obj"
+    let Unit = mkLongIdent "unit"
