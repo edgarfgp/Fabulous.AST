@@ -1,8 +1,6 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
 open Fabulous.AST.Tests
-open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Text
 open NUnit.Framework
 
 open Fabulous.AST
@@ -18,7 +16,7 @@ module UnitsOfMeasure =
         AnonymousModule() {
             UnitsOfMeasure("cm").xmlDocs([ "Cm, centimeters." ])
 
-            UnitsOfMeasure("ml", MeasurePower([ "cm" ], "3"))
+            UnitsOfMeasure("ml", MeasurePower("cm", "3"))
                 .xmlDocs([ "Ml, milliliters." ])
 
             UnitsOfMeasure("g").xmlDocs([ "Mass, grams." ])
@@ -30,12 +28,12 @@ module UnitsOfMeasure =
             UnitsOfMeasure("ft").xmlDocs([ "Distance, feet" ])
             UnitsOfMeasure("s").xmlDocs([ "Time, seconds." ])
 
-            UnitsOfMeasure("N", Tuple([ "kg" ], [ "m" ], MeasurePower([ "s" ], "2")))
+            UnitsOfMeasure("N", Tuple("kg", "m", MeasurePower([ "s" ], "2")))
                 .xmlDocs([ "Force, Newtons." ])
 
             UnitsOfMeasure("bar").xmlDocs([ "Pressure, bar." ])
 
-            UnitsOfMeasure("Pa", Tuple([ "N" ], [], MeasurePower([ "m" ], "2")))
+            UnitsOfMeasure("Pa", Tuple("N", MeasurePower([ "m" ], "2")))
                 .xmlDocs([ "Pressure, Pascals" ])
 
             UnitsOfMeasure("ml").xmlDocs([ "Volume, milliliters." ])

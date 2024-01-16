@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
@@ -181,6 +182,17 @@ module Auxiliary =
             |> fun v -> XmlDocNode(v, Range.Zero)
 
     type Type with
+        static member inline MeasurePower(baseMeasure: string, exponent: string) : Type =
+            Type.MeasurePower(
+                TypeMeasurePowerNode(
+                    Type.LongIdent(
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(baseMeasure)) ], Range.Zero)
+                    ),
+                    RationalConstNode.Integer(SingleTextNode.Create(exponent)),
+                    Range.Zero
+                )
+            )
+
         static member inline MeasurePower(baseMeasure: string list, exponent: string) : Type =
             Type.MeasurePower(
                 TypeMeasurePowerNode(
@@ -226,6 +238,32 @@ module Auxiliary =
                 )
             )
 
+        static member inline MeasurePower
+            (
+                baseMeasure: string,
+                numerator: string,
+                divOp: string,
+                denominator: string
+            ) : Type =
+            Type.MeasurePower(
+                TypeMeasurePowerNode(
+                    Type.LongIdent(
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(baseMeasure)) ], Range.Zero)
+                    ),
+                    RationalConstNode.Rational(
+                        RationalNode(
+                            SingleTextNode.leftParenthesis,
+                            SingleTextNode.Create(numerator),
+                            SingleTextNode.Create(divOp),
+                            SingleTextNode.Create(denominator),
+                            SingleTextNode.rightParenthesis,
+                            Range.Zero
+                        )
+                    ),
+                    Range.Zero
+                )
+            )
+
         static member inline MeasurePower(baseMeasure: string list, node: RationalConstNode) : Type =
             Type.MeasurePower(
                 TypeMeasurePowerNode(
@@ -235,6 +273,17 @@ module Auxiliary =
                                   IdentifierOrDot.Ident(SingleTextNode.Create(ident)) ],
                             Range.Zero
                         )
+                    ),
+                    RationalConstNode.Negate(NegateRationalNode(SingleTextNode.minus, node, Range.Zero)),
+                    Range.Zero
+                )
+            )
+
+        static member inline MeasurePower(baseMeasure: string, node: RationalConstNode) : Type =
+            Type.MeasurePower(
+                TypeMeasurePowerNode(
+                    Type.LongIdent(
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(baseMeasure)) ], Range.Zero)
                     ),
                     RationalConstNode.Negate(NegateRationalNode(SingleTextNode.minus, node, Range.Zero)),
                     Range.Zero
@@ -259,6 +308,44 @@ module Auxiliary =
                                                 IdentifierOrDot.CreateIdent(ident) ]
                                       )
                                   ),
+                                  Range.Zero
+                              )
+                          )
+                      )
+                      Choice1Of2(Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent("/") ])))
+
+                      Choice1Of2(exponent) ],
+                    Range.Zero
+                )
+            )
+
+        static member inline Tuple(first: string, second: string, exponent: Type) : Type =
+            Type.Tuple(
+                TypeTupleNode(
+                    [ Choice1Of2(
+                          Type.AppPostfix(
+                              TypeAppPostFixNode(
+                                  Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(first) ])),
+                                  Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(second) ])),
+                                  Range.Zero
+                              )
+                          )
+                      )
+                      Choice1Of2(Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent("/") ])))
+
+                      Choice1Of2(exponent) ],
+                    Range.Zero
+                )
+            )
+
+        static member inline Tuple(first: string, exponent: Type) : Type =
+            Type.Tuple(
+                TypeTupleNode(
+                    [ Choice1Of2(
+                          Type.AppPostfix(
+                              TypeAppPostFixNode(
+                                  Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(first) ])),
+                                  Type.LongIdent(IdentListNode.Create([])),
                                   Range.Zero
                               )
                           )
