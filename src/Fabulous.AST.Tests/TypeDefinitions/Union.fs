@@ -51,7 +51,9 @@ type Colors =
                 .members() {
                 let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
-                InterfaceMember(CommonType.mkType("IMyInterface")) { MethodMember("x.GetValue") { EscapeHatch(expr) } }
+                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
+                    MethodMember("x.GetValue") { EscapeHatch(expr) }
+                }
             }
 
         }

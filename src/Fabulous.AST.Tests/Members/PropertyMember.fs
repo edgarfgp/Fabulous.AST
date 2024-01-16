@@ -55,7 +55,7 @@ type Colors =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkType("'other"))
+                Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
@@ -81,7 +81,7 @@ type Colors<'other> =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkType("'other"))
+                Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
@@ -258,7 +258,7 @@ type Person =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
         AnonymousModule() {
-            (GenericRecord("Person", [ "'other" ]) { Field("Name", CommonType.mkType("'other")) })
+            (GenericRecord("Person", [ "'other" ]) { Field("Name", CommonType.mkLongIdent("'other")) })
                 .members() {
                 PropertyMember("this.Name") { EscapeHatch(constExpr) }
             }
@@ -317,7 +317,7 @@ type Person =
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
                     Field("a", CommonType.String)
-                    Field("b", CommonType.mkType "'other")
+                    Field("b", CommonType.mkLongIdent "'other")
                 }
 
                 UnionCase("Green")
@@ -349,7 +349,7 @@ type Colors<'other> =
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
                     Field("a", CommonType.String)
-                    Field("b", CommonType.mkType "'other")
+                    Field("b", CommonType.mkLongIdent "'other")
                 }
 
                 UnionCase("Green")

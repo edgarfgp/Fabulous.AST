@@ -14,7 +14,7 @@ module MethodMembers =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkType("'other"))
+                Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
@@ -44,7 +44,7 @@ type Colors<'other> =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkType("'other"))
+                Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
@@ -272,7 +272,7 @@ type Person =
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
                     Field("a", CommonType.String)
-                    Field("b", CommonType.mkType "'other")
+                    Field("b", CommonType.mkLongIdent "'other")
                 }
 
                 UnionCase("Green")

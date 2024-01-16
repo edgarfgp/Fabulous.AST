@@ -117,9 +117,9 @@ module AST =
                     let rec mkType value =
                         match value with
                         | [] -> failwith "unexpected"
-                        | [ single ] -> CommonType.mkType single
+                        | [ single ] -> CommonType.mkLongIdent single
                         | head :: tail ->
-                            TypeAppPostFixNode(mkType tail, CommonType.mkType head, Range.Zero)
+                            TypeAppPostFixNode(mkType tail, CommonType.mkLongIdent head, Range.Zero)
                             |> Type.AppPostfix
 
                     let myFields =

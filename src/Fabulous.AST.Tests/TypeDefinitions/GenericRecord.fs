@@ -13,7 +13,7 @@ module GenericRecord =
         AnonymousModule() {
             GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkType("'other"))
+                Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             }
         }
@@ -33,7 +33,7 @@ type Colors<'other> =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkType("'other"))
+                Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
                 .isStruct()

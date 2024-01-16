@@ -64,6 +64,7 @@
         <Compile Include="Widgets\TypeDefinitions\EnumCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\Enum.fs" />
         <Compile Include="Widgets\TypeDefinitions\Abbrev.fs" />
+        <Compile Include="Widgets\TypeDefinitions\UnitsOfMeasure.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\GenericUnion.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />

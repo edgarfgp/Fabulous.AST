@@ -17,7 +17,7 @@ module GenericUnion =
             GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
                     Field("a", CommonType.String)
-                    Field("b", CommonType.mkType("'other"))
+                    Field("b", CommonType.mkLongIdent("'other"))
                 }
 
                 UnionCase("Green")
@@ -48,7 +48,7 @@ type Colors<'other> =
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
                     Field("a", CommonType.String)
-                    Field("b", CommonType.mkType("'other"))
+                    Field("b", CommonType.mkLongIdent("'other"))
                 }
 
                 UnionCase("Green")
@@ -58,7 +58,9 @@ type Colors<'other> =
                 .members() {
                 let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
-                InterfaceMember(CommonType.mkType("IMyInterface")) { MethodMember("x.GetValue") { EscapeHatch(expr) } }
+                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
+                    MethodMember("x.GetValue") { EscapeHatch(expr) }
+                }
             }
         }
 
@@ -84,7 +86,7 @@ type Colors<'other> =
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParameterizedCase("Red") {
                     Field("a", CommonType.String)
-                    Field("b", CommonType.mkType("'other"))
+                    Field("b", CommonType.mkLongIdent("'other"))
                 }
 
                 UnionCase("Green")
