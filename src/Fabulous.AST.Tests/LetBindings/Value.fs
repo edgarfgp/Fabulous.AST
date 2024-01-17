@@ -21,14 +21,35 @@ let x = 12
 """
 
     [<Test>]
+    let ``Simple Let binding with an expression`` () =
+        AnonymousModule() { Value("x", Expr.Constant(Constant.Text("12"))) }
+        |> produces
+            """
+
+let x = 12
+
+"""
+
+    [<Test>]
     let ``Simple Let binding inlined`` () =
-        AnonymousModule() { Value("x", "12").isInlined() }
+        AnonymousModule() { InlinedValue("x", "12") }
         |> produces
             """
 
 let inline x = 12
 
 """
+
+    [<Test>]
+    let ``Simple Let binding inlined with an expression`` () =
+        AnonymousModule() { InlinedValue("x", Expr.Constant(Constant.Text("12"))) }
+        |> produces
+            """
+
+let inline x = 12
+
+"""
+
 
     [<Test>]
     let ``Simple Let private binding`` () =
@@ -163,7 +184,17 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        AnonymousModule() { Value("x", "12").isMutable() }
+        AnonymousModule() { MutableValue("x", "12") }
+        |> produces
+            """
+        
+let mutable x = 12
+
+"""
+
+    [<Test>]
+    let ``Produces a top level mutable let binding with an expression`` () =
+        AnonymousModule() { MutableValue("x", Expr.Constant(Constant.Text("12"))) }
         |> produces
             """
         

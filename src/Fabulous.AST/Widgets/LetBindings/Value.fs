@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -16,31 +17,29 @@ type ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, 
             isMutable,
             (if isInlined then Some(SingleTextNode.``inline``) else None),
             accessControl,
-            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
             None,
             List.Empty,
             None,
-            SingleTextNode("=", Range.Zero),
-            Expr.Constant(Constant.FromText(SingleTextNode(value, Range.Zero))),
+            SingleTextNode.equals,
+            value,
             Range.Zero
         )
 
 module Value =
-    let Name = Attributes.defineScalar "Name"
-    let Value = Attributes.defineScalar "Value"
+    let Name = Attributes.defineWidget "Name"
+    let Value = Attributes.defineWidget "Value"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
-
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
-
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
+    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+    let ValueExpr = Attributes.defineScalar<Expr> "Expression"
 
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
-            let value = Helpers.getScalarValue widget Value
+            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let value = Helpers.getNodeFromWidget<SingleTextNode> widget Value
 
             let accessControl =
                 Helpers.tryGetScalarValue widget Accessibility
@@ -48,11 +47,10 @@ module Value =
 
             let accessControl =
                 match accessControl with
-                | Public -> Some(SingleTextNode("public", Range.Zero))
-                | Private -> Some(SingleTextNode("private", Range.Zero))
-                | Internal -> Some(SingleTextNode("internal", Range.Zero))
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
-
 
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
@@ -74,21 +72,160 @@ module Value =
             let isInlined =
                 Helpers.tryGetScalarValue widget IsInlined |> ValueOption.defaultValue false
 
-            ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, name, value))
+            ValueNode(
+                xmlDoc,
+                multipleAttributes,
+                isMutable,
+                isInlined,
+                accessControl,
+                name,
+                Expr.Constant(Constant.FromText(value))
+            ))
+
+    let WidgetExprKey =
+        Widgets.register "ValueExpr" (fun widget ->
+            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let expression = Helpers.getScalarValue widget ValueExpr
+
+            let accessControl =
+                Helpers.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
+            let lines = Helpers.tryGetScalarValue widget XmlDocs
+
+            let xmlDoc =
+                match lines with
+                | ValueSome value -> Some(XmlDocNode((value |> Array.ofList), Range.Zero))
+                | ValueNone -> None
+
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueNone -> None
+
+            let isMutable =
+                Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue false
+
+            let isInlined =
+                Helpers.tryGetScalarValue widget IsInlined |> ValueOption.defaultValue false
+
+            ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, name, expression))
 
 [<AutoOpen>]
 module ValueBuilders =
     type Ast with
+        static member inline Value(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<SingleTextNode>) =
+            WidgetBuilder<ValueNode>(
+                Value.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| Value.Name.WithValue(name.Compile())
+                           Value.Value.WithValue(value.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline Value(name: SingleTextNode, value: SingleTextNode) =
+            Ast.Value(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
 
         static member inline Value(name: string, value: string) =
-            WidgetBuilder<ValueNode>(Value.WidgetKey, Value.Name.WithValue(name), Value.Value.WithValue(value))
+            Ast.Value(SingleTextNode.Create(name), SingleTextNode.Create(value))
+
+        static member inline Value(name: WidgetBuilder<SingleTextNode>, value: Expr) =
+            WidgetBuilder<ValueNode>(
+                Value.WidgetExprKey,
+                AttributesBundle(
+                    StackList.one(Value.ValueExpr.WithValue(value)),
+                    ValueSome [| Value.Name.WithValue(name.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline Value(name: SingleTextNode, value: Expr) = Ast.Value(Ast.EscapeHatch(name), value)
+
+        static member inline Value(name: string, value: Expr) =
+            Ast.Value(SingleTextNode.Create(name), value)
+
+        static member inline MutableValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<SingleTextNode>) =
+            WidgetBuilder<ValueNode>(
+                Value.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Value.IsMutable.WithValue(true)),
+                    ValueSome
+                        [| Value.Name.WithValue(name.Compile())
+                           Value.Value.WithValue(value.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline MutableValue(name: SingleTextNode, value: SingleTextNode) =
+            Ast.MutableValue(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
+
+        static member inline MutableValue(name: string, value: string) =
+            Ast.MutableValue(SingleTextNode.Create(name), SingleTextNode.Create(value))
+
+        static member inline MutableValue(name: WidgetBuilder<SingleTextNode>, value: Expr) =
+            WidgetBuilder<ValueNode>(
+                Value.WidgetExprKey,
+                AttributesBundle(
+                    StackList.two(Value.IsMutable.WithValue(true), Value.ValueExpr.WithValue(value)),
+                    ValueSome [| Value.Name.WithValue(name.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline MutableValue(name: SingleTextNode, value: Expr) =
+            Ast.MutableValue(Ast.EscapeHatch(name), value)
+
+        static member inline MutableValue(name: string, value: Expr) =
+            Ast.MutableValue(SingleTextNode.Create(name), value)
+
+        static member inline InlinedValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<SingleTextNode>) =
+            WidgetBuilder<ValueNode>(
+                Value.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Value.IsInlined.WithValue(true)),
+                    ValueSome
+                        [| Value.Name.WithValue(name.Compile())
+                           Value.Value.WithValue(value.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline InlinedValue(name: SingleTextNode, value: SingleTextNode) =
+            Ast.InlinedValue(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
+
+        static member inline InlinedValue(name: string, value: string) =
+            Ast.InlinedValue(SingleTextNode.Create(name), SingleTextNode.Create(value))
+
+        static member inline InlinedValue(name: WidgetBuilder<SingleTextNode>, value: Expr) =
+            WidgetBuilder<ValueNode>(
+                Value.WidgetExprKey,
+                AttributesBundle(
+                    StackList.two(Value.IsInlined.WithValue(true), Value.ValueExpr.WithValue(value)),
+                    ValueSome [| Value.Name.WithValue(name.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline InlinedValue(name: SingleTextNode, value: Expr) =
+            Ast.InlinedValue(Ast.EscapeHatch(name), value)
+
+        static member inline InlinedValue(name: string, value: Expr) =
+            Ast.InlinedValue(SingleTextNode.Create(name), value)
 
 [<Extension>]
 type ValueModifiers =
-    [<Extension>]
-    static member inline isMutable(this: WidgetBuilder<ValueNode>) =
-        this.AddScalar(Value.IsMutable.WithValue(true))
-
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ValueNode>, xmlDocs: string list) =
         this.AddScalar(Value.XmlDocs.WithValue(xmlDocs))
@@ -102,10 +239,6 @@ type ValueModifiers =
         match value with
         | Some value -> this.AddScalar(Value.Accessibility.WithValue(value))
         | None -> this.AddScalar(Value.Accessibility.WithValue(AccessControl.Public))
-
-    [<Extension>]
-    static member inline isInlined(this: WidgetBuilder<ValueNode>) =
-        this.AddScalar(Value.IsInlined.WithValue(true))
 
 [<Extension>]
 type ValueYieldExtensions =
