@@ -408,7 +408,8 @@ module Auxiliary =
             )
 
     type Constant with
-        static member inline Text(text: string) = Constant.Text(text)
+        static member inline Text(text: string) =
+            Constant.FromText(SingleTextNode.Create(text))
 
         static member inline Unit() =
             Constant.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
