@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
@@ -188,6 +187,7 @@ module Auxiliary =
             |> fun v -> XmlDocNode(v, Range.Zero)
 
     type Type with
+
         static member inline MeasurePower(baseMeasure: string, exponent: string) : Type =
             Type.MeasurePower(
                 TypeMeasurePowerNode(

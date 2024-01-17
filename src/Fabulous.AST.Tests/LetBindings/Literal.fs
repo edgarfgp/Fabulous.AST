@@ -93,7 +93,7 @@ let internal x = 12
                         Range.Zero
                     )
                 ),
-                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                MultipleTextsNode([ SingleTextNode.Create("let") ], Range.Zero),
                 false,
                 None,
                 None,

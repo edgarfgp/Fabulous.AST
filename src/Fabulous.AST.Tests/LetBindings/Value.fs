@@ -21,6 +21,16 @@ let x = 12
 """
 
     [<Test>]
+    let ``Simple Let binding with return type`` () =
+        AnonymousModule() { Value("x", "12").returnType(CommonType.Int32) }
+        |> produces
+            """
+
+let x: int = 12
+
+"""
+
+    [<Test>]
     let ``Simple Let binding with an expression`` () =
         AnonymousModule() { Value("x", Expr.Constant(Constant.Text("12"))) }
         |> produces
@@ -41,6 +51,16 @@ let inline x = 12
 """
 
     [<Test>]
+    let ``Simple Let binding inlined with return type`` () =
+        AnonymousModule() { InlinedValue("x", "12").returnType(CommonType.Int32) }
+        |> produces
+            """
+
+let inline x: int = 12
+
+"""
+
+    [<Test>]
     let ``Simple Let binding inlined with an expression`` () =
         AnonymousModule() { InlinedValue("x", Expr.Constant(Constant.Text("12"))) }
         |> produces
@@ -53,7 +73,7 @@ let inline x = 12
 
     [<Test>]
     let ``Simple Let private binding`` () =
-        AnonymousModule() { Value("x", "12").accessibility(AccessControl.Private) }
+        AnonymousModule() { Value("x", "12").toPrivate() }
         |> produces
             """
 
@@ -63,7 +83,7 @@ let private x = 12
 
     [<Test>]
     let ``Simple Let internal binding`` () =
-        AnonymousModule() { Value("x", "12").accessibility(AccessControl.Internal) }
+        AnonymousModule() { Value("x", "12").toInternal() }
         |> produces
             """
 
@@ -189,6 +209,16 @@ let x = 12
             """
         
 let mutable x = 12
+
+"""
+
+    [<Test>]
+    let ``Produces a top level mutable let binding with return type`` () =
+        AnonymousModule() { MutableValue("x", "12").returnType(CommonType.Int32) }
+        |> produces
+            """
+        
+let mutable x: int = 12
 
 """
 
