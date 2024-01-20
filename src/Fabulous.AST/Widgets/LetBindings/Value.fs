@@ -8,7 +8,8 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-type ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, name, value, returnType) =
+type ValueNode
+    (xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, name, value, returnType, genericTypeParameters) =
     inherit
         BindingNode(
             xmlDoc,
@@ -18,7 +19,7 @@ type ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, 
             (if isInlined then Some(SingleTextNode.``inline``) else None),
             accessControl,
             Choice1Of2(IdentListNode.Create([ IdentifierOrDot.Ident(name) ])),
-            None,
+            genericTypeParameters,
             List.Empty,
             returnType,
             SingleTextNode.equals,
@@ -36,6 +37,8 @@ module Value =
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let ValueExpr = Attributes.defineScalar<Expr> "Expression"
     let Return = Attributes.defineScalar<Type> "Return"
+
+    let TypeParams = Attributes.defineScalar<TyparDecls> "TypeParams"
 
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
@@ -80,6 +83,13 @@ module Value =
                 | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
 
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome typeParams -> Some(typeParams)
+                | ValueNone -> None
+
             ValueNode(
                 xmlDoc,
                 multipleAttributes,
@@ -88,13 +98,20 @@ module Value =
                 accessControl,
                 name,
                 Expr.Constant(Constant.FromText(value)),
-                returnType
+                returnType,
+                typeParams
             ))
 
     let WidgetExprKey =
         Widgets.register "ValueExpr" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
             let expression = Helpers.getScalarValue widget ValueExpr
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome typeParams -> Some(typeParams)
+                | ValueNone -> None
 
             let accessControl =
                 Helpers.tryGetScalarValue widget Accessibility
@@ -134,7 +151,17 @@ module Value =
                 | ValueSome(returnType) -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
 
-            ValueNode(xmlDoc, multipleAttributes, isMutable, isInlined, accessControl, name, expression, returnType))
+            ValueNode(
+                xmlDoc,
+                multipleAttributes,
+                isMutable,
+                isInlined,
+                accessControl,
+                name,
+                expression,
+                returnType,
+                typeParams
+            ))
 
 [<AutoOpen>]
 module ValueBuilders =
@@ -265,6 +292,10 @@ type ValueModifiers =
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<ValueNode>, returnType: Type) =
         this.AddScalar(Value.Return.WithValue(returnType))
+
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<ValueNode>, typeParams: TyparDecls) =
+        this.AddScalar(Value.TypeParams.WithValue(typeParams))
 
 [<Extension>]
 type ValueYieldExtensions =

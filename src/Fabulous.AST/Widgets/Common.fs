@@ -468,3 +468,91 @@ module Auxiliary =
                     Range.Zero
                 )
             )
+
+    type TyparDecls with
+        static member inline Postfix(decl: string) =
+            TyparDecls.PostfixList(
+                TyparDeclsPostfixListNode(
+                    SingleTextNode.lessThan,
+                    [ TyparDeclNode(None, SingleTextNode.Create decl, [], Range.Zero) ],
+                    [],
+                    SingleTextNode.greaterThan,
+                    Range.Zero
+                )
+            )
+
+        static member inline Postfix(decls: string list) =
+            TyparDecls.PostfixList(
+                TyparDeclsPostfixListNode(
+                    SingleTextNode.lessThan,
+                    [ for v in decls do
+                          TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                    [],
+                    SingleTextNode.greaterThan,
+                    Range.Zero
+                )
+            )
+
+        static member inline Postfix(decl: TyparDeclNode) =
+            TyparDecls.PostfixList(
+                TyparDeclsPostfixListNode(SingleTextNode.lessThan, [ decl ], [], SingleTextNode.greaterThan, Range.Zero)
+            )
+
+        static member inline Postfix(decls: TyparDeclNode list) =
+            TyparDecls.PostfixList(
+                TyparDeclsPostfixListNode(
+                    SingleTextNode.lessThan,
+                    [ for v in decls do
+                          v ],
+                    [],
+                    SingleTextNode.greaterThan,
+                    Range.Zero
+                )
+            )
+
+        static member inline Prefix(decl: string) =
+            TyparDecls.PrefixList(
+                TyparDeclsPrefixListNode(
+                    SingleTextNode.leftParenthesis,
+                    [ TyparDeclNode(None, SingleTextNode.Create decl, [], Range.Zero) ],
+                    SingleTextNode.rightParenthesis,
+                    Range.Zero
+                )
+            )
+
+        static member inline Prefix(decls: string list) =
+            TyparDecls.PrefixList(
+                TyparDeclsPrefixListNode(
+                    SingleTextNode.leftParenthesis,
+                    [ for v in decls do
+                          TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                    SingleTextNode.rightParenthesis,
+                    Range.Zero
+                )
+            )
+
+        static member inline Prefix(decl: TyparDeclNode) =
+            TyparDecls.PrefixList(
+                TyparDeclsPrefixListNode(
+                    SingleTextNode.leftParenthesis,
+                    [ decl ],
+                    SingleTextNode.rightParenthesis,
+                    Range.Zero
+                )
+            )
+
+        static member inline Prefix(decls: TyparDeclNode list) =
+            TyparDecls.PrefixList(
+                TyparDeclsPrefixListNode(
+                    SingleTextNode.leftParenthesis,
+                    [ for v in decls do
+                          v ],
+                    SingleTextNode.rightParenthesis,
+                    Range.Zero
+                )
+            )
+
+        static member inline Single(decl: string) =
+            TyparDecls.SinglePrefix(TyparDeclNode(None, SingleTextNode.Create decl, [], Range.Zero))
+
+        static member inline Single(decl: TyparDeclNode) = TyparDecls.SinglePrefix(decl)
