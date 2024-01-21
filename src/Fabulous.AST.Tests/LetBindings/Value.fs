@@ -85,37 +85,6 @@ let x:'T = 12
 """
 
     [<Test>]
-    let ``Simple Let binding inlined`` () =
-        AnonymousModule() { InlinedValue("x", "12") }
-        |> produces
-            """
-
-let inline x = 12
-
-"""
-
-    [<Test>]
-    let ``Simple Let binding inlined with return type`` () =
-        AnonymousModule() { InlinedValue("x", "12").returnType(CommonType.Int32) }
-        |> produces
-            """
-
-let inline x: int = 12
-
-"""
-
-    [<Test>]
-    let ``Simple Let binding inlined with an expression`` () =
-        AnonymousModule() { InlinedValue("x", Expr.Constant(Constant.Text("12"))) }
-        |> produces
-            """
-
-let inline x = 12
-
-"""
-
-
-    [<Test>]
     let ``Simple Let private binding`` () =
         AnonymousModule() { Value("x", "12").toPrivate() }
         |> produces

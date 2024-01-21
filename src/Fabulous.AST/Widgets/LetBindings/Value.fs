@@ -58,9 +58,11 @@ module Value =
 
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
-            let xmlDoc =
+            let xmlDocs =
                 match lines with
-                | ValueSome value -> Some(XmlDocNode((value |> Array.ofList), Range.Zero))
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
                 | ValueNone -> None
 
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
@@ -91,7 +93,7 @@ module Value =
                 | ValueNone -> None
 
             ValueNode(
-                xmlDoc,
+                xmlDocs,
                 multipleAttributes,
                 isMutable,
                 isInlined,
@@ -232,40 +234,6 @@ module ValueBuilders =
 
         static member inline MutableValue(name: string, value: Expr) =
             Ast.MutableValue(SingleTextNode.Create(name), value)
-
-        static member inline InlinedValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<SingleTextNode>) =
-            WidgetBuilder<ValueNode>(
-                Value.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Value.IsInlined.WithValue(true)),
-                    ValueSome
-                        [| Value.Name.WithValue(name.Compile())
-                           Value.Value.WithValue(value.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member inline InlinedValue(name: SingleTextNode, value: SingleTextNode) =
-            Ast.InlinedValue(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
-
-        static member inline InlinedValue(name: string, value: string) =
-            Ast.InlinedValue(SingleTextNode.Create(name), SingleTextNode.Create(value))
-
-        static member inline InlinedValue(name: WidgetBuilder<SingleTextNode>, value: Expr) =
-            WidgetBuilder<ValueNode>(
-                Value.WidgetExprKey,
-                AttributesBundle(
-                    StackList.two(Value.IsInlined.WithValue(true), Value.ValueExpr.WithValue(value)),
-                    ValueSome [| Value.Name.WithValue(name.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member inline InlinedValue(name: SingleTextNode, value: Expr) =
-            Ast.InlinedValue(Ast.EscapeHatch(name), value)
-
-        static member inline InlinedValue(name: string, value: Expr) =
-            Ast.InlinedValue(SingleTextNode.Create(name), value)
 
 [<Extension>]
 type ValueModifiers =
