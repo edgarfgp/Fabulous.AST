@@ -106,7 +106,7 @@ let internal x = 12
 
     [<Test>]
     let ``Simple Let binding with a single xml doc`` () =
-        AnonymousModule() { Value("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        AnonymousModule() { Value("x", "12").xmlDocs([ "This is a comment" ]) }
         |> produces
             """
 
@@ -120,9 +120,9 @@ let x = 12
         AnonymousModule() {
             Value("x", "12")
                 .xmlDocs(
-                    [ "/// This is a fist comment"
-                      "/// This is a second comment"
-                      "/// This is a third comment" ]
+                    [ "This is a fist comment"
+                      "This is a second comment"
+                      "This is a third comment" ]
                 )
 
         }
