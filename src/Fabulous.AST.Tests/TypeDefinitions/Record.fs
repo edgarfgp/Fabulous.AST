@@ -44,3 +44,65 @@ type Colors =
       Blue: int }
 
 """
+
+    [<Test>]
+    let ``Produces a generic record`` () =
+        AnonymousModule() {
+            GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkLongIdent("'other"))
+                Field("Yellow", CommonType.Int32)
+            }
+        }
+
+        |> produces
+            """
+
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+"""
+
+    [<Test>]
+    let ``Produces a struct generic record`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkLongIdent("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .attributes([ "Struct" ])
+        }
+
+        |> produces
+            """
+[<Struct>]
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+"""
+
+    [<Test>]
+    let ``Produces an obsolete struct generic record`` () =
+        AnonymousModule() {
+            (GenericRecord("Colors", [ "'other" ]) {
+                Field("Green", CommonType.String)
+                Field("Blue", CommonType.mkLongIdent("'other"))
+                Field("Yellow", CommonType.Int32)
+            })
+                .attributes([ "Struct"; "Obsolete" ])
+        }
+
+        |> produces
+            """
+[<Struct; Obsolete>]
+type Colors<'other> =
+    { Green: string
+      Blue: 'other
+      Yellow: int }
+
+"""

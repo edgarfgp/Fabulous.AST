@@ -31,7 +31,6 @@
         <Compile Include="TypeDefinitions\UnitsOfMeasure.fs" />
         <Compile Include="TypeDefinitions\Enum.fs" />
         <Compile Include="TypeDefinitions\Record.fs" />
-        <Compile Include="TypeDefinitions\GenericRecord.fs" />
         <Compile Include="TypeDefinitions\Class.fs" />
         <Compile Include="TypeDefinitions\GenericClass.fs" />
         <Compile Include="TypeDefinitions\ClassEnd.fs" />
