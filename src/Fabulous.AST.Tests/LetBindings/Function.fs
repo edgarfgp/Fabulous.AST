@@ -14,10 +14,10 @@ module Function =
     let ``Produces a function with parameters`` () =
         let thenExpr =
             Expr.Constant(
-                Constant.Unit(UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero))
+                Constant.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
             )
 
-        AnonymousModule() { Function("x", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) } }
+        AnonymousModule() { Function("x", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) } }
         |> produces
             """
 
@@ -33,7 +33,7 @@ let x i = ()
             )
 
         AnonymousModule() {
-            (Function("x", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) })
+            (Function("x", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) })
                 .attributes([ """Obsolete("Use bar instead")""" ])
         }
         |> produces
@@ -51,7 +51,7 @@ let x i = ()
             )
 
         AnonymousModule() {
-            (Function("x", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) })
+            (Function("x", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) })
                 .xmlDocs([ "Im a function" ])
         }
         |> produces
@@ -69,7 +69,7 @@ let x i = ()
             )
 
         AnonymousModule() {
-            (Function("x", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) })
+            (Function("x", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) })
                 .returnType(CommonType.Unit)
         }
         |> produces
@@ -86,7 +86,7 @@ let x i : unit = ()
             )
 
         AnonymousModule() {
-            (Function("foo", []) { EscapeHatch(thenExpr) })
+            (Function("foo", Parameters([], false)) { EscapeHatch(thenExpr) })
                 .returnType(CommonType.Unit)
                 .typeParams(TyparDecls.Prefix([ "x:'T"; " i:'U" ]))
         }
@@ -103,7 +103,7 @@ let foo(x:'T,  i:'U) : unit = ()
                 Constant.Unit(UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero))
             )
 
-        AnonymousModule() { InlinedFunction("x", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) } }
+        AnonymousModule() { InlinedFunction("x", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) } }
         |> produces
             """
 
@@ -119,13 +119,13 @@ let inline x i = ()
             )
 
         AnonymousModule() {
-            (Function("x", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) })
+            (Function("x", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) })
                 .toPublic()
 
-            (Function("y", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) })
+            (Function("y", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) })
                 .toPrivate()
 
-            (Function("z", [ Pattern.CreateNamed("i") ]) { EscapeHatch(thenExpr) })
+            (Function("z", Parameters([ ("i", None) ], false)) { EscapeHatch(thenExpr) })
                 .toInternal()
         }
         |> produces

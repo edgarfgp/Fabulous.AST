@@ -55,6 +55,7 @@ module Auxiliary =
         let ``lazy`` = SingleTextNode.Create "lazy"
         let ``null`` = SingleTextNode.Create "null"
         let ``struct`` = SingleTextNode.Create "struct"
+        let empty = SingleTextNode.Create ""
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =

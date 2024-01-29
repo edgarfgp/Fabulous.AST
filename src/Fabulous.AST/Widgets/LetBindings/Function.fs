@@ -29,7 +29,7 @@ type FunctionNode
 
 module Function =
     let Name = Attributes.defineWidget "Name"
-    let Parameters = Attributes.defineScalar "Value"
+    let Parameters = Attributes.defineWidget "Value"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
     let IsInlined = Attributes.defineScalar "IsInlined"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
@@ -41,7 +41,7 @@ module Function =
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
             let name = Helpers.getNodeFromWidget widget Name
-            let parameters = Helpers.getScalarValue widget Parameters
+            let parameters = Helpers.getNodeFromWidget<Pattern> widget Parameters
             let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
 
             let isInlined =
@@ -90,7 +90,7 @@ module Function =
 
             FunctionNode(
                 name,
-                parameters,
+                [ parameters ],
                 bodyExpr,
                 isInlined,
                 accessControl,
@@ -104,40 +104,49 @@ module Function =
 module FunctionBuilders =
     type Ast with
 
-        static member inline Function(name: WidgetBuilder<SingleTextNode>, parameters: Pattern list) =
-            SingleChildBuilder<FunctionNode, Expr>(
-                Function.WidgetKey,
-                Function.BodyExpr,
-                AttributesBundle(
-                    StackList.one(Function.Parameters.WithValue(parameters)),
-                    ValueSome [| (Function.Name.WithValue(name.Compile())) |],
-                    ValueNone
-                )
-            )
+        static member inline Function(name: SingleTextNode, parameters: Pattern) =
+            Ast.Function(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
 
-        static member inline Function(name: SingleTextNode, parameters: Pattern list) =
-            Ast.Function(Ast.EscapeHatch(name), parameters)
-
-        static member inline Function(name: string, parameters: Pattern list) =
+        static member inline Function(name: string, parameters: Pattern) =
             Ast.Function(SingleTextNode.Create(name), parameters)
 
+        static member Function(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.Function(EscapeHatch(SingleTextNode.Create(name)), parameters)
 
-        static member inline InlinedFunction(name: WidgetBuilder<SingleTextNode>, parameters: Pattern list) =
+        static member Function(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
             SingleChildBuilder<FunctionNode, Expr>(
                 Function.WidgetKey,
                 Function.BodyExpr,
                 AttributesBundle(
-                    StackList.two(Function.Parameters.WithValue(parameters), Function.IsInlined.WithValue(true)),
-                    ValueSome [| (Function.Name.WithValue(name.Compile())) |],
+                    StackList.empty(),
+                    ValueSome
+                        [| Function.Name.WithValue(name.Compile())
+                           Function.Parameters.WithValue(parameters.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member inline InlinedFunction(name: SingleTextNode, parameters: Pattern list) =
-            Ast.InlinedFunction(Ast.EscapeHatch(name), parameters)
+        static member inline InlinedFunction(name: SingleTextNode, parameters: Pattern) =
+            Ast.InlinedFunction(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
 
-        static member inline InlinedFunction(name: string, parameters: Pattern list) =
+        static member inline InlinedFunction(name: string, parameters: Pattern) =
             Ast.InlinedFunction(SingleTextNode.Create(name), parameters)
+
+        static member InlinedFunction(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.InlinedFunction(EscapeHatch(SingleTextNode.Create(name)), parameters)
+
+        static member InlinedFunction(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
+            SingleChildBuilder<FunctionNode, Expr>(
+                Function.WidgetKey,
+                Function.BodyExpr,
+                AttributesBundle(
+                    StackList.one(Function.IsInlined.WithValue(true)),
+                    ValueSome
+                        [| Function.Name.WithValue(name.Compile())
+                           Function.Parameters.WithValue(parameters.Compile()) |],
+                    ValueNone
+                )
+            )
 
 [<Extension>]
 type FunctionModifiers =
