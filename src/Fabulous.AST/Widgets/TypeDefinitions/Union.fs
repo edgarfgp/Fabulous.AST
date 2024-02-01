@@ -11,7 +11,8 @@ type UnionTypeDefnUnionNode
         name: SingleTextNode,
         multipleAttributes: MultipleAttributeListNode option,
         unionCaseNode: UnionCaseNode list,
-        members: MemberDefn list
+        members: MemberDefn list,
+        typeParams: TyparDecls option
     ) =
     inherit
         TypeDefnUnionNode(
@@ -21,7 +22,7 @@ type UnionTypeDefnUnionNode
                 SingleTextNode.``type``,
                 None,
                 IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
-                None,
+                typeParams,
                 [],
                 None,
                 Some(SingleTextNode.equals),
@@ -44,6 +45,8 @@ module Union =
 
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
+    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -65,23 +68,56 @@ module Union =
                 | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
-            UnionTypeDefnUnionNode(name, multipleAttributes, unionCaseNode, members))
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values ->
+                    TyparDeclsPostfixListNode(
+                        SingleTextNode.lessThan,
+                        [ for v in values do
+                              // FIXME - Update
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                        [],
+                        SingleTextNode.greaterThan,
+                        Range.Zero
+                    )
+                    |> TyparDecls.PostfixList
+                    |> Some
+                | ValueNone -> None
+
+            UnionTypeDefnUnionNode(name, multipleAttributes, unionCaseNode, members, typeParams))
 
 [<AutoOpen>]
 module UnionBuilders =
     type Ast with
+        static member inline private BaseUnion(name: WidgetBuilder<#SingleTextNode>, typeParams: string list voption) =
+            let scalars =
+                match typeParams with
+                | ValueNone -> StackList.empty()
+                | ValueSome typeParams -> StackList.one(Union.TypeParams.WithValue(typeParams))
 
-        static member inline Union(name: WidgetBuilder<#SingleTextNode>) =
             CollectionBuilder<UnionTypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                AttributesBundle(StackList.empty(), ValueSome [| Union.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(scalars, ValueSome [| Union.Name.WithValue(name.Compile()) |], ValueNone)
             )
 
-        static member inline Union(node: SingleTextNode) = Ast.Union(Ast.EscapeHatch(node))
+        static member inline Union(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseUnion(name, ValueNone)
+
+        static member inline Union(name: SingleTextNode) = Ast.Union(Ast.EscapeHatch(name))
 
         static member inline Union(name: string) =
             Ast.Union(SingleTextNode(name, Range.Zero))
+
+        static member inline GenericUnion(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
+            Ast.BaseUnion(name, ValueSome typeParams)
+
+        static member inline GenericUnion(name: SingleTextNode, typeParams: string list) =
+            Ast.GenericUnion(Ast.EscapeHatch(name), typeParams)
+
+        static member inline GenericUnion(name: string, typeParams: string list) =
+            Ast.GenericUnion(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
 type UnionModifiers =
@@ -92,10 +128,6 @@ type UnionModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<UnionTypeDefnUnionNode>, attributes: string list) =
         this.AddScalar(Union.MultipleAttributes.WithValue(attributes))
-
-    [<Extension>]
-    static member inline isStruct(this: WidgetBuilder<UnionTypeDefnUnionNode>) =
-        UnionModifiers.attributes(this, [ "Struct" ])
 
 [<Extension>]
 type UnionYieldExtensions =
