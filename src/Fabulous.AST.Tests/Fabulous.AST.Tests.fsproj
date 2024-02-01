@@ -26,7 +26,6 @@
         <Compile Include="Members\InterfaceMember.fs" />
         <Compile Include="Members\AbstractMember.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
-        <Compile Include="TypeDefinitions\GenericUnion.fs" />
         <Compile Include="TypeDefinitions\Abbrev.fs" />
         <Compile Include="TypeDefinitions\UnitsOfMeasure.fs" />
         <Compile Include="TypeDefinitions\Enum.fs" />
