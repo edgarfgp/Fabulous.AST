@@ -12,7 +12,8 @@ type ClassTypeDefnRegularNode
         name: SingleTextNode,
         implicitConstructor: ImplicitConstructorNode option,
         members: MemberDefn list,
-        multipleAttributes: MultipleAttributeListNode option
+        multipleAttributes: MultipleAttributeListNode option,
+        typeParams
     ) =
     inherit
         TypeDefnRegularNode(
@@ -22,7 +23,7 @@ type ClassTypeDefnRegularNode
                 SingleTextNode.``type``,
                 Some(name),
                 IdentListNode([], Range.Zero),
-                None,
+                typeParams,
                 [],
                 implicitConstructor,
                 Some(SingleTextNode.equals),
@@ -38,6 +39,7 @@ module Class =
     let Parameters = Attributes.defineScalar<SimplePatNode list> "Parameters"
     let Members = Attributes.defineWidgetCollection "Members"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
     let WidgetKey =
         Widgets.register "Class" (fun widget ->
@@ -45,6 +47,23 @@ module Class =
             let parameters = Helpers.tryGetScalarValue widget Parameters
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values ->
+                    TyparDeclsPostfixListNode(
+                        SingleTextNode.lessThan,
+                        [ for v in values do
+                              // FIXME - Update
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                        [],
+                        SingleTextNode.greaterThan,
+                        Range.Zero
+                    )
+                    |> TyparDecls.PostfixList
+                    |> Some
+                | ValueNone -> None
 
             let multipleAttributes =
                 match attributes with
@@ -95,43 +114,44 @@ module Class =
                         )
                     )
 
-            ClassTypeDefnRegularNode(name, implicitConstructor, members, multipleAttributes))
+            ClassTypeDefnRegularNode(name, implicitConstructor, members, multipleAttributes, typeParams))
 
 [<AutoOpen>]
 module ClassBuilders =
     type Ast with
+        static member inline private BaseClass(name: WidgetBuilder<#SingleTextNode>, typeParams: string list voption) =
+            let scalars =
+                match typeParams with
+                | ValueNone -> StackList.empty()
+                | ValueSome typeParams -> StackList.one(Class.TypeParams.WithValue(typeParams))
 
-        static member inline Class(name: WidgetBuilder<#SingleTextNode>) =
             CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>(
                 Class.WidgetKey,
                 Class.Members,
-                AttributesBundle(StackList.empty(), ValueSome [| Class.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(scalars, ValueSome [| Class.Name.WithValue(name.Compile()) |], ValueNone)
             )
 
-        static member inline EmptyClass(name: WidgetBuilder<#SingleTextNode>) =
-            WidgetBuilder<ClassTypeDefnRegularNode>(
-                Class.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| Class.Name.WithValue(name.Compile()) |], ValueNone)
-            )
+        static member inline Class(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseClass(name, ValueNone)
 
-        static member inline Class(node: SingleTextNode) = Ast.Class(Ast.EscapeHatch(node))
+        static member inline Class(name: SingleTextNode) = Ast.Class(Ast.EscapeHatch(name))
 
-        static member inline EmptyClass(node: SingleTextNode) = Ast.EmptyClass(Ast.EscapeHatch(node))
+        static member inline Class(name: string) =
+            Ast.Class(SingleTextNode(name, Range.Zero))
 
-        static member inline Class(name: string) = Ast.Class(SingleTextNode.Create(name))
+        static member inline GenericClass(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
+            Ast.BaseClass(name, ValueSome typeParams)
 
-        static member inline EmptyClass(name: string) =
-            Ast.EmptyClass(SingleTextNode.Create(name))
+        static member inline GenericClass(name: SingleTextNode, typeParams: string list) =
+            Ast.GenericClass(Ast.EscapeHatch(name), typeParams)
+
+        static member inline GenericClass(name: string, typeParams: string list) =
+            Ast.GenericClass(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
 type ClassModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ClassTypeDefnRegularNode>, attributes: string list) =
         this.AddScalar(Class.MultipleAttributes.WithValue(attributes))
-
-    [<Extension>]
-    static member inline isStruct(this: WidgetBuilder<ClassTypeDefnRegularNode>) =
-        ClassModifiers.attributes(this, [ "Struct" ])
 
     [<Extension>]
     static member inline implicitConstructorParameters

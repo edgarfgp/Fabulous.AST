@@ -108,7 +108,7 @@ type Person (name: string, age: int) =
 
         AnonymousModule() {
             (Class("Person") { PropertyMember("this.Name") { EscapeHatch(expr) } })
-                .isStruct()
+                .attributes([ "Struct" ])
                 .implicitConstructorParameters([ param ])
         }
         |> produces
@@ -132,6 +132,56 @@ type Person (name: string) =
             """
 [<Sealed; AbstractClass>]
 type Person () =
+    member this.Name = ""
+
+"""
+
+module GenericClass =
+    [<Test>]
+    let ``Produces a generic class`` () =
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        AnonymousModule() {
+            GenericClass("Person", [ "'a"; "'b" ]) { PropertyMember("this.Name") { EscapeHatch(expr) } }
+
+        }
+        |> produces
+            """
+type Person <'a, 'b> =
+    member this.Name = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a generic class with a constructor`` () =
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        AnonymousModule() {
+            (GenericClass("Person", [ "'a"; "'b" ]) { PropertyMember("this.Name") { EscapeHatch(expr) } })
+                .implicitConstructorParameters([])
+
+        }
+        |> produces
+            """
+type Person <'a, 'b>() =
+    member this.Name = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a struct generic class with a constructor`` () =
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+
+        AnonymousModule() {
+            (GenericClass("Person", [ "'a"; "'b" ]) { PropertyMember("this.Name") { EscapeHatch(expr) } })
+                .attributes([ "Struct" ])
+                .implicitConstructorParameters([])
+
+        }
+        |> produces
+            """
+[<Struct>]
+type Person <'a, 'b>() =
     member this.Name = ""
 
 """
