@@ -56,6 +56,8 @@ module Auxiliary =
         let ``null`` = SingleTextNode.Create "null"
         let ``struct`` = SingleTextNode.Create "struct"
         let empty = SingleTextNode.Create ""
+        let ``static`` = SingleTextNode.Create "static"
+        let ``override`` = SingleTextNode.Create "override"
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =

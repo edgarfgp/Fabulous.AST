@@ -29,7 +29,7 @@ type FunctionNode
 
 module Function =
     let Name = Attributes.defineWidget "Name"
-    let Parameters = Attributes.defineWidget "Value"
+    let Parameters = Attributes.defineWidget "Parameters"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
     let IsInlined = Attributes.defineScalar "IsInlined"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"

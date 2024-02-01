@@ -51,7 +51,9 @@ module Patterns =
 
 module Parameters =
 
-    let Parameters = Attributes.defineScalar<(string * Type option) list> "Parameters"
+    let Parameters =
+        Attributes.defineScalar<(string * Type option) list * bool> "Parameters"
+
     let HasTupledParameters = Attributes.defineScalar<bool> "HasTupledParameters"
 
     let WidgetKey =
@@ -60,13 +62,40 @@ module Parameters =
             let hasTupledParameters = Helpers.getScalarValue widget HasTupledParameters
 
             match parameters with
-            | [] -> Pattern.Unit(UnitNode(SingleTextNode.empty, SingleTextNode.empty, Range.Zero))
-            | parameters ->
+            | [], _ -> Pattern.Unit(UnitNode(SingleTextNode.empty, SingleTextNode.empty, Range.Zero))
+            | parameters, isMember ->
                 let singleParamNodes =
                     parameters
                     |> List.map(fun (pName, pType) ->
                         match pType with
+                        | None when isMember ->
+                            Pattern.Paren(
+                                PatParenNode(
+                                    SingleTextNode.leftParenthesis,
+                                    Pattern.Named(PatNamedNode(None, SingleTextNode.Create(pName), Range.Zero)),
+                                    SingleTextNode.rightParenthesis,
+                                    Range.Zero
+                                )
+                            )
                         | None -> Pattern.Named(PatNamedNode(None, SingleTextNode.Create(pName), Range.Zero))
+                        | Some _ when isMember ->
+                            Pattern.Paren(
+                                PatParenNode(
+                                    SingleTextNode.leftParenthesis,
+                                    Pattern.Parameter(
+                                        PatParameterNode(
+                                            None,
+                                            Pattern.Named(
+                                                PatNamedNode(None, SingleTextNode.Create(pName), Range.Zero)
+                                            ),
+                                            pType,
+                                            Range.Zero
+                                        )
+                                    ),
+                                    SingleTextNode.rightParenthesis,
+                                    Range.Zero
+                                )
+                            )
                         | Some _ ->
                             Pattern.Parameter(
                                 PatParameterNode(
@@ -76,6 +105,7 @@ module Parameters =
                                     Range.Zero
                                 )
                             )
+
 
                     )
 
@@ -132,6 +162,13 @@ module ParameterBuilders =
         static member inline Parameters(parameters: (string * Type option) list, hasTupled: bool) =
             WidgetBuilder<Pattern>(
                 Parameters.WidgetKey,
-                Parameters.Parameters.WithValue(parameters),
+                Parameters.Parameters.WithValue((parameters, false)),
+                Parameters.HasTupledParameters.WithValue(hasTupled)
+            )
+
+        static member inline MemberParameters(parameters: (string * Type option) list, hasTupled: bool) =
+            WidgetBuilder<Pattern>(
+                Parameters.WidgetKey,
+                Parameters.Parameters.WithValue((parameters, true)),
                 Parameters.HasTupledParameters.WithValue(hasTupled)
             )

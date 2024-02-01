@@ -18,12 +18,9 @@ module MethodMembers =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+                let expr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"\"")))
 
-                let parameters =
-                    [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
-
-                MethodMember("this.A", parameters) { EscapeHatch(expr) }
+                MethodMember("this.A", MemberParameters([ ("p", Some CommonType.String) ], false)) { EscapeHatch(expr) }
             }
         }
 
@@ -35,7 +32,7 @@ type Colors<'other> =
       Blue: 'other
       Yellow: int }
 
-    member this.A(p: string) = ""
+    member this.A (p: string) = ""
 
 """
 
@@ -50,10 +47,9 @@ type Colors<'other> =
                 .members() {
                 let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
-                let parameters =
-                    [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
-
-                StaticMethodMember("A", parameters) { EscapeHatch(expr) }
+                StaticMethodMember("A", MemberParameters([ ("p", Some CommonType.String) ], false)) {
+                    EscapeHatch(expr)
+                }
             }
         }
 
@@ -65,7 +61,7 @@ type Colors<'other> =
       Blue: 'other
       Yellow: int }
 
-    static member A(p: string) = ""
+    static member A (p: string) = ""
 
 """
 
@@ -74,13 +70,10 @@ type Colors<'other> =
 
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
-        let parameters =
-            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
-
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                MethodMember("this.A", parameters) { EscapeHatch(expr) }
+                MethodMember("this.A", MemberParameters([ ("p", Some CommonType.String) ], false)) { EscapeHatch(expr) }
             }
         }
         |> produces
@@ -89,7 +82,7 @@ type Colors<'other> =
 type Colors =
     { X: string }
 
-    member this.A(p: string) = ""
+    member this.A (p: string) = ""
 
 """
 
@@ -98,13 +91,12 @@ type Colors =
 
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
-        let parameters =
-            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("p"), Some(CommonType.String)) ]
-
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                StaticMethodMember("A", parameters) { EscapeHatch(expr) }
+                StaticMethodMember("A", MemberParameters([ ("p", Some CommonType.String) ], false)) {
+                    EscapeHatch(expr)
+                }
             }
         }
         |> produces
@@ -113,7 +105,7 @@ type Colors =
 type Colors =
     { X: string }
 
-    static member A(p: string) = ""
+    static member A (p: string) = ""
 
 """
 
@@ -123,7 +115,7 @@ type Colors =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         AnonymousModule() {
-            (Class("Person") { MethodMember("this.Name") { EscapeHatch(expr) } })
+            (Class("Person") { MethodMember("this.Name", Parameters([], false)) { EscapeHatch(expr) } })
                 .implicitConstructorParameters([])
         }
         |> produces
@@ -136,11 +128,8 @@ type Person () =
     let ``Produces a classes with a method member and parameter`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
-        let parameters =
-            [ Pattern.CreateSingleParameter(Pattern.CreateNamed("params"), Some(CommonType.String)) ]
-
         AnonymousModule() {
-            (Class("Person") { MethodMember("this.Name", parameters) { EscapeHatch(expr) } })
+            (Class("Person") { MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(expr) } })
                 .implicitConstructorParameters([])
         }
         |> produces
@@ -153,16 +142,9 @@ type Person () =
     let ``Produces a method member with tupled parameter`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
-        let parameters =
-            Pattern.CreateTupleParameters(
-                [ Pattern.CreateParameter(Pattern.CreateNamed("name"), Some(CommonType.String))
-
-                  Pattern.CreateParameter(Pattern.CreateNamed("age"), Some(CommonType.Int32)) ]
-            )
-
         AnonymousModule() {
             (Class("Person") {
-                MethodMember("this.Name", parameters) { EscapeHatch(expr) }
+                MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(expr) }
 
             })
                 .implicitConstructorParameters([])
@@ -177,15 +159,8 @@ type Person () =
     let ``Produces a method member with multiple parameter`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
-        let parameters =
-            Pattern.CreateCurriedParameters(
-                [ Pattern.CreateParameter(Pattern.CreateNamed("name"), Some(CommonType.String))
-
-                  Pattern.CreateParameter(Pattern.CreateNamed("age"), Some(CommonType.Int32)) ]
-            )
-
         AnonymousModule() {
-            (Class("Person") { MethodMember("this.Name", parameters) { EscapeHatch(expr) } })
+            (Class("Person") { MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(expr) } })
                 .implicitConstructorParameters([])
         }
         |> produces
@@ -200,7 +175,7 @@ type Person () =
 
         AnonymousModule() {
             (Class("Person") {
-                (MethodMember("this.Name") { EscapeHatch(expr) })
+                (MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(expr) })
                     .attributes([ "Obsolete" ])
             })
                 .implicitConstructorParameters([])
@@ -210,7 +185,7 @@ type Person () =
 type Person () =
     [<Obsolete>]
     member this.Name() = 23
-    
+
 """
 
     [<Test>]
@@ -219,7 +194,7 @@ type Person () =
 
         AnonymousModule() {
             (Class("Person") {
-                (MethodMember("this.Name") { EscapeHatch(expr) })
+                (MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(expr) })
                     .isInlined()
             })
                 .implicitConstructorParameters([])
@@ -236,7 +211,7 @@ type Person () =
 
         AnonymousModule() {
             (Class("Person") {
-                (MethodMember("this.Name") { EscapeHatch(expr) })
+                (MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(expr) })
                     .genericTypeParameters([ "'other" ])
             })
                 .implicitConstructorParameters([])
@@ -252,7 +227,9 @@ type Person () =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
         AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() { MethodMember("this.Name") { EscapeHatch(constExpr) } }
+            (Union("Person") { UnionCase("Name") }).members() {
+                MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(constExpr) }
+            }
 
         }
         |> produces
@@ -280,7 +257,7 @@ type Person =
                 UnionCase("Yellow")
             })
                 .members() {
-                MethodMember("this.Name") { EscapeHatch(constExpr) }
+                MethodMember("this.Name", MemberParameters([], false)) { EscapeHatch(constExpr) }
             }
 
         }
