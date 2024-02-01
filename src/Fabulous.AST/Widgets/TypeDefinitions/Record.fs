@@ -12,7 +12,8 @@ type RecordTypeDefnRecordNode
         name: SingleTextNode,
         multipleAttributes: MultipleAttributeListNode option,
         fields: FieldNode list,
-        members: MemberDefn list
+        members: MemberDefn list,
+        typeParams: TyparDecls option
     ) =
     inherit
         TypeDefnRecordNode(
@@ -22,7 +23,7 @@ type RecordTypeDefnRecordNode
                 SingleTextNode.``type``,
                 None,
                 IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
-                None,
+                typeParams,
                 [],
                 None,
                 Some(SingleTextNode.equals),
@@ -47,6 +48,8 @@ module Record =
 
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
+    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
@@ -65,23 +68,57 @@ module Record =
                 | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
-            RecordTypeDefnRecordNode(name, multipleAttributes, fields, members))
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values ->
+                    TyparDeclsPostfixListNode(
+                        SingleTextNode.lessThan,
+                        [ for v in values do
+                              // FIXME - Update
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                        [],
+                        SingleTextNode.greaterThan,
+                        Range.Zero
+                    )
+                    |> TyparDecls.PostfixList
+                    |> Some
+                | ValueNone -> None
+
+            RecordTypeDefnRecordNode(name, multipleAttributes, fields, members, typeParams))
 
 [<AutoOpen>]
 module RecordBuilders =
     type Ast with
 
-        static member inline Record(name: WidgetBuilder<#SingleTextNode>) =
+        static member inline private BaseRecord(name: WidgetBuilder<#SingleTextNode>, typeParams: string list voption) =
+            let scalars =
+                match typeParams with
+                | ValueNone -> StackList.empty()
+                | ValueSome typeParams -> StackList.one(Record.TypeParams.WithValue(typeParams))
+
             CollectionBuilder<RecordTypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
-                AttributesBundle(StackList.empty(), ValueSome [| Record.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(scalars, ValueSome [| Record.Name.WithValue(name.Compile()) |], ValueNone)
             )
+
+        static member inline Record(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseRecord(name, ValueNone)
 
         static member inline Record(name: SingleTextNode) = Ast.Record(Ast.EscapeHatch(name))
 
         static member inline Record(name: string) =
             Ast.Record(SingleTextNode(name, Range.Zero))
+
+        static member inline GenericRecord(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
+            Ast.BaseRecord(name, ValueSome typeParams)
+
+        static member inline GenericRecord(name: SingleTextNode, typeParams: string list) =
+            Ast.GenericRecord(Ast.EscapeHatch(name), typeParams)
+
+        static member inline GenericRecord(name: string, typeParams: string list) =
+            Ast.GenericRecord(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
 type RecordModifiers =
@@ -92,10 +129,6 @@ type RecordModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<RecordTypeDefnRecordNode>, attributes: string list) =
         this.AddScalar(Record.MultipleAttributes.WithValue(attributes))
-
-    [<Extension>]
-    static member inline isStruct(this: WidgetBuilder<RecordTypeDefnRecordNode>) =
-        RecordModifiers.attributes(this, [ "Struct" ])
 
 [<Extension>]
 type RecordYieldExtensions =
