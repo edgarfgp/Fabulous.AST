@@ -31,7 +31,6 @@
         <Compile Include="TypeDefinitions\Enum.fs" />
         <Compile Include="TypeDefinitions\Record.fs" />
         <Compile Include="TypeDefinitions\Class.fs" />
-        <Compile Include="TypeDefinitions\GenericClass.fs" />
         <Compile Include="TypeDefinitions\ClassEnd.fs" />
         <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="TypeDefinitions\GenericInterface.fs" />
