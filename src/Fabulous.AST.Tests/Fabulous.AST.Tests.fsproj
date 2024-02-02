@@ -33,7 +33,6 @@
         <Compile Include="TypeDefinitions\Class.fs" />
         <Compile Include="TypeDefinitions\ClassEnd.fs" />
         <Compile Include="TypeDefinitions\Interface.fs" />
-        <Compile Include="TypeDefinitions\GenericInterface.fs" />
         <Compile Include="ControlFlow\IfThen.fs" />
         <Compile Include="ControlFlow\IfThenElif.fs" />
         <Compile Include="ControlFlow\IfThenElse.fs" />

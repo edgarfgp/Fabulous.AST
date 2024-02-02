@@ -138,6 +138,13 @@ module ClassBuilders =
         static member inline Class(name: string) =
             Ast.Class(SingleTextNode(name, Range.Zero))
 
+        static member inline Interface(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseClass(name, ValueNone)
+
+        static member inline Interface(name: SingleTextNode) = Ast.Class(Ast.EscapeHatch(name))
+
+        static member inline Interface(name: string) =
+            Ast.Class(SingleTextNode(name, Range.Zero))
+
         static member inline GenericClass(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
             Ast.BaseClass(name, ValueSome typeParams)
 
@@ -145,6 +152,15 @@ module ClassBuilders =
             Ast.GenericClass(Ast.EscapeHatch(name), typeParams)
 
         static member inline GenericClass(name: string, typeParams: string list) =
+            Ast.GenericClass(SingleTextNode(name, Range.Zero), typeParams)
+
+        static member inline GenericInterface(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
+            Ast.BaseClass(name, ValueSome typeParams)
+
+        static member inline GenericInterface(name: SingleTextNode, typeParams: string list) =
+            Ast.GenericClass(Ast.EscapeHatch(name), typeParams)
+
+        static member inline GenericInterface(name: string, typeParams: string list) =
             Ast.GenericClass(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
@@ -208,6 +224,24 @@ type ClassYieldExtensions =
         (
             this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<PropertyMemberNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        ClassYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            x: MemberDefnAbstractSlotNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.AbstractSlot(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            x: WidgetBuilder<MemberDefnAbstractSlotNode>
         ) : CollectionContent =
         let node = Tree.compile x
         ClassYieldExtensions.Yield(this, node)
