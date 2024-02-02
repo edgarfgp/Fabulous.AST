@@ -130,10 +130,6 @@ type ClassEndModifiers =
         this.AddScalar(ClassEnd.MultipleAttributes.WithValue(attributes))
 
     [<Extension>]
-    static member inline isStruct(this: WidgetBuilder<TypeDefnExplicitNode>) =
-        ClassEndModifiers.attributes(this, [ "Struct" ])
-
-    [<Extension>]
     static member inline implicitConstructorParameters
         (
             this: WidgetBuilder<TypeDefnExplicitNode>,

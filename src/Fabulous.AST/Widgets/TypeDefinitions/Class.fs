@@ -7,33 +7,6 @@ open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
-type ClassTypeDefnRegularNode
-    (
-        name: SingleTextNode,
-        implicitConstructor: ImplicitConstructorNode option,
-        members: MemberDefn list,
-        multipleAttributes: MultipleAttributeListNode option,
-        typeParams
-    ) =
-    inherit
-        TypeDefnRegularNode(
-            TypeNameNode(
-                None,
-                multipleAttributes,
-                SingleTextNode.``type``,
-                Some(name),
-                IdentListNode([], Range.Zero),
-                typeParams,
-                [],
-                implicitConstructor,
-                Some(SingleTextNode.equals),
-                None,
-                Range.Zero
-            ),
-            members,
-            Range.Zero
-        )
-
 module Class =
     let Name = Attributes.defineWidget "Name"
     let Parameters = Attributes.defineScalar<SimplePatNode list> "Parameters"
@@ -42,7 +15,7 @@ module Class =
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
     let WidgetKey =
-        Widgets.register "Class" (fun widget ->
+        Widgets.register "TypeDefnRegularNode" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
             let parameters = Helpers.tryGetScalarValue widget Parameters
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
@@ -114,7 +87,23 @@ module Class =
                         )
                     )
 
-            ClassTypeDefnRegularNode(name, implicitConstructor, members, multipleAttributes, typeParams))
+            TypeDefnRegularNode(
+                TypeNameNode(
+                    None,
+                    multipleAttributes,
+                    SingleTextNode.``type``,
+                    Some(name),
+                    IdentListNode([], Range.Zero),
+                    typeParams,
+                    [],
+                    implicitConstructor,
+                    Some(SingleTextNode.equals),
+                    None,
+                    Range.Zero
+                ),
+                members,
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module ClassBuilders =
@@ -125,7 +114,7 @@ module ClassBuilders =
                 | ValueNone -> StackList.empty()
                 | ValueSome typeParams -> StackList.one(Class.TypeParams.WithValue(typeParams))
 
-            CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>(
+            CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
                 Class.WidgetKey,
                 Class.Members,
                 AttributesBundle(scalars, ValueSome [| Class.Name.WithValue(name.Compile()) |], ValueNone)
@@ -166,13 +155,13 @@ module ClassBuilders =
 [<Extension>]
 type ClassModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ClassTypeDefnRegularNode>, attributes: string list) =
+    static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attributes: string list) =
         this.AddScalar(Class.MultipleAttributes.WithValue(attributes))
 
     [<Extension>]
     static member inline implicitConstructorParameters
         (
-            this: WidgetBuilder<ClassTypeDefnRegularNode>,
+            this: WidgetBuilder<TypeDefnRegularNode>,
             parameters: SimplePatNode list
         ) =
         this.AddScalar(Class.Parameters.WithValue(parameters))
@@ -183,7 +172,7 @@ type ClassYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ClassTypeDefnRegularNode>
+            x: WidgetBuilder<TypeDefnRegularNode>
         ) : CollectionContent =
         let node = Tree.compile x
         let typeDefn = TypeDefn.Regular(node)
@@ -195,7 +184,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: MethodMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -204,7 +193,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<MethodMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -213,7 +202,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: PropertyMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -222,7 +211,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<PropertyMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -231,7 +220,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: MemberDefnAbstractSlotNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.AbstractSlot(x)).Compile()
@@ -240,7 +229,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<MemberDefnAbstractSlotNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -249,7 +238,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: InterfaceMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
@@ -258,7 +247,7 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<ClassTypeDefnRegularNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<InterfaceMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x

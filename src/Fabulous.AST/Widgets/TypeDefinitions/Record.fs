@@ -7,37 +7,6 @@ open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
-type RecordTypeDefnRecordNode
-    (
-        name: SingleTextNode,
-        multipleAttributes: MultipleAttributeListNode option,
-        fields: FieldNode list,
-        members: MemberDefn list,
-        typeParams: TyparDecls option
-    ) =
-    inherit
-        TypeDefnRecordNode(
-            TypeNameNode(
-                None,
-                multipleAttributes,
-                SingleTextNode.``type``,
-                None,
-                IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
-                typeParams,
-                [],
-                None,
-                Some(SingleTextNode.equals),
-                None,
-                Range.Zero
-            ),
-            None,
-            SingleTextNode.leftCurlyBrace,
-            fields,
-            SingleTextNode.rightCurlyBrace,
-            members,
-            Range.Zero
-        )
-
 module Record =
 
     let RecordCaseNode = Attributes.defineWidgetCollection "RecordCaseNode"
@@ -86,7 +55,27 @@ module Record =
                     |> Some
                 | ValueNone -> None
 
-            RecordTypeDefnRecordNode(name, multipleAttributes, fields, members, typeParams))
+            TypeDefnRecordNode(
+                TypeNameNode(
+                    None,
+                    multipleAttributes,
+                    SingleTextNode.``type``,
+                    None,
+                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    typeParams,
+                    [],
+                    None,
+                    Some(SingleTextNode.equals),
+                    None,
+                    Range.Zero
+                ),
+                None,
+                SingleTextNode.leftCurlyBrace,
+                fields,
+                SingleTextNode.rightCurlyBrace,
+                members,
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module RecordBuilders =
@@ -98,7 +87,7 @@ module RecordBuilders =
                 | ValueNone -> StackList.empty()
                 | ValueSome typeParams -> StackList.one(Record.TypeParams.WithValue(typeParams))
 
-            CollectionBuilder<RecordTypeDefnRecordNode, FieldNode>(
+            CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
                 AttributesBundle(scalars, ValueSome [| Record.Name.WithValue(name.Compile()) |], ValueNone)
@@ -123,11 +112,11 @@ module RecordBuilders =
 [<Extension>]
 type RecordModifiers =
     [<Extension>]
-    static member inline members(this: WidgetBuilder<RecordTypeDefnRecordNode>) =
-        AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>(this, Record.Members)
+    static member inline members(this: WidgetBuilder<TypeDefnRecordNode>) =
+        AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<RecordTypeDefnRecordNode>, attributes: string list) =
+    static member inline attributes(this: WidgetBuilder<TypeDefnRecordNode>, attributes: string list) =
         this.AddScalar(Record.MultipleAttributes.WithValue(attributes))
 
 [<Extension>]
@@ -136,7 +125,7 @@ type RecordYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<RecordTypeDefnRecordNode>
+            x: WidgetBuilder<TypeDefnRecordNode>
         ) : CollectionContent =
         let node = Tree.compile x
         let typeDefn = TypeDefn.Record(node)
@@ -145,18 +134,14 @@ type RecordYieldExtensions =
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<RecordTypeDefnRecordNode, FieldNode>,
-            x: FieldNode
-        ) : CollectionContent =
+    static member inline Yield(_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: FieldNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: PropertyMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -165,7 +150,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<PropertyMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -174,7 +159,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            _: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: PropertyMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -183,7 +168,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<PropertyMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -192,7 +177,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: MethodMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -201,7 +186,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<MethodMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -210,7 +195,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            _: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: MethodMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -219,7 +204,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<MethodMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -228,7 +213,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: InterfaceMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
@@ -237,7 +222,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<InterfaceMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -246,7 +231,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            _: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: InterfaceMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
@@ -255,7 +240,7 @@ type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: AttributeCollectionBuilder<RecordTypeDefnRecordNode, MemberDefn>,
+            this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<InterfaceMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
