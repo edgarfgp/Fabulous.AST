@@ -52,7 +52,7 @@ type Colors =
                 let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
                 InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
-                    MethodMember("x.GetValue") { EscapeHatch(expr) }
+                    MethodMember("x.GetValue", Parameters([], false)) { EscapeHatch(expr) }
                 }
             }
 
@@ -220,7 +220,7 @@ type Colors<'other> =
                 let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
                 InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
-                    MethodMember("x.GetValue") { EscapeHatch(expr) }
+                    MethodMember("x.GetValue", Parameters([ "", None ], false)) { EscapeHatch(expr) }
                 }
             }
         }
