@@ -6,35 +6,6 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
-type UnionTypeDefnUnionNode
-    (
-        name: SingleTextNode,
-        multipleAttributes: MultipleAttributeListNode option,
-        unionCaseNode: UnionCaseNode list,
-        members: MemberDefn list,
-        typeParams: TyparDecls option
-    ) =
-    inherit
-        TypeDefnUnionNode(
-            TypeNameNode(
-                None,
-                multipleAttributes,
-                SingleTextNode.``type``,
-                None,
-                IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
-                typeParams,
-                [],
-                None,
-                Some(SingleTextNode.equals),
-                None,
-                Range.Zero
-            ),
-            None,
-            unionCaseNode,
-            members,
-            Range.Zero
-        )
-
 module Union =
 
     let UnionCaseNode = Attributes.defineWidgetCollection "UnionCaseNode"
@@ -86,7 +57,25 @@ module Union =
                     |> Some
                 | ValueNone -> None
 
-            UnionTypeDefnUnionNode(name, multipleAttributes, unionCaseNode, members, typeParams))
+            TypeDefnUnionNode(
+                TypeNameNode(
+                    None,
+                    multipleAttributes,
+                    SingleTextNode.``type``,
+                    None,
+                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    typeParams,
+                    [],
+                    None,
+                    Some(SingleTextNode.equals),
+                    None,
+                    Range.Zero
+                ),
+                None,
+                unionCaseNode,
+                members,
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module UnionBuilders =
@@ -97,7 +86,7 @@ module UnionBuilders =
                 | ValueNone -> StackList.empty()
                 | ValueSome typeParams -> StackList.one(Union.TypeParams.WithValue(typeParams))
 
-            CollectionBuilder<UnionTypeDefnUnionNode, UnionCaseNode>(
+            CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
                 AttributesBundle(scalars, ValueSome [| Union.Name.WithValue(name.Compile()) |], ValueNone)
@@ -122,11 +111,11 @@ module UnionBuilders =
 [<Extension>]
 type UnionModifiers =
     [<Extension>]
-    static member inline members(this: WidgetBuilder<UnionTypeDefnUnionNode>) =
-        AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>(this, Union.Members)
+    static member inline members(this: WidgetBuilder<TypeDefnUnionNode>) =
+        AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<UnionTypeDefnUnionNode>, attributes: string list) =
+    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes: string list) =
         this.AddScalar(Union.MultipleAttributes.WithValue(attributes))
 
 [<Extension>]
@@ -135,7 +124,7 @@ type UnionYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<UnionTypeDefnUnionNode>
+            x: WidgetBuilder<TypeDefnUnionNode>
         ) : CollectionContent =
         let node = Tree.compile x
         let typeDefn = TypeDefn.Union(node)
@@ -148,7 +137,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<UnionTypeDefnUnionNode, UnionCaseNode>,
+            _: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>,
             x: WidgetBuilder<UnionParameterizedCaseNode>
         ) : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }
@@ -156,7 +145,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: MethodMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -165,7 +154,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: WidgetBuilder<MethodMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -174,7 +163,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            _: CollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: PropertyMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -183,7 +172,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            this: CollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: WidgetBuilder<PropertyMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -192,7 +181,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: WidgetBuilder<PropertyMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -202,7 +191,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: MethodMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -211,7 +200,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            this: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: WidgetBuilder<MethodMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -220,7 +209,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: InterfaceMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
@@ -229,7 +218,7 @@ type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: AttributeCollectionBuilder<UnionTypeDefnUnionNode, MemberDefn>,
+            this: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: WidgetBuilder<InterfaceMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
