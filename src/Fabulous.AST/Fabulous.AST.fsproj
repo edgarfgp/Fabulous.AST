@@ -43,6 +43,7 @@
         <Compile Include="Widgets\Condition.fs" />
         <Compile Include="Widgets\CommonYieldExtensions.fs" />
         <Compile Include="Widgets\Patterns\Pattern.fs" />
+        <Compile Include="Widgets\Expressions\Expr.fs" />
         <Compile Include="Widgets\Namespaces\ParsedHashDirective.fs" />
         <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
         <Compile Include="Widgets\Namespaces\Namespace.fs" />
@@ -51,8 +52,6 @@
         <Compile Include="Widgets\OpenDirectives\Open.fs" />
         <Compile Include="Widgets\OpenDirectives\OpenType.fs" />
         <Compile Include="Widgets\LetBindings\Value.fs" />
-        <Compile Include="Widgets\LetBindings\Literal.fs" />
-        <Compile Include="Widgets\LetBindings\Function.fs" />
         <Compile Include="Widgets\Members\PropertyMember.fs" />
         <Compile Include="Widgets\Members\MethodMember.fs" />
         <Compile Include="Widgets\Members\InterfaceMember.fs" />

@@ -11,7 +11,7 @@ open type Ast
 module Literal =
     [<Test>]
     let ``Produces a Literal constant`` () =
-        AnonymousModule() { Literal("x", "12") }
+        AnonymousModule() { Value("x", "12").attributes([ "Literal" ]) }
         |> produces
             """
 [<Literal>]
@@ -29,7 +29,7 @@ let x = 12
 
         AnonymousModule() {
             for name, value in images do
-                Literal(name, $"\"{value}\"")
+                Value(name, $"\"{value}\"").attributes([ "Literal" ])
         }
         |> produces
             """
@@ -49,7 +49,11 @@ let Sunflower = "sunflower.png"
 
     [<Test>]
     let ``Produces a Literal constant with xml docs`` () =
-        AnonymousModule() { Literal("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        AnonymousModule() {
+            Value("x", "12")
+                .attributes([ "Literal" ])
+                .xmlDocs([ "This is a comment" ])
+        }
         |> produces
             """
 /// This is a comment
@@ -60,7 +64,7 @@ let x = 12
 
     [<Test>]
     let ``Produces Literal constant with an access control `` () =
-        AnonymousModule() { Literal("x", "12").accessibility(AccessControl.Internal) }
+        AnonymousModule() { Value("x", "12").attributes([ "Literal" ]).toInternal() }
         |> produces
             """
 

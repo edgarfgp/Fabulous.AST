@@ -43,10 +43,8 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with type params Postfix`` () =
         AnonymousModule() {
-            Value("x", "12").typeParams(TyparDecls.Postfix("'T"))
-
-            Value("x", "12")
-                .typeParams(TyparDecls.Postfix([ "'a"; "'b"; "'c" ]))
+            Value("x", [ "'T" ], "12")
+            Value("x", [ "'a"; "'b"; "'c" ], "12")
         }
         |> produces
             """
@@ -59,29 +57,26 @@ let x<'a, 'b, 'c> = 12
     [<Test>]
     let ``Simple Let binding with type params Prefix`` () =
         AnonymousModule() {
-            Value("x", "12").typeParams(TyparDecls.Prefix("f:'T"))
-
-            Value("x", "12")
-                .typeParams(TyparDecls.Prefix([ "f: 'a"; "g: 'b"; "h:'c" ]))
+            Value("x", [ "'T" ], "12")
+            Value("x", [ "'a"; "'b"; "'c" ], "12")
         }
         |> produces
             """
-let x(f:'T) = 12
-let x(f: 'a, g: 'b, h:'c) = 12
+let x<'T> = 12
+let x<'a, 'b, 'c> = 12
 """
 
     [<Test>]
     let ``Simple Let binding with type params SinglePrefix`` () =
         AnonymousModule() {
-            Value("x", "12").typeParams(TyparDecls.Single(":'T"))
+            Value("x", [ "'T" ], "12")
 
-            Value("x", "12")
-                .typeParams(TyparDecls.Single(TyparDeclNode(None, SingleTextNode.Create ":'T", [], Range.Zero)))
+            Value("x", [ "'T" ], "12")
         }
         |> produces
             """
-let x:'T = 12
-let x:'T = 12
+let x<'T> = 12
+let x<'T> = 12
 """
 
     [<Test>]

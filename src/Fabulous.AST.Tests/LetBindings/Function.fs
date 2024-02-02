@@ -86,13 +86,21 @@ let x i : unit = ()
             )
 
         AnonymousModule() {
-            (Function("foo", Parameters([], false)) { EscapeHatch(thenExpr) })
+            (Function(
+                "foo",
+                Parameters(
+                    [ ("x", Some(CommonType.mkLongIdent("'T")))
+                      ("i", Some(CommonType.mkLongIdent("'U"))) ],
+                    true
+                )
+            ) {
+                EscapeHatch(thenExpr)
+            })
                 .returnType(CommonType.Unit)
-                .typeParams(TyparDecls.Prefix([ "x:'T"; " i:'U" ]))
         }
         |> produces
             """
-let foo(x:'T,  i:'U) : unit = ()
+let foo (x: 'T, i: 'U) : unit = ()
 
 """
 
