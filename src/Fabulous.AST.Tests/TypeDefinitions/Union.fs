@@ -49,11 +49,7 @@ type Colors =
                 UnionCase("Yellow")
             })
                 .members() {
-                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
-
-                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
-                    MethodMember("x.GetValue") { EscapeHatch(expr) }
-                }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("\"\"") } }
             }
 
         }
@@ -217,11 +213,7 @@ type Colors<'other> =
                 UnionCase("Yellow")
             })
                 .members() {
-                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
-
-                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
-                    MethodMember("x.GetValue") { EscapeHatch(expr) }
-                }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("\"\"") } }
             }
         }
 

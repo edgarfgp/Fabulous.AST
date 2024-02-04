@@ -47,7 +47,6 @@ module Union =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              // FIXME - Update
                               TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
@@ -210,7 +209,7 @@ type UnionParameterizedCaseYieldExtensions =
     static member inline Yield
         (
             _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
-            x: InterfaceMemberNode
+            x: MemberDefnInterfaceNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
@@ -219,7 +218,7 @@ type UnionParameterizedCaseYieldExtensions =
     static member inline Yield
         (
             this: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
-            x: WidgetBuilder<InterfaceMemberNode>
+            x: WidgetBuilder<MemberDefnInterfaceNode>
         ) : CollectionContent =
         let node = Tree.compile x
         UnionParameterizedCaseYieldExtensions.Yield(this, node)

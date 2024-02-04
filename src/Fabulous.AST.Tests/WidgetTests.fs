@@ -13,7 +13,7 @@ module WidgetTests =
         let source =
             """
 
-[<Measure>] type ml = cm^3
+let ``a`` = 0
 
 """
 

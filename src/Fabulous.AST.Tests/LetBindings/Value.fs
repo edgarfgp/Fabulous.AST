@@ -21,18 +21,67 @@ let x = 12
 """
 
     [<Test>]
-    let ``Simple Let binding inlined`` () =
-        AnonymousModule() { Value("x", "12").isInlined() }
+    let ``Simple Let binding with return type`` () =
+        AnonymousModule() { Value("x", "12").returnType(CommonType.Int32) }
         |> produces
             """
 
-let inline x = 12
+let x: int = 12
 
 """
 
     [<Test>]
+    let ``Simple Let binding with an expression`` () =
+        AnonymousModule() { Value("x", Expr.Constant(Constant.Text("12"))) }
+        |> produces
+            """
+
+let x = 12
+
+"""
+
+    [<Test>]
+    let ``Simple Let binding with type params Postfix`` () =
+        AnonymousModule() {
+            Value("x", [ "'T" ], "12")
+            Value("x", [ "'a"; "'b"; "'c" ], "12")
+        }
+        |> produces
+            """
+
+let x<'T> = 12
+let x<'a, 'b, 'c> = 12
+
+"""
+
+    [<Test>]
+    let ``Simple Let binding with type params Prefix`` () =
+        AnonymousModule() {
+            Value("x", [ "'T" ], "12")
+            Value("x", [ "'a"; "'b"; "'c" ], "12")
+        }
+        |> produces
+            """
+let x<'T> = 12
+let x<'a, 'b, 'c> = 12
+"""
+
+    [<Test>]
+    let ``Simple Let binding with type params SinglePrefix`` () =
+        AnonymousModule() {
+            Value("x", [ "'T" ], Constant("12"))
+
+            Value("x", [ "'T" ], "12")
+        }
+        |> produces
+            """
+let x<'T> = 12
+let x<'T> = 12
+"""
+
+    [<Test>]
     let ``Simple Let private binding`` () =
-        AnonymousModule() { Value("x", "12").accessibility(AccessControl.Private) }
+        AnonymousModule() { Value("x", "12").toPrivate() }
         |> produces
             """
 
@@ -42,7 +91,7 @@ let private x = 12
 
     [<Test>]
     let ``Simple Let internal binding`` () =
-        AnonymousModule() { Value("x", "12").accessibility(AccessControl.Internal) }
+        AnonymousModule() { Value("x", "12").toInternal() }
         |> produces
             """
 
@@ -52,7 +101,7 @@ let internal x = 12
 
     [<Test>]
     let ``Simple Let binding with a single xml doc`` () =
-        AnonymousModule() { Value("x", "12").xmlDocs([ "/// This is a comment" ]) }
+        AnonymousModule() { Value("x", "12").xmlDocs([ "This is a comment" ]) }
         |> produces
             """
 
@@ -66,9 +115,9 @@ let x = 12
         AnonymousModule() {
             Value("x", "12")
                 .xmlDocs(
-                    [ "/// This is a fist comment"
-                      "/// This is a second comment"
-                      "/// This is a third comment" ]
+                    [ "This is a fist comment"
+                      "This is a second comment"
+                      "This is a third comment" ]
                 )
 
         }
@@ -163,7 +212,27 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        AnonymousModule() { Value("x", "12").isMutable() }
+        AnonymousModule() { MutableValue("x", "12") }
+        |> produces
+            """
+        
+let mutable x = 12
+
+"""
+
+    [<Test>]
+    let ``Produces a top level mutable let binding with return type`` () =
+        AnonymousModule() { MutableValue("x", "12").returnType(CommonType.Int32) }
+        |> produces
+            """
+        
+let mutable x: int = 12
+
+"""
+
+    [<Test>]
+    let ``Produces a top level mutable let binding with an expression`` () =
+        AnonymousModule() { MutableValue("x", Expr.Constant(Constant.Text("12"))) }
         |> produces
             """
         
