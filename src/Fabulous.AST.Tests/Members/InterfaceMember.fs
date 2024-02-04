@@ -22,12 +22,7 @@ module InterfaceMembers =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                let expr =
-                    Expr.Constant(Constant.FromText(SingleTextNode("x.MyField2", Range.Zero)))
-
-                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
-                    MethodMember("x.GetValue", Parameters([], false)) { EscapeHatch(expr) }
-                }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("x.MyField2") } }
             }
         }
 
@@ -60,12 +55,7 @@ type Colors<'other> =
                 Field("MyField2", CommonType.String)
             })
                 .members() {
-                let expr =
-                    Expr.Constant(Constant.FromText(SingleTextNode("x.MyField2", Range.Zero)))
-
-                InterfaceMember(CommonType.mkLongIdent("IMyInterface")) {
-                    MethodMember("x.GetValue", Parameters([], false)) { EscapeHatch(expr) }
-                }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("x.MyField2") } }
             }
         }
         |> produces
@@ -84,14 +74,10 @@ type MyRecord =
 
     [<Test>]
     let ``Produces a class with a interface member`` () =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"23\"", Range.Zero)))
-
         AnonymousModule() {
             Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
 
-            (Class("Person") {
-                InterfaceMember(CommonType.mkLongIdent("Meh")) { PropertyMember("this.Name") { EscapeHatch(expr) } }
-            })
+            (Class("Person") { InterfaceMember("Meh") { PropertyMember("this.Name") { Constant("\"23\"") } } })
                 .implicitConstructorParameters([])
         }
         |> produces

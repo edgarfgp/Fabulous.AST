@@ -97,8 +97,7 @@ module RecordBuilders =
 
         static member inline Record(name: SingleTextNode) = Ast.Record(Ast.EscapeHatch(name))
 
-        static member inline Record(name: string) =
-            Ast.Record(SingleTextNode(name, Range.Zero))
+        static member inline Record(name: string) = Ast.Record(SingleTextNode.Create(name))
 
         static member inline GenericRecord(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
             Ast.BaseRecord(name, ValueSome typeParams)
@@ -214,7 +213,7 @@ type RecordYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: InterfaceMemberNode
+            x: MemberDefnInterfaceNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
@@ -223,7 +222,7 @@ type RecordYieldExtensions =
     static member inline Yield
         (
             this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: WidgetBuilder<InterfaceMemberNode>
+            x: WidgetBuilder<MemberDefnInterfaceNode>
         ) : CollectionContent =
         let node = Tree.compile x
         RecordYieldExtensions.Yield(this, node)
@@ -232,7 +231,7 @@ type RecordYieldExtensions =
     static member inline Yield
         (
             _: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: InterfaceMemberNode
+            x: MemberDefnInterfaceNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
@@ -241,7 +240,7 @@ type RecordYieldExtensions =
     static member inline Yield
         (
             this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: WidgetBuilder<InterfaceMemberNode>
+            x: WidgetBuilder<MemberDefnInterfaceNode>
         ) : CollectionContent =
         let node = Tree.compile x
         RecordYieldExtensions.Yield(this, node)

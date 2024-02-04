@@ -50,10 +50,18 @@ module MethodMember =
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
-            let parameters = Helpers.getNodeFromWidget<Pattern> widget Parameters
+
+            let parameters =
+                match Helpers.tryGetNodeFromWidget<Pattern> widget Parameters with
+                | ValueSome parameters -> [ parameters ]
+                | ValueNone -> []
+
             let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
             let isInlined = Helpers.tryGetScalarValue widget IsInlined
-            let isStatic = Helpers.tryGetScalarValue widget IsStatic
+
+            let isStatic =
+                Helpers.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
+
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
             let returnType = Helpers.tryGetScalarValue widget ReturnType
             let lines = Helpers.tryGetScalarValue widget XmlDocs
@@ -121,8 +129,6 @@ module MethodMember =
                 | ValueNone -> None
 
             let multipleTextsNode =
-                let isStatic = defaultValueArg isStatic false
-
                 [ if isStatic then
                       SingleTextNode.``static``
                       SingleTextNode.``member``
@@ -134,7 +140,7 @@ module MethodMember =
                 accessControl,
                 functionName,
                 bodyExpr,
-                [ parameters ],
+                parameters,
                 returnType,
                 multipleAttributes,
                 inlineNode,
@@ -145,6 +151,38 @@ module MethodMember =
 [<AutoOpen>]
 module MemberBuilders =
     type Ast with
+
+        static member private BaseMethodMember
+            (
+                name: WidgetBuilder<SingleTextNode>,
+                parameters: WidgetBuilder<Pattern> voption,
+                isStatic: bool
+            ) =
+            let widgets =
+                match parameters with
+                | ValueSome parameters ->
+                    ValueSome
+                        [| MethodMember.Name.WithValue(name.Compile())
+                           MethodMember.Parameters.WithValue(parameters.Compile()) |]
+                | ValueNone -> ValueSome [| MethodMember.Name.WithValue(name.Compile()) |]
+
+            SingleChildBuilder<MethodMemberNode, Expr>(
+                MethodMember.WidgetKey,
+                MethodMember.BodyExpr,
+                AttributesBundle(StackList.one(MethodMember.IsStatic.WithValue(isStatic)), widgets, ValueNone)
+            )
+
+        static member MethodMember(name: WidgetBuilder<SingleTextNode>) =
+            Ast.BaseMethodMember(name, ValueNone, false)
+
+        static member MethodMember(name: SingleTextNode) = Ast.MethodMember(Ast.EscapeHatch(name))
+
+        static member MethodMember(name: string) =
+            Ast.MethodMember(SingleTextNode.Create(name))
+
+        static member MethodMember(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseMethodMember(name, ValueSome parameters, false)
+
         static member inline MethodMember(name: SingleTextNode, parameters: Pattern) =
             Ast.MethodMember(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
 
@@ -154,40 +192,26 @@ module MemberBuilders =
         static member MethodMember(name: string, parameters: WidgetBuilder<Pattern>) =
             Ast.MethodMember(Ast.EscapeHatch(SingleTextNode.Create(name)), parameters)
 
-        static member MethodMember(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
-            SingleChildBuilder<MethodMemberNode, Expr>(
-                MethodMember.WidgetKey,
-                MethodMember.BodyExpr,
-                AttributesBundle(
-                    StackList.one(MethodMember.IsStatic.WithValue(false)),
-                    ValueSome
-                        [| MethodMember.Name.WithValue(name.Compile())
-                           MethodMember.Parameters.WithValue(parameters.Compile()) |],
-                    ValueNone
-                )
-            )
+        static member StaticMethodMember(name: WidgetBuilder<SingleTextNode>) =
+            Ast.BaseMethodMember(name, ValueNone, true)
+
+        static member StaticMethodMember(name: SingleTextNode) =
+            Ast.StaticMethodMember(Ast.EscapeHatch(name))
+
+        static member StaticMethodMember(name: string) =
+            Ast.StaticMethodMember(SingleTextNode.Create(name))
+
+        static member StaticMethodMember(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseMethodMember(name, ValueSome parameters, true)
 
         static member inline StaticMethodMember(name: SingleTextNode, parameters: Pattern) =
             Ast.StaticMethodMember(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
 
         static member inline StaticMethodMember(name: string, parameters: Pattern) =
-            Ast.MethodMember(SingleTextNode.Create(name), parameters)
+            Ast.StaticMethodMember(SingleTextNode.Create(name), parameters)
 
         static member StaticMethodMember(name: string, parameters: WidgetBuilder<Pattern>) =
             Ast.StaticMethodMember(Ast.EscapeHatch(SingleTextNode.Create(name)), parameters)
-
-        static member StaticMethodMember(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
-            SingleChildBuilder<MethodMemberNode, Expr>(
-                MethodMember.WidgetKey,
-                MethodMember.BodyExpr,
-                AttributesBundle(
-                    StackList.one(MethodMember.IsStatic.WithValue(true)),
-                    ValueSome
-                        [| MethodMember.Name.WithValue(name.Compile())
-                           MethodMember.Parameters.WithValue(parameters.Compile()) |],
-                    ValueNone
-                )
-            )
 
 [<Extension>]
 type MethodMemberModifiers =

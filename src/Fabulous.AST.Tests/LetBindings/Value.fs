@@ -69,7 +69,7 @@ let x<'a, 'b, 'c> = 12
     [<Test>]
     let ``Simple Let binding with type params SinglePrefix`` () =
         AnonymousModule() {
-            Value("x", [ "'T" ], "12")
+            Value("x", [ "'T" ], Constant("12"))
 
             Value("x", [ "'T" ], "12")
         }

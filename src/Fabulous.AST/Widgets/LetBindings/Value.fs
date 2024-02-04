@@ -142,6 +142,8 @@ module ValueBuilders =
         static member Value(name: SingleTextNode, value: Expr) =
             Ast.Value(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
 
+        static member Value(name: SingleTextNode, value: WidgetBuilder<Expr>) = Ast.Value(Ast.EscapeHatch(name), value)
+
         static member Value(name: string, value: Expr) =
             Ast.Value(SingleTextNode.Create(name), value)
 
@@ -149,13 +151,16 @@ module ValueBuilders =
             Ast.Value(EscapeHatch(SingleTextNode.Create(name)), value)
 
         static member Value(name: string, value: string) =
-            Ast.Value(SingleTextNode.Create(name), Expr.CreatConstant(value))
+            Ast.Value(SingleTextNode.Create(name), Constant(value)) //Expr.Constant(Constant.FromText(SingleTextNode.Create(value))))
 
         static member Value(name: WidgetBuilder<SingleTextNode>, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, value, false, false, ValueSome typeParams)
 
         static member Value(name: SingleTextNode, typeParams: string list, value: Expr) =
             Ast.Value(Ast.EscapeHatch(name), typeParams, Ast.EscapeHatch(value))
+
+        static member Value(name: SingleTextNode, typeParams: string list, value: WidgetBuilder<Expr>) =
+            Ast.Value(Ast.EscapeHatch(name), typeParams, value)
 
         static member Value(name: string, typeParams: string list, value: Expr) =
             Ast.Value(SingleTextNode.Create(name), typeParams, value)
@@ -164,13 +169,16 @@ module ValueBuilders =
             Ast.Value(EscapeHatch(SingleTextNode.Create(name)), typeParams, value)
 
         static member Value(name: string, typeParams: string list, value: string) =
-            Ast.Value(SingleTextNode.Create(name), typeParams, Expr.CreatConstant(value))
+            Ast.Value(SingleTextNode.Create(name), typeParams, Constant(value))
 
         static member MutableValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, value, true, false, ValueNone)
 
         static member MutableValue(name: SingleTextNode, value: Expr) =
             Ast.MutableValue(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
+
+        static member MutableValue(name: SingleTextNode, value: WidgetBuilder<Expr>) =
+            Ast.MutableValue(Ast.EscapeHatch(name), value)
 
         static member MutableValue(name: string, value: Expr) =
             Ast.MutableValue(SingleTextNode.Create(name), value)
@@ -179,13 +187,16 @@ module ValueBuilders =
             Ast.MutableValue(EscapeHatch(SingleTextNode.Create(name)), value)
 
         static member MutableValue(name: string, value: string) =
-            Ast.MutableValue(SingleTextNode.Create(name), Expr.CreatConstant(value))
+            Ast.MutableValue(SingleTextNode.Create(name), Constant(value))
 
         static member InlinedValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, value, false, true, ValueNone)
 
         static member InlinedValue(name: SingleTextNode, value: Expr) =
             Ast.InlinedValue(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
+
+        static member InlinedValue(name: SingleTextNode, value: WidgetBuilder<Expr>) =
+            Ast.InlinedValue(Ast.EscapeHatch(name), value)
 
         static member InlinedValue(name: string, value: Expr) =
             Ast.InlinedValue(SingleTextNode.Create(name), value)
@@ -194,7 +205,7 @@ module ValueBuilders =
             Ast.InlinedValue(EscapeHatch(SingleTextNode.Create(name)), value)
 
         static member InlinedValue(name: string, value: string) =
-            Ast.InlinedValue(SingleTextNode.Create(name), Expr.CreatConstant(value))
+            Ast.InlinedValue(SingleTextNode.Create(name), Constant(value))
 
         static member InlinedValue
             (
@@ -207,6 +218,9 @@ module ValueBuilders =
         static member InlinedValue(name: SingleTextNode, typeParams: string list, value: Expr) =
             Ast.InlinedValue(Ast.EscapeHatch(name), typeParams, Ast.EscapeHatch(value))
 
+        static member InlinedValue(name: SingleTextNode, typeParams: string list, value: WidgetBuilder<Expr>) =
+            Ast.InlinedValue(Ast.EscapeHatch(name), typeParams, value)
+
         static member InlinedValue(name: string, typeParams: string list, value: Expr) =
             Ast.InlinedValue(SingleTextNode.Create(name), typeParams, value)
 
@@ -214,7 +228,7 @@ module ValueBuilders =
             Ast.InlinedValue(EscapeHatch(SingleTextNode.Create(name)), typeParams, value)
 
         static member InlinedValue(name: string, typeParams: string list, value: string) =
-            Ast.InlinedValue(SingleTextNode.Create(name), typeParams, Expr.CreatConstant(value))
+            Ast.InlinedValue(SingleTextNode.Create(name), typeParams, Constant(value))
 
         static member private BaseFunction
             (

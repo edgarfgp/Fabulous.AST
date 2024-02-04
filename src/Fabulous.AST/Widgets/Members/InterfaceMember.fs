@@ -6,16 +6,6 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
-type InterfaceMemberNode(``type``: Type, members: MemberDefn list) =
-    inherit
-        MemberDefnInterfaceNode(
-            SingleTextNode.``interface``,
-            ``type``,
-            Some(SingleTextNode.``with``),
-            members,
-            Range.Zero
-        )
-
 module InterfaceMember =
     let Type = Attributes.defineScalar<Type> "Type"
 
@@ -31,25 +21,34 @@ module InterfaceMember =
                 | Some members -> members
                 | None -> []
 
-            InterfaceMemberNode(``type``, members))
+            MemberDefnInterfaceNode(
+                SingleTextNode.``interface``,
+                ``type``,
+                Some(SingleTextNode.``with``),
+                members,
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module InterfaceMemberBuilders =
     type Ast with
 
         static member InterfaceMember(``type``: Type) =
-            CollectionBuilder<InterfaceMemberNode, MemberDefn>(
+            CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
                 AttributesBundle(StackList.one(InterfaceMember.Type.WithValue(``type``)), ValueNone, ValueNone)
             )
+
+        static member InterfaceMember(``type``: string) =
+            Ast.InterfaceMember(CommonType.mkLongIdent(``type``))
 
 [<Extension>]
 type InterfaceMemberYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<InterfaceMemberNode, MemberDefn>,
+            _: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>,
             x: MethodMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -58,7 +57,7 @@ type InterfaceMemberYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<InterfaceMemberNode, MemberDefn>,
+            this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>,
             x: WidgetBuilder<MethodMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x
@@ -67,7 +66,7 @@ type InterfaceMemberYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            _: CollectionBuilder<InterfaceMemberNode, MemberDefn>,
+            _: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>,
             x: PropertyMemberNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -76,7 +75,7 @@ type InterfaceMemberYieldExtensions =
     [<Extension>]
     static member inline Yield
         (
-            this: CollectionBuilder<InterfaceMemberNode, MemberDefn>,
+            this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>,
             x: WidgetBuilder<PropertyMemberNode>
         ) : CollectionContent =
         let node = Tree.compile x

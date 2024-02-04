@@ -58,6 +58,12 @@ module Auxiliary =
         let empty = SingleTextNode.Create ""
         let ``static`` = SingleTextNode.Create "static"
         let ``override`` = SingleTextNode.Create "override"
+        let leftQuotation = SingleTextNode.Create "<@"
+        let rightQuotation = SingleTextNode.Create "@>"
+        let leftBracket = SingleTextNode.Create "["
+        let rightBracket = SingleTextNode.Create "]"
+        let rightArray = SingleTextNode.Create "|]"
+        let leftArray = SingleTextNode.Create "[|"
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =
