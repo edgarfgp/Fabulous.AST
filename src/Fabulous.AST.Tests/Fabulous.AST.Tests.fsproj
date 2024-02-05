@@ -37,6 +37,18 @@
         <Compile Include="ControlFlow\IfThenElif.fs" />
         <Compile Include="ControlFlow\IfThenElse.fs" />
         <Compile Include="ControlFlow\ControlFlow.fs" />
+        <Compile Include="Expressions\Lazy.fs" />
+        <Compile Include="Expressions\Quoted.fs" />
+        <Compile Include="Expressions\Paren.fs" />
+        <Compile Include="Expressions\Typed.fs" />
+        <Compile Include="Expressions\Single.fs" />
+        <Compile Include="Expressions\New.fs" />
+        <Compile Include="Expressions\Tuple.fs" />
+        <Compile Include="Expressions\StructTuple.fs" />
+        <Compile Include="Expressions\ArrayOrList.fs" />
+        <Compile Include="Expressions\App.fs" />
+        <Compile Include="Expressions\Match.fs" />
+        <Compile Include="Expressions\InfixApp.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

@@ -20,7 +20,7 @@ module Value =
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Parameters = Attributes.defineWidget "Parameters"
 
-    let WidgetKey =
+    let WidgetNameTextNodeKey =
         Widgets.register "Value" (fun widget ->
             let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
             let value = Helpers.getNodeFromWidget<Expr> widget Value
@@ -104,6 +104,91 @@ module Value =
                 Range.Zero
             ))
 
+    let WidgetNamePatternKey =
+        Widgets.register "Value" (fun widget ->
+            let name = Helpers.getNodeFromWidget<Pattern> widget Name
+            let value = Helpers.getNodeFromWidget<Expr> widget Value
+            let parameters = Helpers.tryGetNodeFromWidget<Pattern> widget Parameters
+
+            let accessControl =
+                Helpers.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
+            let lines = Helpers.tryGetScalarValue widget XmlDocs
+
+            let xmlDocs =
+                match lines with
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
+                | ValueNone -> None
+
+            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueNone -> None
+
+            let isMutable =
+                Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue false
+
+            let isInlined =
+                Helpers.tryGetScalarValue widget IsInlined |> ValueOption.defaultValue false
+
+            let returnType = Helpers.tryGetScalarValue widget Return
+
+            let returnType =
+                match returnType with
+                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
+                | ValueNone -> None
+
+            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let typeParams =
+                match typeParams with
+                | ValueSome values ->
+                    TyparDeclsPostfixListNode(
+                        SingleTextNode.lessThan,
+                        [ for v in values do
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                        [],
+                        SingleTextNode.greaterThan,
+                        Range.Zero
+                    )
+                    |> TyparDecls.PostfixList
+                    |> Some
+                | ValueNone -> None
+
+            let parameters =
+                match parameters with
+                | ValueSome parameters -> [ parameters ]
+                | ValueNone -> []
+
+            BindingNode(
+                xmlDocs,
+                multipleAttributes,
+                MultipleTextsNode([ SingleTextNode.``let`` ], Range.Zero),
+                isMutable,
+                (if isInlined then Some(SingleTextNode.``inline``) else None),
+                accessControl,
+                Choice2Of2(name),
+                typeParams,
+                parameters,
+                returnType,
+                SingleTextNode.equals,
+                value,
+                Range.Zero
+            ))
+
+
 [<AutoOpen>]
 module ValueBuilders =
     type Ast with
@@ -126,7 +211,36 @@ module ValueBuilders =
                     )
 
             WidgetBuilder<BindingNode>(
-                Value.WidgetKey,
+                Value.WidgetNameTextNodeKey,
+                AttributesBundle(
+                    scalars,
+                    ValueSome
+                        [| Value.Name.WithValue(name.Compile())
+                           Value.Value.WithValue(value.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member private BasePatternValue
+            (
+                name: WidgetBuilder<Pattern>,
+                value: WidgetBuilder<Expr>,
+                isMutable: bool,
+                isInlined: bool,
+                typeParams: string list voption
+            ) =
+            let scalars =
+                match typeParams with
+                | ValueNone -> StackList.two(Value.IsMutable.WithValue(isMutable), Value.IsInlined.WithValue(isInlined))
+                | ValueSome typeParams ->
+                    StackList.three(
+                        Value.IsMutable.WithValue(isMutable),
+                        Value.IsInlined.WithValue(isInlined),
+                        Value.TypeParams.WithValue(typeParams)
+                    )
+
+            WidgetBuilder<BindingNode>(
+                Value.WidgetNamePatternKey,
                 AttributesBundle(
                     scalars,
                     ValueSome
@@ -151,7 +265,7 @@ module ValueBuilders =
             Ast.Value(EscapeHatch(SingleTextNode.Create(name)), value)
 
         static member Value(name: string, value: string) =
-            Ast.Value(SingleTextNode.Create(name), Constant(value)) //Expr.Constant(Constant.FromText(SingleTextNode.Create(value))))
+            Ast.Value(SingleTextNode.Create(name), ConstantExpr(value)) //Expr.Constant(Constant.FromText(SingleTextNode.Create(value))))
 
         static member Value(name: WidgetBuilder<SingleTextNode>, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, value, false, false, ValueSome typeParams)
@@ -169,7 +283,10 @@ module ValueBuilders =
             Ast.Value(EscapeHatch(SingleTextNode.Create(name)), typeParams, value)
 
         static member Value(name: string, typeParams: string list, value: string) =
-            Ast.Value(SingleTextNode.Create(name), typeParams, Constant(value))
+            Ast.Value(SingleTextNode.Create(name), typeParams, ConstantExpr(value))
+
+        static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.BasePatternValue(name, value, false, false, ValueNone)
 
         static member MutableValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, value, true, false, ValueNone)
@@ -187,7 +304,7 @@ module ValueBuilders =
             Ast.MutableValue(EscapeHatch(SingleTextNode.Create(name)), value)
 
         static member MutableValue(name: string, value: string) =
-            Ast.MutableValue(SingleTextNode.Create(name), Constant(value))
+            Ast.MutableValue(SingleTextNode.Create(name), ConstantExpr(value))
 
         static member InlinedValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, value, false, true, ValueNone)
@@ -205,7 +322,7 @@ module ValueBuilders =
             Ast.InlinedValue(EscapeHatch(SingleTextNode.Create(name)), value)
 
         static member InlinedValue(name: string, value: string) =
-            Ast.InlinedValue(SingleTextNode.Create(name), Constant(value))
+            Ast.InlinedValue(SingleTextNode.Create(name), ConstantExpr(value))
 
         static member InlinedValue
             (
@@ -228,7 +345,7 @@ module ValueBuilders =
             Ast.InlinedValue(EscapeHatch(SingleTextNode.Create(name)), typeParams, value)
 
         static member InlinedValue(name: string, typeParams: string list, value: string) =
-            Ast.InlinedValue(SingleTextNode.Create(name), typeParams, Constant(value))
+            Ast.InlinedValue(SingleTextNode.Create(name), typeParams, ConstantExpr(value))
 
         static member private BaseFunction
             (
@@ -244,7 +361,7 @@ module ValueBuilders =
                     StackList.two(Value.IsInlined.WithValue(isInlined), Value.TypeParams.WithValue(typeParams))
 
             SingleChildBuilder<BindingNode, Expr>(
-                Value.WidgetKey,
+                Value.WidgetNameTextNodeKey,
                 Value.Value,
                 AttributesBundle(
                     scalars,

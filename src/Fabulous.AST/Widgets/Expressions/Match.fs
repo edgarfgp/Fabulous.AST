@@ -18,20 +18,14 @@ module Match =
                 Helpers.getNodesFromWidgetCollection<MatchClauseNode> widget MatchClauses
 
             Expr.Match(
-                ExprMatchNode(
-                    SingleTextNode("match", Range.Zero),
-                    matchExpr,
-                    SingleTextNode("with", Range.Zero),
-                    matchClauses,
-                    Range.Zero
-                )
+                ExprMatchNode(SingleTextNode.``match``, matchExpr, SingleTextNode.``with``, matchClauses, Range.Zero)
             ))
 
 [<AutoOpen>]
 module MatchBuilders =
     type Ast with
 
-        static member inline Match(matchExpr: WidgetBuilder<Expr>) =
+        static member inline MatchExpr(matchExpr: WidgetBuilder<Expr>) =
             CollectionBuilder<Expr, MatchClauseNode>(
                 Match.WidgetKey,
                 Match.MatchClauses,

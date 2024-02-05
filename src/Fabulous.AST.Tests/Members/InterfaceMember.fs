@@ -22,7 +22,7 @@ module InterfaceMembers =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("x.MyField2") } }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("x.MyField2") } }
             }
         }
 
@@ -55,7 +55,7 @@ type Colors<'other> =
                 Field("MyField2", CommonType.String)
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("x.MyField2") } }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("x.MyField2") } }
             }
         }
         |> produces
@@ -77,7 +77,7 @@ type MyRecord =
         AnonymousModule() {
             Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
 
-            (Class("Person") { InterfaceMember("Meh") { PropertyMember("this.Name") { Constant("\"23\"") } } })
+            (Class("Person") { InterfaceMember("Meh") { PropertyMember("this.Name") { ConstantExpr("\"23\"") } } })
                 .implicitConstructorParameters([])
         }
         |> produces

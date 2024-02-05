@@ -5,13 +5,13 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module MatchClause =
-    let PatternNamed = Attributes.defineScalar "PatternNamed"
+    let PatternNamed = Attributes.defineWidget "PatternNamed"
     let WhenExpr = Attributes.defineWidget "WhenExpr"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
 
     let WidgetKey =
         Widgets.register "MatchClause" (fun widget ->
-            let patternNamed = Helpers.getScalarValue widget PatternNamed
+            let pattern = Helpers.getNodeFromWidget<Pattern> widget PatternNamed
             let whenExpr = Helpers.tryGetNodeFromWidget<Expr> widget WhenExpr
             let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
 
@@ -21,10 +21,10 @@ module MatchClause =
                 | ValueSome value -> Some value
 
             MatchClauseNode(
-                Some(SingleTextNode("|", Range.Zero)),
-                Pattern.Named(PatNamedNode(None, SingleTextNode(patternNamed, Range.Zero), Range.Zero)),
+                Some(SingleTextNode.bar),
+                pattern,
                 whenExpr,
-                SingleTextNode("->", Range.Zero),
+                SingleTextNode.rightArrow,
                 bodyExpr,
                 Range.Zero
             ))
@@ -33,29 +33,32 @@ module MatchClause =
 module MatchClauseBuilders =
     type Ast with
 
-        static member inline MatchClause
+        static member inline MatchClauseExpr
             (
-                patternNamed: string,
+                pattern: WidgetBuilder<Pattern>,
                 whenExpr: WidgetBuilder<Expr>,
                 bodyExpr: WidgetBuilder<Expr>
             ) =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
                 AttributesBundle(
-                    StackList.one(MatchClause.PatternNamed.WithValue(patternNamed)),
+                    StackList.empty(),
                     ValueSome
-                        [| MatchClause.WhenExpr.WithValue(whenExpr.Compile())
+                        [| MatchClause.PatternNamed.WithValue(pattern.Compile())
+                           MatchClause.WhenExpr.WithValue(whenExpr.Compile())
                            MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member inline MatchClause(patternNamed: string, bodyExpr: WidgetBuilder<Expr>) =
+        static member inline MatchClauseExpr(pattern: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
                 AttributesBundle(
-                    StackList.one(MatchClause.PatternNamed.WithValue(patternNamed)),
-                    ValueSome [| MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    StackList.empty(),
+                    ValueSome
+                        [| MatchClause.PatternNamed.WithValue(pattern.Compile())
+                           MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     ValueNone
                 )
             )

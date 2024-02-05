@@ -10,7 +10,7 @@ module Pattern =
     let Parameters = Attributes.defineWidgetCollection "Parameters"
     let HasTupledParameters = Attributes.defineScalar<bool> "HasTupledParameters"
     let Value = Attributes.defineWidget "Value"
-    let Type = Attributes.defineScalar<Type> "Type"
+    let Type = Attributes.defineScalar<Type option> "Type"
 
     let WidgetSingleKey =
         Widgets.register "Parameters" (fun widget ->
@@ -24,10 +24,21 @@ module Pattern =
 
             let typeValue =
                 match typeValue with
-                | ValueSome t -> Some t
+                | ValueSome t -> t
                 | ValueNone -> None
 
             Pattern.Parameter(PatParameterNode(None, value, typeValue, Range.Zero)))
+
+    let WidgetTupleKey =
+        Widgets.register "Pattern" (fun widget ->
+            let values = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
+
+            let values =
+                values
+                |> List.map Choice1Of2
+                |> List.intersperse(Choice2Of2(SingleTextNode.comma))
+
+            Pattern.Tuple(PatTupleNode(values, Range.Zero)))
 
     let WidgetKey =
         Widgets.register "Pattern" (fun widget ->
@@ -117,19 +128,44 @@ module PatternBuilders =
                 Ast.EscapeHatch(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value), Range.Zero)))
             )
 
+        static member Tuple() =
+            CollectionBuilder<Pattern, Pattern>(
+                Pattern.WidgetTupleKey,
+                Pattern.Parameters,
+                Pattern.HasTupledParameters.WithValue(false)
+            )
+
         static member Parameter(name: WidgetBuilder<Pattern>, pType: Type) =
             WidgetBuilder<Pattern>(
                 Pattern.WidgetParameterKey,
                 AttributesBundle(
-                    StackList.one(Pattern.Type.WithValue(pType)),
+                    StackList.one(Pattern.Type.WithValue(Some pType)),
                     ValueSome [| Pattern.Value.WithValue(name.Compile()) |],
                     ValueNone
                 )
             )
 
+        static member Parameter(name: WidgetBuilder<Pattern>) =
+            WidgetBuilder<Pattern>(
+                Pattern.WidgetParameterKey,
+                AttributesBundle(
+                    StackList.one(Pattern.Type.WithValue(None)),
+                    ValueSome [| Pattern.Value.WithValue(name.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member Parameter(name: string, pType: Type) =
+            Ast.Parameter(
+                Ast.EscapeHatch(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(name), Range.Zero))),
+                pType
+            )
+
         static member Parameter(name: WidgetBuilder<Pattern>, pType: string) =
             Ast.Parameter(name, CommonType.mkLongIdent pType)
 
+        static member Parameter(name: string, pType: string) =
+            Ast.Parameter(name, CommonType.mkLongIdent pType)
 
         static member inline Parameters(isTupled: bool) =
             CollectionBuilder<Pattern, Pattern>(

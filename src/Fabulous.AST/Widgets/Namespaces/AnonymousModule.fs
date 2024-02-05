@@ -56,3 +56,10 @@ type AnonymousModuleExtensions =
         let node = Tree.compile x
         let widget = Ast.EscapeHatch(node).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<Expr>) : CollectionContent =
+        let node = Tree.compile x
+        let moduleDecl = ModuleDecl.DeclExpr(node)
+        let widget = Ast.EscapeHatch(moduleDecl).Compile()
+        { Widgets = MutStackArray1.One(widget) }

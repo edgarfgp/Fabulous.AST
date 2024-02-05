@@ -21,6 +21,29 @@ let x = 12
 """
 
     [<Test>]
+    let ``Simple value with tuple pattern`` () =
+        AnonymousModule() {
+            Value(
+                Tuple() {
+                    Named("x")
+                    Named("y")
+                    Named("z")
+                },
+                TupleExpr() {
+                    ConstantExpr("1")
+                    ConstantExpr("2")
+                    ConstantExpr("3")
+                }
+            )
+        }
+        |> produces
+            """
+
+let x, y, z = 1, 2, 3
+
+"""
+
+    [<Test>]
     let ``Simple Let binding with return type`` () =
         AnonymousModule() { Value("x", "12").returnType(CommonType.Int32) }
         |> produces
@@ -69,7 +92,7 @@ let x<'a, 'b, 'c> = 12
     [<Test>]
     let ``Simple Let binding with type params SinglePrefix`` () =
         AnonymousModule() {
-            Value("x", [ "'T" ], Constant("12"))
+            Value("x", [ "'T" ], ConstantExpr("12"))
 
             Value("x", [ "'T" ], "12")
         }

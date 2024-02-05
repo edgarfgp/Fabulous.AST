@@ -64,6 +64,9 @@ module Auxiliary =
         let rightBracket = SingleTextNode.Create "]"
         let rightArray = SingleTextNode.Create "|]"
         let leftArray = SingleTextNode.Create "[|"
+        let ``match`` = SingleTextNode.Create "match"
+        let bar = SingleTextNode.Create "|"
+
 
     type IdentifierOrDot =
         static member inline CreateIdent(idText: string) =

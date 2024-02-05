@@ -49,7 +49,7 @@ type Colors =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("\"\"") } }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("\"\"") } }
             }
 
         }
@@ -213,7 +213,7 @@ type Colors<'other> =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { Constant("\"\"") } }
+                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("\"\"") } }
             }
         }
 

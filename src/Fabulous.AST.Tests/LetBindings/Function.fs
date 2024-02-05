@@ -141,11 +141,11 @@ let x i : unit = ()
             (Function(
                 "foo",
                 Parameters(true) {
-                    Parameter(Named("x"), "'T")
+                    Parameter("x", "'T")
                     Parameter(Named("i"), "'U")
                 }
             ) {
-                Constant(UnitExpr())
+                ConstantExpr(UnitExpr())
             })
                 .returnType(CommonType.Unit)
         }
