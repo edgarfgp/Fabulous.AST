@@ -18,7 +18,7 @@ module Match =
                     ConstantExpr("2")
                 }
             ) {
-                MatchClauseExpr(Named("a"), ConstantExpr("3"))
+                MatchClauseExpr(NamedPat("a"), ConstantExpr("3"))
             }
         }
         |> produces

@@ -24,10 +24,10 @@ let x = 12
     let ``Simple value with tuple pattern`` () =
         AnonymousModule() {
             Value(
-                Tuple() {
-                    Named("x")
-                    Named("y")
-                    Named("z")
+                TuplePat() {
+                    NamedPat("x")
+                    NamedPat("y")
+                    NamedPat("z")
                 },
                 TupleExpr() {
                     ConstantExpr("1")

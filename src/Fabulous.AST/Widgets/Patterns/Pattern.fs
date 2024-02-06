@@ -7,104 +7,81 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Pattern =
-    let Parameters = Attributes.defineWidgetCollection "Parameters"
-    let HasTupledParameters = Attributes.defineScalar<bool> "HasTupledParameters"
+    // let Parameters = Attributes.defineWidgetCollection "Parameters"
+    // let HasTupledParameters = Attributes.defineScalar<bool> "HasTupledParameters"
     let Value = Attributes.defineWidget "Value"
-    let Type = Attributes.defineScalar<Type option> "Type"
+    // let Type = Attributes.defineScalar<Type option> "Type"
 
-    let WidgetSingleKey =
+    let WidgetKey =
         Widgets.register "Parameters" (fun widget ->
             let value = Helpers.getNodeFromWidget widget Value
             value)
 
-    let WidgetParameterKey =
-        Widgets.register "Parameters" (fun widget ->
-            let value = Helpers.getNodeFromWidget widget Value
-            let typeValue = Helpers.tryGetScalarValue widget Type
-
-            let typeValue =
-                match typeValue with
-                | ValueSome t -> t
-                | ValueNone -> None
-
-            Pattern.Parameter(PatParameterNode(None, value, typeValue, Range.Zero)))
-
-    let WidgetTupleKey =
-        Widgets.register "Pattern" (fun widget ->
-            let values = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
-
-            let values =
-                values
-                |> List.map Choice1Of2
-                |> List.intersperse(Choice2Of2(SingleTextNode.comma))
-
-            Pattern.Tuple(PatTupleNode(values, Range.Zero)))
-
-    let WidgetKey =
-        Widgets.register "Pattern" (fun widget ->
-            let values = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
-            let isTupled = Helpers.getScalarValue widget HasTupledParameters
-
-            if isTupled then
-                match values with
-                | [] ->
-                    Pattern.LongIdent(PatLongIdentNode(None, IdentListNode([], Range.Zero), None, values, Range.Zero))
-                | [ pNode ] ->
-                    match pNode with
-                    | Pattern.Parameter(pParamNode) when pParamNode.Type.IsSome ->
-                        Pattern.Paren(
-                            PatParenNode(
-                                SingleTextNode.leftParenthesis,
-                                pNode,
-                                SingleTextNode.rightParenthesis,
-                                Range.Zero
-                            )
-                        )
-                    | pNode ->
-                        Pattern.LongIdent(
-                            PatLongIdentNode(None, IdentListNode([], Range.Zero), None, [ pNode ], Range.Zero)
-                        )
-                | patterns ->
-                    patterns
-                    |> List.map Choice1Of2
-                    |> List.intersperse(Choice2Of2(SingleTextNode.comma))
-                    |> (fun p -> PatTupleNode(p, Range.Zero))
-                    |> Pattern.Tuple
-                    |> (fun pNode ->
-                        Pattern.Paren(
-                            PatParenNode(
-                                SingleTextNode.leftParenthesis,
-                                pNode,
-                                SingleTextNode.rightParenthesis,
-                                Range.Zero
-                            )
-                        ))
-            else
-                match values with
-                | [] ->
-                    Pattern.LongIdent(PatLongIdentNode(None, IdentListNode([], Range.Zero), None, values, Range.Zero))
-                | [ pNode ] ->
-                    Pattern.LongIdent(
-                        PatLongIdentNode(None, IdentListNode([], Range.Zero), None, [ pNode ], Range.Zero)
-                    )
-                | patterns ->
-                    patterns
-                    |> List.map(fun pNode ->
-                        match pNode with
-                        | Pattern.Named nd -> Pattern.Named nd
-                        | pNode ->
-                            Pattern.Paren(
-                                PatParenNode(
-                                    SingleTextNode.leftParenthesis,
-                                    pNode,
-                                    SingleTextNode.rightParenthesis,
-                                    Range.Zero
-                                )
-                            ))
-                    |> (fun pNodes ->
-                        Pattern.LongIdent(
-                            PatLongIdentNode(None, IdentListNode([], Range.Zero), None, pNodes, Range.Zero)
-                        )))
+// let WidgetKey =
+//     Widgets.register "Pattern" (fun widget ->
+//         let values = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
+//         let isTupled = Helpers.getScalarValue widget HasTupledParameters
+//
+//         if isTupled then
+//             match values with
+//             | [] ->
+//                 Pattern.LongIdent(PatLongIdentNode(None, IdentListNode([], Range.Zero), None, values, Range.Zero))
+//             | [ pNode ] ->
+//                 match pNode with
+//                 | Pattern.Parameter(pParamNode) when pParamNode.Type.IsSome ->
+//                     Pattern.Paren(
+//                         PatParenNode(
+//                             SingleTextNode.leftParenthesis,
+//                             pNode,
+//                             SingleTextNode.rightParenthesis,
+//                             Range.Zero
+//                         )
+//                     )
+//                 | pNode ->
+//                     Pattern.LongIdent(
+//                         PatLongIdentNode(None, IdentListNode([], Range.Zero), None, [ pNode ], Range.Zero)
+//                     )
+//             | patterns ->
+//                 patterns
+//                 |> List.map Choice1Of2
+//                 |> List.intersperse(Choice2Of2(SingleTextNode.comma))
+//                 |> (fun p -> PatTupleNode(p, Range.Zero))
+//                 |> Pattern.Tuple
+//                 |> (fun pNode ->
+//                     Pattern.Paren(
+//                         PatParenNode(
+//                             SingleTextNode.leftParenthesis,
+//                             pNode,
+//                             SingleTextNode.rightParenthesis,
+//                             Range.Zero
+//                         )
+//                     ))
+//         else
+//             match values with
+//             | [] ->
+//                 Pattern.LongIdent(PatLongIdentNode(None, IdentListNode([], Range.Zero), None, values, Range.Zero))
+//             | [ pNode ] ->
+//                 Pattern.LongIdent(
+//                     PatLongIdentNode(None, IdentListNode([], Range.Zero), None, [ pNode ], Range.Zero)
+//                 )
+//             | patterns ->
+//                 patterns
+//                 |> List.map(fun pNode ->
+//                     match pNode with
+//                     | Pattern.Named nd -> Pattern.Named nd
+//                     | pNode ->
+//                         Pattern.Paren(
+//                             PatParenNode(
+//                                 SingleTextNode.leftParenthesis,
+//                                 pNode,
+//                                 SingleTextNode.rightParenthesis,
+//                                 Range.Zero
+//                             )
+//                         ))
+//                 |> (fun pNodes ->
+//                     Pattern.LongIdent(
+//                         PatLongIdentNode(None, IdentListNode([], Range.Zero), None, pNodes, Range.Zero)
+//                     )))
 
 [<AutoOpen>]
 module PatternBuilders =
@@ -112,7 +89,7 @@ module PatternBuilders =
 
         static member private BasePattern(value: WidgetBuilder<Pattern>) =
             WidgetBuilder<Pattern>(
-                Pattern.WidgetSingleKey,
+                Pattern.WidgetKey,
                 AttributesBundle(StackList.empty(), ValueSome [| Pattern.Value.WithValue(value.Compile()) |], ValueNone)
             )
 
@@ -123,58 +100,31 @@ module PatternBuilders =
                 )
             )
 
-        static member Named(value: string) =
+        static member NamedPat(value: string) =
             Ast.BasePattern(
                 Ast.EscapeHatch(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value), Range.Zero)))
             )
 
-        static member Tuple() =
-            CollectionBuilder<Pattern, Pattern>(
-                Pattern.WidgetTupleKey,
-                Pattern.Parameters,
-                Pattern.HasTupledParameters.WithValue(false)
-            )
+        static member NullPat() =
+            Ast.BasePattern(Ast.EscapeHatch(Pattern.Null(SingleTextNode.``null``)))
 
-        static member Parameter(name: WidgetBuilder<Pattern>, pType: Type) =
-            WidgetBuilder<Pattern>(
-                Pattern.WidgetParameterKey,
-                AttributesBundle(
-                    StackList.one(Pattern.Type.WithValue(Some pType)),
-                    ValueSome [| Pattern.Value.WithValue(name.Compile()) |],
-                    ValueNone
-                )
-            )
+        static member WildPat() =
+            Ast.BasePattern(Ast.EscapeHatch(Pattern.Wild(SingleTextNode.underscore)))
 
-        static member Parameter(name: WidgetBuilder<Pattern>) =
-            WidgetBuilder<Pattern>(
-                Pattern.WidgetParameterKey,
-                AttributesBundle(
-                    StackList.one(Pattern.Type.WithValue(None)),
-                    ValueSome [| Pattern.Value.WithValue(name.Compile()) |],
-                    ValueNone
-                )
-            )
+        static member ConstantPat(value: Constant) =
+            Ast.BasePattern(Ast.EscapeHatch(Pattern.Const(value)))
 
-        static member Parameter(name: string, pType: Type) =
-            Ast.Parameter(
-                Ast.EscapeHatch(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(name), Range.Zero))),
-                pType
-            )
+        static member ConstantPat(value: string) =
+            Ast.ConstantPat(Constant.FromText(SingleTextNode.Create(value)))
 
-        static member Parameter(name: WidgetBuilder<Pattern>, pType: string) =
-            Ast.Parameter(name, CommonType.mkLongIdent pType)
-
-        static member Parameter(name: string, pType: string) =
-            Ast.Parameter(name, CommonType.mkLongIdent pType)
-
-        static member inline Parameters(isTupled: bool) =
-            CollectionBuilder<Pattern, Pattern>(
-                Pattern.WidgetKey,
-                Pattern.Parameters,
-                Pattern.HasTupledParameters.WithValue(isTupled)
-            )
-
-        static member inline Parameters() = Ast.Parameters(false)
+// static member inline Parameters(isTupled: bool) =
+//     CollectionBuilder<Pattern, Pattern>(
+//         Pattern.WidgetKey,
+//         Pattern.Parameters,
+//         Pattern.HasTupledParameters.WithValue(isTupled)
+//     )
+//
+// static member inline Parameters() = Ast.Parameters(false)
 //     WidgetBuilder<Pattern>(
 //         Parameters.WidgetKey,
 //         Parameters.Parameters.WithValue((parameters, false)),

@@ -50,6 +50,17 @@
         <Compile Include="Expressions\Match.fs" />
         <Compile Include="Expressions\InfixApp.fs" />
         <Compile Include="Expressions\Record.fs" />
+        <Compile Include="Patterns\Or.fs" />
+        <Compile Include="Patterns\As.fs" />
+        <Compile Include="Patterns\Ands.fs" />
+        <Compile Include="Patterns\Tuple.fs" />
+        <Compile Include="Patterns\ArrayOrListPat.fs" />
+        <Compile Include="Patterns\StructTuple.fs" />
+        <Compile Include="Patterns\NamePatPairs.fs" />
+        <Compile Include="Patterns\LongIdent.fs" />
+        <Compile Include="Patterns\Parameter.fs" />
+        <Compile Include="Patterns\NamedParenStarIdent.fs" />
+        <Compile Include="Patterns\ListCons.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

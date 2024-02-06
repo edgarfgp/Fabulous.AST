@@ -18,14 +18,14 @@ module Expr =
 module ExprBuilders =
     type Ast with
 
-        static member ConstantExpr(value: WidgetBuilder<Expr>) =
+        static member private BaseConstantExpr(value: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 Expr.WidgetKey,
                 AttributesBundle(StackList.empty(), ValueSome [| Expr.Value.WithValue(value.Compile()) |], ValueNone)
             )
 
         static member ConstantExpr(value: Constant) =
-            Ast.ConstantExpr(Ast.EscapeHatch(Expr.Constant(value)))
+            Ast.BaseConstantExpr(Ast.EscapeHatch(Expr.Constant(value)))
 
         static member ConstantExpr(value: string) =
             Ast.ConstantExpr(Constant.FromText(SingleTextNode.Create(value)))

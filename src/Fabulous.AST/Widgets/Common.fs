@@ -68,6 +68,9 @@ module Auxiliary =
         let bar = SingleTextNode.Create "|"
         let leftCurlyBraceWithBar = SingleTextNode.Create "{|"
         let rightCurlyBraceWithBar = SingleTextNode.Create "|}"
+        let underscore = SingleTextNode.Create "_"
+        let ``as`` = SingleTextNode.Create "as"
+        let doubleColon = SingleTextNode.Create "::"
 
 
     type IdentifierOrDot =
