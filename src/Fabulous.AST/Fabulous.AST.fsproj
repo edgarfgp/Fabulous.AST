@@ -52,6 +52,8 @@
         <Compile Include="Widgets\Expressions\MatchClause.fs" />
         <Compile Include="Widgets\Expressions\Match.fs" />
         <Compile Include="Widgets\Expressions\InfixApp.fs" />
+        <Compile Include="Widgets\Expressions\RecordField.fs" />
+        <Compile Include="Widgets\Expressions\Record.fs" />
         <Compile Include="Widgets\Namespaces\ParsedHashDirective.fs" />
         <Compile Include="Widgets\Namespaces\AnonymousModule.fs" />
         <Compile Include="Widgets\Namespaces\Namespace.fs" />

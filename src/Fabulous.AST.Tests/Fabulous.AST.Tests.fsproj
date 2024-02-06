@@ -49,6 +49,7 @@
         <Compile Include="Expressions\App.fs" />
         <Compile Include="Expressions\Match.fs" />
         <Compile Include="Expressions\InfixApp.fs" />
+        <Compile Include="Expressions\Record.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

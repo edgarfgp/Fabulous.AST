@@ -18,7 +18,7 @@ module InfixApp =
             Expr.InfixApp(ExprInfixAppNode(lhs, SingleTextNode.Create(operator), rhs, Range.Zero)))
 
 [<AutoOpen>]
-module ConditionBuilders =
+module InfixAppBuilders =
     type Ast with
 
         static member inline InfixAppExpr(lhs: WidgetBuilder<Expr>, operator: string, rhs: WidgetBuilder<Expr>) =

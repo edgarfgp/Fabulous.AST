@@ -66,6 +66,8 @@ module Auxiliary =
         let leftArray = SingleTextNode.Create "[|"
         let ``match`` = SingleTextNode.Create "match"
         let bar = SingleTextNode.Create "|"
+        let leftCurlyBraceWithBar = SingleTextNode.Create "{|"
+        let rightCurlyBraceWithBar = SingleTextNode.Create "|}"
 
 
     type IdentifierOrDot =
