@@ -55,7 +55,7 @@ let x: int = 12
 
     [<Test>]
     let ``Simple Let binding with an expression`` () =
-        AnonymousModule() { Value("x", Expr.Constant(Constant.Text("12"))) }
+        AnonymousModule() { Value("x", ConstantExpr("12")) }
         |> produces
             """
 
@@ -255,10 +255,20 @@ let mutable x: int = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with an expression`` () =
-        AnonymousModule() { MutableValue("x", Expr.Constant(Constant.Text("12"))) }
+        AnonymousModule() { MutableValue("x", ConstantExpr("12")) }
         |> produces
             """
         
 let mutable x = 12
+
+"""
+
+    [<Test>]
+    let ``Produces a top level inlined let binding with type params and an expression`` () =
+        AnonymousModule() { InlinedValue("x", [ "'a" ], ConstantExpr("12")) }
+        |> produces
+            """
+        
+let inline x<'a> = 12
 
 """

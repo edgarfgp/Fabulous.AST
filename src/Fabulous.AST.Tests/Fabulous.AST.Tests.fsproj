@@ -60,6 +60,8 @@
         <Compile Include="Patterns\LongIdent.fs" />
         <Compile Include="Patterns\Parameter.fs" />
         <Compile Include="Patterns\NamedParenStarIdent.fs" />
+        <Compile Include="Patterns\IsInstPat.fs" />
+        <Compile Include="Patterns\QuoteExpr.fs" />
         <Compile Include="Patterns\ListCons.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>

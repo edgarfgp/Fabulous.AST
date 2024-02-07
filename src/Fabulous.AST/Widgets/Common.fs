@@ -71,6 +71,7 @@ module Auxiliary =
         let underscore = SingleTextNode.Create "_"
         let ``as`` = SingleTextNode.Create "as"
         let doubleColon = SingleTextNode.Create "::"
+        let isInstance = SingleTextNode.Create ":?"
 
 
     type IdentifierOrDot =

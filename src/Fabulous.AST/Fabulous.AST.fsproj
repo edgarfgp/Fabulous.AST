@@ -41,6 +41,8 @@
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Or.fs" />
         <Compile Include="Widgets\Patterns\Paren.fs" />
+        <Compile Include="Widgets\Patterns\IsInst.fs" />
+        <Compile Include="Widgets\Patterns\QuoteExpr.fs" />
         <Compile Include="Widgets\Patterns\Ands.fs" />
         <Compile Include="Widgets\Patterns\Tuple.fs" />
         <Compile Include="Widgets\Patterns\ArrayOrList.fs" />
@@ -49,6 +51,7 @@
         <Compile Include="Widgets\Patterns\NamePatPairs.fs" />
         <Compile Include="Widgets\Patterns\LongIdent.fs" />
         <Compile Include="Widgets\Patterns\Parameter.fs" />
+        <Compile Include="Widgets\Patterns\Parameters.fs" />
         <Compile Include="Widgets\Patterns\NamedParenStarIdent.fs" />
         <Compile Include="Widgets\Patterns\As.fs" />
         <Compile Include="Widgets\Patterns\ListCons.fs" />
@@ -76,6 +79,7 @@
         <Compile Include="Widgets\OpenDirectives\Open.fs" />
         <Compile Include="Widgets\OpenDirectives\OpenType.fs" />
         <Compile Include="Widgets\LetBindings\Value.fs" />
+        <Compile Include="Widgets\LetBindings\Function.fs" />
         <Compile Include="Widgets\Members\PropertyMember.fs" />
         <Compile Include="Widgets\Members\MethodMember.fs" />
         <Compile Include="Widgets\Members\InterfaceMember.fs" />
