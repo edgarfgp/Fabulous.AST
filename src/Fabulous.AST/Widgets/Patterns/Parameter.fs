@@ -10,7 +10,7 @@ module Parameter =
 
     let WidgetKey =
         Widgets.register "Parameter" (fun widget ->
-            let value = Helpers.getNodeFromWidget widget Value
+            let value = Helpers.getNodeFromWidget<Pattern> widget Value
             let typeValue = Helpers.tryGetScalarValue widget Type
 
             let typeValue =

@@ -140,14 +140,14 @@ module ValueBuilders =
         static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, false, false, ValueNone, value)
 
+        static member Value(name: string, value: WidgetBuilder<Expr>) =
+            Ast.BaseValue(NamedPat(name), false, false, ValueNone, value)
+
         static member Value(name: WidgetBuilder<Pattern>, value: string) =
             Ast.BaseValue(name, false, false, ValueNone, ConstantExpr(value))
 
         static member Value(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, false, false, ValueSome typeParams, value)
-
-        static member Value(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(NamedPat(name), false, false, ValueNone, value)
 
         static member Value(name: string, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(NamedPat(name), false, false, ValueSome typeParams, value)
