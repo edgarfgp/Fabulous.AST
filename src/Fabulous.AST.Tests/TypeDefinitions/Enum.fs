@@ -31,9 +31,28 @@ type Colors =
 """
 
     [<Test>]
+    let ``Produces an enum with value Expr`` () =
+        AnonymousModule() {
+            Enum("Colors") {
+                EnumCase("Red", "0")
+                EnumCase("Green", ConstantExpr("1"))
+                EnumCase("Blue", "2")
+            }
+        }
+
+        |> produces
+            """
+
+type Colors =
+    | Red = 0
+    | Green = 1
+    | Blue = 2
+"""
+
+    [<Test>]
     let ``Produces an enum with SingleTextNode`` () =
         AnonymousModule() {
-            Enum(SingleTextNode("Colors", Range.Zero)) {
+            Enum("Colors") {
                 EnumCase("Red", "0")
                 EnumCase("Green", "1")
                 EnumCase("Blue", "2")
@@ -161,7 +180,7 @@ type Colors =
     [<Test>]
     let ``Produces an enum case with attributes`` () =
         AnonymousModule() {
-            (Enum(SingleTextNode("Colors", Range.Zero)) {
+            (Enum("Colors") {
                 EnumCase("Red", "0")
                     .attributes([ "Obsolete"; "MyAttribute" ])
 

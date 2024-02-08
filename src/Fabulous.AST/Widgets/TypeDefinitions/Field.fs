@@ -7,7 +7,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 
 module Field =
 
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
 
     let FieldType = Attributes.defineScalar<Type> "FieldType"
 
@@ -15,7 +15,13 @@ module Field =
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let name = Helpers.tryGetScalarValue widget Name
+
+            let name =
+                match name with
+                | ValueSome name -> Some(SingleTextNode.Create(name))
+                | ValueNone -> None
+
             let fieldType = Helpers.getScalarValue widget FieldType
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
 
@@ -24,27 +30,40 @@ module Field =
                 | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
-            FieldNode(None, multipleAttributes, None, false, None, Some name, fieldType, Range.Zero))
+            FieldNode(None, multipleAttributes, None, false, None, name, fieldType, Range.Zero))
 
 [<AutoOpen>]
 module FieldBuilders =
     type Ast with
 
-        static member inline Field(name: WidgetBuilder<#SingleTextNode>, filedType: Type) =
+        static member Field(name: string, filedType: Type) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Field.FieldType.WithValue(filedType)),
-                    ValueSome [| Field.Name.WithValue(name.Compile()) |],
+                    StackList.two(Field.Name.WithValue(name), Field.FieldType.WithValue(filedType)),
+                    ValueNone,
                     ValueNone
                 )
             )
 
-        static member inline Field(name: SingleTextNode, fieldType: Type) =
-            Ast.Field(Ast.EscapeHatch(name), fieldType)
+        static member Field(filedType: Type) =
+            WidgetBuilder<FieldNode>(
+                Field.WidgetKey,
+                AttributesBundle(StackList.one(Field.FieldType.WithValue(filedType)), ValueNone, ValueNone)
+            )
 
-        static member inline Field(name: string, fieldType: Type) =
-            Ast.Field(SingleTextNode(name, Range.Zero), fieldType)
+        static member Field(name: string, filedType: string) =
+            WidgetBuilder<FieldNode>(
+                Field.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        Field.Name.WithValue(name),
+                        Field.FieldType.WithValue(CommonType.mkLongIdent filedType)
+                    ),
+                    ValueNone,
+                    ValueNone
+                )
+            )
 
 [<Extension>]
 type FieldModifiers =

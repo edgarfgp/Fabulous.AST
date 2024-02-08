@@ -315,7 +315,7 @@ type Person =
 
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
-                UnionParameterizedCase("Red") {
+                UnionParamsCase("Red") {
                     Field("a", CommonType.String)
                     Field("b", CommonType.mkLongIdent "'other")
                 }
@@ -347,7 +347,7 @@ type Colors<'other> =
 
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
-                UnionParameterizedCase("Red") {
+                UnionParamsCase("Red") {
                     Field("a", CommonType.String)
                     Field("b", CommonType.mkLongIdent "'other")
                 }

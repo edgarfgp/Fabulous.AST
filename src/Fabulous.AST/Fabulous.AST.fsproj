@@ -85,12 +85,11 @@
         <Compile Include="Widgets\Members\InterfaceMember.fs" />
         <Compile Include="Widgets\Members\AbstractMember.fs" />
         <Compile Include="Widgets\TypeDefinitions\Field.fs" />
-        <Compile Include="Widgets\TypeDefinitions\UnionParameterizedCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\EnumCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\Enum.fs" />
         <Compile Include="Widgets\TypeDefinitions\Abbrev.fs" />
-        <Compile Include="Widgets\TypeDefinitions\UnitsOfMeasure.fs" />
+        <Compile Include="Widgets\TypeDefinitions\Measure.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />

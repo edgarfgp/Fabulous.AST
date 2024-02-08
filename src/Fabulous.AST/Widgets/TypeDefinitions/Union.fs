@@ -10,7 +10,7 @@ module Union =
 
     let UnionCaseNode = Attributes.defineWidgetCollection "UnionCaseNode"
 
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
 
     let Members = Attributes.defineWidgetCollection "Members"
 
@@ -20,7 +20,7 @@ module Union =
 
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let name = Helpers.getScalarValue widget Name
 
             let unionCaseNode =
                 Helpers.getNodesFromWidgetCollection<UnionCaseNode> widget UnionCaseNode
@@ -62,7 +62,7 @@ module Union =
                     multipleAttributes,
                     SingleTextNode.``type``,
                     None,
-                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
                     [],
                     None,
@@ -79,33 +79,23 @@ module Union =
 [<AutoOpen>]
 module UnionBuilders =
     type Ast with
-        static member inline private BaseUnion(name: WidgetBuilder<#SingleTextNode>, typeParams: string list voption) =
+        static member private BaseUnion(name: string, typeParams: string list voption) =
             let scalars =
                 match typeParams with
-                | ValueNone -> StackList.empty()
-                | ValueSome typeParams -> StackList.one(Union.TypeParams.WithValue(typeParams))
+                | ValueNone -> StackList.one(Union.Name.WithValue(name))
+                | ValueSome typeParams ->
+                    StackList.two(Union.Name.WithValue(name), Union.TypeParams.WithValue(typeParams))
 
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                AttributesBundle(scalars, ValueSome [| Union.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(scalars, ValueNone, ValueNone)
             )
 
-        static member inline Union(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseUnion(name, ValueNone)
+        static member Union(name: string) = Ast.BaseUnion(name, ValueNone)
 
-        static member inline Union(name: SingleTextNode) = Ast.Union(Ast.EscapeHatch(name))
-
-        static member inline Union(name: string) =
-            Ast.Union(SingleTextNode(name, Range.Zero))
-
-        static member inline GenericUnion(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
+        static member GenericUnion(name: string, typeParams: string list) =
             Ast.BaseUnion(name, ValueSome typeParams)
-
-        static member inline GenericUnion(name: SingleTextNode, typeParams: string list) =
-            Ast.GenericUnion(Ast.EscapeHatch(name), typeParams)
-
-        static member inline GenericUnion(name: string, typeParams: string list) =
-            Ast.GenericUnion(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
 type UnionModifiers =
@@ -137,7 +127,7 @@ type UnionParameterizedCaseYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>,
-            x: WidgetBuilder<UnionParameterizedCaseNode>
+            x: WidgetBuilder<UnionCaseNode>
         ) : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }
 

@@ -14,31 +14,33 @@ module UnitsOfMeasure =
     [<Test>]
     let ``Produces type Unit of measure`` () =
         AnonymousModule() {
-            UnitsOfMeasure("cm").xmlDocs([ "Cm, centimeters." ])
+            Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-            UnitsOfMeasure("ml", MeasurePower("cm", "3"))
+            Measure("ml", MeasurePower("cm", "3"))
                 .xmlDocs([ "Ml, milliliters." ])
 
-            UnitsOfMeasure("g").xmlDocs([ "Mass, grams." ])
-            UnitsOfMeasure("kg").xmlDocs([ "Mass, kilograms." ])
-            UnitsOfMeasure("lb").xmlDocs([ "Weight, pounds." ])
-            UnitsOfMeasure("m").xmlDocs([ "Distance, meters." ])
-            UnitsOfMeasure("cm").xmlDocs([ "Distance, cm" ])
-            UnitsOfMeasure("inch").xmlDocs([ "Distance, inches." ])
-            UnitsOfMeasure("ft").xmlDocs([ "Distance, feet" ])
-            UnitsOfMeasure("s").xmlDocs([ "Time, seconds." ])
+            Measure("g").xmlDocs([ "Mass, grams." ])
+            Measure("kg").xmlDocs([ "Mass, kilograms." ])
+            Measure("lb").xmlDocs([ "Weight, pounds." ])
+            Measure("m").xmlDocs([ "Distance, meters." ])
+            Measure("cm").xmlDocs([ "Distance, cm" ])
+            Measure("inch").xmlDocs([ "Distance, inches." ])
+            Measure("ft").xmlDocs([ "Distance, feet" ])
+            Measure("s").xmlDocs([ "Time, seconds." ])
 
-            UnitsOfMeasure("N", Tuple("kg", "m", MeasurePower([ "s" ], "2")))
+            Measure("N", Tuple("kg", "m", MeasurePower([ "s" ], "2")))
                 .xmlDocs([ "Force, Newtons." ])
 
-            UnitsOfMeasure("bar").xmlDocs([ "Pressure, bar." ])
+            Measure("bar").xmlDocs([ "Pressure, bar." ])
 
-            UnitsOfMeasure("Pa", Tuple("N", MeasurePower([ "m" ], "2")))
+            Measure("Pa", Tuple("N", MeasurePower([ "m" ], "2")))
                 .xmlDocs([ "Pressure, Pascals" ])
 
-            UnitsOfMeasure("ml").xmlDocs([ "Volume, milliliters." ])
+            Measure("ml").xmlDocs([ "Volume, milliliters." ])
 
-            UnitsOfMeasure("L").xmlDocs([ "Volume, liters." ])
+            Measure("L").xmlDocs([ "Volume, liters." ])
+
+            Measure("Ml", "cm^3")
         }
 
         |> produces
@@ -103,5 +105,8 @@ type ml
 /// Volume, liters.
 [<Measure>]
 type L
+
+[<Measure>]
+type Ml = cm^3
 
 """

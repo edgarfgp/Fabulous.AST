@@ -7,7 +7,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 
 module EnumCase =
 
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
 
     let Value = Attributes.defineWidget "Value"
 
@@ -15,8 +15,8 @@ module EnumCase =
 
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
-            let value = Helpers.getNodeFromWidget<SingleTextNode> widget Value
+            let name = Helpers.getScalarValue widget Name
+            let value = Helpers.getNodeFromWidget<Expr> widget Value
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
@@ -28,9 +28,9 @@ module EnumCase =
                 None,
                 None,
                 multipleAttributes,
-                name,
+                SingleTextNode.Create(name),
                 SingleTextNode.equals,
-                Expr.Constant(Constant.FromText(value)),
+                value,
                 Range.Zero
             ))
 
@@ -38,23 +38,18 @@ module EnumCase =
 module EnumCaseBuilders =
     type Ast with
 
-        static member inline EnumCase(name: WidgetBuilder<#SingleTextNode>, value: WidgetBuilder<#SingleTextNode>) =
+        static member EnumCase(name: string, value: WidgetBuilder<Expr>) =
             WidgetBuilder<EnumCaseNode>(
                 EnumCase.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome
-                        [| EnumCase.Name.WithValue(name.Compile())
-                           EnumCase.Value.WithValue(value.Compile()) |],
+                    StackList.one(EnumCase.Name.WithValue(name)),
+                    ValueSome [| EnumCase.Value.WithValue(value.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member inline EnumCase(node: SingleTextNode, value: SingleTextNode) =
-            Ast.EnumCase(Ast.EscapeHatch(node), Ast.EscapeHatch(value))
-
-        static member inline EnumCase(name: string, value: string) =
-            Ast.EnumCase(SingleTextNode(name, Range.Zero), SingleTextNode(value, Range.Zero))
+        static member EnumCase(name: string, value: string) =
+            Ast.EnumCase(name, Ast.ConstantExpr(value))
 
 [<Extension>]
 type EnumCaseModifiers =

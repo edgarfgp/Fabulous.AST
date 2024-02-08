@@ -10,13 +10,13 @@ module Enum =
 
     let EnumCaseNode = Attributes.defineWidgetCollection "UnionCaseNode"
 
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
 
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let name = Helpers.getScalarValue widget Name
 
             let enumCaseNodes =
                 Helpers.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
@@ -33,8 +33,8 @@ module Enum =
                     None,
                     multipleAttributes,
                     SingleTextNode.``type``,
-                    Some(name),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                    Some(SingleTextNode.Create(name)),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
                     None,
                     [],
                     None,
@@ -51,17 +51,12 @@ module Enum =
 module EnumBuilders =
     type Ast with
 
-        static member inline Enum(name: WidgetBuilder<#SingleTextNode>) =
+        static member Enum(name: string) =
             CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>(
                 Enum.WidgetKey,
                 Enum.EnumCaseNode,
-                AttributesBundle(StackList.empty(), ValueSome [| Enum.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(StackList.one(Enum.Name.WithValue(name)), ValueNone, ValueNone)
             )
-
-        static member inline Enum(node: SingleTextNode) = Ast.Enum(Ast.EscapeHatch(node))
-
-        static member inline Enum(name: string) =
-            Ast.Enum(SingleTextNode(name, Range.Zero))
 
 [<Extension>]
 type EnumModifiers =
