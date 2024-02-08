@@ -1,10 +1,7 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Text
 
 module OptionalVal =
     let Value = Attributes.defineScalar<string> "Value"

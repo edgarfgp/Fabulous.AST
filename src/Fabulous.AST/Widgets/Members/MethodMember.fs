@@ -1,7 +1,6 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -9,7 +8,7 @@ type MethodMemberNode
     (
         xmlDoc: XmlDocNode option,
         accessibility: SingleTextNode option,
-        functionName: Choice<IdentListNode, Pattern>,
+        name: string,
         expr: Expr,
         parameter: Pattern list,
         returnType: BindingReturnInfoNode option,
@@ -26,7 +25,7 @@ type MethodMemberNode
             false,
             inlineNode,
             accessibility,
-            functionName,
+            Choice1Of2(IdentListNode.Create([ IdentifierOrDot.CreateIdent(name) ])),
             genericTypeParameters,
             parameter,
             returnType,
@@ -37,22 +36,23 @@ type MethodMemberNode
 
 module MethodMember =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
     let Parameters = Attributes.defineWidget "Parameters"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
-    let ReturnType = Attributes.defineScalar<Type option> "ReturnType"
+    let ReturnType = Attributes.defineScalar<Type> "ReturnType"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let name = Helpers.getScalarValue widget Name
+            let parameters = Helpers.tryGetNodeFromWidget<Pattern> widget Parameters
 
             let parameters =
-                match Helpers.tryGetNodeFromWidget<Pattern> widget Parameters with
+                match parameters with
                 | ValueSome parameters -> [ parameters ]
                 | ValueNone -> []
 
@@ -86,9 +86,7 @@ module MethodMember =
 
             let returnType =
                 match returnType with
-                | ValueSome(Some returnType) ->
-                    Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-                | ValueSome(None) -> None
+                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
 
             let multipleAttributes =
@@ -96,19 +94,11 @@ module MethodMember =
                 | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
-            let identifiers =
-                name.Text.Trim()
-                |> Seq.toArray
-                |> Array.map(fun s -> IdentifierOrDot.CreateIdent($"{s}"))
-                |> Array.toList
-
             let inlineNode =
                 match isInlined with
                 | ValueSome true -> Some(SingleTextNode.``inline``)
                 | ValueSome false -> None
                 | ValueNone -> None
-
-            let functionName = Choice1Of2(IdentListNode.Create(identifiers))
 
             let typeParams = Helpers.tryGetScalarValue widget TypeParams
 
@@ -118,7 +108,6 @@ module MethodMember =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              // FIXME - Update
                               TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
@@ -138,7 +127,7 @@ module MethodMember =
             MethodMemberNode(
                 xmlDocs,
                 accessControl,
-                functionName,
+                name,
                 bodyExpr,
                 parameters,
                 returnType,
@@ -148,71 +137,6 @@ module MethodMember =
                 multipleTextsNode
             ))
 
-[<AutoOpen>]
-module MemberBuilders =
-    type Ast with
-
-        static member private BaseMethodMember
-            (
-                name: WidgetBuilder<SingleTextNode>,
-                parameters: WidgetBuilder<Pattern> voption,
-                isStatic: bool
-            ) =
-            let widgets =
-                match parameters with
-                | ValueSome parameters ->
-                    ValueSome
-                        [| MethodMember.Name.WithValue(name.Compile())
-                           MethodMember.Parameters.WithValue(parameters.Compile()) |]
-                | ValueNone -> ValueSome [| MethodMember.Name.WithValue(name.Compile()) |]
-
-            SingleChildBuilder<MethodMemberNode, Expr>(
-                MethodMember.WidgetKey,
-                MethodMember.BodyExpr,
-                AttributesBundle(StackList.one(MethodMember.IsStatic.WithValue(isStatic)), widgets, ValueNone)
-            )
-
-        static member MethodMember(name: WidgetBuilder<SingleTextNode>) =
-            Ast.BaseMethodMember(name, ValueNone, false)
-
-        static member MethodMember(name: SingleTextNode) = Ast.MethodMember(Ast.EscapeHatch(name))
-
-        static member MethodMember(name: string) =
-            Ast.MethodMember(SingleTextNode.Create(name))
-
-        static member MethodMember(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseMethodMember(name, ValueSome parameters, false)
-
-        static member inline MethodMember(name: SingleTextNode, parameters: Pattern) =
-            Ast.MethodMember(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
-
-        static member inline MethodMember(name: string, parameters: Pattern) =
-            Ast.MethodMember(SingleTextNode.Create(name), parameters)
-
-        static member MethodMember(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.MethodMember(Ast.EscapeHatch(SingleTextNode.Create(name)), parameters)
-
-        static member StaticMethodMember(name: WidgetBuilder<SingleTextNode>) =
-            Ast.BaseMethodMember(name, ValueNone, true)
-
-        static member StaticMethodMember(name: SingleTextNode) =
-            Ast.StaticMethodMember(Ast.EscapeHatch(name))
-
-        static member StaticMethodMember(name: string) =
-            Ast.StaticMethodMember(SingleTextNode.Create(name))
-
-        static member StaticMethodMember(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseMethodMember(name, ValueSome parameters, true)
-
-        static member inline StaticMethodMember(name: SingleTextNode, parameters: Pattern) =
-            Ast.StaticMethodMember(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
-
-        static member inline StaticMethodMember(name: string, parameters: Pattern) =
-            Ast.StaticMethodMember(SingleTextNode.Create(name), parameters)
-
-        static member StaticMethodMember(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.StaticMethodMember(Ast.EscapeHatch(SingleTextNode.Create(name)), parameters)
-
 [<Extension>]
 type MethodMemberModifiers =
     [<Extension>]
@@ -220,21 +144,29 @@ type MethodMemberModifiers =
         this.AddScalar(MethodMember.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline isInlined(this: WidgetBuilder<MethodMemberNode>) =
-        this.AddScalar(MethodMember.IsInlined.WithValue(true))
-
-    [<Extension>]
     static member inline attributes(this: WidgetBuilder<MethodMemberNode>, attributes) =
         this.AddScalar(MethodMember.MultipleAttributes.WithValue(attributes))
 
     [<Extension>]
-    static member inline genericTypeParameters(this: WidgetBuilder<MethodMemberNode>, typeParams: string list) =
+    static member inline typeParameters(this: WidgetBuilder<MethodMemberNode>, typeParams: string list) =
         this.AddScalar(MethodMember.TypeParams.WithValue(typeParams))
 
     [<Extension>]
-    static member inline accessibility(this: WidgetBuilder<MethodMemberNode>, value: AccessControl) =
-        this.AddScalar(MethodMember.Accessibility.WithValue(value))
+    static member inline toPrivate(this: WidgetBuilder<MethodMemberNode>) =
+        this.AddScalar(MethodMember.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<MethodMemberNode>) =
+        this.AddScalar(MethodMember.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<MethodMemberNode>) =
+        this.AddScalar(MethodMember.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<MethodMemberNode>, returnType: Type) =
-        this.AddScalar(MethodMember.ReturnType.WithValue(Some(returnType)))
+        this.AddScalar(MethodMember.ReturnType.WithValue(returnType))
+
+    [<Extension>]
+    static member inline returnType(this: WidgetBuilder<MethodMemberNode>, returnType: string) =
+        this.AddScalar(MethodMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)))

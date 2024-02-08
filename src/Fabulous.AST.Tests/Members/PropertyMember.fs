@@ -2,21 +2,97 @@ namespace Fabulous.AST.Tests.MethodDefinitions
 
 open Fabulous.AST
 open Fabulous.AST.Tests
-open Fantomas.Core.SyntaxOak
 open type Ast
-open Fantomas.FCS.Text
 open NUnit.Framework
 
 module PropertyMember =
-    [<Test>]
-    let ``Produces a record with property member`` () =
 
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+    [<Test>]
+    let ``Produces PropertiesMembers`` () =
 
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                PropertyMember("this.A") { EscapeHatch(expr) }
+                Member("this.A") { ConstantExpr("\"\"") }
+                InlinedMember("this.C") { ConstantExpr("\"\"") }
+
+                StaticMember("B") { ConstantExpr("\"\"") }
+                InlinedStaticMember("D") { ConstantExpr("\"\"") }
+
+                Member("this.E") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
+
+                InlinedMember("this.F") { ConstantExpr("\"\"") }
+                |> _.returnType(CommonType.String)
+
+                StaticMember("G") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
+
+                InlinedStaticMember("H") { ConstantExpr("\"\"") }
+                |> _.returnType(CommonType.String)
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    member this.A = ""
+    member inline this.C = ""
+    static member B = ""
+    static member inline D = ""
+    member this.E: string = ""
+    member inline this.F: string = ""
+    static member G: string = ""
+    static member inline H: string = ""
+
+"""
+
+    [<Test>]
+    let ``Produces Properties with Patterns`` () =
+
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                Member(NamedPat("this.A")) { ConstantExpr("\"\"") }
+                InlinedMember("this.C") { ConstantExpr("\"\"") }
+
+                StaticMember(ParenPat(NamedPat("|B|_|"))) { ConstantExpr("\"\"") }
+                InlinedStaticMember("D") { ConstantExpr("\"\"") }
+
+                Member("this.E") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
+
+                InlinedMember("this.F") { ConstantExpr("\"\"") }
+                |> _.returnType(CommonType.String)
+
+                StaticMember("G") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
+
+                InlinedStaticMember(NamedPat("H")) { ConstantExpr("\"\"") }
+                |> _.returnType(CommonType.String)
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    { X: string }
+
+    member this.A = ""
+    member inline this.C = ""
+    static member (|B|_|) = ""
+    static member inline D = ""
+    member this.E: string = ""
+    member inline this.F: string = ""
+    static member G: string = ""
+    static member inline H: string = ""
+
+"""
+
+    [<Test>]
+    let ``Produces a record with property member`` () =
+        AnonymousModule() {
+            (Record("Colors") { Field("X", CommonType.String) })
+                .members() {
+                Member("this.A") { ConstantExpr("\"\"") }
             }
         }
         |> produces
@@ -32,12 +108,10 @@ type Colors =
     [<Test>]
     let ``Produces a record with static property member`` () =
 
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
-
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                StaticPropertyMember("A") { EscapeHatch(expr) }
+                StaticMember("A") { ConstantExpr("\"\"") }
             }
         }
         |> produces
@@ -59,8 +133,7 @@ type Colors =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
-                PropertyMember("this.A") { EscapeHatch(expr) }
+                Member("this.A") { ConstantExpr("\"\"") }
             }
         }
 
@@ -85,8 +158,7 @@ type Colors<'other> =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
-                StaticPropertyMember("A") { EscapeHatch(expr) }
+                StaticMember("A") { ConstantExpr("\"\"") }
             }
         }
 
@@ -105,18 +177,17 @@ type Colors<'other> =
 
     [<Test>]
     let ``Produces a class with a static and not static member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
 
         AnonymousModule() {
             Class("Person") {
-                PropertyMember("this.Name1") { EscapeHatch(constExpr) }
+                Member("this.Name1") { ConstantExpr("\"name\"") }
 
-                StaticPropertyMember("Name2") { EscapeHatch(constExpr) }
+                StaticMember("Name2") { ConstantExpr("\"name\"") }
             }
         }
         |> produces
             """
-type Person =
+type Person () =
     member this.Name1 = "name"
     static member Name2 = "name"
 
@@ -124,18 +195,16 @@ type Person =
 
     [<Test>]
     let ``Produces a generic class with a static and not static member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
-            GenericClass("Person", [ "'other" ]) {
-                PropertyMember("this.Name1") { EscapeHatch(constExpr) }
+            Class("Person", [ "'other" ]) {
+                Member("this.Name1") { ConstantExpr("\"name\"") }
 
-                StaticPropertyMember("Name2") { EscapeHatch(constExpr) }
+                StaticMember("Name2") { ConstantExpr("\"name\"") }
             }
         }
         |> produces
             """
-type Person <'other> =
+type Person <'other>() =
     member this.Name1 = "name"
     static member Name2 = "name"
 
@@ -143,17 +212,15 @@ type Person <'other> =
 
     [<Test>]
     let ``Produces a class with a member property with xml comments`` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
             Class("Person") {
-                (PropertyMember("this.Name") { EscapeHatch(constExpr) })
+                (Member("this.Name") { ConstantExpr("\"name\"") })
                     .xmlDocs([ "This is a comment" ])
             }
         }
         |> produces
             """
-type Person =
+type Person () =
     /// This is a comment
     member this.Name = "name"
 
@@ -161,22 +228,27 @@ type Person =
 
     [<Test>]
     let ``Produces a class with a member property and accessibility controls`` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
+        let data =
+            [ "Name", AccessControl.Public
+              "Age", AccessControl.Private
+              "Address", AccessControl.Internal
+              "PostalCode", AccessControl.Unknown ]
 
         AnonymousModule() {
             Class("Person") {
-                for name, acc in
-                    [ "Name", AccessControl.Public
-                      "Age", AccessControl.Private
-                      "Address", AccessControl.Internal
-                      "PostalCode", AccessControl.Unknown ] do
-                    (PropertyMember($"this.{name}") { EscapeHatch(constExpr) })
-                        .accessibility(acc)
+                for name, acc in data do
+                    let widget = Member($"this.{name}") { ConstantExpr("\"name\"") }
+
+                    match acc with
+                    | AccessControl.Public -> widget.toPublic()
+                    | AccessControl.Private -> widget.toPrivate()
+                    | AccessControl.Internal -> widget.toInternal()
+                    | AccessControl.Unknown -> widget
             }
         }
         |> produces
             """
-type Person =
+type Person () =
     member public this.Name = "name"
     member private this.Age = "name"
     member internal this.Address = "name"
@@ -186,11 +258,9 @@ type Person =
 
     [<Test>]
     let ``Produces a class with a member property and return type`` () =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode.Create("23")))
-
         AnonymousModule() {
-            (Class("Person") { PropertyMember("this.Name", CommonType.Int32) { EscapeHatch(expr) } })
-                .implicitConstructorParameters([])
+            Class("Person") { Member("this.Name") { ConstantExpr("23") } |> _.returnType("int") }
+
         }
         |> produces
             """
@@ -200,31 +270,22 @@ type Person () =
 
     [<Test>]
     let ``Produces a class with a member property inlined`` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
-        AnonymousModule() {
-            Class("Person") {
-                (PropertyMember("this.Name") { EscapeHatch(constExpr) })
-                    .isInlined()
-            }
-        }
+        AnonymousModule() { Class("Person") { InlinedMember("this.Name") { ConstantExpr("\"name\"") } } }
         |> produces
             """
-type Person =
+type Person () =
     member inline this.Name = "name"
 
 """
 
     [<Test>]
     let ``Produces a class with property member with attributes`` () =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode.Create("23")))
-
         AnonymousModule() {
-            (Class("Person") {
-                (PropertyMember("this.Name") { EscapeHatch(expr) })
+            Class("Person") {
+                (Member("this.Name") { ConstantExpr("23") })
                     .attributes([ "Obsolete" ])
-            })
-                .implicitConstructorParameters([])
+            }
+
         }
         |> produces
             """
@@ -235,12 +296,10 @@ type Person () =
 
     [<Test>]
     let ``Produces a record with a member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
             (Record("Person") { Field("Name", CommonType.String) })
                 .members() {
-                PropertyMember("this.Name") { EscapeHatch(constExpr) }
+                Member("this.Name") { ConstantExpr("\"name\"") }
             }
 
         }
@@ -255,12 +314,10 @@ type Person =
 
     [<Test>]
     let ``Produces a generic record with a member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
             (GenericRecord("Person", [ "'other" ]) { Field("Name", CommonType.mkLongIdent("'other")) })
                 .members() {
-                PropertyMember("this.Name") { EscapeHatch(constExpr) }
+                Member("this.Name") { ConstantExpr("\"name\"") }
             }
 
         }
@@ -275,10 +332,8 @@ type Person<'other> =
 
     [<Test>]
     let ``Produces a union with a member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() { PropertyMember("this.Name") { EscapeHatch(constExpr) } }
+            (Union("Person") { UnionCase("Name") }).members() { Member("this.Name") { ConstantExpr("\"name\"") } }
 
         }
         |> produces
@@ -292,12 +347,8 @@ type Person =
 
     [<Test>]
     let ``Produces a union with a static member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() {
-                StaticPropertyMember("Name") { EscapeHatch(constExpr) }
-            }
+            (Union("Person") { UnionCase("Name") }).members() { StaticMember("Name") { ConstantExpr("\"name\"") } }
 
         }
         |> produces
@@ -311,8 +362,6 @@ type Person =
 
     [<Test>]
     let ``Produces a generic union with a member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
@@ -325,7 +374,7 @@ type Person =
                 UnionCase("Yellow")
             })
                 .members() {
-                PropertyMember("this.Name") { EscapeHatch(constExpr) }
+                Member("this.Name") { ConstantExpr("\"name\"") }
             }
 
         }
@@ -343,8 +392,6 @@ type Colors<'other> =
 
     [<Test>]
     let ``Produces a generic union with a static member property `` () =
-        let constExpr = Expr.Constant(Constant.FromText(SingleTextNode.Create("\"name\"")))
-
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
@@ -357,7 +404,7 @@ type Colors<'other> =
                 UnionCase("Yellow")
             })
                 .members() {
-                StaticPropertyMember("Name") { EscapeHatch(constExpr) }
+                StaticMember("Name") { ConstantExpr("\"name\"") }
             }
 
         }

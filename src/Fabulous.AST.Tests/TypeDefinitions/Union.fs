@@ -49,7 +49,7 @@ type Colors =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("\"\"") } }
+                InterfaceMember("IMyInterface") { Member("x.GetValue", UnitPat()) { ConstantExpr("\"\"") } }
             }
 
         }
@@ -198,8 +198,7 @@ type Colors<'other> =
     let ``Produces an union with TypeParams and interface member`` () =
         AnonymousModule() {
             Interface("IMyInterface") {
-                let parameters = [ CommonType.Unit ]
-                AbstractCurriedMethodMember("GetValue", parameters, CommonType.String)
+                AbstractCurriedMethodMember("GetValue", [ CommonType.Unit ], CommonType.String)
             }
 
             (GenericUnion("Colors", [ "'other" ]) {
@@ -213,7 +212,7 @@ type Colors<'other> =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("\"\"") } }
+                InterfaceMember("IMyInterface") { Member("x.GetValue", UnitPat()) { ConstantExpr("\"\"") } }
             }
         }
 

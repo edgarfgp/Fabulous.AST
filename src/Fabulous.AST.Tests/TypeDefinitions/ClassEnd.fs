@@ -17,7 +17,7 @@ type MyClass = class end
 
     [<Test>]
     let ``Produces a class end with constructor`` () =
-        AnonymousModule() { ClassEnd("MyClass").implicitConstructorParameters([]) }
+        AnonymousModule() { ClassEnd("MyClass", true) }
         |> produces
             """
 type MyClass () = class end
@@ -26,14 +26,37 @@ type MyClass () = class end
     [<Test>]
     let ``Produces a class end with constructor and attributes`` () =
         AnonymousModule() {
-            ClassEnd("MyClass")
+            ClassEnd("MyClass", true)
                 .attributes([ "Sealed"; "AbstractClass" ])
-                .implicitConstructorParameters([])
         }
         |> produces
             """
 [<Sealed; AbstractClass>]
 type MyClass () = class end
+            """
+
+    [<Test>]
+    let ``Produces a class end with constructor params`` () =
+        AnonymousModule() {
+            ClassEnd("MyClass", ImplicitConstructor() { SimplePat("name", CommonType.String, false) })
+                .attributes([ "Sealed"; "AbstractClass" ])
+        }
+        |> produces
+            """
+[<Sealed; AbstractClass>]
+type MyClass (name: string) = class end
+            """
+
+    [<Test>]
+    let ``Produces a class end with constructor params and type args`` () =
+        AnonymousModule() {
+            ClassEnd("MyClass", [ "'a" ], ImplicitConstructor() { SimplePat("name", CommonType.String, false) })
+                .attributes([ "Sealed"; "AbstractClass" ])
+        }
+        |> produces
+            """
+[<Sealed; AbstractClass>]
+type MyClass <'a>(name: string) = class end
             """
 
     [<Test>]
@@ -46,10 +69,7 @@ type MyClass <'a, 'b> = class end
 
     [<Test>]
     let ``Produces a class end with constructor and  type params`` () =
-        AnonymousModule() {
-            ClassEnd("MyClass", [ "'a"; "'b" ])
-                .implicitConstructorParameters([])
-        }
+        AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ], true) }
         |> produces
             """
 type MyClass <'a, 'b>() = class end

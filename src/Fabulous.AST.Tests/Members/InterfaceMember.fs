@@ -1,9 +1,7 @@
 namespace Fabulous.AST.Tests.MethodDefinitions
 
-open Fantomas.FCS.Text
 open Fabulous.AST
 open Fabulous.AST.Tests
-open Fantomas.Core.SyntaxOak
 open type Ast
 open NUnit.Framework
 
@@ -12,8 +10,7 @@ module InterfaceMembers =
     let ``Produces a record with TypeParams and interface member`` () =
         AnonymousModule() {
             Interface("IMyInterface") {
-                let parameters = [ CommonType.Unit ]
-                AbstractCurriedMethodMember("GetValue", parameters, CommonType.String)
+                AbstractCurriedMethodMember("GetValue", [ CommonType.Unit ], CommonType.String)
             }
 
             (GenericRecord("Colors", [ "'other" ]) {
@@ -22,7 +19,7 @@ module InterfaceMembers =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("x.MyField2") } }
+                InterfaceMember("IMyInterface") { Member("x.GetValue()") { ConstantExpr("x.MyField2") } }
             }
         }
 
@@ -55,7 +52,7 @@ type Colors<'other> =
                 Field("MyField2", CommonType.String)
             })
                 .members() {
-                InterfaceMember("IMyInterface") { MethodMember("x.GetValue()") { ConstantExpr("x.MyField2") } }
+                InterfaceMember("IMyInterface") { Member("x.GetValue()") { ConstantExpr("x.MyField2") } }
             }
         }
         |> produces
@@ -77,8 +74,7 @@ type MyRecord =
         AnonymousModule() {
             Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
 
-            (Class("Person") { InterfaceMember("Meh") { PropertyMember("this.Name") { ConstantExpr("\"23\"") } } })
-                .implicitConstructorParameters([])
+            Class("Person") { InterfaceMember("Meh") { Member("this.Name") { ConstantExpr("\"23\"") } } }
         }
         |> produces
             """
