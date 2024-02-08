@@ -10,41 +10,17 @@ module Function =
 
     [<Test>]
     let ``Produces a function with parameter`` () =
-        AnonymousModule() {
-            let widgetBuilder = ParametersPat() { ParameterPat("i") }
-
-            Function("x", widgetBuilder) { UnitExpr() }
-        }
+        AnonymousModule() { Function("x", ParameterPat("i")) { UnitExpr() } }
         |> produces
             """
 
 let x i = ()
-
-"""
-
-    [<Test>]
-    let ``Produces a function with parameters`` () =
-        AnonymousModule() {
-            Function(
-                "x",
-                ParametersPat() {
-                    NamedPat("i")
-                    NamedPat("j")
-                    NamedPat("k")
-                }
-            ) {
-                UnitExpr()
-            }
-        }
-        |> produces
-            """
-let x i j k = ()
 
 """
 
     [<Test>]
     let ``Produces a function with single tupled parameter`` () =
-        AnonymousModule() { Function("x", ParametersPat(true) { NamedPat("i") }) { UnitExpr() } }
+        AnonymousModule() { Function("x", NamedPat("i")) { UnitExpr() } }
         |> produces
             """
 let x i = ()
@@ -52,10 +28,17 @@ let x i = ()
 """
 
     [<Test>]
+    let ``Produces a function with single parameter`` () =
+        AnonymousModule() { Function("x", ParenPat(NamedPat("i"))) { UnitExpr() } }
+        |> produces
+            """
+let x (i) = ()
+
+"""
+
+    [<Test>]
     let ``Produces a function with single tupled typed parameter`` () =
-        AnonymousModule() {
-            Function("x", ParametersPat(true) { ParameterPat(NamedPat("i"), CommonType.Int32) }) { UnitExpr() }
-        }
+        AnonymousModule() { Function("x", ParenPat(ParameterPat(NamedPat("i"), CommonType.Int32))) { UnitExpr() } }
         |> produces
             """
 let x (i: int) = ()
@@ -83,6 +66,26 @@ let x (i, j, k) = ()
 """
 
     [<Test>]
+    let ``Produces a function with curried parameters`` () =
+        AnonymousModule() {
+            Function(
+                "x",
+                ParametersPat(false) {
+                    NamedPat("i")
+                    NamedPat("j")
+                    NamedPat("k")
+                }
+            ) {
+                UnitExpr()
+            }
+        }
+        |> produces
+            """
+let x i j k = ()
+
+"""
+
+    [<Test>]
     let ``Produces a function with tupled typed parameters`` () =
         AnonymousModule() {
             Function(
@@ -105,7 +108,7 @@ let x (i: int, j: string, k: bool) = ()
     [<Test>]
     let ``Produces a function with parameters and an attribute`` () =
         AnonymousModule() {
-            (Function("x", ParametersPat() { NamedPat("i") }) { UnitExpr() })
+            (Function("x", NamedPat("i")) { UnitExpr() })
                 .attributes([ """Obsolete("Use bar instead")""" ])
         }
         |> produces
@@ -118,7 +121,7 @@ let x i = ()
     [<Test>]
     let ``Produces a function with parameters and Xml Doc`` () =
         AnonymousModule() {
-            (Function("x", ParametersPat() { NamedPat("i") }) { UnitExpr() })
+            (Function("x", NamedPat("i")) { UnitExpr() })
                 .xmlDocs([ "Im a function" ])
         }
         |> produces
@@ -131,7 +134,7 @@ let x i = ()
     [<Test>]
     let ``Produces a function with parameters and return type`` () =
         AnonymousModule() {
-            (Function("x", ParametersPat() { NamedPat("i") }) { UnitExpr() })
+            (Function("x", NamedPat("i")) { UnitExpr() })
                 .returnType(CommonType.Unit)
         }
         |> produces
@@ -162,7 +165,7 @@ let foo (x: 'T, i: 'U) : unit = ()
 
     [<Test>]
     let ``Produces an inlined function with parameters`` () =
-        AnonymousModule() { InlinedFunction("x", ParametersPat() { NamedPat("i") }) { UnitExpr() } }
+        AnonymousModule() { InlinedFunction("x", NamedPat("i")) { UnitExpr() } }
         |> produces
             """
 
@@ -173,14 +176,11 @@ let inline x i = ()
     [<Test>]
     let ``Produces a function with parameters and access controls`` () =
         AnonymousModule() {
-            (Function("x", ParametersPat() { NamedPat("i") }) { UnitExpr() })
-                .toPublic()
+            (Function("x", NamedPat("i")) { UnitExpr() }).toPublic()
 
-            (Function("y", ParametersPat() { NamedPat("i") }) { UnitExpr() })
-                .toPrivate()
+            (Function("y", NamedPat("i")) { UnitExpr() }).toPrivate()
 
-            (Function("z", ParametersPat() { NamedPat("i") }) { UnitExpr() })
-                .toInternal()
+            (Function("z", NamedPat("i")) { UnitExpr() }).toInternal()
         }
         |> produces
             """
