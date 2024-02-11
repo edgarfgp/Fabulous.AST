@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.7.0] - 2023-02-11
+- Update fantomas to 6.1.0-alpha-003 by @kaashyapan in https://github.com/edgarfgp/Fabulous.AST/pull/38
+- Interface Widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/40
+- Rework Class Widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/42
+- Record | Unions Generic Widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/45
+- Widgets for TypeAugmentation, member methods and patterns by @kaashyapan in https://github.com/edgarfgp/Fabulous.AST/pull/46
+- Common types by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/47
+- Interface abstract members widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/48
+- Update fsharp.formatting to modern theme by @nojaf in https://github.com/edgarfgp/Fabulous.AST/pull/49
+- Initial support for unit of measures by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/50
+- Unify Record and GenericRecord into a single node by @TimLariviere in https://github.com/edgarfgp/Fabulous.AST/pull/52
+- Simplify union definitions by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/53
+- Classes Unification by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/54
+- Interfaces unification by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/55
+- BindingNode cleanup by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/51
+- DSL clean-up by @edgarfgp in in https://github.com/edgarfgp/Fabulous.AST/pull/56
+
 ## [0.6.2] - 2023-06-07
 ### Added
 - Attributes for Unions and Emums
