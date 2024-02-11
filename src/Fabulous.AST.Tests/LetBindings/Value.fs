@@ -1,5 +1,6 @@
 namespace Fabulous.AST.Tests.LetBindings
 
+open System.IO
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
@@ -17,6 +18,38 @@ module Value =
             """
 
 let x = 12
+
+"""
+
+    [<Test>]
+    let ``Simple Let binding with an array expression`` () =
+        let sourceRoot = Path.Combine(__SOURCE_DIRECTORY__, "..") |> Path.GetFullPath
+
+        let subcommandProjects =
+            Directory.GetDirectories(sourceRoot) |> Array.sort |> Array.take 4
+
+        let subcommands = subcommandProjects |> Array.map Path.GetFileName
+
+
+        Namespace("Gdmt.Launcher") {
+            NestedModule("Subcommands") {
+                Value(
+                    "GdmtSubcommands",
+                    ArrayExpr() {
+                        for subcommand in subcommands do
+                            ConstantExpr($"\"{subcommand}\"")
+                    }
+                )
+            }
+        }
+
+        |> produces
+            """
+
+namespace Gdmt.Launcher
+
+module Subcommands =
+    let GdmtSubcommands = [| "ControlFlow"; "Core"; "Expressions"; "LetBindings" |]
 
 """
 
