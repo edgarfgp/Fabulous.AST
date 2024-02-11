@@ -9,7 +9,7 @@ type PropertyMemberNode
     (
         xmlDoc: XmlDocNode option,
         accessibility: SingleTextNode option,
-        functionName: Choice<IdentListNode, Pattern>,
+        name: Pattern,
         expr: Expr,
         returnType: BindingReturnInfoNode option,
         multipleAttributes: MultipleAttributeListNode option,
@@ -24,7 +24,7 @@ type PropertyMemberNode
             false,
             inlineNode,
             accessibility,
-            functionName,
+            Choice2Of2(name),
             None,
             [],
             returnType,
@@ -35,17 +35,17 @@ type PropertyMemberNode
 
 module PropertyMember =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-    let Name = Attributes.defineScalar<string> "Name"
+    let Name = Attributes.defineWidget "Name"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
-    let ReturnType = Attributes.defineScalar<Type option> "ReturnType"
+    let ReturnType = Attributes.defineScalar<Type> "ReturnType"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let WidgetKey =
         Widgets.register "PropertyMember" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
+            let name = Helpers.getNodeFromWidget<Pattern> widget Name
             let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
             let isInlined = Helpers.tryGetScalarValue widget IsInlined
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
@@ -73,9 +73,7 @@ module PropertyMember =
 
             let returnType =
                 match returnType with
-                | ValueSome(Some returnType) ->
-                    Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-                | ValueSome(None) -> None
+                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
 
             let multipleAttributes =
@@ -83,26 +81,18 @@ module PropertyMember =
                 | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
-            let identifiers =
-                name.Trim()
-                |> Seq.toArray
-                |> Array.map(fun s -> IdentifierOrDot.CreateIdent($"{s}"))
-                |> Array.toList
-
             let inlineNode =
                 match isInlined with
                 | ValueSome true -> Some(SingleTextNode.``inline``)
                 | ValueSome false -> None
                 | ValueNone -> None
 
-            let functionName = Choice1Of2(IdentListNode.Create(identifiers))
-
             let multipleTextsNode = if isStatic then [ "static"; "member" ] else [ "member" ]
 
             PropertyMemberNode(
                 xmlDocs,
                 accessControl,
-                functionName,
+                name,
                 bodyExpr,
                 returnType,
                 multipleAttributes,
@@ -114,35 +104,81 @@ module PropertyMember =
 module PropertyMemberBuilders =
     type Ast with
 
-        static member PropertyMember(name: string, ?returnType: Type) =
+        static member private BasePropertyMember(name: WidgetBuilder<Pattern>, isStatic: bool, isInlined: bool) =
             SingleChildBuilder<PropertyMemberNode, Expr>(
                 PropertyMember.WidgetKey,
                 PropertyMember.BodyExpr,
                 AttributesBundle(
-                    StackList.three(
-                        PropertyMember.Name.WithValue(name),
-                        PropertyMember.ReturnType.WithValue(returnType),
-                        PropertyMember.IsStatic.WithValue(false)
+                    StackList.two(
+                        PropertyMember.IsStatic.WithValue(isStatic),
+                        PropertyMember.IsInlined.WithValue(isInlined)
                     ),
-                    ValueNone,
+                    ValueSome [| PropertyMember.Name.WithValue(name.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member StaticPropertyMember(name: string, ?returnType: Type) =
-            SingleChildBuilder<PropertyMemberNode, Expr>(
-                PropertyMember.WidgetKey,
-                PropertyMember.BodyExpr,
+        static member private BaseMethodMember
+            (
+                name: string,
+                isStatic: bool,
+                isInline: bool,
+                parameters: WidgetBuilder<Pattern> voption
+            ) =
+            let widgets =
+                match parameters with
+                | ValueSome parameters -> ValueSome [| MethodMember.Parameters.WithValue(parameters.Compile()) |]
+                | ValueNone -> ValueNone
+
+            SingleChildBuilder<MethodMemberNode, Expr>(
+                MethodMember.WidgetKey,
+                MethodMember.BodyExpr,
                 AttributesBundle(
                     StackList.three(
-                        PropertyMember.Name.WithValue(name),
-                        PropertyMember.ReturnType.WithValue(returnType),
-                        PropertyMember.IsStatic.WithValue(true)
+                        MethodMember.Name.WithValue(name),
+                        MethodMember.IsStatic.WithValue(isStatic),
+                        MethodMember.IsInlined.WithValue(isInline)
                     ),
-                    ValueNone,
+                    widgets,
                     ValueNone
                 )
             )
+
+        static member Member(name: WidgetBuilder<Pattern>) =
+            Ast.BasePropertyMember(name, false, false)
+
+        static member Member(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseMethodMember(name, false, false, ValueSome parameters)
+
+        static member Member(name: string) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), false, false)
+
+        static member InlinedMember(name: WidgetBuilder<Pattern>) =
+            Ast.BasePropertyMember(name, false, true)
+
+        static member InlinedMember(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseMethodMember(name, false, true, ValueSome parameters)
+
+        static member InlinedMember(name: string) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), false, true)
+
+        static member StaticMember(name: WidgetBuilder<Pattern>) =
+            Ast.BasePropertyMember(name, true, false)
+
+        static member StaticMember(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseMethodMember(name, true, false, ValueSome parameters)
+
+        static member StaticMember(name: string) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), true, false)
+
+        static member InlinedStaticMember(name: WidgetBuilder<Pattern>) =
+            Ast.BasePropertyMember(name, true, true)
+
+        static member InlinedStaticMember(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseMethodMember(name, true, true, ValueSome parameters)
+
+        static member InlinedStaticMember(name: string) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), true, true)
 
 [<Extension>]
 type PropertyMemberModifiers =
@@ -151,13 +187,25 @@ type PropertyMemberModifiers =
         this.AddScalar(PropertyMember.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline isInlined(this: WidgetBuilder<PropertyMemberNode>) =
-        this.AddScalar(PropertyMember.IsInlined.WithValue(true))
-
-    [<Extension>]
     static member inline attributes(this: WidgetBuilder<PropertyMemberNode>, attributes) =
         this.AddScalar(PropertyMember.MultipleAttributes.WithValue(attributes))
 
     [<Extension>]
-    static member inline accessibility(this: WidgetBuilder<PropertyMemberNode>, value: AccessControl) =
-        this.AddScalar(PropertyMember.Accessibility.WithValue(value))
+    static member inline toPrivate(this: WidgetBuilder<PropertyMemberNode>) =
+        this.AddScalar(PropertyMember.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<PropertyMemberNode>) =
+        this.AddScalar(PropertyMember.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<PropertyMemberNode>) =
+        this.AddScalar(PropertyMember.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline returnType(this: WidgetBuilder<PropertyMemberNode>, returnType: Type) =
+        this.AddScalar(PropertyMember.ReturnType.WithValue(returnType))
+
+    [<Extension>]
+    static member inline returnType(this: WidgetBuilder<PropertyMemberNode>, returnType: string) =
+        this.AddScalar(PropertyMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)))

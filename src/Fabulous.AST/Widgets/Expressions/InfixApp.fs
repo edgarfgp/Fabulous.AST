@@ -4,7 +4,7 @@ open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
-module Condition =
+module InfixApp =
     let LeftHandSide = Attributes.defineWidget "LeftHandSide"
     let Operator = Attributes.defineScalar "Operator"
     let RightHandSide = Attributes.defineWidget "RightHandSide"
@@ -15,20 +15,20 @@ module Condition =
             let operator = Helpers.getScalarValue widget Operator
             let rhs = Helpers.getNodeFromWidget<Expr> widget RightHandSide
 
-            Expr.InfixApp(ExprInfixAppNode(lhs, SingleTextNode(operator, Range.Zero), rhs, Range.Zero)))
+            Expr.InfixApp(ExprInfixAppNode(lhs, SingleTextNode.Create(operator), rhs, Range.Zero)))
 
 [<AutoOpen>]
-module ConditionBuilders =
+module InfixAppBuilders =
     type Ast with
 
-        static member inline Condition(lhs: WidgetBuilder<Expr>, operator: string, rhs: WidgetBuilder<Expr>) =
+        static member inline InfixAppExpr(lhs: WidgetBuilder<Expr>, operator: string, rhs: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
-                Condition.WidgetKey,
+                InfixApp.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Condition.Operator.WithValue(operator)),
+                    StackList.one(InfixApp.Operator.WithValue(operator)),
                     ValueSome
-                        [| Condition.LeftHandSide.WithValue(lhs.Compile())
-                           Condition.RightHandSide.WithValue(rhs.Compile()) |],
+                        [| InfixApp.LeftHandSide.WithValue(lhs.Compile())
+                           InfixApp.RightHandSide.WithValue(rhs.Compile()) |],
                     ValueNone
                 )
             )

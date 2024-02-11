@@ -4,96 +4,78 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 open Microsoft.FSharp.Collections
 
-[<RequireQualifiedAccess>]
-type AbstractSlotType =
-    | Getter
-    | Setter
-    | GetSet
-    | Method
-    | Unknown
-
-[<RequireQualifiedAccess>]
-type MethodParams =
-    | UnNamed of Type list
-    | Named of (string * Type) list
+type MethodParamsType =
+    | UnNamed of parameters: (Type list) * isTupled: bool
+    | Named of types: ((string option * Type) list) * isTupled: bool
 
 module AbstractMember =
-    let Identifier = Attributes.defineScalar "Identifier"
-
-    let ReturnType = Attributes.defineScalar<Type option> "Type"
-
-    let WithGetSet = Attributes.defineScalar<AbstractSlotType option> "WithGetSet"
-
-    let Parameters =
-        Attributes.defineScalar<struct (bool * MethodParams * Type)> "Parameters"
+    let Identifier = Attributes.defineScalar<string> "Identifier"
+    let ReturnType = Attributes.defineScalar<Type> "Type"
+    let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
+    let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
 
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
             let identifier = Helpers.getScalarValue widget Identifier
             let returnType = Helpers.getScalarValue widget ReturnType
-            let withGetSet = Helpers.tryGetScalarValue widget WithGetSet
             let parameters = Helpers.tryGetScalarValue widget Parameters
+            let hasGetterSetter = Helpers.tryGetScalarValue widget HasGetterSetter
 
-            let parameters =
-                match parameters, returnType with
-                | ValueSome(isTupled, parameters, returnType), None ->
+            let typeFun =
+                match parameters with
+                | ValueNone -> [], returnType
+                | ValueSome(UnNamed(parameters, isTupled)) ->
                     let parameters =
-                        match parameters with
-                        | MethodParams.UnNamed types ->
-                            types
-                            |> List.mapi(fun index value ->
-                                let separator =
-                                    if index < types.Length - 1 && isTupled then
-                                        SingleTextNode.star
-                                    else
-                                        SingleTextNode.rightArrow
+                        parameters
+                        |> List.mapi(fun index value ->
+                            let separator =
+                                if index < parameters.Length - 1 && isTupled then
+                                    SingleTextNode.star
+                                else
+                                    SingleTextNode.rightArrow
 
-                                (value, separator))
-                        | MethodParams.Named tuples ->
-                            tuples
-                            |> List.mapi(fun index (name, value) ->
-                                let separator =
-                                    if index < tuples.Length - 1 && isTupled then
-                                        SingleTextNode.star
-                                    else
-                                        SingleTextNode.rightArrow
+                            (value, separator))
 
-                                let value =
-                                    if System.String.IsNullOrEmpty(name) then
-                                        value
-                                    else
-                                        Type.SignatureParameter(
-                                            TypeSignatureParameterNode.Create(name, CommonType.Int32)
-                                        )
+                    parameters, returnType
+                | ValueSome(Named((parameters), isTupled)) ->
+                    let parameters =
+                        parameters
+                        |> List.mapi(fun index (name, value) ->
+                            let separator =
+                                if index < parameters.Length - 1 && isTupled then
+                                    SingleTextNode.star
+                                else
+                                    SingleTextNode.rightArrow
 
-                                (value, separator))
+                            match name with
+                            | Some name ->
+                                if System.String.IsNullOrEmpty(name) then
+                                    failwith "Named parameters must have a name"
 
+                                let value = Type.SignatureParameter(TypeSignatureParameterNode.Create(name, value))
+                                (value, separator)
 
-                    Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
-                | ValueNone, Some returnType -> Type.Funs(TypeFunsNode([], returnType, Range.Zero))
-                | _ -> failwithf $"Invalid parameters and return type combination for abstract member %s{identifier}"
+                            | None -> (value, separator))
+
+                    parameters, returnType
 
             let withGetSetText =
-                match withGetSet with
+                match hasGetterSetter with
+                | ValueSome(true, true) -> Some(MultipleTextsNode.Create([ "with"; "get,"; "set" ]))
+                | ValueSome(true, false) -> Some(MultipleTextsNode.Create([ "with"; "get" ]))
+                | ValueSome(false, true) -> Some(MultipleTextsNode.Create([ "with"; "set" ]))
+                | ValueSome(false, false)
                 | ValueNone -> None
-                | ValueSome slot ->
-                    match slot with
-                    | None -> None
-                    | Some slot ->
-                        match slot with
-                        | AbstractSlotType.Method
-                        | AbstractSlotType.Unknown -> None
-                        | AbstractSlotType.Getter -> Some(MultipleTextsNode.Create([ "with"; "get" ]))
-                        | AbstractSlotType.Setter -> Some(MultipleTextsNode.Create([ "with"; "set" ]))
-                        | AbstractSlotType.GetSet -> Some(MultipleTextsNode.Create([ "with"; "get,"; "set" ]))
+
+            let parameters, returnTYpe = typeFun
 
             MemberDefnAbstractSlotNode(
                 None,
                 None,
                 MultipleTextsNode.Create([ "abstract"; "member" ]),
-                SingleTextNode.Create(identifier),
+                SingleTextNode(identifier, Range.Zero),
                 None,
-                parameters,
+                Type.Funs(TypeFunsNode(parameters, returnTYpe, Range.Zero)),
                 withGetSetText,
                 Range.Zero
             ))
@@ -106,72 +88,157 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(Some returnType),
-                AbstractMember.WithGetSet.WithValue(Some AbstractSlotType.Unknown)
+                AbstractMember.HasGetterSetter.WithValue(false, false),
+                AbstractMember.ReturnType.WithValue(returnType)
+            )
+
+        static member AbstractPropertyMember(identifier: string, returnType: string) =
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.HasGetterSetter.WithValue(false, false),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType))
             )
 
         static member AbstractGetMember(identifier: string, returnType: Type) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(Some returnType),
-                AbstractMember.WithGetSet.WithValue(Some AbstractSlotType.Getter)
+                AbstractMember.HasGetterSetter.WithValue(true, false),
+                AbstractMember.ReturnType.WithValue(returnType)
+            )
+
+        static member AbstractGetMember(identifier: string, returnType: string) =
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.HasGetterSetter.WithValue(true, false),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType))
             )
 
         static member AbstractSetMember(identifier: string, returnType: Type) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(Some returnType),
-                AbstractMember.WithGetSet.WithValue(Some AbstractSlotType.Setter)
+                AbstractMember.HasGetterSetter.WithValue(false, true),
+                AbstractMember.ReturnType.WithValue(returnType)
+            )
+
+        static member AbstractSetMember(identifier: string, returnType: string) =
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.HasGetterSetter.WithValue(false, true),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType))
             )
 
         static member AbstractGetSetMember(identifier: string, returnType: Type) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(Some returnType),
-                AbstractMember.WithGetSet.WithValue(Some AbstractSlotType.GetSet)
+                AbstractMember.HasGetterSetter.WithValue(true, true),
+                AbstractMember.ReturnType.WithValue(returnType)
             )
 
-        static member AbstractCurriedMethodMember(identifier: string, parameters: Type list, returnType: Type) =
+        static member AbstractGetSetMember(identifier: string, returnType: string) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(None),
-                AbstractMember.Parameters.WithValue(struct (false, MethodParams.UnNamed(parameters), returnType))
-            )
-
-        static member AbstractCurriedMethodMember
-            (
-                identifier: string,
-                parameters: (string * Type) list,
-                returnType: Type
-            ) =
-            WidgetBuilder<MemberDefnAbstractSlotNode>(
-                AbstractMember.WidgetKey,
-                AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(None),
-                AbstractMember.Parameters.WithValue(struct (false, MethodParams.Named(parameters), returnType))
+                AbstractMember.HasGetterSetter.WithValue(true, true),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType))
             )
 
         static member AbstractTupledMethodMember(identifier: string, parameters: Type list, returnType: Type) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(None),
-                AbstractMember.Parameters.WithValue(struct (true, MethodParams.UnNamed(parameters), returnType))
+                AbstractMember.ReturnType.WithValue(returnType),
+                AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
+            )
+
+        static member AbstractTupledMethodMember(identifier: string, parameters: string list, returnType: string) =
+            let parameters = parameters |> List.map CommonType.mkLongIdent
+
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
+                AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
             )
 
         static member AbstractTupledMethodMember
             (
                 identifier: string,
-                parameters: (string * Type) list,
+                parameters: (string option * Type) list,
                 returnType: Type
             ) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AbstractMember.Identifier.WithValue(identifier),
-                AbstractMember.ReturnType.WithValue(None),
-                AbstractMember.Parameters.WithValue(struct (true, MethodParams.Named(parameters), returnType))
+                AbstractMember.ReturnType.WithValue(returnType),
+                AbstractMember.Parameters.WithValue(Named(parameters, true))
+            )
+
+        static member AbstractTupledMethodMember
+            (
+                identifier: string,
+                parameters: (string option * string) list,
+                returnType: string
+            ) =
+            let parameters =
+                parameters |> List.map(fun (name, value) -> name, CommonType.mkLongIdent value)
+
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
+                AbstractMember.Parameters.WithValue(Named(parameters, true))
+            )
+
+
+        static member AbstractCurriedMethodMember(identifier: string, parameters: Type list, returnType: Type) =
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.ReturnType.WithValue(returnType),
+                AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
+            )
+
+        static member AbstractCurriedMethodMember(identifier: string, parameters: string list, returnType: string) =
+            let parameters = parameters |> List.map CommonType.mkLongIdent
+
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
+                AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
+            )
+
+        static member AbstractCurriedMethodMember
+            (
+                identifier: string,
+                parameters: (string option * Type) list,
+                returnType: Type
+            ) =
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.ReturnType.WithValue(returnType),
+                AbstractMember.Parameters.WithValue(Named(parameters, false))
+            )
+
+        static member AbstractCurriedMethodMember
+            (
+                identifier: string,
+                parameters: (string option * string) list,
+                returnType: string
+            ) =
+            let parameters =
+                parameters |> List.map(fun (name, value) -> name, CommonType.mkLongIdent value)
+
+            WidgetBuilder<MemberDefnAbstractSlotNode>(
+                AbstractMember.WidgetKey,
+                AbstractMember.Identifier.WithValue(identifier),
+                AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
+                AbstractMember.Parameters.WithValue(Named(parameters, false))
             )

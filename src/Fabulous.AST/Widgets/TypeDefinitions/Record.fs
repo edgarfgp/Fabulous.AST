@@ -11,7 +11,7 @@ module Record =
 
     let RecordCaseNode = Attributes.defineWidgetCollection "RecordCaseNode"
 
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
 
     let Members = Attributes.defineWidgetCollection "Members"
 
@@ -21,7 +21,7 @@ module Record =
 
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let name = Helpers.getScalarValue widget Name
             let fields = Helpers.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
@@ -61,7 +61,7 @@ module Record =
                     multipleAttributes,
                     SingleTextNode.``type``,
                     None,
-                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
                     [],
                     None,
@@ -81,32 +81,23 @@ module Record =
 module RecordBuilders =
     type Ast with
 
-        static member inline private BaseRecord(name: WidgetBuilder<#SingleTextNode>, typeParams: string list voption) =
+        static member private BaseRecord(name: string, typeParams: string list voption) =
             let scalars =
                 match typeParams with
-                | ValueNone -> StackList.empty()
-                | ValueSome typeParams -> StackList.one(Record.TypeParams.WithValue(typeParams))
+                | ValueNone -> StackList.one(Record.Name.WithValue(name))
+                | ValueSome typeParams ->
+                    StackList.two(Record.Name.WithValue(name), Record.TypeParams.WithValue(typeParams))
 
             CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
-                AttributesBundle(scalars, ValueSome [| Record.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(scalars, ValueNone, ValueNone)
             )
 
-        static member inline Record(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseRecord(name, ValueNone)
+        static member Record(name: string) = Ast.BaseRecord(name, ValueNone)
 
-        static member inline Record(name: SingleTextNode) = Ast.Record(Ast.EscapeHatch(name))
-
-        static member inline Record(name: string) = Ast.Record(SingleTextNode.Create(name))
-
-        static member inline GenericRecord(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
+        static member GenericRecord(name: string, typeParams: string list) =
             Ast.BaseRecord(name, ValueSome typeParams)
-
-        static member inline GenericRecord(name: SingleTextNode, typeParams: string list) =
-            Ast.GenericRecord(Ast.EscapeHatch(name), typeParams)
-
-        static member inline GenericRecord(name: string, typeParams: string list) =
-            Ast.GenericRecord(SingleTextNode(name, Range.Zero), typeParams)
 
 [<Extension>]
 type RecordModifiers =

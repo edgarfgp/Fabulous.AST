@@ -22,7 +22,7 @@ module Value =
 
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let name = Helpers.getNodeFromWidget<Pattern> widget Name
             let value = Helpers.getNodeFromWidget<Expr> widget Value
             let parameters = Helpers.tryGetNodeFromWidget<Pattern> widget Parameters
 
@@ -95,7 +95,7 @@ module Value =
                 isMutable,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
-                Choice1Of2(IdentListNode.Create([ IdentifierOrDot.Ident(name) ])),
+                Choice2Of2(name),
                 typeParams,
                 parameters,
                 returnType,
@@ -104,16 +104,17 @@ module Value =
                 Range.Zero
             ))
 
+
 [<AutoOpen>]
 module ValueBuilders =
     type Ast with
         static member private BaseValue
             (
-                name: WidgetBuilder<SingleTextNode>,
-                value: WidgetBuilder<Expr>,
+                name: WidgetBuilder<Pattern>,
                 isMutable: bool,
                 isInlined: bool,
-                typeParams: string list voption
+                typeParams: string list voption,
+                value: WidgetBuilder<Expr>
             ) =
             let scalars =
                 match typeParams with
@@ -136,182 +137,50 @@ module ValueBuilders =
                 )
             )
 
-        static member Value(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(name, value, false, false, ValueNone)
-
-        static member Value(name: SingleTextNode, value: Expr) =
-            Ast.Value(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
-
-        static member Value(name: SingleTextNode, value: WidgetBuilder<Expr>) = Ast.Value(Ast.EscapeHatch(name), value)
-
-        static member Value(name: string, value: Expr) =
-            Ast.Value(SingleTextNode.Create(name), value)
+        static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.BaseValue(name, false, false, ValueNone, value)
 
         static member Value(name: string, value: WidgetBuilder<Expr>) =
-            Ast.Value(EscapeHatch(SingleTextNode.Create(name)), value)
+            Ast.BaseValue(NamedPat(name), false, false, ValueNone, value)
 
-        static member Value(name: string, value: string) =
-            Ast.Value(SingleTextNode.Create(name), Constant(value)) //Expr.Constant(Constant.FromText(SingleTextNode.Create(value))))
+        static member Value(name: WidgetBuilder<Pattern>, value: string) =
+            Ast.BaseValue(name, false, false, ValueNone, ConstantExpr(value))
 
-        static member Value(name: WidgetBuilder<SingleTextNode>, typeParams: string list, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(name, value, false, false, ValueSome typeParams)
-
-        static member Value(name: SingleTextNode, typeParams: string list, value: Expr) =
-            Ast.Value(Ast.EscapeHatch(name), typeParams, Ast.EscapeHatch(value))
-
-        static member Value(name: SingleTextNode, typeParams: string list, value: WidgetBuilder<Expr>) =
-            Ast.Value(Ast.EscapeHatch(name), typeParams, value)
-
-        static member Value(name: string, typeParams: string list, value: Expr) =
-            Ast.Value(SingleTextNode.Create(name), typeParams, value)
+        static member Value(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) =
+            Ast.BaseValue(name, false, false, ValueSome typeParams, value)
 
         static member Value(name: string, typeParams: string list, value: WidgetBuilder<Expr>) =
-            Ast.Value(EscapeHatch(SingleTextNode.Create(name)), typeParams, value)
+            Ast.BaseValue(NamedPat(name), false, false, ValueSome typeParams, value)
+
+        static member Value(name: string, value: string) =
+            Ast.BaseValue(NamedPat(name), false, false, ValueNone, ConstantExpr(value))
 
         static member Value(name: string, typeParams: string list, value: string) =
-            Ast.Value(SingleTextNode.Create(name), typeParams, Constant(value))
+            Ast.BaseValue(NamedPat(name), false, false, ValueSome typeParams, ConstantExpr(value))
 
-        static member MutableValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(name, value, true, false, ValueNone)
+        static member MutableValue(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.BaseValue(name, true, false, ValueNone, value)
 
-        static member MutableValue(name: SingleTextNode, value: Expr) =
-            Ast.MutableValue(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
-
-        static member MutableValue(name: SingleTextNode, value: WidgetBuilder<Expr>) =
-            Ast.MutableValue(Ast.EscapeHatch(name), value)
-
-        static member MutableValue(name: string, value: Expr) =
-            Ast.MutableValue(SingleTextNode.Create(name), value)
+        static member MutableValue(name: WidgetBuilder<Pattern>, value: string) =
+            Ast.BaseValue(name, true, false, ValueNone, ConstantExpr(value))
 
         static member MutableValue(name: string, value: WidgetBuilder<Expr>) =
-            Ast.MutableValue(EscapeHatch(SingleTextNode.Create(name)), value)
+            Ast.BaseValue(NamedPat(name), true, false, ValueNone, value)
 
         static member MutableValue(name: string, value: string) =
-            Ast.MutableValue(SingleTextNode.Create(name), Constant(value))
+            Ast.BaseValue(NamedPat(name), true, false, ValueNone, ConstantExpr(value))
 
-        static member InlinedValue(name: WidgetBuilder<SingleTextNode>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(name, value, false, true, ValueNone)
-
-        static member InlinedValue(name: SingleTextNode, value: Expr) =
-            Ast.InlinedValue(Ast.EscapeHatch(name), Ast.EscapeHatch(value))
-
-        static member InlinedValue(name: SingleTextNode, value: WidgetBuilder<Expr>) =
-            Ast.InlinedValue(Ast.EscapeHatch(name), value)
-
-        static member InlinedValue(name: string, value: Expr) =
-            Ast.InlinedValue(SingleTextNode.Create(name), value)
-
-        static member InlinedValue(name: string, value: WidgetBuilder<Expr>) =
-            Ast.InlinedValue(EscapeHatch(SingleTextNode.Create(name)), value)
-
-        static member InlinedValue(name: string, value: string) =
-            Ast.InlinedValue(SingleTextNode.Create(name), Constant(value))
-
-        static member InlinedValue
-            (
-                name: WidgetBuilder<SingleTextNode>,
-                typeParams: string list,
-                value: WidgetBuilder<Expr>
-            ) =
-            Ast.BaseValue(name, value, false, true, ValueSome typeParams)
-
-        static member InlinedValue(name: SingleTextNode, typeParams: string list, value: Expr) =
-            Ast.InlinedValue(Ast.EscapeHatch(name), typeParams, Ast.EscapeHatch(value))
-
-        static member InlinedValue(name: SingleTextNode, typeParams: string list, value: WidgetBuilder<Expr>) =
-            Ast.InlinedValue(Ast.EscapeHatch(name), typeParams, value)
-
-        static member InlinedValue(name: string, typeParams: string list, value: Expr) =
-            Ast.InlinedValue(SingleTextNode.Create(name), typeParams, value)
+        static member InlinedValue(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) =
+            Ast.BaseValue(name, false, true, ValueSome typeParams, value)
 
         static member InlinedValue(name: string, typeParams: string list, value: WidgetBuilder<Expr>) =
-            Ast.InlinedValue(EscapeHatch(SingleTextNode.Create(name)), typeParams, value)
+            Ast.BaseValue(NamedPat(name), false, true, ValueSome typeParams, value)
+
+        static member InlinedValue(name: WidgetBuilder<Pattern>, typeParams: string list, value: string) =
+            Ast.BaseValue(name, false, true, ValueSome typeParams, ConstantExpr(value))
 
         static member InlinedValue(name: string, typeParams: string list, value: string) =
-            Ast.InlinedValue(SingleTextNode.Create(name), typeParams, Constant(value))
-
-        static member private BaseFunction
-            (
-                name: WidgetBuilder<SingleTextNode>,
-                parameters: WidgetBuilder<Pattern>,
-                isInlined: bool,
-                typeParams: string list voption
-            ) =
-            let scalars =
-                match typeParams with
-                | ValueNone -> StackList.one(Value.IsInlined.WithValue(isInlined))
-                | ValueSome typeParams ->
-                    StackList.two(Value.IsInlined.WithValue(isInlined), Value.TypeParams.WithValue(typeParams))
-
-            SingleChildBuilder<BindingNode, Expr>(
-                Value.WidgetKey,
-                Value.Value,
-                AttributesBundle(
-                    scalars,
-                    ValueSome
-                        [| Value.Name.WithValue(name.Compile())
-                           Value.Parameters.WithValue(parameters.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member Function(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseFunction(name, parameters, false, ValueNone)
-
-        static member inline Function(name: SingleTextNode, parameters: Pattern) =
-            Ast.Function(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
-
-        static member inline Function(name: string, parameters: Pattern) =
-            Ast.Function(SingleTextNode.Create(name), parameters)
-
-        static member Function(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.Function(EscapeHatch(SingleTextNode.Create(name)), parameters)
-
-        static member Function
-            (
-                name: WidgetBuilder<SingleTextNode>,
-                typeParams: string list,
-                parameters: WidgetBuilder<Pattern>
-            ) =
-            Ast.BaseFunction(name, parameters, false, ValueSome typeParams)
-
-        static member inline Function(name: SingleTextNode, typeParams: string list, parameters: Pattern) =
-            Ast.Function(Ast.EscapeHatch(name), typeParams, Ast.EscapeHatch(parameters))
-
-        static member inline Function(name: string, typeParams: string list, parameters: Pattern) =
-            Ast.Function(SingleTextNode.Create(name), typeParams, parameters)
-
-        static member Function(name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>) =
-            Ast.Function(EscapeHatch(SingleTextNode.Create(name)), typeParams, parameters)
-
-        static member InlinedFunction(name: WidgetBuilder<SingleTextNode>, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseFunction(name, parameters, true, ValueNone)
-
-        static member inline InlinedFunction(name: SingleTextNode, parameters: Pattern) =
-            Ast.InlinedFunction(Ast.EscapeHatch(name), Ast.EscapeHatch(parameters))
-
-        static member inline InlinedFunction(name: string, parameters: Pattern) =
-            Ast.InlinedFunction(SingleTextNode.Create(name), parameters)
-
-        static member InlinedFunction(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.InlinedFunction(EscapeHatch(SingleTextNode.Create(name)), parameters)
-
-        static member InlinedFunction
-            (
-                name: WidgetBuilder<SingleTextNode>,
-                typeParams: string list,
-                parameters: WidgetBuilder<Pattern>
-            ) =
-            Ast.BaseFunction(name, parameters, true, ValueSome typeParams)
-
-        static member inline InlinedFunction(name: SingleTextNode, typeParams: string list, parameters: Pattern) =
-            Ast.InlinedFunction(Ast.EscapeHatch(name), typeParams, Ast.EscapeHatch(parameters))
-
-        static member inline InlinedFunction(name: string, typeParams: string list, parameters: Pattern) =
-            Ast.InlinedFunction(SingleTextNode.Create(name), typeParams, parameters)
-
-        static member InlinedFunction(name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>) =
-            Ast.InlinedFunction(EscapeHatch(SingleTextNode.Create(name)), typeParams, parameters)
+            Ast.BaseValue(NamedPat(name), false, true, ValueSome typeParams, ConstantExpr(value))
 
 [<Extension>]
 type ValueModifiers =

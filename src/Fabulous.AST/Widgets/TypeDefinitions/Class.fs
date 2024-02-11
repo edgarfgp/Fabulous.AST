@@ -8,19 +8,24 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
 module Class =
-    let Name = Attributes.defineWidget "Name"
-    let Parameters = Attributes.defineScalar<SimplePatNode list> "Parameters"
+    let Name = Attributes.defineScalar<string> "Name"
+    let SimplePats = Attributes.defineWidget "SimplePats"
     let Members = Attributes.defineWidgetCollection "Members"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let IsClass = Attributes.defineScalar<bool> "IsClass"
 
     let WidgetKey =
         Widgets.register "TypeDefnRegularNode" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
-            let parameters = Helpers.tryGetScalarValue widget Parameters
+            let name = Helpers.getScalarValue widget Name
+
+            let implicitConstructor =
+                Helpers.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
+
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
             let typeParams = Helpers.tryGetScalarValue widget TypeParams
+            let isClass = Helpers.getScalarValue widget IsClass
 
             let typeParams =
                 match typeParams with
@@ -28,7 +33,6 @@ module Class =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              // FIXME - Update
                               TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
@@ -49,10 +53,10 @@ module Class =
                 | Some members -> members
 
             let implicitConstructor =
-                match parameters with
-                | ValueNone -> None
-                | ValueSome(parameters) when parameters.IsEmpty ->
-                    Some(
+                match implicitConstructor with
+                | ValueNone when not isClass -> None
+                | ValueNone ->
+                    let implicitConstructorNode =
                         ImplicitConstructorNode(
                             None,
                             None,
@@ -63,36 +67,16 @@ module Class =
                             None,
                             Range.Zero
                         )
-                    )
-                | ValueSome(simplePatNodes) ->
-                    let simplePats =
-                        match simplePatNodes with
-                        | [] -> []
-                        | head :: tail ->
-                            [ yield Choice1Of2 head
-                              for p in tail do
-                                  yield Choice2Of2 SingleTextNode.comma
-                                  yield Choice1Of2 p ]
 
-                    Some(
-                        ImplicitConstructorNode(
-                            None,
-                            None,
-                            None,
-                            SingleTextNode.leftParenthesis,
-                            simplePats,
-                            SingleTextNode.rightParenthesis,
-                            None,
-                            Range.Zero
-                        )
-                    )
+                    Some implicitConstructorNode
+                | ValueSome implicitConstructor -> Some implicitConstructor
 
             TypeDefnRegularNode(
                 TypeNameNode(
                     None,
                     multipleAttributes,
                     SingleTextNode.``type``,
-                    Some(name),
+                    Some(SingleTextNode.Create(name)),
                     IdentListNode([], Range.Zero),
                     typeParams,
                     [],
@@ -108,63 +92,64 @@ module Class =
 [<AutoOpen>]
 module ClassBuilders =
     type Ast with
-        static member inline private BaseClass(name: WidgetBuilder<#SingleTextNode>, typeParams: string list voption) =
+        static member BaseClass
+            (
+                name: string,
+                typeParams: string list voption,
+                constructor: WidgetBuilder<ImplicitConstructorNode> voption,
+                isClass: bool
+            ) =
             let scalars =
                 match typeParams with
-                | ValueNone -> StackList.empty()
-                | ValueSome typeParams -> StackList.one(Class.TypeParams.WithValue(typeParams))
+                | ValueNone -> StackList.two(Class.Name.WithValue(name), Class.IsClass.WithValue(isClass))
+                | ValueSome typeParams ->
+                    StackList.three(
+                        Class.Name.WithValue(name),
+                        Class.TypeParams.WithValue(typeParams),
+                        Class.IsClass.WithValue(isClass)
+                    )
 
             CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
                 Class.WidgetKey,
                 Class.Members,
-                AttributesBundle(scalars, ValueSome [| Class.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(
+                    scalars,
+                    ValueSome
+                        [| match constructor with
+                           | ValueSome constructor -> Class.SimplePats.WithValue(constructor.Compile())
+                           | ValueNone -> () |],
+                    ValueNone
+                )
             )
 
-        static member inline Class(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseClass(name, ValueNone)
+        static member Class(name: string) =
+            Ast.BaseClass(name, ValueNone, ValueNone, true)
 
-        static member inline Class(name: SingleTextNode) = Ast.Class(Ast.EscapeHatch(name))
+        static member Class(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
+            Ast.BaseClass(name, ValueNone, ValueSome constructor, true)
 
-        static member inline Class(name: string) =
-            Ast.Class(SingleTextNode(name, Range.Zero))
+        static member Class(name: string, typeParams: string list) =
+            Ast.BaseClass(name, ValueSome typeParams, ValueNone, true)
 
-        static member inline Interface(name: WidgetBuilder<#SingleTextNode>) = Ast.BaseClass(name, ValueNone)
+        static member Class
+            (
+                name: string,
+                typeParams: string list,
+                constructor: WidgetBuilder<ImplicitConstructorNode>
+            ) =
+            Ast.BaseClass(name, ValueSome typeParams, ValueSome constructor, true)
 
-        static member inline Interface(name: SingleTextNode) = Ast.Class(Ast.EscapeHatch(name))
+        static member Interface(name: string) =
+            Ast.BaseClass(name, ValueNone, ValueNone, false)
 
-        static member inline Interface(name: string) =
-            Ast.Class(SingleTextNode(name, Range.Zero))
-
-        static member inline GenericClass(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
-            Ast.BaseClass(name, ValueSome typeParams)
-
-        static member inline GenericClass(name: SingleTextNode, typeParams: string list) =
-            Ast.GenericClass(Ast.EscapeHatch(name), typeParams)
-
-        static member inline GenericClass(name: string, typeParams: string list) =
-            Ast.GenericClass(SingleTextNode(name, Range.Zero), typeParams)
-
-        static member inline GenericInterface(name: WidgetBuilder<#SingleTextNode>, typeParams: string list) =
-            Ast.BaseClass(name, ValueSome typeParams)
-
-        static member inline GenericInterface(name: SingleTextNode, typeParams: string list) =
-            Ast.GenericClass(Ast.EscapeHatch(name), typeParams)
-
-        static member inline GenericInterface(name: string, typeParams: string list) =
-            Ast.GenericClass(SingleTextNode(name, Range.Zero), typeParams)
+        static member Interface(name: string, typeParams: string list) =
+            Ast.BaseClass(name, ValueSome typeParams, ValueNone, false)
 
 [<Extension>]
 type ClassModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attributes: string list) =
         this.AddScalar(Class.MultipleAttributes.WithValue(attributes))
-
-    [<Extension>]
-    static member inline implicitConstructorParameters
-        (
-            this: WidgetBuilder<TypeDefnRegularNode>,
-            parameters: SimplePatNode list
-        ) =
-        this.AddScalar(Class.Parameters.WithValue(parameters))
 
 [<Extension>]
 type ClassYieldExtensions =

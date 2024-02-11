@@ -8,13 +8,13 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 
 module Abbrev =
 
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
 
     let AliasType = Attributes.defineScalar<Type> "AliasType"
 
     let WidgetKey =
         Widgets.register "Alias" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+            let name = Helpers.getScalarValue widget Name
 
             let aliasType = Helpers.getScalarValue widget AliasType
 
@@ -23,7 +23,7 @@ module Abbrev =
                     None,
                     None,
                     SingleTextNode.``type``,
-                    Some(name),
+                    Some(SingleTextNode.Create(name)),
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
                     None,
                     [],
@@ -41,21 +41,18 @@ module Abbrev =
 module AbbrevBuilders =
     type Ast with
 
-        static member inline Abbrev(name: WidgetBuilder<#SingleTextNode>, aliasType: Type) =
+        static member Abbrev(name: string, alias: Type) =
             WidgetBuilder<TypeDefnAbbrevNode>(
                 Abbrev.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Abbrev.AliasType.WithValue(aliasType)),
-                    ValueSome [| Abbrev.Name.WithValue(name.Compile()) |],
+                    StackList.two(Abbrev.Name.WithValue(name), Abbrev.AliasType.WithValue(alias)),
+                    ValueNone,
                     ValueNone
                 )
             )
 
-        static member inline Abbrev(name: SingleTextNode, aliasType: Type) =
-            Ast.Abbrev(Ast.EscapeHatch(name), aliasType)
-
-        static member inline Abbrev(name: string, aliasType: Type) =
-            Ast.Abbrev(SingleTextNode(name, Range.Zero), aliasType)
+        static member Abbrev(name: string, alias: string) =
+            Ast.Abbrev(name, CommonType.mkLongIdent(alias))
 
 [<Extension>]
 type AbbrevYieldExtensions =

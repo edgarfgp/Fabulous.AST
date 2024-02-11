@@ -8,18 +8,23 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
 module ClassEnd =
-    let Name = Attributes.defineWidget "Name"
-    let Parameters = Attributes.defineScalar<SimplePatNode list> "Parameters"
+    let Name = Attributes.defineScalar<string> "Name"
     let Members = Attributes.defineWidgetCollection "Members"
     let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let SimplePats = Attributes.defineWidget "SimplePats"
+    let HasConstructor = Attributes.defineScalar<bool> "HasConstructor"
 
     let WidgetKey =
         Widgets.register "ClassEnd" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
-            let parameters = Helpers.tryGetScalarValue widget Parameters
+            let name = Helpers.getScalarValue widget Name
             let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
             let typeParams = Helpers.tryGetScalarValue widget TypeParams
+
+            let implicitConstructor =
+                Helpers.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
+
+            let hasConstructor = Helpers.getScalarValue widget HasConstructor
 
             let multipleAttributes =
                 match attributes with
@@ -27,10 +32,10 @@ module ClassEnd =
                 | ValueNone -> None
 
             let implicitConstructor =
-                match parameters with
-                | ValueNone -> None
-                | ValueSome(parameters) when parameters.IsEmpty ->
-                    Some(
+                match implicitConstructor with
+                | ValueNone when not hasConstructor -> None
+                | ValueNone when hasConstructor ->
+                    let implicitConstructorNode =
                         ImplicitConstructorNode(
                             None,
                             None,
@@ -41,29 +46,23 @@ module ClassEnd =
                             None,
                             Range.Zero
                         )
-                    )
-                | ValueSome(simplePatNodes) ->
-                    let simplePats =
-                        match simplePatNodes with
-                        | [] -> []
-                        | head :: tail ->
-                            [ yield Choice1Of2 head
-                              for p in tail do
-                                  yield Choice2Of2 SingleTextNode.comma
-                                  yield Choice1Of2 p ]
 
-                    Some(
+                    Some implicitConstructorNode
+                | ValueNone ->
+                    let implicitConstructorNode =
                         ImplicitConstructorNode(
                             None,
                             None,
                             None,
                             SingleTextNode.leftParenthesis,
-                            simplePats,
+                            [],
                             SingleTextNode.rightParenthesis,
                             None,
                             Range.Zero
                         )
-                    )
+
+                    Some implicitConstructorNode
+                | ValueSome implicitConstructor -> Some implicitConstructor
 
             let typeParams =
                 match typeParams with
@@ -87,7 +86,7 @@ module ClassEnd =
                     None,
                     multipleAttributes,
                     SingleTextNode.``type``,
-                    Some(name),
+                    Some(SingleTextNode.Create(name)),
                     IdentListNode([], Range.Zero),
                     typeParams,
                     [],
@@ -105,37 +104,64 @@ module ClassEnd =
 module ClassEndBuilders =
     type Ast with
 
-        static member inline ClassEnd(name: WidgetBuilder<#SingleTextNode>, parameters: string list) =
+        static member private BaseClassEnd
+            (
+                name: string,
+                parameters: string list voption,
+                constructor: WidgetBuilder<ImplicitConstructorNode> voption,
+                hasConstructor: bool
+            ) =
+            let scalars =
+                match parameters with
+                | ValueNone ->
+                    StackList.two(ClassEnd.Name.WithValue(name), ClassEnd.HasConstructor.WithValue(hasConstructor))
+                | ValueSome typeParams ->
+                    StackList.three(
+                        ClassEnd.Name.WithValue(name),
+                        ClassEnd.TypeParams.WithValue(typeParams),
+                        ClassEnd.HasConstructor.WithValue(hasConstructor)
+                    )
+
             WidgetBuilder<TypeDefnExplicitNode>(
                 ClassEnd.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ClassEnd.TypeParams.WithValue(parameters)),
-                    ValueSome [| ClassEnd.Name.WithValue(name.Compile()) |],
+                    scalars,
+                    ValueSome
+                        [| match constructor with
+                           | ValueSome constructor -> ClassEnd.SimplePats.WithValue(constructor.Compile())
+                           | ValueNone -> () |],
                     ValueNone
                 )
             )
 
-        static member inline ClassEnd(node: SingleTextNode, parameters: string list option) =
-            match parameters with
-            | None -> Ast.ClassEnd(Ast.EscapeHatch(node), [])
-            | Some(parameters) -> Ast.ClassEnd(Ast.EscapeHatch(node), parameters)
+        static member ClassEnd(node: string) =
+            Ast.BaseClassEnd(node, ValueNone, ValueNone, false)
 
-        static member inline ClassEnd(name: string, ?parameters: string list) =
-            Ast.ClassEnd(SingleTextNode.Create(name), parameters)
+        static member ClassEnd(node: string, hasConstructor: bool) =
+            Ast.BaseClassEnd(node, ValueNone, ValueNone, hasConstructor)
+
+        static member ClassEnd(node: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
+            Ast.BaseClassEnd(node, ValueNone, ValueSome constructor, false)
+
+        static member ClassEnd(name: string, parameters: string list) =
+            Ast.BaseClassEnd(name, ValueSome parameters, ValueNone, false)
+
+        static member ClassEnd(name: string, parameters: string list, hasConstructor: bool) =
+            Ast.BaseClassEnd(name, ValueSome parameters, ValueNone, hasConstructor)
+
+        static member ClassEnd
+            (
+                name: string,
+                parameters: string list,
+                constructor: WidgetBuilder<ImplicitConstructorNode>
+            ) =
+            Ast.BaseClassEnd(name, ValueSome parameters, ValueSome constructor, false)
 
 [<Extension>]
 type ClassEndModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>, attributes: string list) =
         this.AddScalar(ClassEnd.MultipleAttributes.WithValue(attributes))
-
-    [<Extension>]
-    static member inline implicitConstructorParameters
-        (
-            this: WidgetBuilder<TypeDefnExplicitNode>,
-            parameters: SimplePatNode list
-        ) =
-        this.AddScalar(ClassEnd.Parameters.WithValue(parameters))
 
 [<Extension>]
 type ClassEndYieldExtensions =

@@ -62,6 +62,8 @@ type MyFloat = float
         AnonymousModule() {
             Abbrev("MyInt", CommonType.Int32)
 
+            Abbrev("MyString", "string")
+
             TypeDefnAbbrevNode(
                 TypeNameNode(
                     None,
@@ -86,6 +88,7 @@ type MyFloat = float
             """
 
 type MyInt = int
+type MyString = string
 type MyFloat = float
 
 """

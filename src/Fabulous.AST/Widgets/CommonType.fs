@@ -1,7 +1,6 @@
 namespace Fabulous.AST
 
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Text
 
 [<RequireQualifiedAccess>]
 module CommonType =

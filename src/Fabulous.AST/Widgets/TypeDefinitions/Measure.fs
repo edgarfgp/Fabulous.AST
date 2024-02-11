@@ -6,19 +6,19 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
-module UnitsOfMeasure =
+module Measure =
 
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<string> "Name"
 
-    let PowerType = Attributes.defineScalar "PowerType"
+    let PowerType = Attributes.defineScalar<Type> "PowerType"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
     let XmlDocsAbbrev = Attributes.defineScalar<string list> "XmlDoc"
 
     let WidgetKey =
-        Widgets.register "UnitsOfMeasure" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+        Widgets.register "Measure" (fun widget ->
+            let name = Helpers.getScalarValue widget Name
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
@@ -32,7 +32,7 @@ module UnitsOfMeasure =
                 xmlDocs,
                 Some(MultipleAttributeListNode.Create([ "Measure" ])),
                 SingleTextNode.``type``,
-                Some(name),
+                Some(SingleTextNode.Create(name)),
                 IdentListNode([], Range.Zero),
                 None,
                 [],
@@ -43,8 +43,8 @@ module UnitsOfMeasure =
             ))
 
     let WidgetAbbrevKey =
-        Widgets.register "UnitsOfMeasureAbbrev" (fun widget ->
-            let name = Helpers.getNodeFromWidget<SingleTextNode> widget Name
+        Widgets.register "Measure" (fun widget ->
+            let name = Helpers.getScalarValue widget Name
             let powerType = Helpers.getScalarValue widget PowerType
             let lines = Helpers.tryGetScalarValue widget XmlDocsAbbrev
 
@@ -60,7 +60,7 @@ module UnitsOfMeasure =
                     xmlDocs,
                     Some(MultipleAttributeListNode.Create([ "Measure" ])),
                     SingleTextNode.``type``,
-                    Some(name),
+                    Some(SingleTextNode.Create(name)),
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
                     None,
                     [],
@@ -76,54 +76,41 @@ module UnitsOfMeasure =
 
 
 [<AutoOpen>]
-module UnitsOfMeasureBuilders =
+module MeasureBuilders =
     type Ast with
 
-        static member inline UnitsOfMeasure(name: WidgetBuilder<#SingleTextNode>) =
+        static member inline Measure(name: string) =
             WidgetBuilder<TypeNameNode>(
-                UnitsOfMeasure.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| UnitsOfMeasure.Name.WithValue(name.Compile()) |],
-                    ValueNone
-                )
+                Measure.WidgetKey,
+                AttributesBundle(StackList.one(Measure.Name.WithValue(name)), ValueNone, ValueNone)
             )
 
-        static member inline UnitsOfMeasure(name: SingleTextNode) =
-            Ast.UnitsOfMeasure(Ast.EscapeHatch(name))
 
-        static member inline UnitsOfMeasure(name: string) =
-            Ast.UnitsOfMeasure(SingleTextNode(name, Range.Zero))
-
-        static member inline UnitsOfMeasure(name: WidgetBuilder<#SingleTextNode>, powerType: Type) =
+        static member inline Measure(name: string, powerType: Type) =
             WidgetBuilder<TypeDefnAbbrevNode>(
-                UnitsOfMeasure.WidgetAbbrevKey,
+                Measure.WidgetAbbrevKey,
                 AttributesBundle(
-                    StackList.one(UnitsOfMeasure.PowerType.WithValue(powerType)),
-                    ValueSome [| UnitsOfMeasure.Name.WithValue(name.Compile()) |],
+                    StackList.two(Measure.Name.WithValue(name), Measure.PowerType.WithValue(powerType)),
+                    ValueNone,
                     ValueNone
                 )
             )
 
-        static member inline UnitsOfMeasure(name: SingleTextNode, powerType: Type) =
-            Ast.UnitsOfMeasure(Ast.EscapeHatch(name), powerType)
-
-        static member inline UnitsOfMeasure(name: string, powerType: Type) =
-            Ast.UnitsOfMeasure(SingleTextNode(name, Range.Zero), powerType)
+        static member inline Measure(name: string, powerType: string) =
+            Ast.Measure(name, CommonType.mkLongIdent(powerType))
 
 [<Extension>]
 type TypeNameNodeModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeNameNode>, comments: string list) =
-        this.AddScalar(UnitsOfMeasure.XmlDocs.WithValue(comments))
+        this.AddScalar(Measure.XmlDocs.WithValue(comments))
 
 [<Extension>]
 type UnitsOfMeasureAbbrevModifiers =
 
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, comments: string list) =
-        this.AddScalar(UnitsOfMeasure.XmlDocsAbbrev.WithValue(comments))
-
+        this.AddScalar(Measure.XmlDocsAbbrev.WithValue(comments))
 
 [<Extension>]
 type MeasureYieldExtensions =
