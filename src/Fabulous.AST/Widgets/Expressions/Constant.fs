@@ -23,13 +23,13 @@ module Constant =
             Constant.Measure(
                 ConstantMeasureNode(
                     value,
-                    UnitOfMeasureNode(SingleTextNode.minus, measure, SingleTextNode.greaterThan, Range.Zero),
+                    UnitOfMeasureNode(SingleTextNode.lessThan, measure, SingleTextNode.greaterThan, Range.Zero),
                     Range.Zero
                 )
             ))
 
     let WidgetUnitKey =
-        Widgets.register "ConstantUnit" (fun widget ->
+        Widgets.register "ConstantUnit" (fun _ ->
             Constant.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)))
 
 [<AutoOpen>]

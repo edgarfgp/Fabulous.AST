@@ -92,7 +92,7 @@ module MeasureBuilders =
                 Measure.WidgetMeasureOperatorKey,
                 AttributesBundle(
                     StackList.one(Measure.Value.WithValue(operator)),
-                    ValueSome [| Measure.LHS.WithValue(rhs.Compile()); Measure.RHS.WithValue(lhs.Compile()) |],
+                    ValueSome [| Measure.LHS.WithValue(lhs.Compile()); Measure.RHS.WithValue(rhs.Compile()) |],
                     ValueNone
                 )
             )
@@ -103,16 +103,6 @@ module MeasureBuilders =
                 AttributesBundle(
                     StackList.one(Measure.Value.WithValue(operator)),
                     ValueSome [| Measure.LHS.WithValue(lhs.Compile()); Measure.RHS.WithValue(rhs.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member MeasureDivide(operator: string, rhs: WidgetBuilder<Measure>) =
-            WidgetBuilder<Measure>(
-                Measure.WidgetMeasureDivideKey,
-                AttributesBundle(
-                    StackList.one(Measure.Value.WithValue(operator)),
-                    ValueSome [| Measure.RHS.WithValue(rhs.Compile()) |],
                     ValueNone
                 )
             )

@@ -45,13 +45,13 @@ module RationalConstNode =
 module RationalConstNodeBuilders =
     type Ast with
 
-        static member Integer(value: string) =
+        static member RationalConstInteger(value: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetIntegerKey,
                 AttributesBundle(StackList.one(RationalConstNode.Value.WithValue(value)), ValueNone, ValueNone)
             )
 
-        static member Negate(value: string, node: WidgetBuilder<RationalConstNode>) =
+        static member RationalConstNegate(value: string, node: WidgetBuilder<RationalConstNode>) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetNegateKey,
                 AttributesBundle(
@@ -61,7 +61,7 @@ module RationalConstNodeBuilders =
                 )
             )
 
-        static member Rational(numerator: string, divOp: string, denominator: string) =
+        static member RationalConstRational(numerator: string, divOp: string, denominator: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetRationalKey,
                 AttributesBundle(
