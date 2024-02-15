@@ -55,6 +55,9 @@
         <Compile Include="Widgets\Patterns\NamedParenStarIdent.fs" />
         <Compile Include="Widgets\Patterns\As.fs" />
         <Compile Include="Widgets\Patterns\ListCons.fs" />
+        <Compile Include="Widgets\Expressions\Measure\RationalConstNode.fs" />
+        <Compile Include="Widgets\Expressions\Measure\Measure.fs" />
+        <Compile Include="Widgets\Expressions\Constant.fs" />
         <Compile Include="Widgets\Expressions\Expr.fs" />
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />

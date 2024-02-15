@@ -11,7 +11,7 @@ module ListCons =
 
     [<Test>]
     let ``let value with a ListCons pattern`` () =
-        AnonymousModule() { Value(ListConsPat(NamedPat("a"), NamedPat("b")), ConstantExpr("12")) }
+        AnonymousModule() { Value(ListConsPat(NamedPat("a"), NamedPat("b")), ConstantExpr(ConstantString "12")) }
         |> produces
             """
 let a :: b = 12
@@ -19,7 +19,7 @@ let a :: b = 12
 
     [<Test>]
     let ``let value with a custom ListCons pattern`` () =
-        AnonymousModule() { Value(ListConsPat(NamedPat("a"), ";;", NamedPat("b")), ConstantExpr("12")) }
+        AnonymousModule() { Value(ListConsPat(NamedPat("a"), ";;", NamedPat("b")), ConstantExpr(ConstantString "12")) }
         |> produces
             """
 let a ;; b = 12

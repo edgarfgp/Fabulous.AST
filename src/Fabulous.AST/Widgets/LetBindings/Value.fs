@@ -144,7 +144,7 @@ module ValueBuilders =
             Ast.BaseValue(NamedPat(name), false, false, ValueNone, value)
 
         static member Value(name: WidgetBuilder<Pattern>, value: string) =
-            Ast.BaseValue(name, false, false, ValueNone, ConstantExpr(value))
+            Ast.BaseValue(name, false, false, ValueNone, ConstantExpr(ConstantString(value)))
 
         static member Value(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, false, false, ValueSome typeParams, value)
@@ -153,22 +153,22 @@ module ValueBuilders =
             Ast.BaseValue(NamedPat(name), false, false, ValueSome typeParams, value)
 
         static member Value(name: string, value: string) =
-            Ast.BaseValue(NamedPat(name), false, false, ValueNone, ConstantExpr(value))
+            Ast.BaseValue(NamedPat(name), false, false, ValueNone, ConstantExpr(ConstantString(value)))
 
         static member Value(name: string, typeParams: string list, value: string) =
-            Ast.BaseValue(NamedPat(name), false, false, ValueSome typeParams, ConstantExpr(value))
+            Ast.BaseValue(NamedPat(name), false, false, ValueSome typeParams, ConstantExpr(ConstantString(value)))
 
         static member MutableValue(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, true, false, ValueNone, value)
 
         static member MutableValue(name: WidgetBuilder<Pattern>, value: string) =
-            Ast.BaseValue(name, true, false, ValueNone, ConstantExpr(value))
+            Ast.BaseValue(name, true, false, ValueNone, ConstantExpr(ConstantString(value)))
 
         static member MutableValue(name: string, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(NamedPat(name), true, false, ValueNone, value)
 
         static member MutableValue(name: string, value: string) =
-            Ast.BaseValue(NamedPat(name), true, false, ValueNone, ConstantExpr(value))
+            Ast.BaseValue(NamedPat(name), true, false, ValueNone, ConstantExpr(ConstantString(value)))
 
         static member InlinedValue(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, false, true, ValueSome typeParams, value)
@@ -177,10 +177,10 @@ module ValueBuilders =
             Ast.BaseValue(NamedPat(name), false, true, ValueSome typeParams, value)
 
         static member InlinedValue(name: WidgetBuilder<Pattern>, typeParams: string list, value: string) =
-            Ast.BaseValue(name, false, true, ValueSome typeParams, ConstantExpr(value))
+            Ast.BaseValue(name, false, true, ValueSome typeParams, ConstantExpr(ConstantString(value)))
 
         static member InlinedValue(name: string, typeParams: string list, value: string) =
-            Ast.BaseValue(NamedPat(name), false, true, ValueSome typeParams, ConstantExpr(value))
+            Ast.BaseValue(NamedPat(name), false, true, ValueSome typeParams, ConstantExpr(ConstantString(value)))
 
 [<Extension>]
 type ValueModifiers =

@@ -11,8 +11,8 @@ module Augmentation =
     let ``Produces an Augment`` () =
         AnonymousModule() {
             Augmentation("DateTime") {
-                Member("this.Print") { UnitExpr() }
-                Member("this.Print", UnitPat()) { UnitExpr() }
+                Member("this.Print") { ConstantExpr(ConstantUnit()) }
+                Member("this.Print", UnitPat()) { ConstantExpr(ConstantUnit()) }
             }
         }
         |> produces

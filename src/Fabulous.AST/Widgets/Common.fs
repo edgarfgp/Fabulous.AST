@@ -381,49 +381,49 @@ module Auxiliary =
                 )
             )
 
-    type RationalConstNode with
-        static member inline Integer(text: string) =
-            RationalConstNode.Integer(SingleTextNode.Create(text))
+    // type RationalConstNode with
+    //     static member inline Integer(text: string) =
+    //         RationalConstNode.Integer(SingleTextNode.Create(text))
+    //
+    //     static member inline Rational(numerator: string, divOp: string, denominator: string) =
+    //         RationalConstNode.Rational(
+    //             RationalNode(
+    //                 SingleTextNode.leftParenthesis,
+    //                 SingleTextNode.Create(numerator),
+    //                 SingleTextNode.Create(divOp),
+    //                 SingleTextNode.Create(denominator),
+    //                 SingleTextNode.rightParenthesis,
+    //                 Range.Zero
+    //             )
+    //         )
+    //
+    //     static member inline Negate(node: RationalConstNode) =
+    //         RationalConstNode.Negate(NegateRationalNode(SingleTextNode.minus, node, Range.Zero))
 
-        static member inline Rational(numerator: string, divOp: string, denominator: string) =
-            RationalConstNode.Rational(
-                RationalNode(
-                    SingleTextNode.leftParenthesis,
-                    SingleTextNode.Create(numerator),
-                    SingleTextNode.Create(divOp),
-                    SingleTextNode.Create(denominator),
-                    SingleTextNode.rightParenthesis,
-                    Range.Zero
-                )
-            )
-
-        static member inline Negate(node: RationalConstNode) =
-            RationalConstNode.Negate(NegateRationalNode(SingleTextNode.minus, node, Range.Zero))
-
-    type Measure with
-
-        static member inline Single(measure: string) =
-            Measure.Single(SingleTextNode.Create(measure))
-
-        static member inline Operator(lhs: Measure, rhs: Measure) =
-            Measure.Operator(MeasureOperatorNode(lhs, SingleTextNode.star, rhs, Range.Zero))
-
-        static member inline Divide(lhs: Measure option, rhs: Measure) =
-            Measure.Divide(MeasureDivideNode(lhs, SingleTextNode.divOp, rhs, Range.Zero))
-
-        static member inline Power(measure: Measure, rational: RationalConstNode) =
-            Measure.Power(MeasurePowerNode(measure, SingleTextNode.caret, rational, Range.Zero))
-
-        static member inline Multiply(lhs: Measure, rhs: Measure) =
-            Measure.Operator(MeasureOperatorNode(lhs, SingleTextNode.star, rhs, Range.Zero))
-
-        static member inline Sequence(measures: Measure list) =
-            Measure.Seq(MeasureSequenceNode(measures, Range.Zero))
-
-        static member inline Parenthesis(measure: Measure) =
-            Measure.Paren(
-                MeasureParenNode(SingleTextNode.leftParenthesis, measure, SingleTextNode.rightParenthesis, Range.Zero)
-            )
+    // type Measure with
+    //
+    //     static member inline Single(measure: string) =
+    //         Measure.Single(SingleTextNode.Create(measure))
+    //
+    //     static member inline Operator(lhs: Measure, rhs: Measure) =
+    //         Measure.Operator(MeasureOperatorNode(lhs, SingleTextNode.star, rhs, Range.Zero))
+    //
+    //     static member inline Divide(lhs: Measure option, rhs: Measure) =
+    //         Measure.Divide(MeasureDivideNode(lhs, SingleTextNode.divOp, rhs, Range.Zero))
+    //
+    //     static member inline Power(measure: Measure, rational: RationalConstNode) =
+    //         Measure.Power(MeasurePowerNode(measure, SingleTextNode.caret, rational, Range.Zero))
+    //
+    //     static member inline Multiply(lhs: Measure, rhs: Measure) =
+    //         Measure.Operator(MeasureOperatorNode(lhs, SingleTextNode.star, rhs, Range.Zero))
+    //
+    //     static member inline Sequence(measures: Measure list) =
+    //         Measure.Seq(MeasureSequenceNode(measures, Range.Zero))
+    //
+    //     static member inline Parenthesis(measure: Measure) =
+    //         Measure.Paren(
+    //             MeasureParenNode(SingleTextNode.leftParenthesis, measure, SingleTextNode.rightParenthesis, Range.Zero)
+    //         )
 
     type Constant with
         static member inline Text(text: string) =

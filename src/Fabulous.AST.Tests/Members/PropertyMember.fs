@@ -13,20 +13,22 @@ module PropertyMember =
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                Member("this.A") { ConstantExpr("\"\"") }
-                InlinedMember("this.C") { ConstantExpr("\"\"") }
+                Member("this.A") { ConstantExpr(ConstantString "\"\"") }
+                InlinedMember("this.C") { ConstantExpr(ConstantString "\"\"") }
 
-                StaticMember("B") { ConstantExpr("\"\"") }
-                InlinedStaticMember("D") { ConstantExpr("\"\"") }
+                StaticMember("B") { ConstantExpr(ConstantString "\"\"") }
+                InlinedStaticMember("D") { ConstantExpr(ConstantString "\"\"") }
 
-                Member("this.E") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
-
-                InlinedMember("this.F") { ConstantExpr("\"\"") }
+                Member("this.E") { ConstantExpr(ConstantString "\"\"") }
                 |> _.returnType(CommonType.String)
 
-                StaticMember("G") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
+                InlinedMember("this.F") { ConstantExpr(ConstantString "\"\"") }
+                |> _.returnType(CommonType.String)
 
-                InlinedStaticMember("H") { ConstantExpr("\"\"") }
+                StaticMember("G") { ConstantExpr(ConstantString "\"\"") }
+                |> _.returnType(CommonType.String)
+
+                InlinedStaticMember("H") { ConstantExpr(ConstantString "\"\"") }
                 |> _.returnType(CommonType.String)
             }
         }
@@ -53,20 +55,22 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                Member(NamedPat("this.A")) { ConstantExpr("\"\"") }
-                InlinedMember("this.C") { ConstantExpr("\"\"") }
+                Member(NamedPat("this.A")) { ConstantExpr(ConstantString("\"\"")) }
+                InlinedMember("this.C") { ConstantExpr(ConstantString("\"\"")) }
 
-                StaticMember(ParenPat(NamedPat("|B|_|"))) { ConstantExpr("\"\"") }
-                InlinedStaticMember("D") { ConstantExpr("\"\"") }
+                StaticMember(ParenPat(NamedPat("|B|_|"))) { ConstantExpr(ConstantString("\"\"")) }
+                InlinedStaticMember("D") { ConstantExpr(ConstantString("\"\"")) }
 
-                Member("this.E") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
-
-                InlinedMember("this.F") { ConstantExpr("\"\"") }
+                Member("this.E") { ConstantExpr(ConstantString("\"\"")) }
                 |> _.returnType(CommonType.String)
 
-                StaticMember("G") { ConstantExpr("\"\"") } |> _.returnType(CommonType.String)
+                InlinedMember("this.F") { ConstantExpr(ConstantString("\"\"")) }
+                |> _.returnType(CommonType.String)
 
-                InlinedStaticMember(NamedPat("H")) { ConstantExpr("\"\"") }
+                StaticMember("G") { ConstantExpr(ConstantString("\"\"")) }
+                |> _.returnType(CommonType.String)
+
+                InlinedStaticMember(NamedPat("H")) { ConstantExpr(ConstantString("\"\"")) }
                 |> _.returnType(CommonType.String)
             }
         }
@@ -92,7 +96,7 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                Member("this.A") { ConstantExpr("\"\"") }
+                Member("this.A") { ConstantExpr(ConstantString("\"\"")) }
             }
         }
         |> produces
@@ -111,7 +115,7 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                StaticMember("A") { ConstantExpr("\"\"") }
+                StaticMember("A") { ConstantExpr(ConstantString("\"\"")) }
             }
         }
         |> produces
@@ -133,7 +137,7 @@ type Colors =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                Member("this.A") { ConstantExpr("\"\"") }
+                Member("this.A") { ConstantExpr(ConstantString("\"\"")) }
             }
         }
 
@@ -158,7 +162,7 @@ type Colors<'other> =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                StaticMember("A") { ConstantExpr("\"\"") }
+                StaticMember("A") { ConstantExpr(ConstantString("\"\"")) }
             }
         }
 
@@ -180,9 +184,9 @@ type Colors<'other> =
 
         AnonymousModule() {
             Class("Person") {
-                Member("this.Name1") { ConstantExpr("\"name\"") }
+                Member("this.Name1") { ConstantExpr(ConstantString("\"name\"")) }
 
-                StaticMember("Name2") { ConstantExpr("\"name\"") }
+                StaticMember("Name2") { ConstantExpr(ConstantString("\"name\"")) }
             }
         }
         |> produces
@@ -197,9 +201,9 @@ type Person () =
     let ``Produces a generic class with a static and not static member property `` () =
         AnonymousModule() {
             Class("Person", [ "'other" ]) {
-                Member("this.Name1") { ConstantExpr("\"name\"") }
+                Member("this.Name1") { ConstantExpr(ConstantString("\"name\"")) }
 
-                StaticMember("Name2") { ConstantExpr("\"name\"") }
+                StaticMember("Name2") { ConstantExpr(ConstantString("\"name\"")) }
             }
         }
         |> produces
@@ -214,7 +218,7 @@ type Person <'other>() =
     let ``Produces a class with a member property with xml comments`` () =
         AnonymousModule() {
             Class("Person") {
-                (Member("this.Name") { ConstantExpr("\"name\"") })
+                (Member("this.Name") { ConstantExpr(ConstantString("\"name\"")) })
                     .xmlDocs([ "This is a comment" ])
             }
         }
@@ -237,7 +241,7 @@ type Person () =
         AnonymousModule() {
             Class("Person") {
                 for name, acc in data do
-                    let widget = Member($"this.{name}") { ConstantExpr("\"name\"") }
+                    let widget = Member($"this.{name}") { ConstantExpr(ConstantString("\"name\"")) }
 
                     match acc with
                     | AccessControl.Public -> widget.toPublic()
@@ -259,7 +263,7 @@ type Person () =
     [<Test>]
     let ``Produces a class with a member property and return type`` () =
         AnonymousModule() {
-            Class("Person") { Member("this.Name") { ConstantExpr("23") } |> _.returnType("int") }
+            Class("Person") { Member("this.Name") { ConstantExpr(ConstantString "23") } |> _.returnType("int") }
 
         }
         |> produces
@@ -270,7 +274,9 @@ type Person () =
 
     [<Test>]
     let ``Produces a class with a member property inlined`` () =
-        AnonymousModule() { Class("Person") { InlinedMember("this.Name") { ConstantExpr("\"name\"") } } }
+        AnonymousModule() {
+            Class("Person") { InlinedMember("this.Name") { ConstantExpr(ConstantString("\"name\"")) } }
+        }
         |> produces
             """
 type Person () =
@@ -282,7 +288,7 @@ type Person () =
     let ``Produces a class with property member with attributes`` () =
         AnonymousModule() {
             Class("Person") {
-                (Member("this.Name") { ConstantExpr("23") })
+                (Member("this.Name") { ConstantExpr(ConstantString "23") })
                     .attributes([ "Obsolete" ])
             }
 
@@ -299,7 +305,7 @@ type Person () =
         AnonymousModule() {
             (Record("Person") { Field("Name", CommonType.String) })
                 .members() {
-                Member("this.Name") { ConstantExpr("\"name\"") }
+                Member("this.Name") { ConstantExpr(ConstantString("\"name\"")) }
             }
 
         }
@@ -317,7 +323,7 @@ type Person =
         AnonymousModule() {
             (GenericRecord("Person", [ "'other" ]) { Field("Name", CommonType.mkLongIdent("'other")) })
                 .members() {
-                Member("this.Name") { ConstantExpr("\"name\"") }
+                Member("this.Name") { ConstantExpr(ConstantString("\"name\"")) }
             }
 
         }
@@ -333,7 +339,9 @@ type Person<'other> =
     [<Test>]
     let ``Produces a union with a member property `` () =
         AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() { Member("this.Name") { ConstantExpr("\"name\"") } }
+            (Union("Person") { UnionCase("Name") }).members() {
+                Member("this.Name") { ConstantExpr(ConstantString("\"name\"")) }
+            }
 
         }
         |> produces
@@ -348,7 +356,9 @@ type Person =
     [<Test>]
     let ``Produces a union with a static member property `` () =
         AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() { StaticMember("Name") { ConstantExpr("\"name\"") } }
+            (Union("Person") { UnionCase("Name") }).members() {
+                StaticMember("Name") { ConstantExpr(ConstantString("\"name\"")) }
+            }
 
         }
         |> produces
@@ -374,7 +384,7 @@ type Person =
                 UnionCase("Yellow")
             })
                 .members() {
-                Member("this.Name") { ConstantExpr("\"name\"") }
+                Member("this.Name") { ConstantExpr(ConstantString("\"name\"")) }
             }
 
         }
@@ -404,7 +414,7 @@ type Colors<'other> =
                 UnionCase("Yellow")
             })
                 .members() {
-                StaticMember("Name") { ConstantExpr("\"name\"") }
+                StaticMember("Name") { ConstantExpr(ConstantString("\"name\"")) }
             }
 
         }

@@ -11,7 +11,7 @@ module New =
 
     [<Test>]
     let ``let value with a New expression`` () =
-        AnonymousModule() { Value("x", NewExpr(CommonType.mkLongIdent("MyType"), ConstantExpr("12"))) }
+        AnonymousModule() { Value("x", NewExpr(CommonType.mkLongIdent("MyType"), ConstantExpr(ConstantString "12"))) }
         |> produces
             """
 
@@ -20,7 +20,9 @@ let x = new MyType 12
 
     [<Test>]
     let ``let value with a New expression with parenthesis`` () =
-        AnonymousModule() { Value("x", NewExpr(CommonType.mkLongIdent("MyType"), ParenExpr(ConstantExpr("12")))) }
+        AnonymousModule() {
+            Value("x", NewExpr(CommonType.mkLongIdent("MyType"), ParenExpr(ConstantExpr(ConstantString "12"))))
+        }
         |> produces
             """
 
