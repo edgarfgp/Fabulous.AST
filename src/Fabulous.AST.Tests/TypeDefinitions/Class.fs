@@ -24,7 +24,7 @@ type Person () =
     [<Test>]
     let ``Produces a class explicit constructor with no params`` () =
 
-        AnonymousModule() { Class("Person") { Member("this.Name") { ConstantExpr("\"\"") } } }
+        AnonymousModule() { Class("Person") { Member("this.Name") { ConstantExpr(ConstantString "\"\"") } } }
         |> produces
             """
 type Person () =
@@ -43,7 +43,7 @@ type Person () =
                     SimplePat("age", false)
                 }
             ) {
-                Member("this.Name") { ConstantExpr("name") }
+                Member("this.Name") { ConstantExpr(ConstantString "name") }
             }
 
         }
@@ -65,7 +65,7 @@ type Person (name, lastName, age) =
                     SimplePat("age", CommonType.Int32, true)
                 }
             ) {
-                Member("this.Name") { ConstantExpr("name") }
+                Member("this.Name") { ConstantExpr(ConstantString "name") }
             }
         }
         |> produces
@@ -84,7 +84,7 @@ type Person (name: string, lastName: string, ?age: int) =
                     SimplePat("age", CommonType.Int32, false)
                 }
             ) {
-                Member("this.Name") { ConstantExpr("name") }
+                Member("this.Name") { ConstantExpr(ConstantString "name") }
             }
         }
         |> produces
@@ -101,7 +101,7 @@ type Person (name: string, age: int) =
 
         AnonymousModule() {
             (Class("Person", ImplicitConstructor() { SimplePat("name", CommonType.String, false) }) {
-                Member("this.Name") { ConstantExpr("name") }
+                Member("this.Name") { ConstantExpr(ConstantString "name") }
             })
                 .attributes([ "Struct" ])
         }
@@ -133,7 +133,7 @@ module GenericClass =
     [<Test>]
     let ``Produces a generic class`` () =
         AnonymousModule() {
-            Class("Person", [ "'a"; "'b" ]) { Member("this.Name") { ConstantExpr("\"\"") } }
+            Class("Person", [ "'a"; "'b" ]) { Member("this.Name") { ConstantExpr(ConstantString "\"\"") } }
 
         }
         |> produces
@@ -147,7 +147,7 @@ type Person <'a, 'b>() =
     let ``Produces a generic class with a constructor`` () =
 
         AnonymousModule() {
-            Class("Person", [ "'a"; "'b" ]) { Member("this.Name") { ConstantExpr("\"\"") } }
+            Class("Person", [ "'a"; "'b" ]) { Member("this.Name") { ConstantExpr(ConstantString "\"\"") } }
 
         }
         |> produces
@@ -160,7 +160,7 @@ type Person <'a, 'b>() =
     [<Test>]
     let ``Produces a struct generic class with a constructor`` () =
         AnonymousModule() {
-            (Class("Person", [ "'a"; "'b" ]) { Member("this.Name") { ConstantExpr("\"\"") } })
+            (Class("Person", [ "'a"; "'b" ]) { Member("this.Name") { ConstantExpr(ConstantString "\"\"") } })
                 .attributes([ "Struct" ])
 
         }

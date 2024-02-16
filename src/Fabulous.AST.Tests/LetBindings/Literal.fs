@@ -29,7 +29,8 @@ let x = 12
 
         AnonymousModule() {
             for name, value in images do
-                Value(name, $"\"{value}\"").attributes([ "Literal" ])
+                Value(name, ConstantExpr(ConstantString($"\"{value}\"")))
+                    .attributes([ "Literal" ])
         }
         |> produces
             """

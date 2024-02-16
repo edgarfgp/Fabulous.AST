@@ -11,7 +11,7 @@ module NamedParenStarIdent =
 
     [<Test>]
     let ``let value with a NamedParenStarIdent pattern`` () =
-        AnonymousModule() { Value(NamedParenStarIdentPat("a"), ConstantExpr("12")) }
+        AnonymousModule() { Value(NamedParenStarIdentPat("a"), ConstantExpr(ConstantString "12")) }
         |> produces
             """
 let ( a ) = 12

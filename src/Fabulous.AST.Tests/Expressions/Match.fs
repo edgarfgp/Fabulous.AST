@@ -14,11 +14,11 @@ module Match =
         AnonymousModule() {
             MatchExpr(
                 ListExpr() {
-                    ConstantExpr("1")
-                    ConstantExpr("2")
+                    ConstantExpr(ConstantString "1")
+                    ConstantExpr(ConstantString "2")
                 }
             ) {
-                MatchClauseExpr(NamedPat("a"), ConstantExpr("3"))
+                MatchClauseExpr(NamedPat("a"), ConstantExpr(ConstantString "3"))
             }
         }
         |> produces

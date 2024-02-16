@@ -22,7 +22,7 @@ let x = 3
 
     [<Test>]
     let ``Produces a module with unit`` () =
-        Module("Fabulous.AST") { UnitExpr() }
+        Module("Fabulous.AST") { ConstantExpr(ConstantUnit()) }
         |> produces
             """
 module Fabulous.AST

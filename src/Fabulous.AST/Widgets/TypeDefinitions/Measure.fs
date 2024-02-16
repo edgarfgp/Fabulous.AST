@@ -6,7 +6,7 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
-module Measure =
+module TypeDefnAbbrevNode =
 
     let Name = Attributes.defineScalar<string> "Name"
 
@@ -17,7 +17,7 @@ module Measure =
     let XmlDocsAbbrev = Attributes.defineScalar<string list> "XmlDoc"
 
     let WidgetKey =
-        Widgets.register "Measure" (fun widget ->
+        Widgets.register "TypeDefnAbbrevNode" (fun widget ->
             let name = Helpers.getScalarValue widget Name
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
@@ -43,7 +43,7 @@ module Measure =
             ))
 
     let WidgetAbbrevKey =
-        Widgets.register "Measure" (fun widget ->
+        Widgets.register "TypeDefnAbbrevNode" (fun widget ->
             let name = Helpers.getScalarValue widget Name
             let powerType = Helpers.getScalarValue widget PowerType
             let lines = Helpers.tryGetScalarValue widget XmlDocsAbbrev
@@ -76,21 +76,24 @@ module Measure =
 
 
 [<AutoOpen>]
-module MeasureBuilders =
+module TypeDefnAbbrevNodeBuilders =
     type Ast with
 
         static member inline Measure(name: string) =
             WidgetBuilder<TypeNameNode>(
-                Measure.WidgetKey,
-                AttributesBundle(StackList.one(Measure.Name.WithValue(name)), ValueNone, ValueNone)
+                TypeDefnAbbrevNode.WidgetKey,
+                AttributesBundle(StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)), ValueNone, ValueNone)
             )
 
 
         static member inline Measure(name: string, powerType: Type) =
             WidgetBuilder<TypeDefnAbbrevNode>(
-                Measure.WidgetAbbrevKey,
+                TypeDefnAbbrevNode.WidgetAbbrevKey,
                 AttributesBundle(
-                    StackList.two(Measure.Name.WithValue(name), Measure.PowerType.WithValue(powerType)),
+                    StackList.two(
+                        TypeDefnAbbrevNode.Name.WithValue(name),
+                        TypeDefnAbbrevNode.PowerType.WithValue(powerType)
+                    ),
                     ValueNone,
                     ValueNone
                 )
@@ -103,17 +106,17 @@ module MeasureBuilders =
 type TypeNameNodeModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeNameNode>, comments: string list) =
-        this.AddScalar(Measure.XmlDocs.WithValue(comments))
+        this.AddScalar(TypeDefnAbbrevNode.XmlDocs.WithValue(comments))
 
 [<Extension>]
-type UnitsOfMeasureAbbrevModifiers =
+type UnitsOfTypeDefnAbbrevNodeAbbrevModifiers =
 
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, comments: string list) =
-        this.AddScalar(Measure.XmlDocsAbbrev.WithValue(comments))
+        this.AddScalar(TypeDefnAbbrevNode.XmlDocsAbbrev.WithValue(comments))
 
 [<Extension>]
-type MeasureYieldExtensions =
+type TypeDefnAbbrevNodeYieldExtensions =
     [<Extension>]
     static member inline Yield
         (

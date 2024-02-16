@@ -17,7 +17,7 @@ module ArrayOrListPat =
                     NamedPat("a")
                     NamedPat("b")
                 },
-                ConstantExpr("12")
+                ConstantExpr(ConstantString "12")
             )
         }
         |> produces
@@ -34,7 +34,7 @@ let [ a; b ] = 12
                     NamedPat("a")
                     NamedPat("b")
                 },
-                ConstantExpr("12")
+                ConstantExpr(ConstantString "12")
             )
         }
         |> produces

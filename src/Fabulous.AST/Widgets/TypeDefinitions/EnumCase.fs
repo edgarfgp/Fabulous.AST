@@ -49,7 +49,7 @@ module EnumCaseBuilders =
             )
 
         static member EnumCase(name: string, value: string) =
-            Ast.EnumCase(name, Ast.ConstantExpr(value))
+            Ast.EnumCase(name, Ast.ConstantExpr(Ast.ConstantString(value)))
 
 [<Extension>]
 type EnumCaseModifiers =

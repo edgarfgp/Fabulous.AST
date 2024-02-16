@@ -15,9 +15,9 @@ module ArrayOrList =
             Value(
                 "x",
                 ArrayExpr() {
-                    ConstantExpr("1")
-                    ConstantExpr("2")
-                    ConstantExpr("3")
+                    ConstantExpr(ConstantString "1")
+                    ConstantExpr(ConstantString "2")
+                    ConstantExpr(ConstantString "3")
                 }
             )
         }
@@ -33,9 +33,9 @@ let x = [| 1; 2; 3 |]
             Value(
                 "x",
                 ListExpr() {
-                    ConstantExpr("1")
-                    ConstantExpr("2")
-                    ConstantExpr("3")
+                    ConstantExpr(ConstantString "1")
+                    ConstantExpr(ConstantString "2")
+                    ConstantExpr(ConstantString "3")
                 }
             )
         }

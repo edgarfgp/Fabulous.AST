@@ -37,7 +37,7 @@ let x = 12
                     "GdmtSubcommands",
                     ArrayExpr() {
                         for subcommand in subcommands do
-                            ConstantExpr($"\"{subcommand}\"")
+                            ConstantExpr(ConstantString($"\"{subcommand}\""))
                     }
                 )
             }
@@ -63,9 +63,9 @@ module Subcommands =
                     NamedPat("z")
                 },
                 TupleExpr() {
-                    ConstantExpr("1")
-                    ConstantExpr("2")
-                    ConstantExpr("3")
+                    ConstantExpr(ConstantString "1")
+                    ConstantExpr(ConstantString "2")
+                    ConstantExpr(ConstantString "3")
                 }
             )
         }
@@ -88,7 +88,7 @@ let x: int = 12
 
     [<Test>]
     let ``Simple Let binding with an expression`` () =
-        AnonymousModule() { Value("x", ConstantExpr("12")) }
+        AnonymousModule() { Value("x", ConstantExpr(ConstantString "12")) }
         |> produces
             """
 
@@ -125,7 +125,7 @@ let x<'a, 'b, 'c> = 12
     [<Test>]
     let ``Simple Let binding with type params SinglePrefix`` () =
         AnonymousModule() {
-            Value("x", [ "'T" ], ConstantExpr("12"))
+            Value("x", [ "'T" ], ConstantExpr(ConstantString "12"))
 
             Value("x", [ "'T" ], "12")
         }
@@ -288,7 +288,7 @@ let mutable x: int = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with an expression`` () =
-        AnonymousModule() { MutableValue("x", ConstantExpr("12")) }
+        AnonymousModule() { MutableValue("x", ConstantExpr(ConstantString "12")) }
         |> produces
             """
         
@@ -298,7 +298,7 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a top level inlined let binding with type params and an expression`` () =
-        AnonymousModule() { InlinedValue("x", [ "'a" ], ConstantExpr("12")) }
+        AnonymousModule() { InlinedValue("x", [ "'a" ], ConstantExpr(ConstantString "12")) }
         |> produces
             """
         
