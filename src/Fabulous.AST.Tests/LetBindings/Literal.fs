@@ -1,5 +1,6 @@
 namespace Fabulous.AST.Tests.LetBindings
 
+open Fantomas.Core
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
@@ -11,7 +12,7 @@ open type Ast
 module Literal =
     [<Test>]
     let ``Produces a Literal constant`` () =
-        AnonymousModule() { Value("x", "12").attributes([ "Literal" ]) }
+        AnonymousModule() { Value("x", "12").attributes(AttributeNode "Literal") }
         |> produces
             """
 [<Literal>]
@@ -30,7 +31,7 @@ let x = 12
         AnonymousModule() {
             for name, value in images do
                 Value(name, ConstantExpr(ConstantString($"\"{value}\"")))
-                    .attributes([ "Literal" ])
+                    .attributes(AttributeNode "Literal")
         }
         |> produces
             """
@@ -52,7 +53,7 @@ let Sunflower = "sunflower.png"
     let ``Produces a Literal constant with xml docs`` () =
         AnonymousModule() {
             Value("x", "12")
-                .attributes([ "Literal" ])
+                .attributes(AttributeNode "Literal")
                 .xmlDocs([ "This is a comment" ])
         }
         |> produces
@@ -65,7 +66,11 @@ let x = 12
 
     [<Test>]
     let ``Produces Literal constant with an access control `` () =
-        AnonymousModule() { Value("x", "12").attributes([ "Literal" ]).toInternal() }
+        AnonymousModule() {
+            Value("x", "12")
+                .attributes(AttributeNode("Literal"))
+                .toInternal()
+        }
         |> produces
             """
 
@@ -83,7 +88,7 @@ let internal x = 12
                     MultipleAttributeListNode(
                         [ AttributeListNode(
                               SingleTextNode("[<", Range.Zero),
-                              [ AttributeNode(
+                              [ SyntaxOak.AttributeNode(
                                     IdentListNode(
                                         [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.Zero)) ],
                                         Range.Zero

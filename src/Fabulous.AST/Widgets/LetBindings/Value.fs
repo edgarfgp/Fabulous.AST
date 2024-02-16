@@ -14,7 +14,7 @@ module Value =
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Return = Attributes.defineScalar<Type> "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
@@ -46,11 +46,12 @@ module Value =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
             let isMutable =
@@ -189,8 +190,12 @@ type ValueModifiers =
         this.AddScalar(Value.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: string list) =
-        this.AddScalar(Value.MultipleAttributes.WithValue(attributes))
+    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeListNode>) =
+        this.AddWidget(Value.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<BindingNode>, attribute: WidgetBuilder<AttributeNode>) =
+        this.AddWidget(Value.MultipleAttributes.WithValue((AttributeNodes() { attribute }).Compile()))
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<BindingNode>) =

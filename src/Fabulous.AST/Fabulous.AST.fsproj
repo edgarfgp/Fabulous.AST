@@ -37,6 +37,8 @@
         <Compile Include="Widgets\CommonType.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\CommonYieldExtensions.fs" />
+        <Compile Include="Widgets\Attributes\AttributeNode.fs" />
+        <Compile Include="Widgets\Attributes\AttributeListNode.fs" />
         <Compile Include="Widgets\Patterns\Pattern.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Or.fs" />

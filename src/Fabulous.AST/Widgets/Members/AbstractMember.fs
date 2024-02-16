@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 open Microsoft.FSharp.Collections
@@ -9,10 +10,12 @@ type MethodParamsType =
     | Named of types: ((string option * Type) list) * isTupled: bool
 
 module AbstractMember =
+    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineScalar<Type> "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
     let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
@@ -20,6 +23,23 @@ module AbstractMember =
             let returnType = Helpers.getScalarValue widget ReturnType
             let parameters = Helpers.tryGetScalarValue widget Parameters
             let hasGetterSetter = Helpers.tryGetScalarValue widget HasGetterSetter
+
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
+                | ValueNone -> None
+
+            let lines = Helpers.tryGetScalarValue widget XmlDocs
+
+            let xmlDocs =
+                match lines with
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
+                | ValueNone -> None
 
             let typeFun =
                 match parameters with
@@ -70,8 +90,8 @@ module AbstractMember =
             let parameters, returnTYpe = typeFun
 
             MemberDefnAbstractSlotNode(
-                None,
-                None,
+                xmlDocs,
+                multipleAttributes,
                 MultipleTextsNode.Create([ "abstract"; "member" ]),
                 SingleTextNode(identifier, Range.Zero),
                 None,
@@ -242,3 +262,25 @@ module AbstractMemberBuilders =
                 AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
                 AbstractMember.Parameters.WithValue(Named(parameters, false))
             )
+
+[<Extension>]
+type AbstractMemberModifiers =
+    [<Extension>]
+    static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, comments: string list) =
+        this.AddScalar(AbstractMember.XmlDocs.WithValue(comments))
+
+    [<Extension>]
+    static member inline attributes
+        (
+            this: WidgetBuilder<MemberDefnAbstractSlotNode>,
+            attributes: WidgetBuilder<AttributeListNode>
+        ) =
+        this.AddWidget(AbstractMember.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes
+        (
+            this: WidgetBuilder<MemberDefnAbstractSlotNode>,
+            attribute: WidgetBuilder<AttributeNode>
+        ) =
+        this.AddWidget(AbstractMember.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))

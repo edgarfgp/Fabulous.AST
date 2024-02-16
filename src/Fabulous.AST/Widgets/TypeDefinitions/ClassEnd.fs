@@ -10,7 +10,7 @@ open Microsoft.FSharp.Collections
 module ClassEnd =
     let Name = Attributes.defineScalar<string> "Name"
     let Members = Attributes.defineWidgetCollection "Members"
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let SimplePats = Attributes.defineWidget "SimplePats"
     let HasConstructor = Attributes.defineScalar<bool> "HasConstructor"
@@ -18,18 +18,21 @@ module ClassEnd =
     let WidgetKey =
         Widgets.register "ClassEnd" (fun widget ->
             let name = Helpers.getScalarValue widget Name
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
+                | ValueNone -> None
+
             let typeParams = Helpers.tryGetScalarValue widget TypeParams
 
             let implicitConstructor =
                 Helpers.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
 
             let hasConstructor = Helpers.getScalarValue widget HasConstructor
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
-                | ValueNone -> None
 
             let implicitConstructor =
                 match implicitConstructor with
@@ -160,8 +163,20 @@ module ClassEndBuilders =
 [<Extension>]
 type ClassEndModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>, attributes: string list) =
-        this.AddScalar(ClassEnd.MultipleAttributes.WithValue(attributes))
+    static member inline attributes
+        (
+            this: WidgetBuilder<TypeDefnExplicitNode>,
+            attributes: WidgetBuilder<AttributeListNode>
+        ) =
+        this.AddWidget(ClassEnd.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes
+        (
+            this: WidgetBuilder<TypeDefnExplicitNode>,
+            attribute: WidgetBuilder<AttributeNode>
+        ) =
+        this.AddWidget(ClassEnd.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
 
 [<Extension>]
 type ClassEndYieldExtensions =

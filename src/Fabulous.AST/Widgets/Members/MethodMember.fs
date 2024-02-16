@@ -42,7 +42,7 @@ module MethodMember =
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let ReturnType = Attributes.defineScalar<Type> "ReturnType"
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -62,7 +62,6 @@ module MethodMember =
             let isStatic =
                 Helpers.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
 
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
             let returnType = Helpers.tryGetScalarValue widget ReturnType
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
@@ -89,10 +88,14 @@ module MethodMember =
                 | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
 
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
+
 
             let inlineNode =
                 match isInlined with
@@ -144,8 +147,17 @@ type MethodMemberModifiers =
         this.AddScalar(MethodMember.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<MethodMemberNode>, attributes) =
-        this.AddScalar(MethodMember.MultipleAttributes.WithValue(attributes))
+    static member inline attributes
+        (
+            this: WidgetBuilder<MethodMemberNode>,
+            attributes: WidgetBuilder<AttributeListNode>
+        ) =
+        this.AddWidget(MethodMember.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<MethodMemberNode>, attribute: WidgetBuilder<AttributeNode>) =
+        this.AddWidget(MethodMember.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+
 
     [<Extension>]
     static member inline typeParameters(this: WidgetBuilder<MethodMemberNode>, typeParams: string list) =

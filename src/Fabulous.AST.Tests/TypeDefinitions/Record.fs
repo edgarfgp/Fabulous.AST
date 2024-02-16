@@ -29,7 +29,9 @@ type Colors = { Red: int; Green: int; Blue: int }
     let ``Produces a record field with an attribute`` () =
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", CommonType.Int32).attributes([ "Obsolete" ])
+                Field("Red", CommonType.Int32)
+                    .attributes(AttributeNode "Obsolete")
+
                 Field("Green", CommonType.Int32)
                 Field("Blue", CommonType.Int32)
             }

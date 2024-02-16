@@ -65,6 +65,7 @@
         <Compile Include="Patterns\IsInstPat.fs" />
         <Compile Include="Patterns\QuoteExpr.fs" />
         <Compile Include="Patterns\ListCons.fs" />
+        <Compile Include="Attributes\Attributes.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
