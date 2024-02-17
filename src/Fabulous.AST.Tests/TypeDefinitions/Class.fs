@@ -103,7 +103,7 @@ type Person (name: string, age: int) =
             (Class("Person", ImplicitConstructor() { SimplePat("name", CommonType.String, false) }) {
                 Member("this.Name") { ConstantExpr(ConstantString "name") }
             })
-                .attributes([ "Struct" ])
+                .attributes(AttributeNode("Struct"))
         }
         |> produces
             """
@@ -119,7 +119,12 @@ type Person (name: string) =
 
         AnonymousModule() {
             (Class("Person") { Member("this.Name") { EscapeHatch(expr) } })
-                .attributes([ "Sealed"; "AbstractClass" ])
+                .attributes(
+                    AttributeNodes() {
+                        AttributeNode("Sealed")
+                        AttributeNode("AbstractClass")
+                    }
+                )
         }
         |> produces
             """
@@ -161,7 +166,7 @@ type Person <'a, 'b>() =
     let ``Produces a struct generic class with a constructor`` () =
         AnonymousModule() {
             (Class("Person", [ "'a"; "'b" ]) { Member("this.Name") { ConstantExpr(ConstantString "\"\"") } })
-                .attributes([ "Struct" ])
+                .attributes(AttributeNode("Struct"))
 
         }
         |> produces

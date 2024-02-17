@@ -87,37 +87,17 @@ module Auxiliary =
 
         static member inline Create(content: Fantomas.Core.SyntaxOak.IdentifierOrDot) = IdentListNode.Create [ content ]
 
-    type AttributeNode =
-        static member inline Create
-            (
-                typeName: Fantomas.Core.SyntaxOak.IdentListNode,
-                ?expr: Expr,
-                ?target: Fantomas.Core.SyntaxOak.SingleTextNode
-            ) =
-            AttributeNode(typeName, expr, target, Range.Zero)
-
-    type AttributeListNode =
-        static member inline Create(attributes: Fantomas.Core.SyntaxOak.AttributeNode list) =
-            AttributeListNode(SingleTextNode.leftAttribute, attributes, SingleTextNode.rightAttribute, Range.Zero)
-
     type MultipleAttributeListNode with
-
-        static member inline Create(attributeLists: Fantomas.Core.SyntaxOak.AttributeListNode list) =
-            MultipleAttributeListNode(attributeLists, Range.Zero)
-
-        static member inline Create(attributeLists: Fantomas.Core.SyntaxOak.AttributeListNode) =
-            MultipleAttributeListNode.Create [ attributeLists ]
-
-        static member inline Create(attributeLists: Fantomas.Core.SyntaxOak.AttributeNode list) =
-            AttributeListNode.Create attributeLists |> MultipleAttributeListNode.Create
-
-        static member inline Create(attributeLists: Fantomas.Core.SyntaxOak.AttributeNode) =
-            AttributeListNode.Create [ attributeLists ] |> MultipleAttributeListNode.Create
-
         static member inline Create(idTexts: string list) =
-            MultipleAttributeListNode.Create(
-                [ for v in idTexts do
-                      AttributeNode.Create(IdentListNode.Create(IdentifierOrDot.CreateIdent v)) ]
+            MultipleAttributeListNode(
+                [ AttributeListNode(
+                      SingleTextNode.leftAttribute,
+                      [ for v in idTexts do
+                            AttributeNode(IdentListNode.Create(IdentifierOrDot.CreateIdent v), None, None, Range.Zero) ],
+                      SingleTextNode.rightAttribute,
+                      Range.Zero
+                  ) ],
+                Range.Zero
             )
 
     type TypeSignatureParameterNode with

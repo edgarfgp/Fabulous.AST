@@ -15,7 +15,7 @@ module Record =
                 for colour in [ "Red"; "Green"; "Blue" ] do
                     Field(colour, CommonType.Int32)
             })
-                .attributes([ "Serializable" ])
+                .attributes(AttributeNode "Serializable")
         }
         |> produces
             """
@@ -75,7 +75,7 @@ type Colors<'other> =
                 Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
-                .attributes([ "Struct" ])
+                .attributes(AttributeNode "Struct")
         }
 
         |> produces
@@ -96,7 +96,12 @@ type Colors<'other> =
                 Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
-                .attributes([ "Struct"; "Obsolete" ])
+                .attributes(
+                    AttributeNodes() {
+                        AttributeNode "Struct"
+                        AttributeNode "Obsolete"
+                    }
+                )
         }
 
         |> produces

@@ -11,7 +11,9 @@ module Class =
     let Name = Attributes.defineScalar<string> "Name"
     let SimplePats = Attributes.defineWidget "SimplePats"
     let Members = Attributes.defineWidgetCollection "Members"
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+
+    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let IsClass = Attributes.defineScalar<bool> "IsClass"
 
@@ -23,7 +25,6 @@ module Class =
                 Helpers.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
 
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
             let typeParams = Helpers.tryGetScalarValue widget TypeParams
             let isClass = Helpers.getScalarValue widget IsClass
 
@@ -42,9 +43,21 @@ module Class =
                     |> Some
                 | ValueNone -> None
 
+            let lines = Helpers.tryGetScalarValue widget XmlDocs
+
+            let xmlDocs =
+                match lines with
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
+                | ValueNone -> None
+
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
             let members =
@@ -73,7 +86,7 @@ module Class =
 
             TypeDefnRegularNode(
                 TypeNameNode(
-                    None,
+                    xmlDocs,
                     multipleAttributes,
                     SingleTextNode.``type``,
                     Some(SingleTextNode.Create(name)),
@@ -148,8 +161,20 @@ module ClassBuilders =
 [<Extension>]
 type ClassModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attributes: string list) =
-        this.AddScalar(Class.MultipleAttributes.WithValue(attributes))
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string list) =
+        this.AddScalar(Class.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
+    static member inline attributes
+        (
+            this: WidgetBuilder<TypeDefnRegularNode>,
+            attributes: WidgetBuilder<AttributeListNode>
+        ) =
+        this.AddWidget(Class.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attribute: WidgetBuilder<AttributeNode>) =
+        this.AddWidget(Class.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
 
 [<Extension>]
 type ClassYieldExtensions =
