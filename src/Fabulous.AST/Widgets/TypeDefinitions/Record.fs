@@ -15,7 +15,9 @@ module Record =
 
     let Members = Attributes.defineWidgetCollection "Members"
 
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+
+    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
@@ -30,11 +32,21 @@ module Record =
                 | Some members -> members
                 | None -> []
 
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+            let lines = Helpers.tryGetScalarValue widget XmlDocs
+
+            let xmlDocs =
+                match lines with
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
+                | ValueNone -> None
+
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
             let typeParams = Helpers.tryGetScalarValue widget TypeParams
@@ -106,8 +118,20 @@ type RecordModifiers =
         AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnRecordNode>, attributes: string list) =
-        this.AddScalar(Record.MultipleAttributes.WithValue(attributes))
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: string list) =
+        this.AddScalar(Record.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
+    static member inline attributes
+        (
+            this: WidgetBuilder<TypeDefnRecordNode>,
+            attributes: WidgetBuilder<AttributeListNode>
+        ) =
+        this.AddWidget(Record.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<TypeDefnRecordNode>, attribute: WidgetBuilder<AttributeNode>) =
+        this.AddWidget(Record.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
 
 [<Extension>]
 type RecordYieldExtensions =

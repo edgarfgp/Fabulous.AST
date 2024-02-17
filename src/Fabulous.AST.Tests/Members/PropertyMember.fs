@@ -289,7 +289,7 @@ type Person () =
         AnonymousModule() {
             Class("Person") {
                 (Member("this.Name") { ConstantExpr(ConstantString "23") })
-                    .attributes([ "Obsolete" ])
+                    .attributes(AttributeNode "Obsolete")
             }
 
         }

@@ -40,7 +40,7 @@ module PropertyMember =
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let ReturnType = Attributes.defineScalar<Type> "ReturnType"
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let WidgetKey =
@@ -48,7 +48,15 @@ module PropertyMember =
             let name = Helpers.getNodeFromWidget<Pattern> widget Name
             let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
             let isInlined = Helpers.tryGetScalarValue widget IsInlined
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+
+            let multipleAttributes =
+                match attributes with
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
+                | ValueNone -> None
+
             let returnType = Helpers.tryGetScalarValue widget ReturnType
             let lines = Helpers.tryGetScalarValue widget XmlDocs
             let isStatic = Helpers.getScalarValue widget IsStatic
@@ -74,11 +82,6 @@ module PropertyMember =
             let returnType =
                 match returnType with
                 | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-                | ValueNone -> None
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
                 | ValueNone -> None
 
             let inlineNode =
@@ -187,8 +190,16 @@ type PropertyMemberModifiers =
         this.AddScalar(PropertyMember.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<PropertyMemberNode>, attributes) =
-        this.AddScalar(PropertyMember.MultipleAttributes.WithValue(attributes))
+    static member inline attributes
+        (
+            this: WidgetBuilder<PropertyMemberNode>,
+            attributes: WidgetBuilder<AttributeListNode>
+        ) =
+        this.AddWidget(PropertyMember.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<PropertyMemberNode>, attribute: WidgetBuilder<AttributeNode>) =
+        this.AddWidget(PropertyMember.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<PropertyMemberNode>) =

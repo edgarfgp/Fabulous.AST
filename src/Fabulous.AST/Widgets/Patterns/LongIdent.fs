@@ -35,7 +35,7 @@ module LongIdent =
             Pattern.LongIdent(
                 PatLongIdentNode(
                     None,
-                    IdentListNode([ IdentifierOrDot.CreateIdent(identifier) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero),
                     typeParams,
                     items,
                     Range.Zero

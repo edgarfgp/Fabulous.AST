@@ -18,7 +18,7 @@ type FunctionNode
             false,
             (if isInlined then Some(SingleTextNode.``inline``) else None),
             accessControl,
-            Choice1Of2(IdentListNode.Create(IdentifierOrDot.CreateIdent name)),
+            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create name) ], Range.Zero)),
             typeParams,
             parameters,
             returnType,
@@ -32,7 +32,7 @@ module Function =
     let Value = Attributes.defineWidget "Value"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Return = Attributes.defineScalar<Type> "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
@@ -64,11 +64,12 @@ module Function =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
             let isInlined =
@@ -165,8 +166,13 @@ type FunctionModifiers =
         this.AddScalar(Function.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<FunctionNode>, attributes: string list) =
-        this.AddScalar(Function.MultipleAttributes.WithValue(attributes))
+    static member inline attributes(this: WidgetBuilder<FunctionNode>, attributes: WidgetBuilder<AttributeListNode>) =
+        this.AddWidget(Function.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<FunctionNode>, attribute: WidgetBuilder<AttributeNode>) =
+        this.AddWidget(Function.MultipleAttributes.WithValue((AttributeNodes() { attribute }).Compile()))
+
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<FunctionNode>) =

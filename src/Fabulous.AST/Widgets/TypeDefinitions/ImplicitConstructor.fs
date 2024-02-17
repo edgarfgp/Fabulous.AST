@@ -9,7 +9,9 @@ open Microsoft.FSharp.Collections
 
 module ImplicitConstructor =
 
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
 
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
@@ -19,9 +21,6 @@ module ImplicitConstructor =
 
     let WidgetKey =
         Widgets.register "ImplicitConstructor" (fun widget ->
-
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
-
             let simplePatNodes =
                 Helpers.getNodesFromWidgetCollection<SimplePatNode> widget SimplePats
 
@@ -34,13 +33,25 @@ module ImplicitConstructor =
                           yield Choice2Of2 SingleTextNode.comma
                           yield Choice1Of2 p ]
 
+            let lines = Helpers.tryGetScalarValue widget XmlDocs
+
+            let xmlDocs =
+                match lines with
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
+                | ValueNone -> None
+
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
             ImplicitConstructorNode(
-                None,
+                xmlDocs,
                 multipleAttributes,
                 None,
                 SingleTextNode.leftParenthesis,
@@ -63,8 +74,25 @@ module ImplicitConstructorBuilders =
 [<Extension>]
 type ImplicitConstructorModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ImplicitConstructorNode>, attributes: string list) =
-        this.AddScalar(ImplicitConstructor.MultipleAttributes.WithValue(attributes))
+    static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: string list) =
+        this.AddScalar(ImplicitConstructor.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
+    static member inline attributes
+        (
+            this: WidgetBuilder<ImplicitConstructorNode>,
+            attributes: WidgetBuilder<AttributeListNode>
+        ) =
+        this.AddWidget(ImplicitConstructor.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes
+        (
+            this: WidgetBuilder<ImplicitConstructorNode>,
+            attribute: WidgetBuilder<AttributeNode>
+        ) =
+        this.AddWidget(ImplicitConstructor.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+
 
 [<Extension>]
 type ImplicitConstructorYieldExtensions =

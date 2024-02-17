@@ -9,7 +9,7 @@ open Microsoft.FSharp.Collections
 module SimplePat =
     let Name = Attributes.defineScalar<string> "Name"
 
-    let MultipleAttributes = Attributes.defineScalar<string list> "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
 
     let IsOptional = Attributes.defineScalar<bool> "Parameters"
 
@@ -19,7 +19,6 @@ module SimplePat =
         Widgets.register "SimplePatNode" (fun widget ->
             let name = Helpers.getScalarValue widget Name
             let isOptional = Helpers.getScalarValue widget IsOptional
-            let attributes = Helpers.tryGetScalarValue widget MultipleAttributes
             let typed = Helpers.tryGetScalarValue widget Typed
 
             let typed =
@@ -27,9 +26,12 @@ module SimplePat =
                 | ValueSome t -> Some t
                 | ValueNone -> None
 
+            let attributes =
+                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> MultipleAttributeListNode.Create values |> Some
+                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
             SimplePatNode(multipleAttributes, isOptional, SingleTextNode.Create(name), typed, Range.Zero))
@@ -79,5 +81,9 @@ module SimplePatNodeBuilders =
 [<Extension>]
 type SimplePatNodeModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<SimplePatNode>, attributes: string list) =
-        this.AddScalar(SimplePat.MultipleAttributes.WithValue(attributes))
+    static member inline attributes(this: WidgetBuilder<SimplePatNode>, attributes: WidgetBuilder<AttributeListNode>) =
+        this.AddWidget(SimplePat.MultipleAttributes.WithValue(attributes.Compile()))
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<SimplePatNode>, attribute: WidgetBuilder<AttributeNode>) =
+        this.AddWidget(SimplePat.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))

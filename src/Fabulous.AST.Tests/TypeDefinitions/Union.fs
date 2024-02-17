@@ -146,7 +146,7 @@ type Colors =
     let ``Produces an union with attribute`` () =
         AnonymousModule() {
             (Union("Colors") { UnionCase("Red") })
-                .attributes([ "Test" ])
+                .attributes(AttributeNode "Test")
         }
         |> produces
             """
@@ -158,8 +158,17 @@ type Colors = | Red
     [<Test>]
     let ``Produces an union case with attributes`` () =
         AnonymousModule() {
-            (Union("Colors") { UnionCase("Red").attributes([ "Obsolete"; "Test" ]) })
-                .attributes([ "Test" ])
+            (Union("Colors") {
+                UnionCase("Red")
+                    .attributes(
+                        AttributeNodes() {
+                            AttributeNode("Obsolete")
+                            AttributeNode("Test")
+
+                        }
+                    )
+            })
+                .attributes(AttributeNode "Test")
         }
         |> produces
             """
@@ -249,7 +258,7 @@ type Colors<'other> =
                 UnionCase("Blue")
                 UnionCase("Yellow")
             })
-                .attributes([ "Struct" ])
+                .attributes(AttributeNode "Struct")
 
         }
 
