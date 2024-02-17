@@ -18,7 +18,7 @@ type FunctionNode
             false,
             (if isInlined then Some(SingleTextNode.``inline``) else None),
             accessControl,
-            Choice1Of2(IdentListNode.Create(IdentifierOrDot.CreateIdent name)),
+            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create name) ], Range.Zero)),
             typeParams,
             parameters,
             returnType,

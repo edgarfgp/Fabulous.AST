@@ -73,19 +73,9 @@ module Auxiliary =
         let doubleColon = SingleTextNode.Create "::"
         let isInstance = SingleTextNode.Create ":?"
 
+        let forwardSlash = SingleTextNode.Create "/"
 
-    type IdentifierOrDot =
-        static member inline CreateIdent(idText: string) =
-            IdentifierOrDot.Ident(SingleTextNode.Create idText)
-
-        static member inline CreateKnownDot(idText: string) =
-            IdentifierOrDot.KnownDot(SingleTextNode.Create idText)
-
-    type IdentListNode =
-        static member inline Create(content: Fantomas.Core.SyntaxOak.IdentifierOrDot list) =
-            IdentListNode(content, Range.Zero)
-
-        static member inline Create(content: Fantomas.Core.SyntaxOak.IdentifierOrDot) = IdentListNode.Create [ content ]
+        let backSlash = SingleTextNode.Create "\""
 
     type MultipleAttributeListNode with
         static member inline Create(idTexts: string list) =
@@ -93,7 +83,12 @@ module Auxiliary =
                 [ AttributeListNode(
                       SingleTextNode.leftAttribute,
                       [ for v in idTexts do
-                            AttributeNode(IdentListNode.Create(IdentifierOrDot.CreateIdent v), None, None, Range.Zero) ],
+                            AttributeNode(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create v) ], Range.Zero),
+                                None,
+                                None,
+                                Range.Zero
+                            ) ],
                       SingleTextNode.rightAttribute,
                       Range.Zero
                   ) ],
@@ -111,68 +106,6 @@ module Auxiliary =
             MultipleTextsNode(
                 [ for v in texts do
                       SingleTextNode.Create(v) ],
-                Range.Zero
-            )
-
-    type MemberDefnAbstractSlotNode with
-
-        static member Method(identifier: string, parameters: Type) =
-            MemberDefnAbstractSlotNode(
-                None,
-                None,
-                MultipleTextsNode.Create([ "abstract"; "member" ]),
-                SingleTextNode.Create(identifier),
-                None,
-                parameters,
-                None,
-                Range.Zero
-            )
-
-        static member Property(identifier: string, returnType: Type) =
-            MemberDefnAbstractSlotNode(
-                None,
-                None,
-                MultipleTextsNode.Create([ "abstract"; "member" ]),
-                SingleTextNode.Create(identifier),
-                None,
-                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
-                None,
-                Range.Zero
-            )
-
-        static member GetSet(identifier, returnType) =
-            MemberDefnAbstractSlotNode(
-                None,
-                None,
-                MultipleTextsNode.Create([ "abstract"; "member" ]),
-                SingleTextNode.Create(identifier),
-                None,
-                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
-                Some(MultipleTextsNode.Create([ "with"; "get,"; "set" ])),
-                Range.Zero
-            )
-
-        static member Get(identifier, returnType) =
-            MemberDefnAbstractSlotNode(
-                None,
-                None,
-                MultipleTextsNode.Create([ "abstract"; "member" ]),
-                SingleTextNode.Create(identifier),
-                None,
-                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
-                Some(MultipleTextsNode.Create([ "with"; "get" ])),
-                Range.Zero
-            )
-
-        static member Set(identifier, returnType) =
-            MemberDefnAbstractSlotNode(
-                None,
-                None,
-                MultipleTextsNode.Create([ "abstract"; "member" ]),
-                SingleTextNode.Create(identifier),
-                None,
-                Type.Funs(TypeFunsNode([], returnType, Range.Zero)),
-                Some(MultipleTextsNode.Create([ "with"; "set" ])),
                 Range.Zero
             )
 
@@ -301,22 +234,28 @@ module Auxiliary =
                           Type.AppPostfix(
                               TypeAppPostFixNode(
                                   Type.LongIdent(
-                                      IdentListNode.Create(
+                                      IdentListNode(
                                           [ for ident in first do
-                                                IdentifierOrDot.CreateIdent(ident) ]
+                                                IdentifierOrDot.Ident(SingleTextNode.Create ident) ],
+                                          Range.Zero
                                       )
                                   ),
                                   Type.LongIdent(
-                                      IdentListNode.Create(
+                                      IdentListNode(
                                           [ for ident in second do
-                                                IdentifierOrDot.CreateIdent(ident) ]
+                                                IdentifierOrDot.Ident(SingleTextNode.Create(ident)) ],
+                                          Range.Zero
                                       )
                                   ),
                                   Range.Zero
                               )
                           )
                       )
-                      Choice1Of2(Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent("/") ])))
+                      Choice1Of2(
+                          Type.LongIdent(
+                              IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.forwardSlash) ], Range.Zero)
+                          )
+                      )
 
                       Choice1Of2(exponent) ],
                     Range.Zero
@@ -329,13 +268,24 @@ module Auxiliary =
                     [ Choice1Of2(
                           Type.AppPostfix(
                               TypeAppPostFixNode(
-                                  Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(first) ])),
-                                  Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(second) ])),
+                                  Type.LongIdent(
+                                      IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(first)) ], Range.Zero)
+                                  ),
+                                  Type.LongIdent(
+                                      IdentListNode(
+                                          [ IdentifierOrDot.Ident(SingleTextNode.Create(second)) ],
+                                          Range.Zero
+                                      )
+                                  ),
                                   Range.Zero
                               )
                           )
                       )
-                      Choice1Of2(Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent("/") ])))
+                      Choice1Of2(
+                          Type.LongIdent(
+                              IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.forwardSlash) ], Range.Zero)
+                          )
+                      )
 
                       Choice1Of2(exponent) ],
                     Range.Zero
@@ -348,13 +298,19 @@ module Auxiliary =
                     [ Choice1Of2(
                           Type.AppPostfix(
                               TypeAppPostFixNode(
-                                  Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(first) ])),
-                                  Type.LongIdent(IdentListNode.Create([])),
+                                  Type.LongIdent(
+                                      IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(first)) ], Range.Zero)
+                                  ),
+                                  Type.LongIdent(IdentListNode([], Range.Zero)),
                                   Range.Zero
                               )
                           )
                       )
-                      Choice1Of2(Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent("/") ])))
+                      Choice1Of2(
+                          Type.LongIdent(
+                              IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.forwardSlash) ], Range.Zero)
+                          )
+                      )
 
                       Choice1Of2(exponent) ],
                     Range.Zero

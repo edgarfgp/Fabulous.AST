@@ -56,9 +56,10 @@ module Measure =
             let content = Helpers.getScalarValue widget Content
 
             Measure.Multiple(
-                IdentListNode.Create(
+                IdentListNode(
                     [ for ident in content do
-                          IdentifierOrDot.CreateIdent(ident) ]
+                          IdentifierOrDot.Ident(SingleTextNode.Create(ident)) ],
+                    Range.Zero
 
                 )
             ))

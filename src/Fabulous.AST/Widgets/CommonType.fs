@@ -1,11 +1,13 @@
 namespace Fabulous.AST
 
+open System
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
 
 [<RequireQualifiedAccess>]
 module CommonType =
     let mkLongIdent (typ: string) : Type =
-        Type.LongIdent(IdentListNode.Create([ IdentifierOrDot.CreateIdent(typ) ]))
+        Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(typ)) ], Range.Zero))
 
     let Boolean = mkLongIdent "bool"
     let Byte = mkLongIdent "byte"

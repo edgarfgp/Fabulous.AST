@@ -36,7 +36,7 @@ module NamePatPairs =
 
             Pattern.NamePatPairs(
                 PatNamePatPairsNode(
-                    IdentListNode([ IdentifierOrDot.CreateIdent(identifier) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero),
                     typeParams,
                     SingleTextNode.leftParenthesis,
                     items,

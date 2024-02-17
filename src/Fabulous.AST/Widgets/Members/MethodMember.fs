@@ -25,7 +25,7 @@ type MethodMemberNode
             false,
             inlineNode,
             accessibility,
-            Choice1Of2(IdentListNode.Create([ IdentifierOrDot.CreateIdent(name) ])),
+            Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
             genericTypeParameters,
             parameter,
             returnType,
