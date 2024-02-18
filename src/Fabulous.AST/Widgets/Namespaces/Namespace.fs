@@ -35,10 +35,7 @@ type NamespaceNode
 module Namespace =
     let Decls = Attributes.defineWidgetCollection "Decls"
     let IdentList = Attributes.defineWidget "IdentList"
-
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
-
-    let ParsedHashDirectives = Attributes.defineWidgetCollection "ParsedHashDirectives"
 
     let WidgetKey =
         Widgets.register "Namespace" (fun widget ->
@@ -46,17 +43,13 @@ module Namespace =
             let identList = Helpers.getNodeFromWidget widget IdentList
             let isRecursive = Helpers.getScalarValue widget IsRecursive
 
-            let parsedHashDirectives =
-                Helpers.tryGetNodesFromWidgetCollection widget ParsedHashDirectives
-                |> Option.defaultValue []
-
-            NamespaceNode(identList, decls, isRecursive, parsedHashDirectives))
+            NamespaceNode(identList, decls, isRecursive, []))
 
 [<AutoOpen>]
 module NamespaceBuilders =
     type Ast with
 
-        static member inline Namespace(identList: WidgetBuilder<#IdentListNode>) =
+        static member Namespace(identList: WidgetBuilder<#IdentListNode>) =
             CollectionBuilder<NamespaceNode, ModuleDecl>(
                 Namespace.WidgetKey,
                 Namespace.Decls,
@@ -67,12 +60,12 @@ module NamespaceBuilders =
                 )
             )
 
-        static member inline Namespace(node: IdentListNode) = Ast.Namespace(Ast.EscapeHatch(node))
+        static member Namespace(node: IdentListNode) = Ast.Namespace(Ast.EscapeHatch(node))
 
-        static member inline Namespace(name: string) =
+        static member Namespace(name: string) =
             Ast.Namespace(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
 
-        static member inline RecNamespace(identList: WidgetBuilder<#IdentListNode>) =
+        static member RecNamespace(identList: WidgetBuilder<#IdentListNode>) =
             CollectionBuilder<NamespaceNode, ModuleDecl>(
                 Namespace.WidgetKey,
                 Namespace.Decls,
@@ -83,29 +76,7 @@ module NamespaceBuilders =
                 )
             )
 
-        static member inline RecNamespace(node: IdentListNode) = Ast.RecNamespace(Ast.EscapeHatch(node))
+        static member RecNamespace(node: IdentListNode) = Ast.RecNamespace(Ast.EscapeHatch(node))
 
-        static member inline RecNamespace(name: string) =
-            Ast.RecNamespace(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
-
-[<Extension>]
-type NamespaceModifiers =
-    [<Extension>]
-    static member inline hashDirectives(this: WidgetBuilder<NamespaceNode>) =
-        AttributeCollectionBuilder<NamespaceNode, HashDirectiveNode>(this, Namespace.ParsedHashDirectives)
-
-    [<Extension>]
-    static member inline hashDirective(this: WidgetBuilder<NamespaceNode>, value: WidgetBuilder<HashDirectiveNode>) =
-        AttributeCollectionBuilder<NamespaceNode, HashDirectiveNode>(this, Namespace.ParsedHashDirectives) { value }
-
-[<Extension>]
-type NameSpaceExtensions =
-    [<Extension>]
-    static member inline Yield
-        (
-            _: AttributeCollectionBuilder<NamespaceNode, HashDirectiveNode>,
-            x: WidgetBuilder<HashDirectiveNode>
-        ) : CollectionContent =
-        let node = Tree.compile x
-        let widget = Ast.EscapeHatch(node).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+        static member RecNamespace(name: string) =
+            Ast.RecNamespace(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))

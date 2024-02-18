@@ -32,16 +32,7 @@ module Fabulous.AST
 
     [<Test>]
     let ``Produces a module with IdentListNode`` () =
-        Module(
-            IdentListNode(
-                [ IdentifierOrDot.Ident(SingleTextNode("Fabulous", Range.Zero))
-                  IdentifierOrDot.KnownDot(SingleTextNode(".", Range.Zero))
-                  IdentifierOrDot.Ident(SingleTextNode("AST", Range.Zero)) ],
-                Range.Zero
-            )
-        ) {
-            Value("x", "3")
-        }
+        Module("Fabulous.AST") { Value("x", "3") }
         |> produces
             """
 module Fabulous.AST
@@ -51,14 +42,7 @@ let x = 3
 
     [<Test>]
     let ``Produces a module with IdentListNode and BindingNode`` () =
-        Module(
-            IdentListNode(
-                [ IdentifierOrDot.Ident(SingleTextNode("Fabulous", Range.Zero))
-                  IdentifierOrDot.KnownDot(SingleTextNode(".", Range.Zero))
-                  IdentifierOrDot.Ident(SingleTextNode("AST", Range.Zero)) ],
-                Range.Zero
-            )
-        ) {
+        Module("Fabulous.AST") {
             BindingNode(
                 None,
                 None,

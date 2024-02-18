@@ -16,12 +16,7 @@ module AnonymousModule =
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
             let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-
-            let parsedHashDirectives =
-                Helpers.tryGetNodesFromWidgetCollection widget ParsedHashDirectives
-                |> Option.defaultValue []
-
-            AnonymousModuleNode(decls, parsedHashDirectives))
+            AnonymousModuleNode(decls, []))
 
 [<AutoOpen>]
 module AnonymousModuleBuilders =
@@ -30,33 +25,7 @@ module AnonymousModuleBuilders =
             CollectionBuilder<AnonymousModuleNode, ModuleDecl>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
 
 [<Extension>]
-type AnonymousModuleModifiers =
-    [<Extension>]
-    static member inline hashDirective
-        (
-            this: WidgetBuilder<AnonymousModuleNode>,
-            value: WidgetBuilder<HashDirectiveNode>
-        ) =
-        AttributeCollectionBuilder<AnonymousModuleNode, HashDirectiveNode>(this, AnonymousModule.ParsedHashDirectives) {
-            value
-        }
-
-    [<Extension>]
-    static member inline hashDirectives(this: WidgetBuilder<AnonymousModuleNode>) =
-        AttributeCollectionBuilder<AnonymousModuleNode, HashDirectiveNode>(this, AnonymousModule.ParsedHashDirectives)
-
-[<Extension>]
 type AnonymousModuleExtensions =
-    [<Extension>]
-    static member inline Yield
-        (
-            _: AttributeCollectionBuilder<AnonymousModuleNode, HashDirectiveNode>,
-            x: WidgetBuilder<HashDirectiveNode>
-        ) : CollectionContent =
-        let node = Tree.compile x
-        let widget = Ast.EscapeHatch(node).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<Expr>) : CollectionContent =
         let node = Tree.compile x

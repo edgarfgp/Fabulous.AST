@@ -30,30 +30,24 @@ type ModuleNode(identList: IdentListNode, decls: ModuleDecl list) =
 
 module Module =
     let Decls = Attributes.defineWidgetCollection "Decls"
-    let IdentList = Attributes.defineWidget "IdentList"
+    let IdentList = Attributes.defineScalar<IdentListNode> "IdentList"
 
     let WidgetKey =
         Widgets.register "Module" (fun widget ->
             let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-            let identList = Helpers.getNodeFromWidget<IdentListNode> widget IdentList
+            let identList = Helpers.getScalarValue widget IdentList
             ModuleNode(identList, decls))
 
 [<AutoOpen>]
 module ModuleBuilders =
     type Ast with
 
-        static member inline Module(identList: WidgetBuilder<#IdentListNode>) =
+        static member private BaseModule(identList: IdentListNode) =
             CollectionBuilder<ModuleNode, ModuleDecl>(
                 Module.WidgetKey,
                 Module.Decls,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Module.IdentList.WithValue(identList.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.one(Module.IdentList.WithValue(identList)), ValueSome [||], ValueNone)
             )
 
-        static member inline Module(node: IdentListNode) = Ast.Module(Ast.EscapeHatch(node))
-
-        static member inline Module(name: string) =
-            Ast.Module(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
+        static member Module(name: string) =
+            Ast.BaseModule(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))
