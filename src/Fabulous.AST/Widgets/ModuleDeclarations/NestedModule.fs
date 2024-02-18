@@ -56,7 +56,7 @@ module NestedModule =
 module NestedModuleBuilders =
     type Ast with
 
-        static member inline NestedModule(identList: WidgetBuilder<#IdentListNode>) =
+        static member NestedModule(identList: WidgetBuilder<#IdentListNode>) =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(
                 NestedModule.WidgetKey,
                 NestedModule.Decls,
@@ -67,9 +67,9 @@ module NestedModuleBuilders =
                 )
             )
 
-        static member inline NestedModule(node: IdentListNode) = Ast.NestedModule(Ast.EscapeHatch(node))
+        static member NestedModule(node: IdentListNode) = Ast.NestedModule(Ast.EscapeHatch(node))
 
-        static member inline NestedModule(name: string) =
+        static member NestedModule(name: string) =
             Ast.NestedModule(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
 
 [<Extension>]

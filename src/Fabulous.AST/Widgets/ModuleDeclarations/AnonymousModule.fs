@@ -21,7 +21,7 @@ module AnonymousModule =
 [<AutoOpen>]
 module AnonymousModuleBuilders =
     type Ast with
-        static member inline AnonymousModule() =
+        static member AnonymousModule() =
             CollectionBuilder<AnonymousModuleNode, ModuleDecl>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
 
 [<Extension>]

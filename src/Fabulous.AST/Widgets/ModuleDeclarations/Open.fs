@@ -21,7 +21,7 @@ module Open =
 module OpenBuilders =
     type Ast with
 
-        static member inline Open(identList: WidgetBuilder<#IdentListNode>) =
+        static member Open(identList: WidgetBuilder<#IdentListNode>) =
             WidgetBuilder<OpenNode>(
                 Open.WidgetKey,
                 AttributesBundle(
@@ -31,9 +31,9 @@ module OpenBuilders =
                 )
             )
 
-        static member inline Open(node: IdentListNode) = Ast.Open(Ast.EscapeHatch(node))
+        static member Open(node: IdentListNode) = Ast.Open(Ast.EscapeHatch(node))
 
-        static member inline Open(name: string) =
+        static member Open(name: string) =
             Ast.Open(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
 
 [<Extension>]

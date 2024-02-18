@@ -76,6 +76,9 @@ module Auxiliary =
         let forwardSlash = SingleTextNode.Create "/"
 
         let backSlash = SingleTextNode.Create "\""
+        let ``mutable`` = SingleTextNode.Create "mutable"
+
+        let ``val`` = SingleTextNode.Create "val"
 
     type MultipleAttributeListNode with
         static member inline Create(idTexts: string list) =

@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Tests.Namespaces
+namespace Fabulous.AST.Tests.ModuleDeclarations
 
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
