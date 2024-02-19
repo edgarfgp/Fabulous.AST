@@ -76,6 +76,9 @@
         <Compile Include="Widgets\Expressions\InfixApp.fs" />
         <Compile Include="Widgets\Expressions\RecordField.fs" />
         <Compile Include="Widgets\Expressions\Record.fs" />
+        <Compile Include="Widgets\Expressions\IfThen.fs" />
+        <Compile Include="Widgets\Expressions\IfThenElif.fs" />
+        <Compile Include="Widgets\Expressions\IfThenElse.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ParsedHashDirective.fs" />
         <Compile Include="Widgets\ModuleDeclarations\AnonymousModule.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Namespace.fs" />
@@ -103,9 +106,6 @@
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />
         <Compile Include="Widgets\TypeDefinitions\ClassEnd.fs" />
         <Compile Include="Widgets\TypeDefinitions\Augment.fs" />
-        <Compile Include="Widgets\ControlFlow\IfThen.fs" />
-        <Compile Include="Widgets\ControlFlow\IfThenElif.fs" />
-        <Compile Include="Widgets\ControlFlow\IfThenElse.fs" />
     </ItemGroup>
 
     <ItemGroup>

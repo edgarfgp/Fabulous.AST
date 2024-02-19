@@ -35,10 +35,6 @@
         <Compile Include="TypeDefinitions\ClassEnd.fs" />
         <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="TypeDefinitions\Augmentation.fs" />
-        <Compile Include="ControlFlow\IfThen.fs" />
-        <Compile Include="ControlFlow\IfThenElif.fs" />
-        <Compile Include="ControlFlow\IfThenElse.fs" />
-        <Compile Include="ControlFlow\ControlFlow.fs" />
         <Compile Include="Expressions\Lazy.fs" />
         <Compile Include="Expressions\Quoted.fs" />
         <Compile Include="Expressions\Paren.fs" />
@@ -53,6 +49,7 @@
         <Compile Include="Expressions\Match.fs" />
         <Compile Include="Expressions\InfixApp.fs" />
         <Compile Include="Expressions\Record.fs" />
+        <Compile Include="Expressions\Conditionals.fs" />
         <Compile Include="Patterns\Or.fs" />
         <Compile Include="Patterns\As.fs" />
         <Compile Include="Patterns\Ands.fs" />
