@@ -72,7 +72,16 @@ module AbstractMember =
                                 if System.String.IsNullOrEmpty(name) then
                                     failwith "Named parameters must have a name"
 
-                                let value = Type.SignatureParameter(TypeSignatureParameterNode.Create(name, value))
+                                let value =
+                                    Type.SignatureParameter(
+                                        TypeSignatureParameterNode(
+                                            None,
+                                            Some(SingleTextNode.Create(name)),
+                                            value,
+                                            Range.Zero
+                                        )
+                                    )
+
                                 (value, separator)
 
                             | None -> (value, separator))

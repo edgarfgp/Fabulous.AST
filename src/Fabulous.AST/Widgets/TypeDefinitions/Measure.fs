@@ -30,7 +30,22 @@ module TypeDefnAbbrevNode =
 
             TypeNameNode(
                 xmlDocs,
-                Some(MultipleAttributeListNode.Create([ "Measure" ])),
+                Some(
+                    MultipleAttributeListNode(
+                        [ AttributeListNode(
+                              SingleTextNode.leftAttribute,
+                              [ AttributeNode(
+                                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
+                                    None,
+                                    None,
+                                    Range.Zero
+                                ) ],
+                              SingleTextNode.rightAttribute,
+                              Range.Zero
+                          ) ],
+                        Range.Zero
+                    )
+                ),
                 SingleTextNode.``type``,
                 Some(SingleTextNode.Create(name)),
                 IdentListNode([], Range.Zero),
@@ -58,7 +73,22 @@ module TypeDefnAbbrevNode =
             TypeDefnAbbrevNode(
                 TypeNameNode(
                     xmlDocs,
-                    Some(MultipleAttributeListNode.Create([ "Measure" ])),
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  [ AttributeNode(
+                                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
+                                        None,
+                                        None,
+                                        Range.Zero
+                                    ) ],
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    ),
                     SingleTextNode.``type``,
                     Some(SingleTextNode.Create(name)),
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),

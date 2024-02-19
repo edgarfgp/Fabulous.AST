@@ -80,28 +80,7 @@ module Auxiliary =
 
         let ``val`` = SingleTextNode.Create "val"
 
-    type MultipleAttributeListNode with
-        static member inline Create(idTexts: string list) =
-            MultipleAttributeListNode(
-                [ AttributeListNode(
-                      SingleTextNode.leftAttribute,
-                      [ for v in idTexts do
-                            AttributeNode(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create v) ], Range.Zero),
-                                None,
-                                None,
-                                Range.Zero
-                            ) ],
-                      SingleTextNode.rightAttribute,
-                      Range.Zero
-                  ) ],
-                Range.Zero
-            )
-
-    type TypeSignatureParameterNode with
-
-        static member Create(identifier: string, ``type``: Type) =
-            TypeSignatureParameterNode(None, Some(SingleTextNode.Create(identifier)), ``type``, Range.Zero)
+        let measure = SingleTextNode.Create "Measure"
 
     type MultipleTextsNode with
 
