@@ -87,6 +87,7 @@
         <Compile Include="Widgets\ModuleDeclarations\Open.fs" />
         <Compile Include="Widgets\ModuleDeclarations\OpenType.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Val.fs" />
+        <Compile Include="Widgets\ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="Widgets\LetBindings\Value.fs" />
         <Compile Include="Widgets\LetBindings\Function.fs" />
         <Compile Include="Widgets\Members\MethodMember.fs" />
