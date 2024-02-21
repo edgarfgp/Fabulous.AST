@@ -18,6 +18,7 @@
         <Compile Include="ModuleDeclarations\NestedModule.fs" />
         <Compile Include="ModuleDeclarations\Val.fs" />
         <Compile Include="ModuleDeclarations\ModuleDeclAttributes.fs" />
+        <Compile Include="ModuleDeclarations\ExternalFunctions.fs" />
         <Compile Include="OpenDirectives\Open.fs" />
         <Compile Include="OpenDirectives\OpenType.fs" />
         <Compile Include="LetBindings\Value.fs" />

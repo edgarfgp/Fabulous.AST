@@ -72,15 +72,12 @@ module Auxiliary =
         let ``as`` = SingleTextNode.Create "as"
         let doubleColon = SingleTextNode.Create "::"
         let isInstance = SingleTextNode.Create ":?"
-
         let forwardSlash = SingleTextNode.Create "/"
-
         let backSlash = SingleTextNode.Create "\""
         let ``mutable`` = SingleTextNode.Create "mutable"
-
         let ``val`` = SingleTextNode.Create "val"
-
         let measure = SingleTextNode.Create "Measure"
+        let ``extern`` = SingleTextNode.Create "extern"
 
     type MultipleTextsNode with
 

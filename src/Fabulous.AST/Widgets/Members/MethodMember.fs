@@ -63,7 +63,6 @@ module MethodMember =
                 Helpers.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
 
             let returnType = Helpers.tryGetScalarValue widget ReturnType
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
 
             let accessControl =
                 Helpers.tryGetScalarValue widget Accessibility
@@ -75,6 +74,8 @@ module MethodMember =
                 | Private -> Some(SingleTextNode.``private``)
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
+
+            let lines = Helpers.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
