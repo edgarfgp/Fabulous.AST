@@ -13,70 +13,82 @@ module MethodMembers =
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                Member("this.A", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                Member(
+                    "this.A",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
 
 
                 InlinedMember(
                     "this.C",
-                    ParametersPat() { ParameterPat("p", CommonType.String) }
-
-                ) {
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
 
-                StaticMember("B", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                StaticMember(
+                    "B",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
 
-                InlinedStaticMember("D", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                InlinedStaticMember(
+                    "D",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
 
-                Member("this.E", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                Member(
+                    "this.E",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
                 |> _.returnType(CommonType.String)
 
-                InlinedMember("this.F", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                InlinedMember(
+                    "this.F",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
                 |> _.returnType(CommonType.String)
 
-                StaticMember("G", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                StaticMember(
+                    "G",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
                 |> _.returnType(CommonType.String)
 
-                InlinedStaticMember("H", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                InlinedStaticMember(
+                    "H",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
                 |> _.returnType(CommonType.String)
 
-                Member("this.I", ParametersPat(true) { ParameterPat("p", CommonType.String) }) {
+                Member(
+                    "this.I",
+                    ParametersPat(true) { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
 
                 Member(
                     "this.J",
                     ParametersPat(true) {
                         ParameterPat("p", CommonType.String)
                         ParameterPat("p2", CommonType.String)
-                    }
-                ) {
+                    },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
 
                 Member(
                     "this.K",
                     ParametersPat() {
                         ParameterPat("p", CommonType.String)
                         ParameterPat("p2", CommonType.String)
-                    }
-                ) {
+                    },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
             }
         }
         |> produces
@@ -108,9 +120,11 @@ type Colors =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                Member("this.A", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                Member(
+                    "this.A",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
             }
         }
 
@@ -135,9 +149,11 @@ type Colors<'other> =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                StaticMember("A", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                StaticMember(
+                    "A",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
             }
         }
 
@@ -158,9 +174,11 @@ type Colors<'other> =
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                Member("this.A", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                Member(
+                    "this.A",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
             }
         }
         |> produces
@@ -178,9 +196,11 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") { Field("X", CommonType.String) })
                 .members() {
-                StaticMember("A", ParametersPat() { ParameterPat("p", CommonType.String) }) {
+                StaticMember(
+                    "A",
+                    ParametersPat() { ParameterPat("p", CommonType.String) },
                     ConstantExpr(ConstantString "\"\"")
-                }
+                )
             }
         }
         |> produces
@@ -196,7 +216,7 @@ type Colors =
 
     [<Test>]
     let ``Produces a classes with a method member`` () =
-        AnonymousModule() { Class("Person") { Member("this.Name", UnitPat()) { ConstantExpr(ConstantString "23") } } }
+        AnonymousModule() { Class("Person") { Member("this.Name", UnitPat(), ConstantExpr(ConstantString "23")) } }
         |> produces
             """
 type Person () =
@@ -207,9 +227,11 @@ type Person () =
     let ``Produces a classes with a method member and parameter`` () =
         AnonymousModule() {
             Class("Person") {
-                Member("this.Name", ParametersPat() { ParameterPat("params", CommonType.String) }) {
+                Member(
+                    "this.Name",
+                    ParametersPat() { ParameterPat("params", CommonType.String) },
                     ConstantExpr(ConstantString "23")
-                }
+                )
             }
         }
         |> produces
@@ -227,10 +249,9 @@ type Person () =
                     ParametersPat(true) {
                         ParameterPat("name", CommonType.String)
                         ParameterPat("age", CommonType.Int32)
-                    }
-                ) {
+                    },
                     ConstantExpr(ConstantString "23")
-                }
+                )
 
             }
         }
@@ -249,10 +270,9 @@ type Person () =
                     ParametersPat() {
                         ParameterPat("name", CommonType.String)
                         ParameterPat("age", CommonType.Int32)
-                    }
-                ) {
+                    },
                     ConstantExpr(ConstantString "23")
-                }
+                )
             }
         }
         |> produces
@@ -265,7 +285,7 @@ type Person () =
     let ``Produces a method member with attributes`` () =
         AnonymousModule() {
             Class("Person") {
-                (Member("this.Name", UnitPat()) { ConstantExpr(ConstantString "23") })
+                (Member("this.Name", UnitPat(), ConstantExpr(ConstantString "23")))
                     .attributes(AttributeNode "Obsolete")
             }
         }
@@ -280,7 +300,7 @@ type Person () =
     [<Test>]
     let ``Produces an inline method member`` () =
         AnonymousModule() {
-            Class("Person") { InlinedMember("this.Name", UnitPat()) { ConstantExpr(ConstantString "23") } }
+            Class("Person") { InlinedMember("this.Name", UnitPat(), ConstantExpr(ConstantString "23")) }
         }
         |> produces
             """
@@ -292,7 +312,7 @@ type Person () =
     let ``Produces an method member with type parameters`` () =
         AnonymousModule() {
             Class("Person") {
-                (Member("this.Name", UnitPat()) { ConstantExpr(ConstantString "23") })
+                (Member("this.Name", UnitPat(), ConstantExpr(ConstantString "23")))
                     .typeParameters([ "'other" ])
             }
         }
@@ -306,7 +326,7 @@ type Person () =
     let ``Produces a union with a method member `` () =
         AnonymousModule() {
             (Union("Person") { UnionCase("Name") }).members() {
-                Member("this.Name()") { ConstantExpr(ConstantString "\"name\"") }
+                Member("this.Name()", ConstantExpr(ConstantString "\"name\""))
             }
         }
         |> produces
@@ -332,7 +352,7 @@ type Person =
                 UnionCase("Yellow")
             })
                 .members() {
-                Member("this.Name()") { ConstantExpr(ConstantString "\"name\"") }
+                Member("this.Name()", ConstantExpr(ConstantString "\"name\""))
             }
 
         }

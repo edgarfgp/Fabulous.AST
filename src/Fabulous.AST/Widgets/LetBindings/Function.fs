@@ -125,6 +125,7 @@ module FunctionBuilders =
                 name: string,
                 isInlined: bool,
                 typeParams: string list voption,
+                value: WidgetBuilder<Expr>,
                 parameters: WidgetBuilder<Pattern>
             ) =
             let scalars =
@@ -137,27 +138,40 @@ module FunctionBuilders =
                         Function.TypeParams.WithValue(typeParams)
                     )
 
-            SingleChildBuilder<FunctionNode, Expr>(
+            WidgetBuilder<FunctionNode>(
                 Function.WidgetKey,
-                Function.Value,
                 AttributesBundle(
                     scalars,
-                    ValueSome [| Function.Parameters.WithValue(parameters.Compile()) |],
+                    ValueSome
+                        [| Function.Value.WithValue(value.Compile())
+                           Function.Parameters.WithValue(parameters.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member Function(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseFunction(name, false, ValueNone, parameters)
+        static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.BaseFunction(name, false, ValueNone, value, parameters)
 
-        static member Function(name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseFunction(name, false, ValueSome typeParams, parameters)
+        static member Function
+            (
+                name: string,
+                typeParams: string list,
+                parameters: WidgetBuilder<Pattern>,
+                value: WidgetBuilder<Expr>
+            ) =
+            Ast.BaseFunction(name, false, ValueSome typeParams, value, parameters)
 
-        static member InlinedFunction(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseFunction(name, true, ValueNone, parameters)
+        static member InlinedFunction(name: string, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.BaseFunction(name, true, ValueNone, value, parameters)
 
-        static member InlinedFunction(name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseFunction(name, true, ValueSome typeParams, parameters)
+        static member InlinedFunction
+            (
+                name: string,
+                typeParams: string list,
+                parameters: WidgetBuilder<Pattern>,
+                value: WidgetBuilder<Expr>
+            ) =
+            Ast.BaseFunction(name, true, ValueSome typeParams, value, parameters)
 
 [<Extension>]
 type FunctionModifiers =

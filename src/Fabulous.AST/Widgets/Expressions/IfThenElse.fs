@@ -31,14 +31,19 @@ module IfThenElse =
 module IfThenElseBuilders =
     type Ast with
 
-        static member inline IfThenElse(ifExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>) =
-            SingleChildBuilder<ExprIfThenElseNode, Expr>(
+        static member inline IfThenElse
+            (
+                ifExpr: WidgetBuilder<Expr>,
+                thenExpr: WidgetBuilder<Expr>,
+                elseExpr: WidgetBuilder<Expr>
+            ) =
+            WidgetBuilder<ExprIfThenElseNode>(
                 IfThenElse.WidgetKey,
-                IfThenElse.ThenExpr,
                 AttributesBundle(
                     StackList.empty(),
                     ValueSome
                         [| IfThenElse.IfExpr.WithValue(ifExpr.Compile())
+                           IfThenElse.ThenExpr.WithValue(thenExpr.Compile())
                            IfThenElse.ElseExpr.WithValue(elseExpr.Compile()) |],
                     ValueNone
                 )

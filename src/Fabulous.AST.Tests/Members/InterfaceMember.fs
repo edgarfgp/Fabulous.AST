@@ -19,7 +19,7 @@ module InterfaceMembers =
                 Field("Yellow", CommonType.Int32)
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Member("x.GetValue()") { ConstantExpr(ConstantString "x.MyField2") } }
+                InterfaceMember("IMyInterface") { Member("x.GetValue()", ConstantExpr(ConstantString "x.MyField2")) }
             }
         }
 
@@ -52,7 +52,7 @@ type Colors<'other> =
                 Field("MyField2", CommonType.String)
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Member("x.GetValue()") { ConstantExpr(ConstantString "x.MyField2") } }
+                InterfaceMember("IMyInterface") { Member("x.GetValue()", ConstantExpr(ConstantString "x.MyField2")) }
             }
         }
         |> produces
@@ -74,7 +74,7 @@ type MyRecord =
         AnonymousModule() {
             Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
 
-            Class("Person") { InterfaceMember("Meh") { Member("this.Name") { ConstantExpr(ConstantString "\"23\"") } } }
+            Class("Person") { InterfaceMember("Meh") { Member("this.Name", ConstantExpr(ConstantString "\"23\"")) } }
         }
         |> produces
             """

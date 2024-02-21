@@ -53,25 +53,40 @@ module IfThen =
 module IfThenBuilders =
     type Ast with
 
-        static member inline IfThen(expr: WidgetBuilder<Expr>) =
-            SingleChildBuilder<ExprIfThenNode, Expr>(
+        static member inline IfThen(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+            WidgetBuilder<ExprIfThenNode>(
                 IfThen.WidgetIfThenKey,
-                IfThen.ThenExpr,
-                AttributesBundle(StackList.empty(), ValueSome [| IfThen.IfExpr.WithValue(expr.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThen.IfExpr.WithValue(ifExpr.Compile())
+                           IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
+                    ValueNone
+                )
             )
 
-        static member inline ElIfThen(expr: WidgetBuilder<Expr>) =
-            SingleChildBuilder<ExprIfThenNode, Expr>(
+        static member inline ElIfThen(elIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+            WidgetBuilder<ExprIfThenNode>(
                 IfThen.WidgetElIfThenKey,
-                IfThen.ThenExpr,
-                AttributesBundle(StackList.empty(), ValueSome [| IfThen.IfExpr.WithValue(expr.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThen.IfExpr.WithValue(elIfExpr.Compile())
+                           IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
+                    ValueNone
+                )
             )
 
-        static member inline ElseIfThen(expr: WidgetBuilder<Expr>) =
-            SingleChildBuilder<ExprIfThenNode, Expr>(
+        static member inline ElseIfThen(elseIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+            WidgetBuilder<ExprIfThenNode>(
                 IfThen.WidgetElseIfThenKey,
-                IfThen.ThenExpr,
-                AttributesBundle(StackList.empty(), ValueSome [| IfThen.IfExpr.WithValue(expr.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThen.IfExpr.WithValue(elseIfExpr.Compile())
+                           IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
+                    ValueNone
+                )
             )
 
 [<Extension>]

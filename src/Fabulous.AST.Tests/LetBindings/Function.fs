@@ -10,7 +10,7 @@ module Function =
 
     [<Test>]
     let ``Produces a function with parameter`` () =
-        AnonymousModule() { Function("x", ParameterPat("i")) { ConstantExpr(ConstantUnit()) } }
+        AnonymousModule() { Function("x", ParameterPat("i"), ConstantExpr(ConstantUnit())) }
         |> produces
             """
 
@@ -20,7 +20,7 @@ let x i = ()
 
     [<Test>]
     let ``Produces a function with single tupled parameter`` () =
-        AnonymousModule() { Function("x", NamedPat("i")) { ConstantExpr(ConstantUnit()) } }
+        AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())) }
         |> produces
             """
 let x i = ()
@@ -29,7 +29,7 @@ let x i = ()
 
     [<Test>]
     let ``Produces a function with single parameter`` () =
-        AnonymousModule() { Function("x", ParenPat(NamedPat("i"))) { ConstantExpr(ConstantUnit()) } }
+        AnonymousModule() { Function("x", ParenPat(NamedPat("i")), ConstantExpr(ConstantUnit())) }
         |> produces
             """
 let x (i) = ()
@@ -39,7 +39,7 @@ let x (i) = ()
     [<Test>]
     let ``Produces a function with single tupled typed parameter`` () =
         AnonymousModule() {
-            Function("x", ParenPat(ParameterPat(NamedPat("i"), CommonType.Int32))) { ConstantExpr(ConstantUnit()) }
+            Function("x", ParenPat(ParameterPat(NamedPat("i"), CommonType.Int32)), ConstantExpr(ConstantUnit()))
         }
         |> produces
             """
@@ -56,10 +56,9 @@ let x (i: int) = ()
                     NamedPat("i")
                     NamedPat("j")
                     NamedPat("k")
-                }
-            ) {
+                },
                 ConstantExpr(ConstantUnit())
-            }
+            )
         }
         |> produces
             """
@@ -76,10 +75,9 @@ let x (i, j, k) = ()
                     NamedPat("i")
                     NamedPat("j")
                     NamedPat("k")
-                }
-            ) {
+                },
                 ConstantExpr(ConstantUnit())
-            }
+            )
         }
         |> produces
             """
@@ -96,10 +94,9 @@ let x i j k = ()
                     ParameterPat(NamedPat("i"), CommonType.Int32)
                     ParameterPat(NamedPat("j"), CommonType.String)
                     ParameterPat(NamedPat("k"), CommonType.Boolean)
-                }
-            ) {
+                },
                 ConstantExpr(ConstantUnit())
-            }
+            )
         }
         |> produces
             """
@@ -110,7 +107,7 @@ let x (i: int, j: string, k: bool) = ()
     [<Test>]
     let ``Produces a function with parameters and an attribute`` () =
         AnonymousModule() {
-            (Function("x", NamedPat("i")) { ConstantExpr(ConstantUnit()) })
+            (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .attributes(AttributeNode("Obsolete", ParenExpr(ConstantExpr(ConstantString("\"Use bar instead\"")))))
         }
         |> produces
@@ -123,7 +120,7 @@ let x i = ()
     [<Test>]
     let ``Produces a function with parameters and Xml Doc`` () =
         AnonymousModule() {
-            (Function("x", NamedPat("i")) { ConstantExpr(ConstantUnit()) })
+            (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .xmlDocs([ "Im a function" ])
         }
         |> produces
@@ -136,7 +133,7 @@ let x i = ()
     [<Test>]
     let ``Produces a function with parameters and return type`` () =
         AnonymousModule() {
-            (Function("x", NamedPat("i")) { ConstantExpr(ConstantUnit()) })
+            (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .returnType(CommonType.Unit)
         }
         |> produces
@@ -153,10 +150,9 @@ let x i : unit = ()
                 ParametersPat(true) {
                     ParameterPat("x", "'T")
                     ParameterPat(NamedPat("i"), "'U")
-                }
-            ) {
+                },
                 ConstantExpr(ConstantUnit())
-            })
+            ))
                 .returnType(CommonType.Unit)
         }
         |> produces
@@ -167,7 +163,7 @@ let foo (x: 'T, i: 'U) : unit = ()
 
     [<Test>]
     let ``Produces an inlined function with parameters`` () =
-        AnonymousModule() { InlinedFunction("x", NamedPat("i")) { ConstantExpr(ConstantUnit()) } }
+        AnonymousModule() { InlinedFunction("x", NamedPat("i"), ConstantExpr(ConstantUnit())) }
         |> produces
             """
 
@@ -178,13 +174,13 @@ let inline x i = ()
     [<Test>]
     let ``Produces a function with parameters and access controls`` () =
         AnonymousModule() {
-            (Function("x", NamedPat("i")) { ConstantExpr(ConstantUnit()) })
+            (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .toPublic()
 
-            (Function("y", NamedPat("i")) { ConstantExpr(ConstantUnit()) })
+            (Function("y", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .toPrivate()
 
-            (Function("z", NamedPat("i")) { ConstantExpr(ConstantUnit()) })
+            (Function("z", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .toInternal()
         }
         |> produces

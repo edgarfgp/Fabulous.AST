@@ -49,9 +49,7 @@ type Colors =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") {
-                    Member("x.GetValue", UnitPat()) { ConstantExpr(ConstantString "\"\"") }
-                }
+                InterfaceMember("IMyInterface") { Member("x.GetValue", UnitPat(), ConstantExpr(ConstantString "\"\"")) }
             }
 
         }
@@ -223,9 +221,7 @@ type Colors<'other> =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") {
-                    Member("x.GetValue", UnitPat()) { ConstantExpr(ConstantString "\"\"") }
-                }
+                InterfaceMember("IMyInterface") { Member("x.GetValue", UnitPat(), ConstantExpr(ConstantString "\"\"")) }
             }
         }
 

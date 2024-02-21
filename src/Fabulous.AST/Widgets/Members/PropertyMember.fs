@@ -107,16 +107,23 @@ module PropertyMember =
 module PropertyMemberBuilders =
     type Ast with
 
-        static member private BasePropertyMember(name: WidgetBuilder<Pattern>, isStatic: bool, isInlined: bool) =
-            SingleChildBuilder<PropertyMemberNode, Expr>(
+        static member private BasePropertyMember
+            (
+                name: WidgetBuilder<Pattern>,
+                body: WidgetBuilder<Expr>,
+                isStatic: bool,
+                isInlined: bool
+            ) =
+            WidgetBuilder<PropertyMemberNode>(
                 PropertyMember.WidgetKey,
-                PropertyMember.BodyExpr,
                 AttributesBundle(
                     StackList.two(
                         PropertyMember.IsStatic.WithValue(isStatic),
                         PropertyMember.IsInlined.WithValue(isInlined)
                     ),
-                    ValueSome [| PropertyMember.Name.WithValue(name.Compile()) |],
+                    ValueSome
+                        [| PropertyMember.Name.WithValue(name.Compile())
+                           PropertyMember.BodyExpr.WithValue(body.Compile()) |],
                     ValueNone
                 )
             )
@@ -126,16 +133,19 @@ module PropertyMemberBuilders =
                 name: string,
                 isStatic: bool,
                 isInline: bool,
+                body: WidgetBuilder<Expr>,
                 parameters: WidgetBuilder<Pattern> voption
             ) =
             let widgets =
                 match parameters with
-                | ValueSome parameters -> ValueSome [| MethodMember.Parameters.WithValue(parameters.Compile()) |]
+                | ValueSome parameters ->
+                    ValueSome
+                        [| MethodMember.Parameters.WithValue(parameters.Compile())
+                           MethodMember.BodyExpr.WithValue(body.Compile()) |]
                 | ValueNone -> ValueNone
 
-            SingleChildBuilder<MethodMemberNode, Expr>(
+            WidgetBuilder<MethodMemberNode>(
                 MethodMember.WidgetKey,
-                MethodMember.BodyExpr,
                 AttributesBundle(
                     StackList.three(
                         MethodMember.Name.WithValue(name),
@@ -147,41 +157,41 @@ module PropertyMemberBuilders =
                 )
             )
 
-        static member Member(name: WidgetBuilder<Pattern>) =
-            Ast.BasePropertyMember(name, false, false)
+        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(name, body, false, false)
 
-        static member Member(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseMethodMember(name, false, false, ValueSome parameters)
+        static member Member(name: string, parameters: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BaseMethodMember(name, false, false, body, ValueSome parameters)
 
-        static member Member(name: string) =
-            Ast.BasePropertyMember(Ast.NamedPat(name), false, false)
+        static member Member(name: string, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), body, false, false)
 
-        static member InlinedMember(name: WidgetBuilder<Pattern>) =
-            Ast.BasePropertyMember(name, false, true)
+        static member InlinedMember(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(name, body, false, true)
 
-        static member InlinedMember(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseMethodMember(name, false, true, ValueSome parameters)
+        static member InlinedMember(name: string, parameters: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BaseMethodMember(name, false, true, body, ValueSome parameters)
 
-        static member InlinedMember(name: string) =
-            Ast.BasePropertyMember(Ast.NamedPat(name), false, true)
+        static member InlinedMember(name: string, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), body, false, true)
 
-        static member StaticMember(name: WidgetBuilder<Pattern>) =
-            Ast.BasePropertyMember(name, true, false)
+        static member StaticMember(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(name, body, true, false)
 
-        static member StaticMember(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseMethodMember(name, true, false, ValueSome parameters)
+        static member StaticMember(name: string, parameters: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BaseMethodMember(name, true, false, body, ValueSome parameters)
 
-        static member StaticMember(name: string) =
-            Ast.BasePropertyMember(Ast.NamedPat(name), true, false)
+        static member StaticMember(name: string, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), body, true, false)
 
-        static member InlinedStaticMember(name: WidgetBuilder<Pattern>) =
-            Ast.BasePropertyMember(name, true, true)
+        static member InlinedStaticMember(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(name, body, true, true)
 
-        static member InlinedStaticMember(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseMethodMember(name, true, true, ValueSome parameters)
+        static member InlinedStaticMember(name: string, parameters: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.BaseMethodMember(name, true, true, body, ValueSome parameters)
 
-        static member InlinedStaticMember(name: string) =
-            Ast.BasePropertyMember(Ast.NamedPat(name), true, true)
+        static member InlinedStaticMember(name: string, body: WidgetBuilder<Expr>) =
+            Ast.BasePropertyMember(Ast.NamedPat(name), body, true, true)
 
 [<Extension>]
 type PropertyMemberModifiers =

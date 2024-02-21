@@ -120,62 +120,6 @@ type WidgetBuilder<'marker> =
     end
 
 [<Struct>]
-type SingleChildContent = { Child: Widget }
-
-/// A Computation Expression builder accepting a single child widget.
-[<Struct; NoComparison; NoEquality>]
-type SingleChildBuilder<'marker, 'childMarker> =
-    struct
-        val Key: WidgetKey
-        val Attributes: AttributesBundle
-        val Attr: WidgetAttributeDefinition
-
-        new(key: WidgetKey, attr: WidgetAttributeDefinition, attributes: AttributesBundle) =
-            { Key = key
-              Attributes = attributes
-              Attr = attr }
-
-        new(key: WidgetKey, attr: WidgetAttributeDefinition) =
-            { Key = key
-              Attributes = AttributesBundle(StackList.empty(), ValueNone, ValueNone)
-              Attr = attr }
-
-        /// Starts with a state equals to unit so we can force yield to only be used once.
-        member inline _.Zero() = ()
-
-        member inline _.Yield(child: WidgetBuilder<'childMarker>) = { Child = child.Compile() }
-
-        /// Combines only the Zero state with the first child.
-        /// Subsequent children won't be allowed thanks to the Unit initial state.
-        member inline _.Combine(_: unit, b: SingleChildContent) = b
-
-        member inline _.Delay([<InlineIfLambda>] f: unit -> SingleChildContent) = f()
-
-        /// Creates the current widget using the accumulated attributes and the child.
-        member inline x.Run(c: SingleChildContent) =
-            let struct (scalars, widgets, widgetCollections) = x.Attributes
-
-            let widgetAttr = x.Attr.WithValue(c.Child)
-
-            let widgets =
-                match widgets with
-                | ValueNone -> [| widgetAttr |]
-                | ValueSome widgets -> Array.append [| widgetAttr |] widgets
-
-            WidgetBuilder<'marker>(x.Key, AttributesBundle(scalars, ValueSome widgets, widgetCollections))
-
-        member inline x.AddScalar(attr: ScalarAttribute) =
-            let struct (scalarAttributes, widgetAttributes, widgetCollectionAttributes) =
-                x.Attributes
-
-            SingleChildBuilder<'marker, 'childMarker>(
-                x.Key,
-                x.Attr,
-                struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
-            )
-    end
-
-[<Struct>]
 type CollectionContent = { Widgets: MutStackArray1.T<Widget> }
 
 /// A Computation Expression builder accepting a collection of child widgets.
