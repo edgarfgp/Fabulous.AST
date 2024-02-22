@@ -66,7 +66,7 @@ type Meh =
     abstract member Add6: int -> int -> int
     abstract member Add7: a: int -> b: int -> int
     abstract member Add8: a: int -> b: int -> int
-   
+
 """
 
     [<Test>]
@@ -128,5 +128,5 @@ type Meh <'other, 'another> =
     abstract member Add6: int -> int -> int
     abstract member Add7: a: int -> b: int -> int
     abstract member Add8: a: int -> b: int -> int
-   
+
 """

@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Tests.LetBindings
+namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
 open Fabulous.AST
 open Fabulous.AST.Tests
@@ -163,7 +163,10 @@ let foo (x: 'T, i: 'U) : unit = ()
 
     [<Test>]
     let ``Produces an inlined function with parameters`` () =
-        AnonymousModule() { InlinedFunction("x", NamedPat("i"), ConstantExpr(ConstantUnit())) }
+        AnonymousModule() {
+            Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))
+                .toInlined()
+        }
         |> produces
             """
 

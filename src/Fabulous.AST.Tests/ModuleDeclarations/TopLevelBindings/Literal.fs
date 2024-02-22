@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Tests.LetBindings
+namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
 open Fantomas.Core
 open Fantomas.FCS.Text

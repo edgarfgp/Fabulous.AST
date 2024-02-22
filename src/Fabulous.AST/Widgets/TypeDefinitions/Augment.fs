@@ -68,7 +68,7 @@ type AugmentYieldExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>,
-            x: MethodMemberNode
+            x: BindingNode
         ) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
@@ -77,25 +77,7 @@ type AugmentYieldExtensions =
     static member inline Yield
         (
             this: CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>,
-            x: WidgetBuilder<MethodMemberNode>
-        ) : CollectionContent =
-        let node = Tree.compile x
-        AugmentYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>,
-            x: PropertyMemberNode
-        ) : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (
-            this: CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>,
-            x: WidgetBuilder<PropertyMemberNode>
+            x: WidgetBuilder<BindingNode>
         ) : CollectionContent =
         let node = Tree.compile x
         AugmentYieldExtensions.Yield(this, node)

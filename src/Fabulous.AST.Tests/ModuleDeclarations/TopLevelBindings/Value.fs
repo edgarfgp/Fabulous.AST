@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Tests.LetBindings
+namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
 open System.IO
 open Fantomas.FCS.Text
@@ -268,7 +268,7 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        AnonymousModule() { MutableValue("x", "12") }
+        AnonymousModule() { Value("x", "12").toMutable() }
         |> produces
             """
         
@@ -278,7 +278,7 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with return type`` () =
-        AnonymousModule() { MutableValue("x", "12").returnType(CommonType.Int32) }
+        AnonymousModule() { Value("x", "12").returnType(CommonType.Int32).toMutable() }
         |> produces
             """
         
@@ -288,7 +288,7 @@ let mutable x: int = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with an expression`` () =
-        AnonymousModule() { MutableValue("x", ConstantExpr(ConstantString "12")) }
+        AnonymousModule() { Value("x", ConstantExpr(ConstantString "12")).toMutable() }
         |> produces
             """
         
@@ -298,7 +298,10 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a top level inlined let binding with type params and an expression`` () =
-        AnonymousModule() { InlinedValue("x", [ "'a" ], ConstantExpr(ConstantString "12")) }
+        AnonymousModule() {
+            Value("x", [ "'a" ], ConstantExpr(ConstantString "12"))
+                .toInlined()
+        }
         |> produces
             """
         
