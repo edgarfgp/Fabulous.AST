@@ -12,7 +12,7 @@ module Val =
 
     let LeadingKeyword = Attributes.defineScalar<string list> "LeadingKeyword"
 
-    let Inlined = Attributes.defineScalar<bool> "Inlined"
+    let IsInlined = Attributes.defineScalar<bool> "Inlined"
 
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
 
@@ -24,7 +24,7 @@ module Val =
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
     let WidgetKey =
-        Widgets.register "OpenType" (fun widget ->
+        Widgets.register "ValNode" (fun widget ->
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
@@ -42,11 +42,12 @@ module Val =
                 | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
+            let inlined = Helpers.tryGetScalarValue widget IsInlined
+
             let inlined =
-                if Helpers.getScalarValue widget Inlined then
-                    Some(SingleTextNode.``inline``)
-                else
-                    None
+                match inlined with
+                | ValueSome _ -> Some(SingleTextNode.``inline``)
+                | ValueNone -> None
 
             let isMutable =
                 Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue(false)
@@ -103,43 +104,34 @@ module Val =
 module ValBuilders =
     type Ast with
 
-        static member inline BaseVal(identifier: string, isMutable: bool, isInlined: bool, returnType: Type) =
+        static member inline BaseVal(identifier: string, returnType: Type) =
             WidgetBuilder<ValNode>(
                 Val.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        Val.IdentifierReturnType.WithValue(struct (identifier, returnType)),
-                        Val.IsMutable.WithValue(isMutable),
-                        Val.Inlined.WithValue(isInlined)
-                    ),
+                    StackList.one(Val.IdentifierReturnType.WithValue(struct (identifier, returnType))),
                     ValueNone,
                     ValueNone
                 )
             )
 
-        static member Val(identifier: string, returnType: Type) =
-            Ast.BaseVal(identifier, false, false, returnType)
+        static member Val(identifier: string, returnType: Type) = Ast.BaseVal(identifier, returnType)
 
         static member Val(identifier: string, returnType: string) =
-            Ast.BaseVal(identifier, false, false, CommonType.mkLongIdent(returnType))
-
-        static member MutableVal(identifier: string, returnType: Type) =
-            Ast.BaseVal(identifier, true, false, returnType)
-
-        static member MutableVal(identifier: string, returnType: string) =
-            Ast.BaseVal(identifier, true, false, CommonType.mkLongIdent(returnType))
-
-        static member InlinedVal(identifier: string, returnType: Type) =
-            Ast.BaseVal(identifier, false, true, returnType)
-
-        static member InlinedVal(identifier: string, returnType: string) =
-            Ast.BaseVal(identifier, false, true, CommonType.mkLongIdent(returnType))
+            Ast.BaseVal(identifier, CommonType.mkLongIdent(returnType))
 
 [<Extension>]
 type ValNodeModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ValNode>, comments: string list) =
         this.AddScalar(Val.XmlDocs.WithValue(comments))
+
+    [<Extension>]
+    static member inline toMutable(this: WidgetBuilder<ValNode>) =
+        this.AddScalar(Val.IsMutable.WithValue(true))
+
+    [<Extension>]
+    static member inline toInlined(this: WidgetBuilder<ValNode>) =
+        this.AddScalar(Val.IsInlined.WithValue(true))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ValNode>, attributes: WidgetBuilder<AttributeListNode>) =

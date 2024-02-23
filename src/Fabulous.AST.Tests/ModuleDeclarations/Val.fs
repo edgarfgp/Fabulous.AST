@@ -20,7 +20,7 @@ val x: string
 
     [<Test>]
     let ``Produces a MutableVal`` () =
-        AnonymousModule() { MutableVal("x", CommonType.String) }
+        AnonymousModule() { Val("x", CommonType.String).toMutable() }
 
         |> produces
             """
@@ -29,7 +29,7 @@ val mutable x: string
 
     [<Test>]
     let ``Produces a InlinedVal`` () =
-        AnonymousModule() { InlinedVal("x", "string") }
+        AnonymousModule() { Val("x", "string").toInlined() }
 
         |> produces
             """
