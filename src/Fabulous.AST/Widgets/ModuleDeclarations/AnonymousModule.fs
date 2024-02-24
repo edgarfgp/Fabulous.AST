@@ -5,8 +5,6 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
-type AnonymousModuleNode(decls: ModuleDecl list, hashDirectives: ParsedHashDirectiveNode list) =
-    inherit Oak(hashDirectives, [ ModuleOrNamespaceNode(None, decls, Range.Zero) ], Range.Zero)
 
 module AnonymousModule =
     let Decls = Attributes.defineWidgetCollection "Decls"
@@ -16,13 +14,22 @@ module AnonymousModule =
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
             let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-            AnonymousModuleNode(decls, []))
+
+            let hashDirectives =
+                Helpers.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives
+
+            let hashDirectives =
+                match hashDirectives with
+                | Some hashDirectives -> hashDirectives
+                | None -> []
+
+            Oak(hashDirectives, [ ModuleOrNamespaceNode(None, decls, Range.Zero) ], Range.Zero))
 
 [<AutoOpen>]
 module AnonymousModuleBuilders =
     type Ast with
         static member AnonymousModule() =
-            CollectionBuilder<AnonymousModuleNode, ModuleDecl>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
+            CollectionBuilder<Oak, ModuleDecl>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
 
 [<Extension>]
 type AnonymousModuleExtensions =

@@ -55,7 +55,7 @@ module A =
 
     [<Test>]
     let ``Produces a recursive NestedModule`` () =
-        AnonymousModule() { NestedModule("A").isRecursive() { Value("x", "12") } }
+        AnonymousModule() { NestedModule("A").toRecursive() { Value("x", "12") } }
 
         |> produces
             """

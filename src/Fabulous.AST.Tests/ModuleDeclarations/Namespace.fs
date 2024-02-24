@@ -22,7 +22,7 @@ let x = 3
 
     [<Test>]
     let ``Produces a rec namespace with binding`` () =
-        RecNamespace("Fabulous.AST") { Value("x", "3") }
+        (Namespace("Fabulous.AST") { Value("x", "3") }).toRecursive()
         |> produces
             """
 namespace rec Fabulous.AST
@@ -33,13 +33,11 @@ let x = 3
     [<Test>]
     let ``Produces a namespace using the EscapeHatch widget`` () =
         Namespace(
-            EscapeHatch(
-                IdentListNode(
-                    [ IdentifierOrDot.Ident(SingleTextNode("Fabulous", Range.Zero))
-                      IdentifierOrDot.KnownDot(SingleTextNode(".", Range.Zero))
-                      IdentifierOrDot.Ident(SingleTextNode("AST", Range.Zero)) ],
-                    Range.Zero
-                )
+            IdentListNode(
+                [ IdentifierOrDot.Ident(SingleTextNode("Fabulous", Range.Zero))
+                  IdentifierOrDot.KnownDot(SingleTextNode(".", Range.Zero))
+                  IdentifierOrDot.Ident(SingleTextNode("AST", Range.Zero)) ],
+                Range.Zero
             )
         ) {
             BindingNode(
@@ -86,7 +84,6 @@ let x = 12
                 )
             }
         }
-
         |> produces
             """
 namespace Fabulous

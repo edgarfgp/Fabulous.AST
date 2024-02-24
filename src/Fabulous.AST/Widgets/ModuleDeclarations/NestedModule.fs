@@ -36,21 +36,17 @@ module NestedModule =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-
-            let nestedModuleNode =
-                NestedModuleNode(
-                    None,
-                    None,
-                    SingleTextNode.``module``,
-                    accessControl,
-                    isRecursive,
-                    identList,
-                    SingleTextNode.equals,
-                    moduleDecls,
-                    Range.Zero
-                )
-
-            nestedModuleNode)
+            NestedModuleNode(
+                None,
+                None,
+                SingleTextNode.``module``,
+                accessControl,
+                isRecursive,
+                identList,
+                SingleTextNode.equals,
+                moduleDecls,
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module NestedModuleBuilders =
@@ -75,7 +71,7 @@ module NestedModuleBuilders =
 [<Extension>]
 type NestedModuleModifiers =
     [<Extension>]
-    static member inline isRecursive(this: CollectionBuilder<NestedModuleNode, ModuleDecl>) =
+    static member inline toRecursive(this: CollectionBuilder<NestedModuleNode, ModuleDecl>) =
         this.AddScalar(NestedModule.IsRecursive.WithValue(true))
 
     [<Extension>]

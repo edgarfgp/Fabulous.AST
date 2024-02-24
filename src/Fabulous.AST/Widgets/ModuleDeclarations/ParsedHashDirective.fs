@@ -6,9 +6,6 @@ open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
-type HashDirectiveNode(ident: string, args: SingleTextNode list) =
-    inherit ParsedHashDirectiveNode(ident, args, Range.Zero)
-
 module HashDirective =
     let Ident = Attributes.defineScalar<string> "Ident"
     let Args = Attributes.defineScalar<string list> "Args"
@@ -19,7 +16,7 @@ module HashDirective =
 
             let args = Helpers.getScalarValue widget Args |> List.map(SingleTextNode.Create)
 
-            HashDirectiveNode(ident, args))
+            ParsedHashDirectiveNode(ident, args, Range.Zero))
 
 [<AutoOpen>]
 module HashDirectiveBuilders =
@@ -32,7 +29,7 @@ module HashDirectiveBuilders =
                 else
                     args
 
-            WidgetBuilder<HashDirectiveNode>(
+            WidgetBuilder<ParsedHashDirectiveNode>(
                 HashDirective.WidgetKey,
                 HashDirective.Ident.WithValue(ident),
                 HashDirective.Args.WithValue(args)
@@ -60,7 +57,7 @@ type HashDirectiveNodeExtensions =
     static member inline Yield
         (
             _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<HashDirectiveNode>
+            x: WidgetBuilder<ParsedHashDirectiveNode>
         ) : CollectionContent =
         let node = Tree.compile x
         let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ]))

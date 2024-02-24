@@ -103,3 +103,21 @@ type EnumYieldExtensions =
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            _: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>,
+            x: EnumCaseNode
+        ) : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (
+            this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>,
+            x: WidgetBuilder<EnumCaseNode>
+        ) : CollectionContent =
+        let node = Tree.compile x
+        EnumYieldExtensions.Yield(this, node)
