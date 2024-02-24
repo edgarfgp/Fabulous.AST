@@ -22,7 +22,8 @@ let x = 3
 
     [<Test>]
     let ``Produces a rec namespace with binding`` () =
-        (Namespace("Fabulous.AST") { Value("x", "3") }).toRecursive()
+        (Namespace("Fabulous.AST") { Value("x", "3") })
+            .toRecursive()
         |> produces
             """
 namespace rec Fabulous.AST
