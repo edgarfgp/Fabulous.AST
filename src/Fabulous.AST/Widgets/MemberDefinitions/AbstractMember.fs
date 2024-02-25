@@ -15,7 +15,7 @@ module AbstractMember =
     let ReturnType = Attributes.defineScalar<Type> "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
     let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
@@ -25,12 +25,23 @@ module AbstractMember =
             let hasGetterSetter = Helpers.tryGetScalarValue widget HasGetterSetter
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
             let lines = Helpers.tryGetScalarValue widget XmlDocs
 
@@ -279,17 +290,28 @@ type AbstractMemberModifiers =
         this.AddScalar(AbstractMember.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline attributes
-        (
-            this: WidgetBuilder<MemberDefnAbstractSlotNode>,
-            attributes: WidgetBuilder<AttributeListNode>
-        ) =
-        this.AddWidget(AbstractMember.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<MemberDefnAbstractSlotNode>) =
+        AttributeCollectionBuilder<MemberDefnAbstractSlotNode, AttributeNode>(this, AbstractMember.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes
+    static member inline attributes(this: WidgetBuilder<MemberDefnAbstractSlotNode>, attributes: string list) =
+        AttributeCollectionBuilder<MemberDefnAbstractSlotNode, AttributeNode>(this, AbstractMember.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute
         (
             this: WidgetBuilder<MemberDefnAbstractSlotNode>,
             attribute: WidgetBuilder<AttributeNode>
         ) =
-        this.AddWidget(AbstractMember.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+        AttributeCollectionBuilder<MemberDefnAbstractSlotNode, AttributeNode>(this, AbstractMember.MultipleAttributes) {
+            attribute
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<MemberDefnAbstractSlotNode>, attribute: string) =
+        AttributeCollectionBuilder<MemberDefnAbstractSlotNode, AttributeNode>(this, AbstractMember.MultipleAttributes) {
+            Ast.Attribute(attribute)
+        }

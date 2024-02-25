@@ -7,15 +7,15 @@ open Fantomas.Core.SyntaxOak
 
 module ExternBindingPattern =
     let Pattern = Attributes.defineWidget "DoExpression"
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let Type = Attributes.defineScalar<Type> "Type"
 
     let WidgetKey =
         Widgets.register "ExternBindingPattern" (fun widget ->
             let pat = Helpers.tryGetNodeFromWidget<Pattern> widget Pattern
 
-            let attribute =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+            let attributes =
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let ``type`` = Helpers.tryGetScalarValue widget Type
 
@@ -25,9 +25,20 @@ module ExternBindingPattern =
                 | ValueNone -> None
 
             let multipleAttributes =
-                match attribute with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                match attributes with
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
             let pat =
                 match pat with
@@ -63,19 +74,40 @@ module ExternBindingPatternNodeBuilders =
 [<Extension>]
 type ExternBindingPatternNodeModifiers =
     [<Extension>]
-    static member inline attributes
-        (
-            this: WidgetBuilder<ExternBindingPatternNode>,
-            attributes: WidgetBuilder<AttributeListNode>
-        ) =
-        this.AddWidget(ExternBindingPattern.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<ExternBindingPatternNode>) =
+        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
+            this,
+            ExternBindingPattern.MultipleAttributes
+        )
 
     [<Extension>]
-    static member inline attributes
+    static member inline attributes(this: WidgetBuilder<ExternBindingPatternNode>, attributes: string list) =
+        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
+            this,
+            ExternBindingPattern.MultipleAttributes
+        ) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute
         (
             this: WidgetBuilder<ExternBindingPatternNode>,
             attribute: WidgetBuilder<AttributeNode>
         ) =
-        this.AddWidget(
-            ExternBindingPattern.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile())
-        )
+        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
+            this,
+            ExternBindingPattern.MultipleAttributes
+        ) {
+            attribute
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<ExternBindingPatternNode>, attribute: string) =
+        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
+            this,
+            ExternBindingPattern.MultipleAttributes
+        ) {
+            Ast.Attribute(attribute)
+        }

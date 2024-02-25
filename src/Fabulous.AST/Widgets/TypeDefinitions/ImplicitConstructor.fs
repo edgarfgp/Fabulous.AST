@@ -11,7 +11,7 @@ module ImplicitConstructor =
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
@@ -43,12 +43,24 @@ module ImplicitConstructor =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
+
 
             ImplicitConstructorNode(
                 xmlDocs,
@@ -78,21 +90,31 @@ type ImplicitConstructorModifiers =
         this.AddScalar(ImplicitConstructor.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes
-        (
-            this: WidgetBuilder<ImplicitConstructorNode>,
-            attributes: WidgetBuilder<AttributeListNode>
-        ) =
-        this.AddWidget(ImplicitConstructor.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<ImplicitConstructorNode>) =
+        AttributeCollectionBuilder<ImplicitConstructorNode, AttributeNode>(this, ImplicitConstructor.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes
+    static member inline attributes(this: WidgetBuilder<ImplicitConstructorNode>, attributes: string list) =
+        AttributeCollectionBuilder<ImplicitConstructorNode, AttributeNode>(this, ImplicitConstructor.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute
         (
             this: WidgetBuilder<ImplicitConstructorNode>,
             attribute: WidgetBuilder<AttributeNode>
         ) =
-        this.AddWidget(ImplicitConstructor.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+        AttributeCollectionBuilder<ImplicitConstructorNode, AttributeNode>(this, ImplicitConstructor.MultipleAttributes) {
+            attribute
+        }
 
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<ImplicitConstructorNode>, attribute: string) =
+        AttributeCollectionBuilder<ImplicitConstructorNode, AttributeNode>(this, ImplicitConstructor.MultipleAttributes) {
+            Ast.Attribute(attribute)
+        }
 
 [<Extension>]
 type ImplicitConstructorYieldExtensions =

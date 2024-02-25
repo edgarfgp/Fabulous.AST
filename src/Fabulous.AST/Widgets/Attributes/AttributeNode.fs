@@ -62,14 +62,14 @@ module AttributeNodeBuilders =
 
             WidgetBuilder<AttributeNode>(AttributeNode.WidgetKey, AttributesBundle(scalars, widgets, ValueNone))
 
-        static member AttributeNode(typeName: string) =
+        static member Attribute(typeName: string) =
             Ast.BaseAttributeNode(typeName, ValueNone, ValueNone)
 
-        static member AttributeNode(typeName: string, target: string) =
+        static member Attribute(typeName: string, target: string) =
             Ast.BaseAttributeNode(typeName, ValueNone, ValueSome target)
 
-        static member AttributeNode(typeName: string, expr: WidgetBuilder<Expr>) =
+        static member Attribute(typeName: string, expr: WidgetBuilder<Expr>) =
             Ast.BaseAttributeNode(typeName, ValueSome expr, ValueNone)
 
-        static member AttributeNode(typeName: string, expr: WidgetBuilder<Expr>, target: string) =
+        static member Attribute(typeName: string, expr: WidgetBuilder<Expr>, target: string) =
             Ast.BaseAttributeNode(typeName, ValueSome expr, ValueSome target)

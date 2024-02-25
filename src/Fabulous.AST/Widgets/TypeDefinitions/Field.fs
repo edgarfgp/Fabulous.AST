@@ -12,7 +12,7 @@ module Field =
 
     let FieldType = Attributes.defineScalar<Type> "FieldType"
 
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
@@ -27,12 +27,23 @@ module Field =
             let fieldType = Helpers.getScalarValue widget FieldType
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
             let xmlDocs =
                 match lines with
@@ -83,9 +94,22 @@ type FieldModifiers =
         this.AddScalar(Field.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: WidgetBuilder<AttributeListNode>) =
-        this.AddWidget(Field.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<FieldNode>) =
+        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<FieldNode>, attribute: WidgetBuilder<AttributeNode>) =
-        this.AddWidget(Field.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+    static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: string list) =
+        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: WidgetBuilder<AttributeNode>) =
+        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes) { attribute }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: string) =
+        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes) {
+            Ast.Attribute(attribute)
+        }

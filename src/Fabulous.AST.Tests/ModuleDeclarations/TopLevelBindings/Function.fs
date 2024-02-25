@@ -108,7 +108,7 @@ let x (i: int, j: string, k: bool) = ()
     let ``Produces a function with parameters and an attribute`` () =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                .attributes(AttributeNode("Obsolete", ParenExpr(ConstantExpr(ConstantString("\"Use bar instead\"")))))
+                .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(ConstantString("\"Use bar instead\"")))))
         }
         |> produces
             """

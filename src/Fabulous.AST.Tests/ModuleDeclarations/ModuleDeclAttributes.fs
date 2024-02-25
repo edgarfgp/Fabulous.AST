@@ -12,10 +12,10 @@ module ModuleDeclAttributes =
     [<Test>]
     let ``Produces a do expr`` () =
         AnonymousModule() {
-            ModuleDeclAttributeNode(
-                ConstantExpr(ConstantString("do printfn \"Executing...\"")),
-                AttributeNode "MyCustomModuleAttribute"
-            )
+            ModuleDeclAttribute(ConstantExpr(ConstantString("do printfn \"Executing...\"")))
+                .attributes() {
+                Attribute "MyCustomModuleAttribute"
+            }
         }
         |> produces
             """
@@ -26,13 +26,11 @@ do printfn "Executing..."
     [<Test>]
     let ``Produces a ModuleDeclAttributes`` () =
         AnonymousModule() {
-            ModuleDeclAttributeNode(
-                ConstantExpr(ConstantString("do printfn \"Executing...\"")),
-                AttributeNodes() {
-                    AttributeNode "MyCustomModuleAttribute"
-                    AttributeNode "MyCustomModuleAttribute2"
-                }
-            )
+            ModuleDeclAttribute(ConstantExpr(ConstantString("do printfn \"Executing...\"")))
+                .attributes() {
+                Attribute "MyCustomModuleAttribute"
+                Attribute "MyCustomModuleAttribute2"
+            }
         }
         |> produces
             """

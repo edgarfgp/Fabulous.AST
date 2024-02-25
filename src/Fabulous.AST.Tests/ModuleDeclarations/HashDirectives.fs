@@ -19,7 +19,7 @@ module HashDirectives =
                 Field("G", CommonType.Int32)
                 Field("B", CommonType.Int32)
             })
-                .attributes(AttributeNode "Obsolete")
+                .attribute(Attribute "Obsolete")
         }
         |> produces
             """
@@ -41,7 +41,7 @@ type HEX = { R: int; G: int; B: int }
                 Field("G", CommonType.Int32)
                 Field("B", CommonType.Int32)
             })
-                .attributes(AttributeNode "Obsolete")
+                .attribute("Obsolete")
         }
         |> produces
             """
@@ -64,7 +64,7 @@ type HEX = { R: int; G: int; B: int }
                 Field("G", CommonType.Int32)
                 Field("B", CommonType.Int32)
             })
-                .attributes(AttributeNode "Obsolete")
+                .attribute("Obsolete")
         }
         |> produces
             """
@@ -87,7 +87,7 @@ type HEX = { R: int; G: int; B: int }
                 Field("G", CommonType.Int32)
                 Field("B", CommonType.Int32)
             })
-                .attributes(AttributeNode "Obsolete")
+                .attribute(Attribute "Obsolete")
         }
         |> produces
             """

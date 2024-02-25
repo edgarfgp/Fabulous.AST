@@ -8,7 +8,7 @@ open Fantomas.Core.SyntaxOak
 
 module Val =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let LeadingKeyword = Attributes.defineScalar<string list> "LeadingKeyword"
 
@@ -35,12 +35,23 @@ module Val =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
             let inlined = Helpers.tryGetScalarValue widget IsInlined
 
@@ -134,12 +145,23 @@ type ValNodeModifiers =
         this.AddScalar(Val.IsInlined.WithValue(true))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ValNode>, attributes: WidgetBuilder<AttributeListNode>) =
-        this.AddWidget(Val.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<ValNode>) =
+        AttributeCollectionBuilder<ValNode, AttributeNode>(this, Val.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ValNode>, attribute: WidgetBuilder<AttributeNode>) =
-        this.AddWidget(Val.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+    static member inline attributes(this: WidgetBuilder<ValNode>, attributes: string list) =
+        AttributeCollectionBuilder<ValNode, AttributeNode>(this, Val.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<ValNode>, attribute: WidgetBuilder<AttributeNode>) =
+        AttributeCollectionBuilder<ValNode, AttributeNode>(this, Val.MultipleAttributes) { attribute }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<ValNode>, attribute: string) =
+        AttributeCollectionBuilder<ValNode, AttributeNode>(this, Val.MultipleAttributes) { Ast.Attribute(attribute) }
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ValNode>) =

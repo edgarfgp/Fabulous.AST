@@ -14,7 +14,7 @@ module BindingNode =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Return = Attributes.defineScalar<Type> "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
@@ -27,12 +27,25 @@ type ValueModifiers =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeListNode>) =
-        this.AddWidget(BindingNode.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<BindingNode>) =
+        AttributeCollectionBuilder<BindingNode, AttributeNode>(this, BindingNode.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<BindingNode>, attribute: WidgetBuilder<AttributeNode>) =
-        this.AddWidget(BindingNode.MultipleAttributes.WithValue((AttributeNodes() { attribute }).Compile()))
+    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: string list) =
+        AttributeCollectionBuilder<BindingNode, AttributeNode>(this, BindingNode.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<BindingNode>, attribute: WidgetBuilder<AttributeNode>) =
+        AttributeCollectionBuilder<BindingNode, AttributeNode>(this, BindingNode.MultipleAttributes) { attribute }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<BindingNode>, attribute: string) =
+        AttributeCollectionBuilder<BindingNode, AttributeNode>(this, BindingNode.MultipleAttributes) {
+            Ast.Attribute(attribute)
+        }
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<BindingNode>) =

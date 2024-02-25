@@ -36,12 +36,23 @@ module BindingFunction =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget BindingNode.MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
             let isInlined =
                 Helpers.tryGetScalarValue widget BindingNode.IsInlined

@@ -9,7 +9,7 @@ open Microsoft.FSharp.Collections
 module SimplePat =
     let Name = Attributes.defineScalar<string> "Name"
 
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let IsOptional = Attributes.defineScalar<bool> "Parameters"
 
@@ -27,12 +27,24 @@ module SimplePat =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
             SimplePatNode(multipleAttributes, isOptional, SingleTextNode.Create(name), typed, Range.Zero))
 
@@ -81,9 +93,22 @@ module SimplePatNodeBuilders =
 [<Extension>]
 type SimplePatNodeModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<SimplePatNode>, attributes: WidgetBuilder<AttributeListNode>) =
-        this.AddWidget(SimplePat.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<SimplePatNode>) =
+        AttributeCollectionBuilder<SimplePatNode, AttributeNode>(this, SimplePat.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<SimplePatNode>, attribute: WidgetBuilder<AttributeNode>) =
-        this.AddWidget(SimplePat.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+    static member inline attributes(this: WidgetBuilder<SimplePatNode>, attributes: string list) =
+        AttributeCollectionBuilder<SimplePatNode, AttributeNode>(this, SimplePat.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<SimplePatNode>, attribute: WidgetBuilder<AttributeNode>) =
+        AttributeCollectionBuilder<SimplePatNode, AttributeNode>(this, SimplePat.MultipleAttributes) { attribute }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<SimplePatNode>, attribute: string) =
+        AttributeCollectionBuilder<SimplePatNode, AttributeNode>(this, SimplePat.MultipleAttributes) {
+            Ast.Attribute(attribute)
+        }

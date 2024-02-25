@@ -11,7 +11,7 @@ module AttributesNodes =
 
     [<Test>]
     let ``Simple AttributeNode`` () =
-        AnonymousModule() { Value("x", "12").attributes(AttributeNode("Obsolete")) }
+        AnonymousModule() { Value("x", "12").attribute("Obsolete") }
         |> produces
             """
 [<Obsolete>]
@@ -22,7 +22,7 @@ let x = 12
     let ``Simple AttributeNode with expr`` () =
         AnonymousModule() {
             Value("x", "12")
-                .attributes(AttributeNode("Obsolete", ParenExpr(ConstantExpr(ConstantString("\"This is obsolete\"")))))
+                .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(ConstantString("\"This is obsolete\"")))))
         }
         |> produces
             """
@@ -33,12 +33,9 @@ let x = 12
     [<Test>]
     let ``Multiple attributes`` () =
         AnonymousModule() {
-            Value("x", "12")
-                .attributes(
-                    AttributeNodes() {
-                        AttributeNode("Obsolete", ParenExpr(ConstantExpr(ConstantString("\"This is obsolete\""))))
-                    }
-                )
+            Value("x", "12").attributes() {
+                Attribute("Obsolete", ParenExpr(ConstantExpr(ConstantString("\"This is obsolete\""))))
+            }
         }
         |> produces
             """
@@ -46,13 +43,9 @@ let x = 12
 let x = 12
 """
 
-
     [<Test>]
     let ``Simple AttributeNode type name and target`` () =
-        AnonymousModule() {
-            Value("x", "12")
-                .attributes(AttributeNode("Struct", "return"))
-        }
+        AnonymousModule() { Value("x", "12").attribute(Attribute("Struct", "return")) }
         |> produces
             """
 [<return: Struct>]

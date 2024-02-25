@@ -12,7 +12,7 @@ module Enum =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -33,12 +33,24 @@ module Enum =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
 
             TypeDefnEnumNode(
@@ -78,16 +90,25 @@ type EnumModifiers =
         this.AddScalar(Enum.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes
-        (
-            this: WidgetBuilder<TypeDefnEnumNode>,
-            attributes: WidgetBuilder<AttributeListNode>
-        ) =
-        this.AddWidget(Enum.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<TypeDefnEnumNode>) =
+        AttributeCollectionBuilder<TypeDefnEnumNode, AttributeNode>(this, Enum.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnEnumNode>, attribute: WidgetBuilder<AttributeNode>) =
-        this.AddWidget(Enum.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+    static member inline attributes(this: WidgetBuilder<TypeDefnEnumNode>, attributes: string list) =
+        AttributeCollectionBuilder<TypeDefnEnumNode, AttributeNode>(this, Enum.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<TypeDefnEnumNode>, attribute: WidgetBuilder<AttributeNode>) =
+        AttributeCollectionBuilder<TypeDefnEnumNode, AttributeNode>(this, Enum.MultipleAttributes) { attribute }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<TypeDefnEnumNode>, attribute: string) =
+        AttributeCollectionBuilder<TypeDefnEnumNode, AttributeNode>(this, Enum.MultipleAttributes) {
+            Ast.Attribute(attribute)
+        }
 
 
 [<Extension>]

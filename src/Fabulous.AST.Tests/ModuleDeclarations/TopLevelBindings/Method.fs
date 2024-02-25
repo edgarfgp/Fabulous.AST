@@ -295,7 +295,7 @@ type Person () =
         AnonymousModule() {
             Class("Person") {
                 Method("this.Name", UnitPat(), ConstantExpr(ConstantString "23"))
-                    .attributes(AttributeNode "Obsolete")
+                    .attribute("Obsolete")
             }
         }
         |> produces

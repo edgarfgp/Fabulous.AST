@@ -38,10 +38,7 @@ val inline x: string
 
     [<Test>]
     let ``Produces a Val with attribute`` () =
-        AnonymousModule() {
-            Val("x", CommonType.String)
-                .attributes(AttributeNode("DefaultValue"))
-        }
+        AnonymousModule() { Val("x", CommonType.String).attribute("DefaultValue") }
 
         |> produces
             """
@@ -50,18 +47,31 @@ val x: string
 """
 
     [<Test>]
+    let ``Produces a Val with attributes`` () =
+        AnonymousModule() {
+            Val("x", CommonType.String)
+                .attributes([ "DefaultValue"; "OtherAttribute"; "AnotherAttribute" ])
+        }
+
+        |> produces
+            """
+[<DefaultValue; OtherAttribute; AnotherAttribute>]
+val x: string
+"""
+
+    [<Test>]
     let ``Produces a Val with accessControl`` () =
         AnonymousModule() {
             Val("x", CommonType.String)
-                .attributes(AttributeNode("DefaultValue"))
+                .attribute("DefaultValue")
                 .toInternal()
 
             Val("y", CommonType.String)
-                .attributes(AttributeNode("DefaultValue"))
+                .attribute("DefaultValue")
                 .toPrivate()
 
             Val("z", CommonType.String)
-                .attributes(AttributeNode("DefaultValue"))
+                .attribute("DefaultValue")
                 .toPublic()
         }
 

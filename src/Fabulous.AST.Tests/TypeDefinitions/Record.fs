@@ -15,7 +15,7 @@ module Record =
                 for colour in [ "Red"; "Green"; "Blue" ] do
                     Field(colour, CommonType.Int32)
             })
-                .attributes(AttributeNode "Serializable")
+                .attribute("Serializable")
         }
         |> produces
             """
@@ -29,8 +29,7 @@ type Colors = { Red: int; Green: int; Blue: int }
     let ``Produces a record field with an attribute`` () =
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", CommonType.Int32)
-                    .attributes(AttributeNode "Obsolete")
+                Field("Red", CommonType.Int32).attribute("Obsolete")
 
                 Field("Green", CommonType.Int32)
                 Field("Blue", CommonType.Int32)
@@ -75,7 +74,7 @@ type Colors<'other> =
                 Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
-                .attributes(AttributeNode "Struct")
+                .attribute("Struct")
         }
 
         |> produces
@@ -96,12 +95,11 @@ type Colors<'other> =
                 Field("Blue", CommonType.mkLongIdent("'other"))
                 Field("Yellow", CommonType.Int32)
             })
-                .attributes(
-                    AttributeNodes() {
-                        AttributeNode "Struct"
-                        AttributeNode "Obsolete"
-                    }
-                )
+                .attributes() {
+                Attribute "Struct"
+                Attribute "Obsolete"
+            }
+
         }
 
         |> produces

@@ -185,7 +185,7 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with multiline with a single attribute`` () =
         AnonymousModule() {
-            Value("x", "12").attributes(AttributeNode("Obsolete"))
+            Value("x", "12").attribute("Obsolete")
 
         }
         |> produces
@@ -198,13 +198,11 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with multiline with a multiple attributes`` () =
         AnonymousModule() {
-            Value("x", "12")
-                .attributes(
-                    AttributeNodes() {
-                        AttributeNode("EditorBrowsable")
-                        AttributeNode("Obsolete")
-                    }
-                )
+            Value("x", "12").attributes() {
+                Attribute("EditorBrowsable")
+                Attribute("Obsolete")
+            }
+
         }
         |> produces
             """

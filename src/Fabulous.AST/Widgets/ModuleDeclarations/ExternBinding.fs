@@ -8,7 +8,7 @@ open Fantomas.Core.SyntaxOak
 
 module ExternBinding =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-    let MultipleAttributes = Attributes.defineWidget "MultipleAttributes"
+    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let AttributesOfType = Attributes.defineWidget "MultipleAttributes"
     let Type = Attributes.defineScalar<Type> "Type"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
@@ -27,12 +27,23 @@ module ExternBinding =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget MultipleAttributes
+                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                | Some values ->
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode.leftAttribute,
+                                  values,
+                                  SingleTextNode.rightAttribute,
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    )
+                | None -> None
 
             let attributesOfType =
                 Helpers.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
@@ -96,31 +107,6 @@ module ExternBindingNodeBuilders =
                 )
             )
 
-// static member ExternBindingNodeWithParameters(name: string, ``type``: string) =
-//     CollectionBuilder<ExternBindingNode, ExternBindingPatternNode>(
-//         ExternBinding.WidgetKey,
-//         ExternBinding.Parameters,
-//         AttributesBundle(
-//             StackList.two(
-//                 ExternBinding.Identifier.WithValue(name),
-//                 ExternBinding.Type.WithValue(CommonType.mkLongIdent(``type``))
-//             ),
-//             ValueSome [||],
-//             ValueNone
-//         )
-//     )
-//
-// static member ExternBindingNode(name: string, ``type``: Type) =
-//     CollectionBuilder<ExternBindingNode, ExternBindingPatternNode>(
-//         ExternBinding.WidgetKey,
-//         ExternBinding.Parameters,
-//         AttributesBundle(
-//             StackList.two(ExternBinding.Identifier.WithValue(name), ExternBinding.Type.WithValue(``type``)),
-//             ValueSome [||],
-//             ValueNone
-//         )
-//     )
-
 [<Extension>]
 type ExternBindingNodeModifiers =
     [<Extension>]
@@ -128,16 +114,27 @@ type ExternBindingNodeModifiers =
         this.AddScalar(ExternBinding.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline attributes
-        (
-            this: WidgetBuilder<ExternBindingNode>,
-            attributes: WidgetBuilder<AttributeListNode>
-        ) =
-        this.AddWidget(ExternBinding.MultipleAttributes.WithValue(attributes.Compile()))
+    static member inline attributes(this: WidgetBuilder<ExternBindingNode>) =
+        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes)
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ExternBindingNode>, attribute: WidgetBuilder<AttributeNode>) =
-        this.AddWidget(ExternBinding.MultipleAttributes.WithValue((Ast.AttributeNodes() { attribute }).Compile()))
+    static member inline attributes(this: WidgetBuilder<ExternBindingNode>, attributes: string list) =
+        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes) {
+            for attribute in attributes do
+                Ast.Attribute(attribute)
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: WidgetBuilder<AttributeNode>) =
+        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes) {
+            attribute
+        }
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: string) =
+        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes) {
+            Ast.Attribute(attribute)
+        }
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ExternBindingNode>) =

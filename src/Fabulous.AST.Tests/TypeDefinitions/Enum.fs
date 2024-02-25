@@ -162,7 +162,7 @@ type Colors =
                 for i = 0 to colors.Length - 1 do
                     EnumCase(colors.[i], $"{i}")
             })
-                .attributes(AttributeNode "FlagsAttribute")
+                .attribute("FlagsAttribute")
 
         }
         |> produces
@@ -182,17 +182,12 @@ type Colors =
         AnonymousModule() {
             (Enum("Colors") {
                 EnumCase("Red", "0")
-                    .attributes(
-                        AttributeNodes() {
-                            AttributeNode("Obsolete")
-                            AttributeNode("MyAttribute")
-                        }
-                    )
+                    .attributes([ "Obsolete"; "MyAttribute" ])
 
                 EnumCase("Green", "1")
                 EnumCase("Blue", "2")
             })
-                .attributes(AttributeNode "FlagsAttribute")
+                .attribute("FlagsAttribute")
         }
         |> produces
             """
