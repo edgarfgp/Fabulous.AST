@@ -16,7 +16,7 @@ module BindingNode =
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
-    let Return = Attributes.defineScalar<Type> "Return"
+    let Return = Attributes.defineWidget "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Parameters = Attributes.defineWidget "Parameters"
 
@@ -60,12 +60,16 @@ type ValueModifiers =
         this.AddScalar(BindingNode.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
+    static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) =
+        this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
+
+    [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
-        this.AddScalar(BindingNode.Return.WithValue(CommonType.mkLongIdent(returnType)))
+        ValueModifiers.returnType(this, Ast.TypeLongIdent(returnType))
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: Type) =
-        this.AddScalar(BindingNode.Return.WithValue(returnType))
+        this.AddWidget(BindingNode.Return.WithValue(Ast.EscapeHatch(returnType).Compile()))
 
     [<Extension>]
     static member inline toMutable(this: WidgetBuilder<BindingNode>) =

@@ -1,6 +1,5 @@
 namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
-open System.IO
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open NUnit.Framework
@@ -78,6 +77,35 @@ let x, y, z = 1, 2, 3
             """
 
 let x: int = 12
+
+"""
+
+    [<Test>]
+    let ``Simple Let binding with return widget type`` () =
+        AnonymousModule() {
+            Value("x", "12").returnType("int")
+            Value("y", "12").returnType(TypeLongIdent("int"))
+
+            Value("z", "12")
+                .returnType(TypeFuns(TypeLongIdent("string")) { TypeLongIdent("int") })
+
+            Value("a", "12")
+                .returnType(TypeFuns("string") { TypeLongIdent("int") })
+
+            Value("b", "12").returnType("string -> int")
+
+            Value("c", "12")
+                .returnType(TypeHashConstraint(TypeLongIdent("int")))
+        }
+        |> produces
+            """
+
+let x: int = 12
+let y: int = 12
+let z: int -> string = 12
+let a: int -> string = 12
+let b: string -> int = 12
+let c: #int = 12
 
 """
 

@@ -3,7 +3,7 @@ namespace Fabulous.AST
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
-module LongIdent =
+module LongIdentPattern =
     let Pairs = Attributes.defineWidgetCollection "Items"
 
     let Identifiers = Attributes.defineScalar<string> "Identifiers"
@@ -43,20 +43,20 @@ module LongIdent =
             ))
 
 [<AutoOpen>]
-module LongIdentBuilders =
+module LongIdentPatternBuilders =
     type Ast with
 
         static member LongIdentPat(ident: string) =
             CollectionBuilder<Pattern, Pattern>(
-                LongIdent.WidgetKey,
-                LongIdent.Pairs,
-                LongIdent.Identifiers.WithValue(ident)
+                LongIdentPattern.WidgetKey,
+                LongIdentPattern.Pairs,
+                LongIdentPattern.Identifiers.WithValue(ident)
             )
 
         static member LongIdentPat(ident: string, typeParams: string list) =
             CollectionBuilder<Pattern, Pattern>(
-                LongIdent.WidgetKey,
-                LongIdent.Pairs,
-                LongIdent.Identifiers.WithValue(ident),
-                LongIdent.TypeParams.WithValue(typeParams)
+                LongIdentPattern.WidgetKey,
+                LongIdentPattern.Pairs,
+                LongIdentPattern.Identifiers.WithValue(ident),
+                LongIdentPattern.TypeParams.WithValue(typeParams)
             )

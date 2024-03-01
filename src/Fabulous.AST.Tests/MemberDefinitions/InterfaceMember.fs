@@ -15,9 +15,9 @@ module InterfaceMembers =
             }
 
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
                 InterfaceMember("IMyInterface") {
@@ -51,8 +51,8 @@ type Colors<'other> =
             }
 
             (Record("MyRecord") {
-                Field("MyField1", CommonType.Int32)
-                Field("MyField2", CommonType.String)
+                Field("MyField1", TypeLongIdent("int"))
+                Field("MyField2", TypeLongIdent("string"))
             })
                 .members() {
                 InterfaceMember("IMyInterface") {

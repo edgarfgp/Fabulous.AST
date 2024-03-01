@@ -112,13 +112,11 @@ module AST =
                     |> TypeDefn.Abbrev
                     |> ModuleDecl.TypeDefn
                 else
-                    let rec mkType value =
+                    let rec mkType (value: string list) =
                         match value with
                         | [] -> failwith "unexpected"
-                        | [ single ] -> CommonType.mkLongIdent single
-                        | head :: tail ->
-                            TypeAppPostFixNode(mkType tail, CommonType.mkLongIdent head, Range.Zero)
-                            |> Type.AppPostfix
+                        | [ single ] -> TypeLongIdent(single)
+                        | head :: tail -> TypeAppPostfix(mkType(tail), TypeLongIdent(head))
 
                     let myFields =
                         props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))

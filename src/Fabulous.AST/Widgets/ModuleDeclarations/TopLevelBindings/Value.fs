@@ -62,7 +62,7 @@ module BindingValue =
                 Helpers.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Helpers.tryGetScalarValue widget BindingNode.Return
+            let returnType = Helpers.tryGetNodeFromWidget<Type> widget BindingNode.Return
 
             let returnType =
                 match returnType with

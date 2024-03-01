@@ -7,24 +7,27 @@ open Fantomas.FCS.Text
 module Typed =
     let Value = Attributes.defineWidget "Value"
 
-    let Typed = Attributes.defineScalar<struct (string * Type)> "TypedValue"
+    let Typed = Attributes.defineWidget "TypedValue"
+
+    let Text = Attributes.defineScalar "Text"
 
     let WidgetKey =
         Widgets.register "Typed" (fun widget ->
             let expr = Helpers.getNodeFromWidget<Expr> widget Value
-            let struct (text, typ) = Helpers.getScalarValue widget Typed
-            Expr.Typed(ExprTypedNode(expr, text, typ, Range.Zero)))
+            let typed = Helpers.getNodeFromWidget widget Typed
+            let text = Helpers.getScalarValue widget Text
+            Expr.Typed(ExprTypedNode(expr, text, typed, Range.Zero)))
 
 [<AutoOpen>]
 module TypedBuilders =
     type Ast with
 
-        static member TypedExpr(value: WidgetBuilder<Expr>, operator: string, t: Type) =
+        static member TypedExpr(value: WidgetBuilder<Expr>, operator: string, t: WidgetBuilder<Type>) =
             WidgetBuilder<Expr>(
                 Typed.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Typed.Typed.WithValue(operator, t)),
-                    ValueSome [| Typed.Value.WithValue(value.Compile()) |],
+                    StackList.one(Typed.Text.WithValue(operator)),
+                    ValueSome [| Typed.Value.WithValue(value.Compile()); Typed.Typed.WithValue(t.Compile()) |],
                     ValueNone
                 )
             )

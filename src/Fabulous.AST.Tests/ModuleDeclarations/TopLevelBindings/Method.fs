@@ -11,7 +11,7 @@ module MethodMembers =
     let ``Produces MethodMembers`` () =
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.String) })
+            (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
                 Method(
                     "this.A",
@@ -123,9 +123,9 @@ type Colors =
     let ``Produces a record with TypeParams and method member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
                 Method(
@@ -152,9 +152,9 @@ type Colors<'other> =
     let ``Produces a record with TypeParams and static method member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
                 Method(
@@ -181,7 +181,7 @@ type Colors<'other> =
     [<Test>]
     let ``Produces a record with method member`` () =
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.String) })
+            (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
                 Method(
                     "this.A",
@@ -203,7 +203,7 @@ type Colors =
     [<Test>]
     let ``Produces a record with static method member`` () =
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.String) })
+            (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
                 Method(
                     "A",
@@ -355,8 +355,8 @@ type Person =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
-                    Field("a", CommonType.String)
-                    Field("b", CommonType.mkLongIdent "'other")
+                    Field("a", TypeLongIdent("string"))
+                    Field("b", TypeLongIdent "'other")
                 }
 
                 UnionCase("Green")

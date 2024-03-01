@@ -7,27 +7,27 @@ open Fantomas.FCS.Text
 module New =
     let Value = Attributes.defineWidget "Value"
 
-    let Type = Attributes.defineScalar<Type> "Type"
+    let Type = Attributes.defineWidget "Type"
 
     let WidgetKey =
         Widgets.register "New" (fun widget ->
             let expr = Helpers.getNodeFromWidget<Expr> widget Value
-            let typ = Helpers.getScalarValue widget Type
+            let typ = Helpers.getNodeFromWidget widget Type
             Expr.New(ExprNewNode(SingleTextNode.``new``, typ, expr, Range.Zero)))
 
 [<AutoOpen>]
 module NewBuilders =
     type Ast with
 
-        static member NewExpr(t: Type, value: WidgetBuilder<Expr>) =
+        static member NewExpr(t: WidgetBuilder<Type>, value: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 New.WidgetKey,
                 AttributesBundle(
-                    StackList.one(New.Type.WithValue(t)),
-                    ValueSome [| New.Value.WithValue(value.Compile()) |],
+                    StackList.empty(),
+                    ValueSome [| New.Value.WithValue(value.Compile()); New.Type.WithValue(t.Compile()) |],
                     ValueNone
                 )
             )
 
         static member NewExpr(t: string, value: WidgetBuilder<Expr>) =
-            Ast.NewExpr(CommonType.mkLongIdent(t), value)
+            Ast.NewExpr(Ast.TypeLongIdent(t), value)

@@ -13,7 +13,7 @@ module Record =
         AnonymousModule() {
             (Record("Colors") {
                 for colour in [ "Red"; "Green"; "Blue" ] do
-                    Field(colour, CommonType.Int32)
+                    Field(colour, TypeLongIdent("int"))
             })
                 .attribute("Serializable")
         }
@@ -29,10 +29,10 @@ type Colors = { Red: int; Green: int; Blue: int }
     let ``Produces a record field with an attribute`` () =
         AnonymousModule() {
             Record("Colors") {
-                Field("Red", CommonType.Int32).attribute("Obsolete")
+                Field("Red", TypeLongIdent("int")).attribute("Obsolete")
 
-                Field("Green", CommonType.Int32)
-                Field("Blue", CommonType.Int32)
+                Field("Green", TypeLongIdent("int"))
+                Field("Blue", TypeLongIdent("int"))
             }
         }
         |> produces
@@ -50,9 +50,9 @@ type Colors =
     let ``Produces a generic record`` () =
         AnonymousModule() {
             GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             }
         }
 
@@ -70,9 +70,9 @@ type Colors<'other> =
     let ``Produces a struct generic record`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .attribute("Struct")
         }
@@ -91,9 +91,9 @@ type Colors<'other> =
     let ``Produces an obsolete struct generic record`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .attributes() {
                 Attribute "Struct"

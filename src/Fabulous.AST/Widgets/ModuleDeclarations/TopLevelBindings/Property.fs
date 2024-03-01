@@ -19,7 +19,7 @@ module BindingProperty =
                 Helpers.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Helpers.tryGetScalarValue widget BindingNode.Return
+            let returnType = Helpers.tryGetNodeFromWidget<Type> widget BindingNode.Return
 
             let accessControl =
                 Helpers.tryGetScalarValue widget BindingNode.Accessibility
