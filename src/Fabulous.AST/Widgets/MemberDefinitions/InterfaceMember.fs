@@ -7,13 +7,13 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module InterfaceMember =
-    let Type = Attributes.defineScalar<Type> "Type"
+    let Type = Attributes.defineWidget "Type"
 
     let Members = Attributes.defineWidgetCollection "Members"
 
     let WidgetKey =
         Widgets.register "InterfaceMember" (fun widget ->
-            let ``type`` = Helpers.getScalarValue widget Type
+            let ``type`` = Helpers.getNodeFromWidget widget Type
             let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
             let members =
@@ -33,15 +33,19 @@ module InterfaceMember =
 module InterfaceMemberBuilders =
     type Ast with
 
-        static member InterfaceMember(``type``: Type) =
+        static member InterfaceMember(``type``: WidgetBuilder<Type>) =
             CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
-                AttributesBundle(StackList.one(InterfaceMember.Type.WithValue(``type``)), ValueNone, ValueNone)
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome [| InterfaceMember.Type.WithValue(``type``.Compile()) |],
+                    ValueNone
+                )
             )
 
         static member InterfaceMember(``type``: string) =
-            Ast.InterfaceMember(CommonType.mkLongIdent(``type``))
+            Ast.InterfaceMember(Ast.TypeLongIdent(``type``))
 
 [<Extension>]
 type InterfaceMemberYieldExtensions =

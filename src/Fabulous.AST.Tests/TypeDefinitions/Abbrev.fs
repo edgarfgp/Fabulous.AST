@@ -13,7 +13,7 @@ module Abbrev =
 
     [<Test>]
     let ``Produces type Abbrev`` () =
-        AnonymousModule() { Abbrev("MyInt", CommonType.Int32) }
+        AnonymousModule() { Abbrev("MyInt", Int32()) }
 
         |> produces
             """
@@ -39,13 +39,13 @@ type MyInt = int
                     None,
                     Range.Zero
                 ),
-                CommonType.Float,
+                Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)),
                 [],
                 Range.Zero
             )
 
         AnonymousModule() {
-            Abbrev("MyInt", CommonType.Int32)
+            Abbrev("MyInt", Int32())
             EscapeHatch(alias)
         }
 
@@ -60,7 +60,7 @@ type MyFloat = float
     [<Test>]
     let ``Produces type Abbrev with TypeDefnAbbrevNode`` () =
         AnonymousModule() {
-            Abbrev("MyInt", CommonType.Int32)
+            Abbrev("MyInt", Int32())
 
             Abbrev("MyString", "string")
 
@@ -78,7 +78,7 @@ type MyFloat = float
                     None,
                     Range.Zero
                 ),
-                CommonType.Float,
+                Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)),
                 [],
                 Range.Zero
             )

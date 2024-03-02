@@ -13,78 +13,46 @@ module MethodMembers =
         AnonymousModule() {
             (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
-                Method(
-                    "this.A",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
 
 
-                Method(
-                    "this.C",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toInlined()
 
-                Method(
-                    "B",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("B", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toStatic()
 
-                Method(
-                    "D",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("D", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toInlined()
                     .toStatic()
 
-                Method(
-                    "this.E",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
-                |> _.returnType(CommonType.String)
+                Method("this.E", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
+                |> _.returnType(String())
 
-                Method(
-                    "this.F",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("this.F", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
-                Method(
-                    "G",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("G", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toStatic()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
-                Method(
-                    "H",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("H", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toStatic()
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Method(
                     "this.I",
-                    ParametersPat(true) { ParameterPat("p", CommonType.String) },
+                    ParametersPat(true) { ParameterPat("p", String()) },
                     ConstantExpr(ConstantString "\"\"")
                 )
 
                 Method(
                     "this.J",
                     ParametersPat(true) {
-                        ParameterPat("p", CommonType.String)
-                        ParameterPat("p2", CommonType.String)
+                        ParameterPat("p", String())
+                        ParameterPat("p2", String())
                     },
                     ConstantExpr(ConstantString "\"\"")
                 )
@@ -92,8 +60,8 @@ module MethodMembers =
                 Method(
                     "this.K",
                     ParametersPat() {
-                        ParameterPat("p", CommonType.String)
-                        ParameterPat("p2", CommonType.String)
+                        ParameterPat("p", String())
+                        ParameterPat("p2", String())
                     },
                     ConstantExpr(ConstantString "\"\"")
                 )
@@ -128,11 +96,7 @@ type Colors =
                 Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
-                Method(
-                    "this.A",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
             }
         }
 
@@ -157,11 +121,7 @@ type Colors<'other> =
                 Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
-                Method(
-                    "A",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toStatic()
             }
         }
@@ -183,11 +143,7 @@ type Colors<'other> =
         AnonymousModule() {
             (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
-                Method(
-                    "this.A",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
             }
         }
         |> produces
@@ -205,11 +161,7 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
-                Method(
-                    "A",
-                    ParametersPat() { ParameterPat("p", CommonType.String) },
-                    ConstantExpr(ConstantString "\"\"")
-                )
+                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(ConstantString "\"\""))
                     .toStatic()
             }
         }
@@ -239,7 +191,7 @@ type Person () =
             Class("Person") {
                 Method(
                     "this.Name",
-                    ParametersPat() { ParameterPat("params", CommonType.String) },
+                    ParametersPat() { ParameterPat("params", String()) },
                     ConstantExpr(ConstantString "23")
                 )
             }
@@ -257,8 +209,8 @@ type Person () =
                 Method(
                     "this.Name",
                     ParametersPat(true) {
-                        ParameterPat("name", CommonType.String)
-                        ParameterPat("age", CommonType.Int32)
+                        ParameterPat("name", String())
+                        ParameterPat("age", Int32())
                     },
                     ConstantExpr(ConstantString "23")
                 )
@@ -277,8 +229,8 @@ type Person () =
                 Method(
                     "this.Name",
                     ParametersPat() {
-                        ParameterPat("name", CommonType.String)
-                        ParameterPat("age", CommonType.Int32)
+                        ParameterPat("name", String())
+                        ParameterPat("age", Int32())
                     },
                     ConstantExpr(ConstantString "23")
                 )

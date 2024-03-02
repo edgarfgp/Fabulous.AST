@@ -13,17 +13,17 @@ module APISketchTests =
     let ``Multiple Widgets for loops in builder`` () =
         let result =
             Namespace("DummyNamespace") {
-                Abbrev("Foo", CommonType.String)
-                Abbrev("bar", CommonType.String)
+                Abbrev("Foo", String())
+                Abbrev("bar", String())
 
                 for i = 0 to 10 do
-                    Abbrev($"T{i}", CommonType.String)
+                    Abbrev($"T{i}", String())
 
                 for i = 10 to 20 do
-                    Abbrev($"T{i}", CommonType.String)
+                    Abbrev($"T{i}", String())
 
                 for i = 20 to 30 do
-                    Abbrev($"T{i}", CommonType.String)
+                    Abbrev($"T{i}", String())
             }
             |> Tree.compile
             |> CodeFormatter.FormatOakAsync
@@ -36,13 +36,13 @@ module APISketchTests =
         let result =
             Namespace("DummyNamespace") {
                 for i = 0 to 10 do
-                    Abbrev($"T{i}", CommonType.String)
+                    Abbrev($"T{i}", String())
 
                 for i = 10 to 20 do
-                    Abbrev($"T{i}", CommonType.String)
+                    Abbrev($"T{i}", String())
 
                 for i = 20 to 30 do
-                    Abbrev($"T{i}", CommonType.String)
+                    Abbrev($"T{i}", String())
             }
             |> Tree.compile
             |> CodeFormatter.FormatOakAsync

@@ -16,8 +16,9 @@ module Val =
 
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
 
-    let IdentifierReturnType =
-        Attributes.defineScalar<struct (string * Type)> "Identifier"
+    let Identifier = Attributes.defineScalar<string> "Identifier"
+
+    let ReturnType = Attributes.defineWidget "Identifier"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -63,10 +64,10 @@ module Val =
             let isMutable =
                 Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue(false)
 
-            let struct (identifier, returnType) =
-                Helpers.getScalarValue widget IdentifierReturnType
-
+            let identifier = Helpers.getScalarValue widget Identifier
             let identifier = SingleTextNode.Create(identifier)
+
+            let returnType = Helpers.getNodeFromWidget<Type> widget ReturnType
 
             let accessControl =
                 Helpers.tryGetScalarValue widget Accessibility
@@ -115,20 +116,20 @@ module Val =
 module ValBuilders =
     type Ast with
 
-        static member inline BaseVal(identifier: string, returnType: Type) =
+        static member inline BaseVal(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<ValNode>(
                 Val.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Val.IdentifierReturnType.WithValue(struct (identifier, returnType))),
-                    ValueNone,
+                    StackList.one(Val.Identifier.WithValue(identifier)),
+                    ValueSome [| Val.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member Val(identifier: string, returnType: Type) = Ast.BaseVal(identifier, returnType)
+        static member Val(identifier: string, returnType: WidgetBuilder<Type>) = Ast.BaseVal(identifier, returnType)
 
         static member Val(identifier: string, returnType: string) =
-            Ast.BaseVal(identifier, CommonType.mkLongIdent(returnType))
+            Ast.BaseVal(identifier, Ast.TypeLongIdent(returnType))
 
 [<Extension>]
 type ValNodeModifiers =

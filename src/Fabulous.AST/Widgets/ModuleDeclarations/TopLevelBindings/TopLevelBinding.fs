@@ -68,10 +68,6 @@ type ValueModifiers =
         ValueModifiers.returnType(this, Ast.TypeLongIdent(returnType))
 
     [<Extension>]
-    static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: Type) =
-        this.AddWidget(BindingNode.Return.WithValue(Ast.EscapeHatch(returnType).Compile()))
-
-    [<Extension>]
     static member inline toMutable(this: WidgetBuilder<BindingNode>) =
         this.AddScalar(BindingNode.IsMutable.WithValue(true))
 

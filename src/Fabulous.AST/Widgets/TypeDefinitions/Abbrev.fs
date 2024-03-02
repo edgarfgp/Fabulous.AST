@@ -10,13 +10,13 @@ module Abbrev =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let AliasType = Attributes.defineScalar<Type> "AliasType"
+    let AliasType = Attributes.defineWidget "AliasType"
 
     let WidgetKey =
         Widgets.register "Alias" (fun widget ->
             let name = Helpers.getScalarValue widget Name
 
-            let aliasType = Helpers.getScalarValue widget AliasType
+            let aliasType = Helpers.getNodeFromWidget widget AliasType
 
             TypeDefnAbbrevNode(
                 TypeNameNode(
@@ -41,18 +41,18 @@ module Abbrev =
 module AbbrevBuilders =
     type Ast with
 
-        static member Abbrev(name: string, alias: Type) =
+        static member Abbrev(name: string, alias: WidgetBuilder<Type>) =
             WidgetBuilder<TypeDefnAbbrevNode>(
                 Abbrev.WidgetKey,
                 AttributesBundle(
-                    StackList.two(Abbrev.Name.WithValue(name), Abbrev.AliasType.WithValue(alias)),
-                    ValueNone,
+                    StackList.one(Abbrev.Name.WithValue(name)),
+                    ValueSome [| Abbrev.AliasType.WithValue(alias.Compile()) |],
                     ValueNone
                 )
             )
 
         static member Abbrev(name: string, alias: string) =
-            Ast.Abbrev(name, CommonType.mkLongIdent(alias))
+            Ast.Abbrev(name, Ast.TypeLongIdent(alias))
 
 [<Extension>]
 type AbbrevYieldExtensions =

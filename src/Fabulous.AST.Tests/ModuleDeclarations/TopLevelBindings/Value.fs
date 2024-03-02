@@ -72,7 +72,7 @@ let x, y, z = 1, 2, 3
 
     [<Test>]
     let ``Simple Let binding with return type`` () =
-        AnonymousModule() { Value("x", "12").returnType(CommonType.Int32) }
+        AnonymousModule() { Value("x", "12").returnType(Int32()) }
         |> produces
             """
 
@@ -304,7 +304,7 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with return type`` () =
-        AnonymousModule() { Value("x", "12").returnType(CommonType.Int32).toMutable() }
+        AnonymousModule() { Value("x", "12").returnType(Int32()).toMutable() }
         |> produces
             """
         

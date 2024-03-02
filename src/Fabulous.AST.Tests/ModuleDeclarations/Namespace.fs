@@ -107,10 +107,7 @@ module AST =
             records
             |> List.map(fun { typename = name; props = props } ->
                 if Map.isEmpty props then
-                    Abbrev(name, CommonType.Obj)
-                    |> Tree.compile
-                    |> TypeDefn.Abbrev
-                    |> ModuleDecl.TypeDefn
+                    Abbrev(name, Obj()) |> Tree.compile |> TypeDefn.Abbrev |> ModuleDecl.TypeDefn
                 else
                     let rec mkType (value: string list) =
                         match value with

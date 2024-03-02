@@ -11,37 +11,29 @@ module AbstractMembers =
     let ``Produces a classes with a abstract members`` () =
         AnonymousModule() {
             Interface("Meh") {
-                AbstractGetMember("Area", CommonType.Float)
+                AbstractGetMember("Area", Float())
                 AbstractGetMember("Area1", "float")
 
-                AbstractSetMember("Area2", CommonType.Float)
+                AbstractSetMember("Area2", Float())
                 AbstractSetMember("Area3", "float")
 
-                AbstractGetSetMember("Area4", CommonType.Float)
+                AbstractGetSetMember("Area4", Float())
                 AbstractGetSetMember("Area5", "float")
 
-                AbstractPropertyMember("Pi", CommonType.Float)
+                AbstractPropertyMember("Pi", Float())
                 AbstractPropertyMember("Pi2", "float")
 
                 AbstractTupledMethodMember("Add", [ "int"; "int" ], "int")
-                AbstractTupledMethodMember("Add2", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
+                AbstractTupledMethodMember("Add2", [ Int32(); Int32() ], Int32())
 
-                AbstractTupledMethodMember(
-                    "Add3",
-                    [ (Some "a", CommonType.Int32); (Some "b", CommonType.Int32) ],
-                    CommonType.Int32
-                )
+                AbstractTupledMethodMember("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
                 AbstractTupledMethodMember("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
                 AbstractCurriedMethodMember("Add5", [ "int"; "int" ], "int")
-                AbstractCurriedMethodMember("Add6", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
+                AbstractCurriedMethodMember("Add6", [ Int32(); Int32() ], Int32())
 
-                AbstractCurriedMethodMember(
-                    "Add7",
-                    [ (Some "a", CommonType.Int32); (Some "b", CommonType.Int32) ],
-                    CommonType.Int32
-                )
+                AbstractCurriedMethodMember("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
                 AbstractCurriedMethodMember("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
@@ -73,37 +65,29 @@ type Meh =
     let ``Produces a genetic interface with multiple abstract members types`` () =
         AnonymousModule() {
             Interface("Meh", [ "'other"; "'another" ]) {
-                AbstractGetMember("Area", CommonType.Float)
+                AbstractGetMember("Area", Float())
                 AbstractGetMember("Area1", "float")
 
-                AbstractSetMember("Area2", CommonType.Float)
+                AbstractSetMember("Area2", Float())
                 AbstractSetMember("Area3", "float")
 
-                AbstractGetSetMember("Area4", CommonType.Float)
+                AbstractGetSetMember("Area4", Float())
                 AbstractGetSetMember("Area5", "float")
 
-                AbstractPropertyMember("Pi", CommonType.Float)
+                AbstractPropertyMember("Pi", Float())
                 AbstractPropertyMember("Pi2", "float")
 
                 AbstractTupledMethodMember("Add", [ "int"; "int" ], "int")
-                AbstractTupledMethodMember("Add2", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
+                AbstractTupledMethodMember("Add2", [ Int32(); Int32() ], Int32())
 
-                AbstractTupledMethodMember(
-                    "Add3",
-                    [ (Some "a", CommonType.Int32); (Some "b", CommonType.Int32) ],
-                    CommonType.Int32
-                )
+                AbstractTupledMethodMember("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
                 AbstractTupledMethodMember("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
                 AbstractCurriedMethodMember("Add5", [ "int"; "int" ], "int")
-                AbstractCurriedMethodMember("Add6", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
+                AbstractCurriedMethodMember("Add6", [ Int32(); Int32() ], Int32())
 
-                AbstractCurriedMethodMember(
-                    "Add7",
-                    [ (Some "a", CommonType.Int32); (Some "b", CommonType.Int32) ],
-                    CommonType.Int32
-                )
+                AbstractCurriedMethodMember("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
                 AbstractCurriedMethodMember("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
 

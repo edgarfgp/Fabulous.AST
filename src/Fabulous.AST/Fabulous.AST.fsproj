@@ -34,7 +34,6 @@
         <Compile Include="Core\Attributes.fs" />
         <Compile Include="Tree.fs" />
         <Compile Include="Widgets\Common.fs" />
-        <Compile Include="Widgets\CommonType.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\CommonYieldExtensions.fs" />
         <Compile Include="Widgets\RationalConstNode.fs" />
@@ -46,11 +45,14 @@
         <Compile Include="Widgets\Types\Anon.fs" />
         <Compile Include="Widgets\Types\Var.fs" />
         <Compile Include="Widgets\Types\Array.fs" />
+        <Compile Include="Widgets\Types\StructTuple.fs" />
+        <Compile Include="Widgets\Types\AnonRecord.fs" />
         <Compile Include="Widgets\Types\AppPostfix.fs" />
         <Compile Include="Widgets\Types\AppPrefix.fs" />
         <Compile Include="Widgets\Types\Tuple.fs" />
         <Compile Include="Widgets\Types\MeasurePower.fs" />
         <Compile Include="Widgets\Types\Funs.fs" />
+        <Compile Include="Widgets\Types\CommonTypes.fs" />
         <Compile Include="Widgets\Attributes\AttributeNode.fs" />
         <Compile Include="Widgets\Patterns\Pattern.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />

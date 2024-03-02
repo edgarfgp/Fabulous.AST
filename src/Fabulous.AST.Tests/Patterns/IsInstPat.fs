@@ -13,7 +13,7 @@ module IsInstPat =
     let ``let value with a IsInstPat pattern`` () =
         AnonymousModule() {
             MatchExpr(ConstantExpr(ConstantString "12")) {
-                MatchClauseExpr(IsInstPat(CommonType.String), ConstantExpr(ConstantString "12"))
+                MatchClauseExpr(IsInstPat(String()), ConstantExpr(ConstantString "12"))
             }
         }
         |> produces
@@ -27,7 +27,7 @@ match 12 with
     let ``let value with a custom IsInstPat pattern`` () =
         AnonymousModule() {
             MatchExpr(ConstantExpr(ConstantString "12")) {
-                MatchClauseExpr(IsInstPat("<:", CommonType.String), ConstantExpr(ConstantString "12"))
+                MatchClauseExpr(IsInstPat("<:", "string"), ConstantExpr(ConstantString "12"))
             }
         }
         |> produces

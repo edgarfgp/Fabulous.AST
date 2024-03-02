@@ -25,20 +25,20 @@ module PropertyMember =
                     .toInlined()
 
                 Property("this.E", ConstantExpr(ConstantString "\"\""))
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("this.F", ConstantExpr(ConstantString "\"\""))
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("G", ConstantExpr(ConstantString "\"\""))
                     .toStatic()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("H", ConstantExpr(ConstantString "\"\""))
                     .toStatic()
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
             }
         }
         |> produces
@@ -77,20 +77,20 @@ type Colors =
                     .toInlined()
 
                 Property("this.E", ConstantExpr(ConstantString("\"\"")))
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("this.F", ConstantExpr(ConstantString("\"\"")))
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("G", ConstantExpr(ConstantString("\"\"")))
                     .toStatic()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("H", ConstantExpr(ConstantString("\"\"")))
                     .toStatic()
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
             }
         }
         |> produces
