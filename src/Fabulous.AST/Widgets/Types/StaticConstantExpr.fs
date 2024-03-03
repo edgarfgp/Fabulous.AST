@@ -9,7 +9,7 @@ module TypeStaticConstantExpr =
     let Const = Attributes.defineScalar<string> "Const"
 
     let WidgetKey =
-        Widgets.register "TypeStaticConstant" (fun widget ->
+        Widgets.register "TypeStaticConstantExpr" (fun widget ->
             let expr = Helpers.getNodeFromWidget<Expr> widget Expr
             let constant = Helpers.getScalarValue widget Const
             Type.StaticConstantExpr(TypeStaticConstantExprNode(SingleTextNode.Create(constant), expr, Range.Zero)))
