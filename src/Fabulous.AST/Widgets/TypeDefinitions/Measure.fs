@@ -10,7 +10,7 @@ module TypeDefnAbbrevNode =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let PowerType = Attributes.defineScalar<Type> "PowerType"
+    let PowerType = Attributes.defineWidget "PowerType"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -60,7 +60,7 @@ module TypeDefnAbbrevNode =
     let WidgetAbbrevKey =
         Widgets.register "TypeDefnAbbrevNode" (fun widget ->
             let name = Helpers.getScalarValue widget Name
-            let powerType = Helpers.getScalarValue widget PowerType
+            let powerType = Helpers.getNodeFromWidget widget PowerType
             let lines = Helpers.tryGetScalarValue widget XmlDocsAbbrev
 
             let xmlDocs =
@@ -115,22 +115,18 @@ module TypeDefnAbbrevNodeBuilders =
                 AttributesBundle(StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)), ValueNone, ValueNone)
             )
 
-
-        static member inline Measure(name: string, powerType: Type) =
+        static member inline Measure(name: string, powerType: WidgetBuilder<Type>) =
             WidgetBuilder<TypeDefnAbbrevNode>(
                 TypeDefnAbbrevNode.WidgetAbbrevKey,
                 AttributesBundle(
-                    StackList.two(
-                        TypeDefnAbbrevNode.Name.WithValue(name),
-                        TypeDefnAbbrevNode.PowerType.WithValue(powerType)
-                    ),
-                    ValueNone,
+                    StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)),
+                    ValueSome [| TypeDefnAbbrevNode.PowerType.WithValue(powerType.Compile()) |],
                     ValueNone
                 )
             )
 
         static member inline Measure(name: string, powerType: string) =
-            Ast.Measure(name, CommonType.mkLongIdent(powerType))
+            Ast.Measure(name, Ast.TypeLongIdent(powerType))
 
 [<Extension>]
 type TypeNameNodeModifiers =

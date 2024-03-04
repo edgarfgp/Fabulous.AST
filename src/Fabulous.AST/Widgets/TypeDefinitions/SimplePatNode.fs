@@ -13,13 +13,13 @@ module SimplePat =
 
     let IsOptional = Attributes.defineScalar<bool> "Parameters"
 
-    let Typed = Attributes.defineScalar<Type> "Typed"
+    let Typed = Attributes.defineWidget "Typed"
 
     let WidgetKey =
         Widgets.register "SimplePatNode" (fun widget ->
             let name = Helpers.getScalarValue widget Name
             let isOptional = Helpers.getScalarValue widget IsOptional
-            let typed = Helpers.tryGetScalarValue widget Typed
+            let typed = Helpers.tryGetNodeFromWidget<Type> widget Typed
 
             let typed =
                 match typed with
@@ -62,16 +62,12 @@ module SimplePatNodeBuilders =
                 )
             )
 
-        static member SimplePat(name: string, tp: Type, isOptional: bool) =
+        static member SimplePat(name: string, tp: WidgetBuilder<Type>, isOptional: bool) =
             WidgetBuilder<SimplePatNode>(
                 SimplePat.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        SimplePat.Name.WithValue(name),
-                        SimplePat.Typed.WithValue(tp),
-                        SimplePat.IsOptional.WithValue(isOptional)
-                    ),
-                    ValueNone,
+                    StackList.two(SimplePat.Name.WithValue(name), SimplePat.IsOptional.WithValue(isOptional)),
+                    ValueSome [| SimplePat.Typed.WithValue(tp.Compile()) |],
                     ValueNone
                 )
             )
@@ -80,12 +76,8 @@ module SimplePatNodeBuilders =
             WidgetBuilder<SimplePatNode>(
                 SimplePat.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        SimplePat.Name.WithValue(name),
-                        SimplePat.Typed.WithValue(CommonType.mkLongIdent tp),
-                        SimplePat.IsOptional.WithValue(isOptional)
-                    ),
-                    ValueNone,
+                    StackList.two(SimplePat.Name.WithValue(name), SimplePat.IsOptional.WithValue(isOptional)),
+                    ValueSome [| SimplePat.Typed.WithValue(Ast.TypeLongIdent(tp).Compile()) |],
                     ValueNone
                 )
             )

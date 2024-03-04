@@ -11,8 +11,7 @@ module PropertyMember =
     let ``Produces PropertiesMembers`` () =
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.String) })
-                .members() {
+            (Record("Colors") { Field("X", "string") }).members() {
                 Property("this.A", ConstantExpr(ConstantString "\"\""))
 
                 Property("this.C", ConstantExpr(ConstantString "\"\""))
@@ -26,20 +25,20 @@ module PropertyMember =
                     .toInlined()
 
                 Property("this.E", ConstantExpr(ConstantString "\"\""))
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("this.F", ConstantExpr(ConstantString "\"\""))
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("G", ConstantExpr(ConstantString "\"\""))
                     .toStatic()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("H", ConstantExpr(ConstantString "\"\""))
                     .toStatic()
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
             }
         }
         |> produces
@@ -63,7 +62,7 @@ type Colors =
     let ``Produces Properties with Patterns`` () =
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.String) })
+            (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
                 Property("this.A", ConstantExpr(ConstantString("\"\"")))
 
@@ -78,20 +77,20 @@ type Colors =
                     .toInlined()
 
                 Property("this.E", ConstantExpr(ConstantString("\"\"")))
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("this.F", ConstantExpr(ConstantString("\"\"")))
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("G", ConstantExpr(ConstantString("\"\"")))
                     .toStatic()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
 
                 Property("H", ConstantExpr(ConstantString("\"\"")))
                     .toStatic()
                     .toInlined()
-                |> _.returnType(CommonType.String)
+                |> _.returnType(String())
             }
         }
         |> produces
@@ -114,7 +113,7 @@ type Colors =
     [<Test>]
     let ``Produces a record with property member`` () =
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.String) })
+            (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
                 Property("this.A", ConstantExpr(ConstantString("\"\"")))
             }
@@ -133,7 +132,7 @@ type Colors =
     let ``Produces a record with static property member`` () =
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", CommonType.String) })
+            (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
                 Property("A", ConstantExpr(ConstantString("\"\"")))
                     .toStatic()
@@ -153,9 +152,9 @@ type Colors =
     let ``Produces a record with TypeParams and property member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
                 Property("this.A", ConstantExpr(ConstantString("\"\"")))
@@ -178,9 +177,9 @@ type Colors<'other> =
     let ``Produces a record with TypeParams and static property member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
                 Property("A", ConstantExpr(ConstantString("\"\"")))
@@ -330,7 +329,7 @@ type Person () =
     [<Test>]
     let ``Produces a record with a member property `` () =
         AnonymousModule() {
-            (Record("Person") { Field("Name", CommonType.String) })
+            (Record("Person") { Field("Name", TypeLongIdent("string")) })
                 .members() {
                 Property("this.Name", ConstantExpr(ConstantString("\"name\"")))
             }
@@ -348,7 +347,7 @@ type Person =
     [<Test>]
     let ``Produces a generic record with a member property `` () =
         AnonymousModule() {
-            (GenericRecord("Person", [ "'other" ]) { Field("Name", CommonType.mkLongIdent("'other")) })
+            (GenericRecord("Person", [ "'other" ]) { Field("Name", TypeLongIdent("'other")) })
                 .members() {
                 Property("this.Name", ConstantExpr(ConstantString("\"name\"")))
             }
@@ -403,8 +402,8 @@ type Person =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
-                    Field("a", CommonType.String)
-                    Field("b", CommonType.mkLongIdent "'other")
+                    Field("a", TypeLongIdent("string"))
+                    Field("b", TypeLongIdent "'other")
                 }
 
                 UnionCase("Green")
@@ -433,8 +432,8 @@ type Colors<'other> =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
-                    Field("a", CommonType.String)
-                    Field("b", CommonType.mkLongIdent "'other")
+                    Field("a", TypeLongIdent("string"))
+                    Field("b", TypeLongIdent "'other")
                 }
 
                 UnionCase("Green")

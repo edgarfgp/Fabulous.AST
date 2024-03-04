@@ -10,7 +10,7 @@ module Field =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let FieldType = Attributes.defineScalar<Type> "FieldType"
+    let FieldType = Attributes.defineWidget "FieldType"
 
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
@@ -24,7 +24,7 @@ module Field =
                 | ValueSome name -> Some(SingleTextNode.Create(name))
                 | ValueNone -> None
 
-            let fieldType = Helpers.getScalarValue widget FieldType
+            let fieldType = Helpers.getNodeFromWidget widget FieldType
 
             let attributes =
                 Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
@@ -58,31 +58,32 @@ module Field =
 module FieldBuilders =
     type Ast with
 
-        static member Field(name: string, filedType: Type) =
+        static member Field(name: string, filedType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
                 AttributesBundle(
-                    StackList.two(Field.Name.WithValue(name), Field.FieldType.WithValue(filedType)),
-                    ValueNone,
+                    StackList.one(Field.Name.WithValue(name)),
+                    ValueSome [| Field.FieldType.WithValue(filedType.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member Field(filedType: Type) =
+        static member Field(filedType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
-                AttributesBundle(StackList.one(Field.FieldType.WithValue(filedType)), ValueNone, ValueNone)
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome [| Field.FieldType.WithValue(filedType.Compile()) |],
+                    ValueNone
+                )
             )
 
         static member Field(name: string, filedType: string) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        Field.Name.WithValue(name),
-                        Field.FieldType.WithValue(CommonType.mkLongIdent filedType)
-                    ),
-                    ValueNone,
+                    StackList.one(Field.Name.WithValue(name)),
+                    ValueSome [| Field.FieldType.WithValue(Ast.TypeLongIdent(filedType).Compile()) |],
                     ValueNone
                 )
             )

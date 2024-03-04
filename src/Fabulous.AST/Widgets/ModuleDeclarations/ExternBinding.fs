@@ -10,7 +10,7 @@ module ExternBinding =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let AttributesOfType = Attributes.defineWidget "MultipleAttributes"
-    let Type = Attributes.defineScalar<Type> "Type"
+    let Type = Attributes.defineWidget "Type"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let Parameters = Attributes.defineWidgetCollection "Parameters"
@@ -53,7 +53,7 @@ module ExternBinding =
                 | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
-            let ``type`` = Helpers.getScalarValue widget Type
+            let ``type`` = Helpers.getNodeFromWidget widget Type
 
             let accessControl =
                 Helpers.tryGetScalarValue widget Accessibility
@@ -98,14 +98,22 @@ module ExternBindingNodeBuilders =
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        ExternBinding.Identifier.WithValue(name),
-                        ExternBinding.Type.WithValue(CommonType.mkLongIdent(``type``))
-                    ),
-                    ValueSome [||],
+                    StackList.one(ExternBinding.Identifier.WithValue(name)),
+                    ValueSome [| ExternBinding.Type.WithValue(Ast.TypeLongIdent(``type``).Compile()) |],
                     ValueNone
                 )
             )
+
+        static member ExternBindingNode(name: string, ``type``: WidgetBuilder<Type>) =
+            WidgetBuilder<ExternBindingNode>(
+                ExternBinding.WidgetKey,
+                AttributesBundle(
+                    StackList.one(ExternBinding.Identifier.WithValue(name)),
+                    ValueSome [| ExternBinding.Type.WithValue(``type``.Compile()) |],
+                    ValueNone
+                )
+            )
+
 
 [<Extension>]
 type ExternBindingNodeModifiers =

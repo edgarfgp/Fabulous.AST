@@ -10,13 +10,9 @@ module Interface =
     [<Test>]
     let ``Produces an interface abstract method`` () =
         AnonymousModule() {
-            Interface("INumericFSharp") {
-                AbstractCurriedMethodMember("Add", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
-            }
+            Interface("INumericFSharp") { AbstractCurriedMethodMember("Add", [ Int32(); Int32() ], Int32()) }
 
-            Interface("INumericDotNet") {
-                AbstractTupledMethodMember("Add", [ CommonType.Int32; CommonType.Int32 ], CommonType.Int32)
-            }
+            Interface("INumericDotNet") { AbstractTupledMethodMember("Add", [ Int32(); Int32() ], Int32()) }
         }
         |> produces
             """
@@ -34,10 +30,10 @@ module GenericInterface =
     let ``Produces a generic interface with TypeParams`` () =
         AnonymousModule() {
             Interface("MyInterface", [ "'other"; "'another" ]) {
-                let parameters = [ CommonType.Int32; CommonType.Int32; CommonType.String ]
-                AbstractCurriedMethodMember("Add", parameters, CommonType.Int32)
-                AbstractPropertyMember("Pi", CommonType.Float)
-                AbstractGetSetMember("Area", CommonType.Float)
+                let parameters = [ Int32(); Int32(); String() ]
+                AbstractCurriedMethodMember("Add", parameters, Int32())
+                AbstractPropertyMember("Pi", Float())
+                AbstractGetSetMember("Area", Float())
             }
 
         }

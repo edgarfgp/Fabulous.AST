@@ -39,7 +39,7 @@ let x (i) = ()
     [<Test>]
     let ``Produces a function with single tupled typed parameter`` () =
         AnonymousModule() {
-            Function("x", ParenPat(ParameterPat(NamedPat("i"), CommonType.Int32)), ConstantExpr(ConstantUnit()))
+            Function("x", ParenPat(ParameterPat(NamedPat("i"), Int32())), ConstantExpr(ConstantUnit()))
         }
         |> produces
             """
@@ -91,9 +91,9 @@ let x i j k = ()
             Function(
                 "x",
                 ParametersPat(true) {
-                    ParameterPat(NamedPat("i"), CommonType.Int32)
-                    ParameterPat(NamedPat("j"), CommonType.String)
-                    ParameterPat(NamedPat("k"), CommonType.Boolean)
+                    ParameterPat(NamedPat("i"), Int32())
+                    ParameterPat(NamedPat("j"), String())
+                    ParameterPat(NamedPat("k"), Boolean())
                 },
                 ConstantExpr(ConstantUnit())
             )
@@ -134,7 +134,7 @@ let x i = ()
     let ``Produces a function with parameters and return type`` () =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                .returnType(CommonType.Unit)
+                .returnType(Unit())
         }
         |> produces
             """
@@ -153,7 +153,7 @@ let x i : unit = ()
                 },
                 ConstantExpr(ConstantUnit())
             ))
-                .returnType(CommonType.Unit)
+                .returnType(Unit())
         }
         |> produces
             """

@@ -19,7 +19,7 @@ let a = 12
 
     [<Test>]
     let ``let value with a typed Parameter pattern`` () =
-        AnonymousModule() { Value(ParameterPat(NamedPat("a"), CommonType.String), ConstantExpr(ConstantString "12")) }
+        AnonymousModule() { Value(ParameterPat(NamedPat("a"), String()), ConstantExpr(ConstantString "12")) }
         |> produces
             """
 let a: string = 12

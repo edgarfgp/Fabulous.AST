@@ -8,7 +8,7 @@ open Fantomas.Core.SyntaxOak
 module ExternBindingPattern =
     let Pattern = Attributes.defineWidget "DoExpression"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
-    let Type = Attributes.defineScalar<Type> "Type"
+    let Type = Attributes.defineWidget "Type"
 
     let WidgetKey =
         Widgets.register "ExternBindingPattern" (fun widget ->
@@ -17,7 +17,7 @@ module ExternBindingPattern =
             let attributes =
                 Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
-            let ``type`` = Helpers.tryGetScalarValue widget Type
+            let ``type`` = Helpers.tryGetNodeFromWidget widget Type
 
             let ``type`` =
                 match ``type`` with
@@ -55,18 +55,22 @@ module ExternBindingPatternNodeBuilders =
             WidgetBuilder<ExternBindingPatternNode>(
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ExternBindingPattern.Type.WithValue(CommonType.mkLongIdent(``type``))),
-                    ValueSome [| ExternBindingPattern.Pattern.WithValue(pat.Compile()) |],
+                    StackList.empty(),
+                    ValueSome
+                        [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
+                           ExternBindingPattern.Type.WithValue(Ast.TypeLongIdent(``type``).Compile()) |],
                     ValueNone
                 )
             )
 
-        static member ExternBindingPattern(``type``: Type, pat: WidgetBuilder<Pattern>) =
+        static member ExternBindingPattern(``type``: WidgetBuilder<Type>, pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<ExternBindingPatternNode>(
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ExternBindingPattern.Type.WithValue(``type``)),
-                    ValueSome [| ExternBindingPattern.Pattern.WithValue(pat.Compile()) |],
+                    StackList.empty(),
+                    ValueSome
+                        [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
+                           ExternBindingPattern.Type.WithValue(``type``.Compile()) |],
                     ValueNone
                 )
             )

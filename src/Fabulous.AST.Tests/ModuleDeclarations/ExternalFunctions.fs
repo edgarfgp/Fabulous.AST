@@ -33,7 +33,7 @@ extern void HelloWorld(string x)
         AnonymousModule() {
             ExternBindingNode("HelloWorld", "void").parameters() {
                 ExternBindingPattern("string", ConstantPat("x"))
-                ExternBindingPattern(CommonType.mkLongIdent("int"), ConstantPat("y"))
+                ExternBindingPattern(Int32(), ConstantPat("y"))
             }
         }
         |> produces

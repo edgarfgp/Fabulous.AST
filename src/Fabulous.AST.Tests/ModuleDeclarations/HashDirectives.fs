@@ -15,9 +15,9 @@ module HashDirectives =
             Open("System")
 
             (Record("HEX") {
-                Field("R", CommonType.Int32)
-                Field("G", CommonType.Int32)
-                Field("B", CommonType.Int32)
+                Field("R", TypeLongIdent("int"))
+                Field("G", TypeLongIdent("int"))
+                Field("B", TypeLongIdent("int"))
             })
                 .attribute(Attribute "Obsolete")
         }
@@ -37,9 +37,9 @@ type HEX = { R: int; G: int; B: int }
             Open("System")
 
             (Record("HEX") {
-                Field("R", CommonType.Int32)
-                Field("G", CommonType.Int32)
-                Field("B", CommonType.Int32)
+                Field("R", TypeLongIdent("int"))
+                Field("G", TypeLongIdent("int"))
+                Field("B", TypeLongIdent("int"))
             })
                 .attribute("Obsolete")
         }
@@ -60,9 +60,9 @@ type HEX = { R: int; G: int; B: int }
             Open("System")
 
             (Record("HEX") {
-                Field("R", CommonType.Int32)
-                Field("G", CommonType.Int32)
-                Field("B", CommonType.Int32)
+                Field("R", TypeLongIdent("int"))
+                Field("G", TypeLongIdent("int"))
+                Field("B", TypeLongIdent("int"))
             })
                 .attribute("Obsolete")
         }
@@ -83,9 +83,9 @@ type HEX = { R: int; G: int; B: int }
             Open("System")
 
             (Record("HEX") {
-                Field("R", CommonType.Int32)
-                Field("G", CommonType.Int32)
-                Field("B", CommonType.Int32)
+                Field("R", TypeLongIdent("int"))
+                Field("G", TypeLongIdent("int"))
+                Field("B", TypeLongIdent("int"))
             })
                 .attribute(Attribute "Obsolete")
         }

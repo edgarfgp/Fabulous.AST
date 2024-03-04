@@ -20,7 +20,7 @@ val x: string
 
     [<Test>]
     let ``Produces a MutableVal`` () =
-        AnonymousModule() { Val("x", CommonType.String).toMutable() }
+        AnonymousModule() { Val("x", String()).toMutable() }
 
         |> produces
             """
@@ -38,7 +38,7 @@ val inline x: string
 
     [<Test>]
     let ``Produces a Val with attribute`` () =
-        AnonymousModule() { Val("x", CommonType.String).attribute("DefaultValue") }
+        AnonymousModule() { Val("x", String()).attribute("DefaultValue") }
 
         |> produces
             """
@@ -49,7 +49,7 @@ val x: string
     [<Test>]
     let ``Produces a Val with attributes`` () =
         AnonymousModule() {
-            Val("x", CommonType.String)
+            Val("x", String())
                 .attributes([ "DefaultValue"; "OtherAttribute"; "AnotherAttribute" ])
         }
 
@@ -62,17 +62,11 @@ val x: string
     [<Test>]
     let ``Produces a Val with accessControl`` () =
         AnonymousModule() {
-            Val("x", CommonType.String)
-                .attribute("DefaultValue")
-                .toInternal()
+            Val("x", String()).attribute("DefaultValue").toInternal()
 
-            Val("y", CommonType.String)
-                .attribute("DefaultValue")
-                .toPrivate()
+            Val("y", String()).attribute("DefaultValue").toPrivate()
 
-            Val("z", CommonType.String)
-                .attribute("DefaultValue")
-                .toPublic()
+            Val("z", String()).attribute("DefaultValue").toPublic()
         }
 
         |> produces
@@ -89,7 +83,7 @@ val public z: string
 
     [<Test>]
     let ``Produces a Val with type parameters`` () =
-        AnonymousModule() { Val("x", CommonType.String).typeParameters([ "a"; "b" ]) }
+        AnonymousModule() { Val("x", String()).typeParameters([ "a"; "b" ]) }
 
         |> produces
             """

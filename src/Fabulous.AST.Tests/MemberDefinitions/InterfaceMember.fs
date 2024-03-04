@@ -10,14 +10,12 @@ module InterfaceMembers =
     [<Test>]
     let ``Produces a record with TypeParams and interface member`` () =
         AnonymousModule() {
-            Interface("IMyInterface") {
-                AbstractCurriedMethodMember("GetValue", [ CommonType.Unit ], CommonType.String)
-            }
+            Interface("IMyInterface") { AbstractCurriedMethodMember("GetValue", [ Unit() ], String()) }
 
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", CommonType.String)
-                Field("Blue", CommonType.mkLongIdent("'other"))
-                Field("Yellow", CommonType.Int32)
+                Field("Green", TypeLongIdent("string"))
+                Field("Blue", TypeLongIdent("'other"))
+                Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
                 InterfaceMember("IMyInterface") {
@@ -46,13 +44,13 @@ type Colors<'other> =
 
         AnonymousModule() {
             Interface("IMyInterface") {
-                let parameters = [ CommonType.Unit ]
-                AbstractCurriedMethodMember("GetValue", parameters, CommonType.String)
+                let parameters = [ Unit() ]
+                AbstractCurriedMethodMember("GetValue", parameters, String())
             }
 
             (Record("MyRecord") {
-                Field("MyField1", CommonType.Int32)
-                Field("MyField2", CommonType.String)
+                Field("MyField1", TypeLongIdent("int"))
+                Field("MyField2", TypeLongIdent("string"))
             })
                 .members() {
                 InterfaceMember("IMyInterface") {
@@ -77,7 +75,7 @@ type MyRecord =
     [<Test>]
     let ``Produces a class with a interface member`` () =
         AnonymousModule() {
-            Interface("Meh") { AbstractPropertyMember("Name", CommonType.String) }
+            Interface("Meh") { AbstractPropertyMember("Name", String()) }
 
             Class("Person") { InterfaceMember("Meh") { Property("this.Name", ConstantExpr(ConstantString "\"23\"")) } }
         }

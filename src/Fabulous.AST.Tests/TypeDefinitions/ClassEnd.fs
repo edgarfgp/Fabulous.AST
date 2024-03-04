@@ -41,7 +41,7 @@ type MyClass () = class end
     [<Test>]
     let ``Produces a class end with constructor params`` () =
         AnonymousModule() {
-            ClassEnd("MyClass", ImplicitConstructor() { SimplePat("name", CommonType.String, false) })
+            ClassEnd("MyClass", ImplicitConstructor() { SimplePat("name", String(), false) })
                 .attributes() {
                 Attribute("Sealed")
                 Attribute("AbstractClass")
@@ -57,7 +57,7 @@ type MyClass (name: string) = class end
     [<Test>]
     let ``Produces a class end with constructor params and type args`` () =
         AnonymousModule() {
-            ClassEnd("MyClass", [ "'a" ], ImplicitConstructor() { SimplePat("name", CommonType.String, false) })
+            ClassEnd("MyClass", [ "'a" ], ImplicitConstructor() { SimplePat("name", String(), false) })
                 .attributes() {
                 Attribute("Sealed")
                 Attribute("AbstractClass")
