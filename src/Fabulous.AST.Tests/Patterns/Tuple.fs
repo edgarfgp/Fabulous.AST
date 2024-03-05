@@ -17,7 +17,7 @@ module TuplePat =
                     NamedPat("a")
                     NamedPat("b")
                 },
-                ConstantExpr(ConstantString "12")
+                ConstantExpr(Constant "12")
             )
         }
         |> produces

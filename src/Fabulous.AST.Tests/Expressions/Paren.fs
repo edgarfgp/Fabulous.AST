@@ -10,7 +10,7 @@ open type Ast
 module Paren =
     [<Test>]
     let ``let value with a expression wrapped parenthesis`` () =
-        AnonymousModule() { Value("x", ParenExpr(ConstantExpr(ConstantString "12"))) }
+        AnonymousModule() { Value("x", ParenExpr(ConstantExpr(Constant "12"))) }
         |> produces
             """
 

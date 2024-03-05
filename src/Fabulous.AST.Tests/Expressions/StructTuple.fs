@@ -15,9 +15,9 @@ module StructTuple =
             Value(
                 "x",
                 StructTupleExpr() {
-                    ConstantExpr(ConstantString "1")
-                    ConstantExpr(ConstantString "2")
-                    ConstantExpr(ConstantString "3")
+                    ConstantExpr("1")
+                    ConstantExpr("2")
+                    ConstantExpr("3")
                 }
             )
         }
@@ -34,9 +34,9 @@ let x = struct (1, 2, 3)
                 "x",
                 ParenExpr(
                     StructTupleExpr() {
-                        ConstantExpr(ConstantString "1")
-                        ConstantExpr(ConstantString "2")
-                        ConstantExpr(ConstantString "3")
+                        ConstantExpr("1")
+                        ConstantExpr("2")
+                        ConstantExpr("3")
                     }
                 )
             )

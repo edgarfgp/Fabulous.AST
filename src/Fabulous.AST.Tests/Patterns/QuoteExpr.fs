@@ -11,7 +11,7 @@ module QuoteExpr =
 
     [<Test>]
     let ``let value with a QuoteExpr pattern`` () =
-        AnonymousModule() { Value(QuoteExprPat(ConstantExpr(ConstantString "345")), ConstantExpr(ConstantString "12")) }
+        AnonymousModule() { Value(QuoteExprPat(ConstantExpr(Constant "345")), ConstantExpr(Constant "12")) }
         |> produces
             """
 let <@ 345 @> = 12

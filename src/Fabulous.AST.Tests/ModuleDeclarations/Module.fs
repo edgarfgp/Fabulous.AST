@@ -12,7 +12,7 @@ open type Ast
 module Module =
     [<Test>]
     let ``Produces a module with binding`` () =
-        Module("Fabulous.AST") { Value("x", "3") }
+        Module("Fabulous.AST") { Value("x", "3", false) }
         |> produces
             """
 module Fabulous.AST
@@ -32,7 +32,7 @@ module Fabulous.AST
 
     [<Test>]
     let ``Produces a module with IdentListNode`` () =
-        Module("Fabulous.AST") { Value("x", "3") }
+        Module("Fabulous.AST") { Value("x", "3", false) }
         |> produces
             """
 module Fabulous.AST
@@ -117,7 +117,7 @@ module Foo =
                 )
             }
 
-            NestedModule("Bar") { Value("x", "12") }
+            NestedModule("Bar") { Value("x", "12", false) }
         }
 
         |> produces

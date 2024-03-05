@@ -11,7 +11,7 @@ module InfixApp =
 
     [<Test>]
     let ``let value with a InfixApp expression`` () =
-        AnonymousModule() { InfixAppExpr(ConstantExpr(ConstantString "a"), "|>", ConstantExpr(ConstantString "b")) }
+        AnonymousModule() { InfixAppExpr(ConstantExpr(Constant "a"), "|>", ConstantExpr(Constant "b")) }
         |> produces
             """
 

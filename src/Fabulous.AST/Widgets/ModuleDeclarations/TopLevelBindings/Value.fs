@@ -138,8 +138,10 @@ module BindingValueBuilders =
         static member Value(name: string, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(NamedPat(name), ValueNone, value)
 
-        static member Value(name: WidgetBuilder<Pattern>, value: string) =
-            Ast.BaseValue(name, ValueNone, ConstantExpr(ConstantString(value)))
+        static member Value(name: WidgetBuilder<Pattern>, value: string, ?hasQuotes: bool) =
+            match hasQuotes with
+            | Some false -> Ast.BaseValue(name, ValueNone, ConstantExpr(value))
+            | _ -> Ast.BaseValue(name, ValueNone, ConstantStringExpr(value))
 
         static member Value(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(name, ValueSome typeParams, value)
@@ -147,8 +149,12 @@ module BindingValueBuilders =
         static member Value(name: string, typeParams: string list, value: WidgetBuilder<Expr>) =
             Ast.BaseValue(NamedPat(name), ValueSome typeParams, value)
 
-        static member Value(name: string, value: string) =
-            Ast.BaseValue(NamedPat(name), ValueNone, ConstantExpr(ConstantString(value)))
+        static member Value(name: string, value: string, ?hasQuotes: bool) =
+            match hasQuotes with
+            | Some false -> Ast.BaseValue(NamedPat(name), ValueNone, ConstantExpr(value))
+            | _ -> Ast.BaseValue(NamedPat(name), ValueNone, ConstantStringExpr(value))
 
-        static member Value(name: string, typeParams: string list, value: string) =
-            Ast.BaseValue(NamedPat(name), ValueSome typeParams, ConstantExpr(ConstantString(value)))
+        static member Value(name: string, typeParams: string list, value: string, ?hasQuotes: bool) =
+            match hasQuotes with
+            | Some false -> Ast.BaseValue(NamedPat(name), ValueSome typeParams, ConstantExpr(value))
+            | _ -> Ast.BaseValue(NamedPat(name), ValueSome typeParams, ConstantStringExpr(value))

@@ -17,7 +17,7 @@ module Ands =
                     NamedPat("A")
                     NamedPat("B")
                 },
-                ConstantExpr(ConstantString "12")
+                ConstantExpr(Constant "12")
             )
         }
         |> produces

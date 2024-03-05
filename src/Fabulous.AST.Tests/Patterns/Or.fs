@@ -11,7 +11,7 @@ module Or =
 
     [<Test>]
     let ``let value with a Or pattern`` () =
-        AnonymousModule() { Value(OrPat(NamedPat("A"), NamedPat("B")), ConstantExpr(ConstantString "12")) }
+        AnonymousModule() { Value(OrPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Constant "12")) }
         |> produces
             """
 
@@ -20,7 +20,7 @@ let A | B = 12
 
     [<Test>]
     let ``let value with a Or custom middle pattern`` () =
-        AnonymousModule() { Value(OrPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(ConstantString "12")) }
+        AnonymousModule() { Value(OrPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(Constant "12")) }
         |> produces
             """
 

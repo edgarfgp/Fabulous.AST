@@ -31,22 +31,11 @@ module PatternBuilders =
                 )
             )
 
-        static member NamedPat(value: string) =
-            Ast.BasePattern(
-                Ast.EscapeHatch(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value), Range.Zero)))
-            )
-
         static member NullPat() =
             Ast.BasePattern(Ast.EscapeHatch(Pattern.Null(SingleTextNode.``null``)))
 
         static member WildPat() =
             Ast.BasePattern(Ast.EscapeHatch(Pattern.Wild(SingleTextNode.underscore)))
-
-        static member ConstantPat(value: Constant) =
-            Ast.BasePattern(Ast.EscapeHatch(Pattern.Const(value)))
-
-        static member ConstantPat(value: string) =
-            Ast.ConstantPat(Constant.FromText(SingleTextNode.Create(value)))
 
 [<Extension>]
 type ParametersYieldExtensions =

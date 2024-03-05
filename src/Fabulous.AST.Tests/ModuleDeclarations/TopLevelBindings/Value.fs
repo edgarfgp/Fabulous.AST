@@ -12,7 +12,7 @@ open type Ast
 module Value =
     [<Test>]
     let ``Simple Let binding`` () =
-        AnonymousModule() { Value("x", "12") }
+        AnonymousModule() { Value("x", "12", false) }
         |> produces
             """
 
@@ -31,7 +31,7 @@ let x = 12
                     "GdmtSubcommands",
                     ArrayExpr() {
                         for subcommand in subcommands do
-                            ConstantExpr(ConstantString($"\"{subcommand}\""))
+                            ConstantExpr($"{subcommand}")
                     }
                 )
             }
@@ -57,9 +57,9 @@ module Subcommands =
                     NamedPat("z")
                 },
                 TupleExpr() {
-                    ConstantExpr(ConstantString "1")
-                    ConstantExpr(ConstantString "2")
-                    ConstantExpr(ConstantString "3")
+                    ConstantExpr("1")
+                    ConstantExpr("2")
+                    ConstantExpr("3")
                 }
             )
         }
@@ -72,7 +72,7 @@ let x, y, z = 1, 2, 3
 
     [<Test>]
     let ``Simple Let binding with return type`` () =
-        AnonymousModule() { Value("x", "12").returnType(Int32()) }
+        AnonymousModule() { Value("x", "12", false).returnType(Int32()) }
         |> produces
             """
 
@@ -83,18 +83,18 @@ let x: int = 12
     [<Test>]
     let ``Simple Let binding with return widget type`` () =
         AnonymousModule() {
-            Value("x", "12").returnType("int")
-            Value("y", "12").returnType(TypeLongIdent("int"))
+            Value("x", "12", false).returnType("int")
+            Value("y", "12", false).returnType(TypeLongIdent("int"))
 
-            Value("z", "12")
+            Value("z", "12", false)
                 .returnType(TypeFuns(TypeLongIdent("string")) { TypeLongIdent("int") })
 
-            Value("a", "12")
+            Value("a", "12", false)
                 .returnType(TypeFuns("string") { TypeLongIdent("int") })
 
-            Value("b", "12").returnType("string -> int")
+            Value("b", "12", false).returnType("string -> int")
 
-            Value("c", "12")
+            Value("c", "12", false)
                 .returnType(TypeHashConstraint(TypeLongIdent("int")))
         }
         |> produces
@@ -111,7 +111,7 @@ let c: #int = 12
 
     [<Test>]
     let ``Simple Let binding with an expression`` () =
-        AnonymousModule() { Value("x", ConstantExpr(ConstantString "12")) }
+        AnonymousModule() { Value("x", ConstantExpr("12")) }
         |> produces
             """
 
@@ -122,8 +122,8 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with type params Postfix`` () =
         AnonymousModule() {
-            Value("x", [ "'T" ], "12")
-            Value("x", [ "'a"; "'b"; "'c" ], "12")
+            Value("x", [ "'T" ], "12", false)
+            Value("x", [ "'a"; "'b"; "'c" ], "12", false)
         }
         |> produces
             """
@@ -136,8 +136,8 @@ let x<'a, 'b, 'c> = 12
     [<Test>]
     let ``Simple Let binding with type params Prefix`` () =
         AnonymousModule() {
-            Value("x", [ "'T" ], "12")
-            Value("x", [ "'a"; "'b"; "'c" ], "12")
+            Value("x", [ "'T" ], "12", false)
+            Value("x", [ "'a"; "'b"; "'c" ], "12", false)
         }
         |> produces
             """
@@ -148,9 +148,9 @@ let x<'a, 'b, 'c> = 12
     [<Test>]
     let ``Simple Let binding with type params SinglePrefix`` () =
         AnonymousModule() {
-            Value("x", [ "'T" ], ConstantExpr(ConstantString "12"))
+            Value("x", [ "'T" ], ConstantExpr("12"))
 
-            Value("x", [ "'T" ], "12")
+            Value("x", [ "'T" ], "12", false)
         }
         |> produces
             """
@@ -160,7 +160,7 @@ let x<'T> = 12
 
     [<Test>]
     let ``Simple Let private binding`` () =
-        AnonymousModule() { Value("x", "12").toPrivate() }
+        AnonymousModule() { Value("x", "12", false).toPrivate() }
         |> produces
             """
 
@@ -170,7 +170,7 @@ let private x = 12
 
     [<Test>]
     let ``Simple Let internal binding`` () =
-        AnonymousModule() { Value("x", "12").toInternal() }
+        AnonymousModule() { Value("x", "12", false).toInternal() }
         |> produces
             """
 
@@ -180,7 +180,7 @@ let internal x = 12
 
     [<Test>]
     let ``Simple Let binding with a single xml doc`` () =
-        AnonymousModule() { Value("x", "12").xmlDocs([ "This is a comment" ]) }
+        AnonymousModule() { Value("x", "12", false).xmlDocs([ "This is a comment" ]) }
         |> produces
             """
 
@@ -192,7 +192,7 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with multiline xml doc`` () =
         AnonymousModule() {
-            Value("x", "12")
+            Value("x", "12", false)
                 .xmlDocs(
                     [ "This is a fist comment"
                       "This is a second comment"
@@ -213,7 +213,7 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with multiline with a single attribute`` () =
         AnonymousModule() {
-            Value("x", "12").attribute("Obsolete")
+            Value("x", "12", false).attribute("Obsolete")
 
         }
         |> produces
@@ -226,7 +226,7 @@ let x = 12
     [<Test>]
     let ``Simple Let binding with multiline with a multiple attributes`` () =
         AnonymousModule() {
-            Value("x", "12").attributes() {
+            Value("x", "12", false).attributes() {
                 Attribute("EditorBrowsable")
                 Attribute("Obsolete")
             }
@@ -294,7 +294,7 @@ let x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding`` () =
-        AnonymousModule() { Value("x", "12").toMutable() }
+        AnonymousModule() { Value("x", "12", false).toMutable() }
         |> produces
             """
         
@@ -304,7 +304,7 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with return type`` () =
-        AnonymousModule() { Value("x", "12").returnType(Int32()).toMutable() }
+        AnonymousModule() { Value("x", "12", false).returnType(Int32()).toMutable() }
         |> produces
             """
         
@@ -314,7 +314,7 @@ let mutable x: int = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with an expression`` () =
-        AnonymousModule() { Value("x", ConstantExpr(ConstantString "12")).toMutable() }
+        AnonymousModule() { Value("x", ConstantExpr("12")).toMutable() }
         |> produces
             """
         
@@ -324,10 +324,7 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a top level inlined let binding with type params and an expression`` () =
-        AnonymousModule() {
-            Value("x", [ "'a" ], ConstantExpr(ConstantString "12"))
-                .toInlined()
-        }
+        AnonymousModule() { Value("x", [ "'a" ], ConstantExpr("12")).toInlined() }
         |> produces
             """
         

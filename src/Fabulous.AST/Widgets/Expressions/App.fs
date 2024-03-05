@@ -27,5 +27,4 @@ module AppBuilders =
                 AttributesBundle(StackList.empty(), ValueSome [| App.Name.WithValue(name.Compile()) |], ValueNone)
             )
 
-        static member inline AppExpr(name: string) =
-            Ast.AppExpr(Ast.ConstantExpr(ConstantString(name)))
+        static member inline AppExpr(name: string) = Ast.AppExpr(Ast.ConstantExpr(name))

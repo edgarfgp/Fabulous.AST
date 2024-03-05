@@ -11,7 +11,7 @@ module Constant =
 
     [<Test>]
     let ``let value with a ConstantExpr expression with ConstantString`` () =
-        AnonymousModule() { Value("x", ConstantExpr(ConstantString "\"a\"")) }
+        AnonymousModule() { Value("x", ConstantExpr(ConstantString("a"))) }
         |> produces
             """
 
@@ -20,7 +20,7 @@ let x = "a"
 
     [<Test>]
     let ``let value with a ConstantExpr expression with ConstantMeasure`` () =
-        AnonymousModule() { Value("x", ConstantExpr(ConstantMeasure(ConstantString("1.0"), MeasureSingle("cm")))) }
+        AnonymousModule() { Value("x", ConstantExpr(ConstantMeasure(Constant("1.0"), MeasureSingle("cm")))) }
         |> produces
             """
 
@@ -43,7 +43,7 @@ let x = ()
                 "x",
                 ConstantExpr(
                     ConstantMeasure(
-                        ConstantString("55.0f"),
+                        Constant("55.0f"),
                         MeasureOperator("*", MeasureSingle("miles"), MeasureSingle("hour"))
                     )
                 )
@@ -62,7 +62,7 @@ let x = 55.0f<miles * hour>
                 "x",
                 ConstantExpr(
                     ConstantMeasure(
-                        ConstantString("55.0f"),
+                        Constant("55.0f"),
                         MeasureDivide("/", MeasureSingle("miles"), MeasureSingle("hour"))
                     )
                 )
@@ -80,13 +80,10 @@ let x = 55.0f<miles / hour>
             Value(
                 "x",
                 InfixAppExpr(
-                    ConstantExpr(ConstantString "55.0f"),
+                    ConstantExpr(Constant "55.0f"),
                     "/",
                     ConstantExpr(
-                        ConstantMeasure(
-                            ConstantString "1000.0",
-                            MeasureDivide("/", MeasureSingle("g"), MeasureSingle("kg"))
-                        )
+                        ConstantMeasure(Constant "1000.0", MeasureDivide("/", MeasureSingle("g"), MeasureSingle("kg")))
                     )
                 )
             )
@@ -105,7 +102,7 @@ let x = 55.0f / 1000.0<g / kg>
                 "x",
                 ConstantExpr(
                     ConstantMeasure(
-                        ConstantString("55.0f"),
+                        Constant("55.0f"),
                         MeasurePower("*", MeasureSingle("miles"), RationalConstInteger("hour"))
                     )
                 )

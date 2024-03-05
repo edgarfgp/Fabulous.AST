@@ -12,7 +12,7 @@ open type Ast
 module Namespace =
     [<Test>]
     let ``Produces a namespace with binding`` () =
-        (Namespace("Fabulous.AST") { Value("x", "3") })
+        (Namespace("Fabulous.AST") { Value("x", "3", false) })
         |> produces
             """
 namespace Fabulous.AST
@@ -22,7 +22,7 @@ let x = 3
 
     [<Test>]
     let ``Produces a rec namespace with binding`` () =
-        (Namespace("Fabulous.AST") { Value("x", "3") })
+        (Namespace("Fabulous.AST") { Value("x", "3", false) })
             .toRecursive()
         |> produces
             """

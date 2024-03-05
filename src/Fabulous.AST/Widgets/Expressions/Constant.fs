@@ -35,10 +35,16 @@ module Constant =
 [<AutoOpen>]
 module ConstantBuilders =
     type Ast with
-        static member ConstantString(value: string) =
+        static member Constant(value: string) =
             WidgetBuilder<Constant>(
                 Constant.WidgetFromTextKey,
                 AttributesBundle(StackList.one(Constant.ValueString.WithValue(value)), ValueNone, ValueNone)
+            )
+
+        static member ConstantString(value: string) =
+            WidgetBuilder<Constant>(
+                Constant.WidgetFromTextKey,
+                AttributesBundle(StackList.one(Constant.ValueString.WithValue($"\"{value}\"")), ValueNone, ValueNone)
             )
 
         static member ConstantMeasure(constant: WidgetBuilder<Constant>, measure: WidgetBuilder<Measure>) =

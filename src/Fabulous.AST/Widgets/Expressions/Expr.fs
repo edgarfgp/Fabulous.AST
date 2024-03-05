@@ -25,6 +25,26 @@ module ExprBuilders =
                 AttributesBundle(StackList.empty(), ValueSome [| Expr.Value.WithValue(value.Compile()) |], ValueNone)
             )
 
+        static member ConstantExpr(value: string) =
+            WidgetBuilder<Expr>(
+                Expr.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome [| Expr.Value.WithValue(Ast.Constant(value).Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member ConstantStringExpr(value: string) =
+            WidgetBuilder<Expr>(
+                Expr.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome [| Expr.Value.WithValue(Ast.ConstantString(value).Compile()) |],
+                    ValueNone
+                )
+            )
+
         static member NUllExpr() =
             WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))
 
