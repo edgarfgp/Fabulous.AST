@@ -31,7 +31,7 @@ let x = 12
                     "GdmtSubcommands",
                     ArrayExpr() {
                         for subcommand in subcommands do
-                            ConstantExpr($"{subcommand}")
+                            ConstantStringExpr(subcommand)
                     }
                 )
             }

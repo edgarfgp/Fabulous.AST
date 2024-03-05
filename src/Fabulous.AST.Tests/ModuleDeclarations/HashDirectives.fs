@@ -104,9 +104,9 @@ type HEX = { R: int; G: int; B: int }
     let ``Produces an Namespace with Conditional directive`` () =
         AnonymousModule() {
             HashDirective("if", "!DEBUG")
-            Value("str", ConstantExpr(("Not debugging!")))
+            Value("str", ConstantStringExpr(("Not debugging!")))
             HashDirective("else")
-            Value("str", ConstantExpr("Debugging!"))
+            Value("str", ConstantStringExpr("Debugging!"))
             HashDirective("endif")
         }
         |> produces

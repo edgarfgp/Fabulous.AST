@@ -24,7 +24,7 @@ type Person () =
     [<Test>]
     let ``Produces a class explicit constructor with no params`` () =
 
-        AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr("")) } }
+        AnonymousModule() { Class("Person") { Property("this.Name", ConstantStringExpr("")) } }
         |> produces
             """
 type Person () =
@@ -133,7 +133,7 @@ module GenericClass =
     [<Test>]
     let ``Produces a generic class`` () =
         AnonymousModule() {
-            Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantExpr("")) }
+            Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantStringExpr("")) }
 
         }
         |> produces
@@ -147,7 +147,7 @@ type Person <'a, 'b>() =
     let ``Produces a generic class with a constructor`` () =
 
         AnonymousModule() {
-            Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantExpr("")) }
+            Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantStringExpr("")) }
 
         }
         |> produces
@@ -160,7 +160,7 @@ type Person <'a, 'b>() =
     [<Test>]
     let ``Produces a struct generic class with a constructor`` () =
         AnonymousModule() {
-            (Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantExpr("")) })
+            (Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantStringExpr("")) })
                 .attribute(Attribute("Struct"))
 
         }

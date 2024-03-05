@@ -13,36 +13,36 @@ module MethodMembers =
         AnonymousModule() {
             (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
-                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
 
 
-                Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
                     .toInlined()
 
-                Method("B", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("B", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
                     .toStatic()
 
-                Method("D", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("D", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
                     .toInlined()
                     .toStatic()
 
-                Method("this.E", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("this.E", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
                 |> _.returnType(String())
 
-                Method("this.F", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
-                    .toInlined()
-                |> _.returnType(String())
-
-                Method("G", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
-                    .toStatic()
-                |> _.returnType(String())
-
-                Method("H", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
-                    .toStatic()
+                Method("this.F", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
                     .toInlined()
                 |> _.returnType(String())
 
-                Method("this.I", ParametersPat(true) { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("G", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                    .toStatic()
+                |> _.returnType(String())
+
+                Method("H", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                    .toStatic()
+                    .toInlined()
+                |> _.returnType(String())
+
+                Method("this.I", ParametersPat(true) { ParameterPat("p", String()) }, ConstantStringExpr(""))
 
                 Method(
                     "this.J",
@@ -50,7 +50,7 @@ module MethodMembers =
                         ParameterPat("p", String())
                         ParameterPat("p2", String())
                     },
-                    ConstantExpr("")
+                    ConstantStringExpr("")
                 )
 
                 Method(
@@ -59,7 +59,7 @@ module MethodMembers =
                         ParameterPat("p", String())
                         ParameterPat("p2", String())
                     },
-                    ConstantExpr("")
+                    ConstantStringExpr("")
                 )
             }
         }
@@ -92,7 +92,7 @@ type Colors =
                 Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
-                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
             }
         }
 
@@ -117,7 +117,7 @@ type Colors<'other> =
                 Field("Yellow", TypeLongIdent("int"))
             })
                 .members() {
-                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
                     .toStatic()
             }
         }
@@ -139,7 +139,7 @@ type Colors<'other> =
         AnonymousModule() {
             (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
-                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
             }
         }
         |> produces
@@ -157,7 +157,7 @@ type Colors =
         AnonymousModule() {
             (Record("Colors") { Field("X", TypeLongIdent("string")) })
                 .members() {
-                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
                     .toStatic()
             }
         }
@@ -281,7 +281,9 @@ type Person () =
     [<Test>]
     let ``Produces a union with a method member `` () =
         AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() { Method("this.Name", UnitPat(), ConstantExpr("name")) }
+            (Union("Person") { UnionCase("Name") }).members() {
+                Method("this.Name", UnitPat(), ConstantStringExpr("name"))
+            }
         }
         |> produces
             """
@@ -306,7 +308,7 @@ type Person =
                 UnionCase("Yellow")
             })
                 .members() {
-                Method("this.Name", UnitPat(), ConstantExpr("name"))
+                Method("this.Name", UnitPat(), ConstantStringExpr("name"))
             }
 
         }
