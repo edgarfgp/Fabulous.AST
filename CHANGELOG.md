@@ -6,18 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-_No unreleased changes_
+
+### Updated
+- Rework constant widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/57
+- Update fsdocs-tool to 20.0.0
+
+### Added
+- Attribute Widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/58
+- Type widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/59
+- ConstantStringExpr
 
 ## [0.7.0] - 2023-02-11
-- Update fantomas by @kaashyapan in https://github.com/edgarfgp/Fabulous.AST/pull/38
+
+### Added
 - Interface Widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/40
+- Initial support for unit of measures by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/50
+- Interface abstract members widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/48
+- Common types by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/47
+
+### Changed
+- Update fantomas by @kaashyapan in https://github.com/edgarfgp/Fabulous.AST/pull/38
 - Rework Class Widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/42
 - Record Unions Generic Widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/45
 - Widgets for TypeAugmentation member methods and patterns by @kaashyapan in https://github.com/edgarfgp/Fabulous.AST/pull/46
-- Common types by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/47
-- Interface abstract members widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/48
 - Update fsharp formatting to modern theme by @nojaf in https://github.com/edgarfgp/Fabulous.AST/pull/49
-- Initial support for unit of measures by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/50
 - Unify Record and GenericRecord into a single node by @TimLariviere in https://github.com/edgarfgp/Fabulous.AST/pull/52
 - Simplify union definitions by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/53
 - Classes Unification by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/54
