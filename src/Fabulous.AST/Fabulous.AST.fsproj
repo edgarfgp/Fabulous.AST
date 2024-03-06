@@ -97,8 +97,7 @@
         <Compile Include="Widgets\Expressions\IfThenElse.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ParsedHashDirective.fs" />
         <Compile Include="Widgets\ModuleDeclarations\AnonymousModule.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\Namespace.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\Module.fs" />
+        <Compile Include="Widgets\ModuleDeclarations\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\ModuleDeclarations\NestedModule.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Open.fs" />
         <Compile Include="Widgets\ModuleDeclarations\OpenType.fs" />

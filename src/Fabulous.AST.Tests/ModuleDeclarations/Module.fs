@@ -21,6 +21,17 @@ let x = 3
 """
 
     [<Test>]
+    let ``Produces a recursive module`` () =
+        Module("Fabulous.AST") { Value("x", "3", false) }
+        |> _.toRecursive()
+        |> produces
+            """
+module rec Fabulous.AST
+
+let x = 3
+"""
+
+    [<Test>]
     let ``Produces a module with unit`` () =
         Module("Fabulous.AST") { ConstantExpr(ConstantUnit()) }
         |> produces
@@ -64,70 +75,4 @@ let x = 3
 module Fabulous.AST
 
 let x = 12
-"""
-
-    [<Test>]
-    let ``Produces a module with nested module`` () =
-        Module("Fabulous.AST") {
-            NestedModule("Foo") {
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
-                )
-            }
-        }
-
-        |> produces
-            """
-module Fabulous.AST
-
-module Foo =
-    let x = 12
-"""
-
-    [<Test>]
-    let ``Produces a module with multiple nested module`` () =
-        Module("Fabulous.AST") {
-            NestedModule("Foo") {
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
-                )
-            }
-
-            NestedModule("Bar") { Value("x", "12", false) }
-        }
-
-        |> produces
-            """
-module Fabulous.AST
-
-module Foo =
-    let x = 12
-
-module Bar =
-    let x = 12
-
 """

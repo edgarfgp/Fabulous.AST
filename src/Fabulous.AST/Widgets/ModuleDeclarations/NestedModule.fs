@@ -14,11 +14,11 @@ module NestedModule =
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Decls = Attributes.defineWidgetCollection "Decls"
-    let IdentList = Attributes.defineWidget "IdentList"
+    let IdentList = Attributes.defineScalar<IdentListNode> "IdentList"
 
     let WidgetKey =
         Widgets.register "NestedModule" (fun widget ->
-            let identList = Helpers.getNodeFromWidget<IdentListNode> widget IdentList
+            let identList = Helpers.getScalarValue widget IdentList
 
             let moduleDecls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
 
@@ -52,31 +52,33 @@ module NestedModule =
 module NestedModuleBuilders =
     type Ast with
 
-        static member NestedModule(identList: WidgetBuilder<#IdentListNode>) =
+        static member BaseNestedModule(identList: IdentListNode) =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(
                 NestedModule.WidgetKey,
                 NestedModule.Decls,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| NestedModule.IdentList.WithValue(identList.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.one(NestedModule.IdentList.WithValue(identList)), ValueNone, ValueNone)
             )
 
-        static member NestedModule(node: IdentListNode) = Ast.NestedModule(Ast.EscapeHatch(node))
-
         static member NestedModule(name: string) =
-            Ast.NestedModule(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
+            Ast.BaseNestedModule(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
 
 [<Extension>]
 type NestedModuleModifiers =
     [<Extension>]
-    static member inline toRecursive(this: CollectionBuilder<NestedModuleNode, ModuleDecl>) =
+    static member inline toRecursive(this: WidgetBuilder<NestedModuleNode>) =
         this.AddScalar(NestedModule.IsRecursive.WithValue(true))
 
     [<Extension>]
-    static member inline accessibility(this: CollectionBuilder<NestedModuleNode, ModuleDecl>, value: AccessControl) =
-        this.AddScalar(NestedModule.Accessibility.WithValue(value))
+    static member inline toPrivate(this: WidgetBuilder<NestedModuleNode>) =
+        this.AddScalar(NestedModule.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<NestedModuleNode>) =
+        this.AddScalar(NestedModule.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<NestedModuleNode>) =
+        this.AddScalar(NestedModule.Accessibility.WithValue(AccessControl.Internal))
 
 [<Extension>]
 type NestedModuleYieldExtensions =

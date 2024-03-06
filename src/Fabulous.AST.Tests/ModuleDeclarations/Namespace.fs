@@ -33,14 +33,7 @@ let x = 3
 
     [<Test>]
     let ``Produces a namespace using the EscapeHatch widget`` () =
-        Namespace(
-            IdentListNode(
-                [ IdentifierOrDot.Ident(SingleTextNode("Fabulous", Range.Zero))
-                  IdentifierOrDot.KnownDot(SingleTextNode(".", Range.Zero))
-                  IdentifierOrDot.Ident(SingleTextNode("AST", Range.Zero)) ],
-                Range.Zero
-            )
-        ) {
+        Namespace("Fabulous.AST") {
             BindingNode(
                 None,
                 None,

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Updated
 - Rework constant widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/57
 - Update fsdocs-tool to 20.0.0
+- Unify Module and Namespace
 
 ### Added
 - Attribute Widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/58
