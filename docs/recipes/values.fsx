@@ -2,7 +2,7 @@
 ---
 title: Values
 category: recipes
-index: 0
+index: 2
 ---
 *)
 
@@ -16,13 +16,13 @@ index: 0
 
 *)
 
-// #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
-// #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
+#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
+#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
 
-// open Fabulous.AST
-// open type Fabulous.AST.Ast
-//
-// Value("a", "12").returnType ("string")
+open Fabulous.AST
+open type Fabulous.AST.Ast
+
+Value("a", "12").returnType ("string")
 
 (**
 Will output the following code:
