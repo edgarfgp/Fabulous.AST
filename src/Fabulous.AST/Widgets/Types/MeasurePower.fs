@@ -29,9 +29,21 @@ module TypeMeasurePowerBuilders =
                     ValueNone
                 )
             )
+            
+        static member TypeMeasurePower(t: string, rational: WidgetBuilder<RationalConstNode>) =
+            WidgetBuilder<Type>(
+                TypeMeasurePower.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| TypeMeasurePower.TypeWidget.WithValue(Ast.TypeLongIdent(t).Compile())
+                           TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
+                    ValueNone
+                )
+            )
 
         static member TypeMeasurePower(t: string, rational: string) =
-            Ast.TypeMeasurePower(Ast.TypeLongIdent(t), Ast.RationalConstInteger(rational))
+            Ast.TypeMeasurePower(Ast.TypeLongIdent(t), Ast.Integer(rational))
 
         static member TypeMeasurePower(t: string list, rational: string) =
-            Ast.TypeMeasurePower(Ast.TypeLongIdent(t), Ast.RationalConstInteger(rational))
+            Ast.TypeMeasurePower(Ast.TypeLongIdent(t), Ast.Integer(rational))

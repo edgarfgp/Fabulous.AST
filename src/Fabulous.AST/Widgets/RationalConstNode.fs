@@ -20,9 +20,9 @@ module RationalConstNode =
 
     let WidgetNegateKey =
         Widgets.register "RationalConstNodeNegate" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
-            let node = Helpers.getNodeFromWidget<RationalConstNode> widget Node
-            RationalConstNode.Negate(NegateRationalNode(SingleTextNode.Create(value), node, Range.Zero)))
+            let minus = Helpers.getScalarValue widget Value
+            let rationalConst = Helpers.getNodeFromWidget<RationalConstNode> widget Node
+            RationalConstNode.Negate(NegateRationalNode(SingleTextNode.Create(minus), rationalConst, Range.Zero)))
 
     let WidgetRationalKey =
         Widgets.register "RationalConstNodeRational" (fun widget ->
@@ -45,23 +45,47 @@ module RationalConstNode =
 module RationalConstNodeBuilders =
     type Ast with
 
-        static member RationalConstInteger(value: string) =
+        /// <summary>
+        /// Create a RationalConstNode with an integer value
+        /// </summary>
+        /// <param name="value">The integer value</param>
+        /// <code language="fsharp">
+        /// Integer("123")
+        /// </code>
+        static member Integer(value: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetIntegerKey,
                 AttributesBundle(StackList.one(RationalConstNode.Value.WithValue(value)), ValueNone, ValueNone)
             )
 
-        static member RationalConstNegate(value: string, node: WidgetBuilder<RationalConstNode>) =
+        /// <summary>
+        /// Create a RationalConstNode with a negated value
+        /// </summary>
+        /// <param name="minus">The minus value</param>
+        /// <param name="rationalConst">The RationalConstNode to negate</param>
+        /// <code language="fsharp">
+        /// Negate("-", Integer("123"))
+        /// </code>
+        static member Negate(minus: string, rationalConst: WidgetBuilder<RationalConstNode>) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetNegateKey,
                 AttributesBundle(
-                    StackList.one(RationalConstNode.Value.WithValue(value)),
-                    ValueSome [| RationalConstNode.Node.WithValue(node.Compile()) |],
+                    StackList.one(RationalConstNode.Value.WithValue(minus)),
+                    ValueSome [| RationalConstNode.Node.WithValue(rationalConst.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member RationalConstRational(numerator: string, divOp: string, denominator: string) =
+        /// <summary>
+        /// Create a RationalConstNode with a rational value
+        /// </summary>
+        /// <param name="numerator">The numerator used in the rational value</param>
+        /// <param name="divOp">The division operator used in the rational value</param>
+        /// <param name="denominator">The denominator used in the rational value</param>
+        /// <code language="fsharp">
+        /// Rational("123", "/", "456")
+        /// </code>
+        static member Rational(numerator: string, divOp: string, denominator: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetRationalKey,
                 AttributesBundle(

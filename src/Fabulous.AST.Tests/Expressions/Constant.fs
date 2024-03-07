@@ -103,7 +103,7 @@ let x = 55.0f / 1000.0<g / kg>
                 ConstantExpr(
                     ConstantMeasure(
                         Constant("55.0f"),
-                        MeasurePower("*", MeasureSingle("miles"), RationalConstInteger("hour"))
+                        MeasurePower("*", MeasureSingle("miles"), Integer("hour"))
                     )
                 )
             )

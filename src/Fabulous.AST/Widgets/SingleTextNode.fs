@@ -6,6 +6,8 @@ open Fantomas.Core.SyntaxOak
 type SingleTextNode =
     static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)
 
+/// Contains all the single text nodes that are used in the AST
+[<RequireQualifiedAccess>]
 module SingleTextNode =
     let lessThan = SingleTextNode.Create "<"
     let greaterThan = SingleTextNode.Create ">"
