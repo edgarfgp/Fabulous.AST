@@ -25,7 +25,7 @@ module APISketchTests =
                 for i = 20 to 30 do
                     Abbrev($"T{i}", String())
             }
-            |> Gen.ast
+            |> Gen.mkOak
             |> CodeFormatter.FormatOakAsync
             |> Async.RunSynchronously
 
@@ -44,7 +44,7 @@ module APISketchTests =
                 for i = 20 to 30 do
                     Abbrev($"T{i}", String())
             }
-            |> Gen.ast
+            |> Gen.mkOak
             |> CodeFormatter.FormatOakAsync
             |> Async.RunSynchronously
 

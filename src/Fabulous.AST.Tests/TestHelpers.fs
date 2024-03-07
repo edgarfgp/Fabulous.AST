@@ -8,7 +8,7 @@ open NUnit.Framework
 [<AutoOpen>]
 module TestHelpers =
     let produces (expected: string) (source: WidgetBuilder<#Oak>) =
-        let oak = Gen.ast source
+        let oak = Gen.mkOak source
 
         let config =
             { FormatConfig.Default with

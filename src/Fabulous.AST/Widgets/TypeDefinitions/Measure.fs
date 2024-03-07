@@ -149,7 +149,7 @@ type TypeDefnAbbrevNodeYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<TypeNameNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let typeDefn = TypeDefn.None(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()

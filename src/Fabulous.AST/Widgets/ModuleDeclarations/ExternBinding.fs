@@ -178,7 +178,7 @@ type ExternBindingNodeYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<ExternBindingNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.ExternBinding node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }

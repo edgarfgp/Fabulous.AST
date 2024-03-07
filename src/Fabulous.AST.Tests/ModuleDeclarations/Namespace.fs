@@ -100,7 +100,7 @@ module AST =
             records
             |> List.map(fun { typename = name; props = props } ->
                 if Map.isEmpty props then
-                    Abbrev(name, Obj()) |> Gen.ast |> TypeDefn.Abbrev |> ModuleDecl.TypeDefn
+                    Abbrev(name, Obj()) |> Gen.mkOak |> TypeDefn.Abbrev |> ModuleDecl.TypeDefn
                 else
                     let rec mkType (value: string list) =
                         match value with
@@ -111,7 +111,7 @@ module AST =
                     let myFields =
                         props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))
 
-                    let fields = Record(name) { yield! myFields } |> Gen.ast
+                    let fields = Record(name) { yield! myFields } |> Gen.mkOak
                     let record = TypeDefn.Record(fields)
                     ModuleDecl.TypeDefn(record))
 

@@ -54,7 +54,7 @@ open type Fabulous.AST.Ast
 AnonymousModule() { 
     Value("x", "12", false)
 }
-|> Gen.ast
+|> Gen.mkOak
 |> CodeFormatter.FormatOakAsync
 |> Async.RunSynchronously
 |> printfn "%s"

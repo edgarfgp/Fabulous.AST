@@ -163,7 +163,7 @@ type RecordYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<TypeDefnRecordNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let typeDefn = TypeDefn.Record(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
@@ -189,7 +189,7 @@ type RecordYieldExtensions =
             this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<BindingNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         RecordYieldExtensions.Yield(this, node)
 
     [<Extension>]
@@ -207,7 +207,7 @@ type RecordYieldExtensions =
             this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<MemberDefnInterfaceNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         RecordYieldExtensions.Yield(this, node)
 
     [<Extension>]
@@ -225,5 +225,5 @@ type RecordYieldExtensions =
             this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
             x: WidgetBuilder<MemberDefnInterfaceNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         RecordYieldExtensions.Yield(this, node)

@@ -58,7 +58,7 @@ type AugmentYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<TypeDefnAugmentationNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let typeDefn = TypeDefn.Augmentation(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
@@ -79,5 +79,5 @@ type AugmentYieldExtensions =
             this: CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>,
             x: WidgetBuilder<BindingNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         AugmentYieldExtensions.Yield(this, node)

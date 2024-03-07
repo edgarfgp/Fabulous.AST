@@ -159,7 +159,7 @@ type UnionYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<TypeDefnUnionNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let typeDefn = TypeDefn.Union(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
@@ -181,7 +181,7 @@ type UnionParameterizedCaseYieldExtensions =
             _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: WidgetBuilder<BindingNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
@@ -209,5 +209,5 @@ type UnionParameterizedCaseYieldExtensions =
             this: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
             x: WidgetBuilder<MemberDefnInterfaceNode>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         UnionParameterizedCaseYieldExtensions.Yield(this, node)

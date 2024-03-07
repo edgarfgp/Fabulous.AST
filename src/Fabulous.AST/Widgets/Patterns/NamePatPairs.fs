@@ -72,6 +72,6 @@ type NamePatPairsYieldExtensions =
             _: CollectionBuilder<'parent, NamePatPair>,
             x: WidgetBuilder<NamePatPair>
         ) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let widget = Ast.EscapeHatch(node).Compile()
         { Widgets = MutStackArray1.One(widget) }

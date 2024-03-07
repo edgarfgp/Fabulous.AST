@@ -35,7 +35,7 @@ module AnonymousModuleBuilders =
 type AnonymousModuleExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<Expr>) : CollectionContent =
-        let node = Gen.ast x
+        let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.DeclExpr(node)
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
