@@ -63,5 +63,5 @@ type FunsYieldExtensions =
             this: CollectionBuilder<TypeFunsNode, Type>,
             x: WidgetBuilder<Type>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         FunsYieldExtensions.Yield(this, node)

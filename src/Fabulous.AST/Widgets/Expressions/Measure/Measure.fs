@@ -148,6 +148,6 @@ module MeasureBuilders =
 type MeasureYieldExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, Measure>, x: WidgetBuilder<Measure>) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         let widget = Ast.EscapeHatch(node).Compile()
         { Widgets = MutStackArray1.One(widget) }

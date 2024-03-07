@@ -97,7 +97,7 @@ type IfThenYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<ExprIfThenNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         let expIfThen = Expr.IfThen(node)
         let moduleDecl = ModuleDecl.DeclExpr expIfThen
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

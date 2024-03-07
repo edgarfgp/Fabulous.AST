@@ -99,7 +99,7 @@ type ModuleDeclAttributesYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<ModuleDeclAttributesNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         let moduleDecl = ModuleDecl.Attributes node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }

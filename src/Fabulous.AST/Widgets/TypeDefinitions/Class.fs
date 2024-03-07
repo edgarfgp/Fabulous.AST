@@ -204,7 +204,7 @@ type ClassYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<TypeDefnRegularNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         let typeDefn = TypeDefn.Regular(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
 
@@ -226,7 +226,7 @@ type ClassYieldExtensions =
             this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<BindingNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         ClassYieldExtensions.Yield(this, node)
 
     [<Extension>]
@@ -244,7 +244,7 @@ type ClassYieldExtensions =
             this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<MemberDefnAbstractSlotNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         ClassYieldExtensions.Yield(this, node)
 
     [<Extension>]
@@ -262,5 +262,5 @@ type ClassYieldExtensions =
             this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>,
             x: WidgetBuilder<MemberDefnInterfaceNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         ClassYieldExtensions.Yield(this, node)

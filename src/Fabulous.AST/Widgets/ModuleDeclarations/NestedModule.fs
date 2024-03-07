@@ -88,7 +88,7 @@ type NestedModuleYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<NestedModuleNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         let moduleDecl = ModuleDecl.NestedModule node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }

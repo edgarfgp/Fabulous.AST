@@ -66,7 +66,7 @@ module AbstractMember =
                                 else
                                     SingleTextNode.rightArrow
 
-                            (Tree.compile value, separator))
+                            (Gen.ast value, separator))
 
                     parameters, returnType
                 | ValueSome(Named((parameters), isTupled)) ->
@@ -89,14 +89,14 @@ module AbstractMember =
                                         TypeSignatureParameterNode(
                                             None,
                                             Some(SingleTextNode.Create(name)),
-                                            Tree.compile(value),
+                                            Gen.ast(value),
                                             Range.Zero
                                         )
                                     )
 
                                 (value, separator)
 
-                            | None -> (Tree.compile(value), separator))
+                            | None -> (Gen.ast(value), separator))
 
                     parameters, returnType
 

@@ -57,7 +57,7 @@ type IfThenElseYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<ExprIfThenElseNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         let expIfThen = Expr.IfThenElse(node)
         let moduleDecl = ModuleDecl.DeclExpr expIfThen
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

@@ -188,7 +188,7 @@ type ValYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<ValNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.ast x
         let moduleDecl = ModuleDecl.Val node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
