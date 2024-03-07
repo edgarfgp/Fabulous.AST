@@ -70,7 +70,7 @@ open type Fabulous.AST.Ast
 
 let source = AnonymousModule() { Value("x", "12") }
 
-let oak = Tree.compile source
+let oak = Gen.ast source
 CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously |> printfn "%s"
 
 // produces the following code:
@@ -110,7 +110,7 @@ let sourceWithEscapeHatch =
         EscapeHatch(topLevelBinding)
     }
 
-Tree.compile sourceWithEscapeHatch
+Gen.ast sourceWithEscapeHatch
 |> CodeFormatter.FormatOakAsync
 |> Async.RunSynchronously
 |> printfn "%s"
