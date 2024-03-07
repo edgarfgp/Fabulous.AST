@@ -15,7 +15,7 @@ module TypeAnonRecord =
 
             let fields =
                 fields
-                |> List.map(fun (name, widget) -> (SingleTextNode.Create(name), Tree.compile widget))
+                |> List.map(fun (name, widget) -> (SingleTextNode.Create(name), Gen.mkOak widget))
 
             let isStructNode = Helpers.getScalarValue widget IsStructNode
 

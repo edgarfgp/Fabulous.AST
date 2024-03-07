@@ -44,7 +44,7 @@ type OpenYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<OpenNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         let openList = OpenListNode([ Open.ModuleOrNamespace node ])
         let moduleDecl = ModuleDecl.OpenList openList
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

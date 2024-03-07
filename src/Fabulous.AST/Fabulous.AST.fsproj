@@ -17,7 +17,7 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="README.md" PackagePath="\" Pack="true" />
+        <None Include="../../README.md" PackagePath="\" Pack="true" />
     </ItemGroup>
     <PropertyGroup Condition="$(GITHUB_ACTIONS) == 'true'">
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
@@ -32,7 +32,7 @@
         <Compile Include="Core\Helpers.fs" />
         <Compile Include="Core\Widgets.fs" />
         <Compile Include="Core\Attributes.fs" />
-        <Compile Include="Tree.fs" />
+        <Compile Include="Gen.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\SingleTextNode.fs" />
         <Compile Include="Widgets\Common.fs" />

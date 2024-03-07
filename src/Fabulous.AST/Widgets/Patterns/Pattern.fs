@@ -41,6 +41,6 @@ module PatternBuilders =
 type ParametersYieldExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, Pattern>, x: WidgetBuilder<Pattern>) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         let widget = Ast.EscapeHatch(node).Compile()
         { Widgets = MutStackArray1.One(widget) }

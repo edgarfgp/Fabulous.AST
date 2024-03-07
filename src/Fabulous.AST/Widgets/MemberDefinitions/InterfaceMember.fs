@@ -64,5 +64,5 @@ type InterfaceMemberYieldExtensions =
             this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>,
             x: WidgetBuilder<BindingNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         InterfaceMemberYieldExtensions.Yield(this, node)

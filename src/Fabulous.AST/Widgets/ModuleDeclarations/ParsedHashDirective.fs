@@ -59,7 +59,7 @@ type HashDirectiveNodeExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<ParsedHashDirectiveNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ]))
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }

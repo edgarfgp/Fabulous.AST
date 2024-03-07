@@ -202,7 +202,7 @@ type ClassEndYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<TypeDefnExplicitNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         let typeDefn = TypeDefn.Explicit(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()

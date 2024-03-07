@@ -60,7 +60,7 @@ type IfThenIfYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<ExprIfThenElifNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         let expIfThen = Expr.IfThenElif(node)
         let moduleDecl = ModuleDecl.DeclExpr expIfThen
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

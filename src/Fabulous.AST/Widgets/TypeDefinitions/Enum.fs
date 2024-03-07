@@ -119,7 +119,7 @@ type EnumYieldExtensions =
             _: CollectionBuilder<'parent, ModuleDecl>,
             x: WidgetBuilder<TypeDefnEnumNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         let typeDefn = TypeDefn.Enum(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
@@ -140,5 +140,5 @@ type EnumYieldExtensions =
             this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>,
             x: WidgetBuilder<EnumCaseNode>
         ) : CollectionContent =
-        let node = Tree.compile x
+        let node = Gen.mkOak x
         EnumYieldExtensions.Yield(this, node)
