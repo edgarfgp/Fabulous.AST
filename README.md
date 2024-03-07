@@ -8,38 +8,34 @@ Fabulous.AST uses [Fantomas](https://fsprojects.github.io/fantomas/docs/end-user
 Let's take a look at an AST example in Fantomas:
 
 ```fsharp
-open FSharp.Compiler.Text
-open Fantomas.Core.SyntaxOak
-
-let implementationSyntaxTree =
-    Oak(
-        [],
-        [ ModuleOrNamespaceNode(
-              None,
-              [ BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    [],
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
-                )
-                |> ModuleDecl.TopLevelBinding ],
-              Range.Zero
-          ) ],
-        Range.Zero
-    )
-
 open Fantomas.Core
-
-CodeFormatter.FormatOakAsync(implementationSyntaxTree)
+open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
+Oak(
+    [],
+    [ ModuleOrNamespaceNode(
+          None,
+          [ BindingNode(
+                None,
+                None,
+                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                false,
+                None,
+                None,
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                None,
+                [],
+                None,
+                SingleTextNode("=", Range.Zero),
+                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                Range.Zero
+            )
+            |> ModuleDecl.TopLevelBinding ],
+          Range.Zero
+      ) ],
+    Range.Zero
+)
+|> CodeFormatter.FormatOakAsync
 |> Async.RunSynchronously
 |> printfn "%s"
 ```
@@ -52,18 +48,16 @@ let x = 12
 Now let's take a look at same example using Fabulous.AST:
 
 ```fsharp
+open Fantomas.Core
 open type Fabulous.AST.Ast
 
-let source = 
-    AnonymousModule() { 
-        Value("x", "12")
-    }
-
-open Fantomas.Core
-
-let oak = Tree.compile source
-let res = CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously
-printfn $"%s{res}"
+AnonymousModule() { 
+    Value("x", "12", false)
+}
+|> Tree.compile
+|> CodeFormatter.FormatOakAsync
+|> Async.RunSynchronously
+|> printfn "%s"
 ```
 produces the following code:
 
