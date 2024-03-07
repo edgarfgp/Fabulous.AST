@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Attribute Widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/58
 - Type widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/59
-- ConstantStringExpr
+- Add ConstantStringExpr widget
 
 ## [0.7.0] - 2023-02-11
 

@@ -35,7 +35,6 @@
         <Compile Include="Tree.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
-        <Compile Include="Widgets\CommonYieldExtensions.fs" />
         <Compile Include="Widgets\RationalConstNode.fs" />
         <Compile Include="Widgets\Types\LongIdent.fs" />
         <Compile Include="Widgets\Types\HashConstraint.fs" />
