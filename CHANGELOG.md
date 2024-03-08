@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+_No unreleased changes_
+
+## [0.8.0] - 2024-03-08
 
 ### Updated
 - Rework constant widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/57
@@ -94,7 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.7.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.0
 [0.7.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.7.0
 [0.6.2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.2
 [0.6.1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.1
