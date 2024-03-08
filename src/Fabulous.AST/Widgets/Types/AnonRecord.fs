@@ -38,7 +38,7 @@ module TypeAnonRecord =
 [<AutoOpen>]
 module TypeAnonRecordBuilders =
     type Ast with
-        static member TypeAnonRecord(fields: (string * WidgetBuilder<Type>) list) =
+        static member AnonRecord(fields: (string * WidgetBuilder<Type>) list) =
             WidgetBuilder<Type>(
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
@@ -48,9 +48,9 @@ module TypeAnonRecordBuilders =
                 )
             )
 
-        static member TypeAnonRecord(fields: (string * string) list) =
+        static member AnonRecord(fields: (string * string) list) =
             let fields =
-                fields |> List.map(fun (name, typeName) -> (name, Ast.TypeLongIdent(typeName)))
+                fields |> List.map(fun (name, typeName) -> (name, Ast.LongIdent(typeName)))
 
             WidgetBuilder<Type>(
                 TypeAnonRecord.WidgetKey,
@@ -61,7 +61,7 @@ module TypeAnonRecordBuilders =
                 )
             )
 
-        static member TypeStructAnonRecord(fields: (string * WidgetBuilder<Type>) list) =
+        static member StructAnonRecord(fields: (string * WidgetBuilder<Type>) list) =
             WidgetBuilder<Type>(
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
@@ -71,9 +71,9 @@ module TypeAnonRecordBuilders =
                 )
             )
 
-        static member TypeStructAnonRecord(fields: (string * string) list) =
+        static member StructAnonRecord(fields: (string * string) list) =
             let fields =
-                fields |> List.map(fun (name, typeName) -> (name, Ast.TypeLongIdent(typeName)))
+                fields |> List.map(fun (name, typeName) -> (name, Ast.LongIdent(typeName)))
 
             WidgetBuilder<Type>(
                 TypeAnonRecord.WidgetKey,

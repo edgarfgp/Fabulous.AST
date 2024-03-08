@@ -12,7 +12,7 @@ module ModuleDeclAttributes =
     [<Test>]
     let ``Produces a do expr`` () =
         AnonymousModule() {
-            ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\""))
+            ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"", false))
                 .attributes() {
                 Attribute "MyCustomModuleAttribute"
             }
@@ -26,7 +26,7 @@ do printfn "Executing..."
     [<Test>]
     let ``Produces a ModuleDeclAttributes`` () =
         AnonymousModule() {
-            ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\""))
+            ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"", false))
                 .attributes() {
                 Attribute "MyCustomModuleAttribute"
                 Attribute "MyCustomModuleAttribute2"

@@ -10,7 +10,7 @@ open type Ast
 module AnonymousModule =
     [<Test>]
     let ``Produces a simple hello world console app`` () =
-        AnonymousModule() { AppExpr("printfn") { ConstantStringExpr("hello, world") } }
+        AnonymousModule() { AppExpr("printfn") { ConstantExpr("hello, world") } }
         |> produces
             """
         
@@ -24,8 +24,8 @@ printfn "hello, world"
             Value("x", "hello, world", true)
 
             AppExpr("printfn") {
-                ConstantStringExpr("%s")
-                ConstantExpr("x")
+                ConstantExpr("%s")
+                ConstantExpr("x", false)
             }
         }
         |> produces
@@ -41,8 +41,8 @@ printfn "%s" x
         AnonymousModule() {
             for i = 0 to 2 do
                 AppExpr("printfn") {
-                    ConstantStringExpr("%s")
-                    ConstantExpr($"{i}")
+                    ConstantExpr("%s")
+                    ConstantExpr($"{i}", false)
                 }
         }
         |> produces

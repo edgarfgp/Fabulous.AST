@@ -21,32 +21,32 @@ module IsInst =
 module IsInstPatBuilders =
     type Ast with
 
-        static member IsInstPat(tp: WidgetBuilder<Type>) =
+        static member IsInstPat(value: WidgetBuilder<Type>) =
             WidgetBuilder<Pattern>(
                 IsInst.WidgetKey,
                 AttributesBundle(
                     StackList.one(IsInst.Token.WithValue(SingleTextNode.isInstance)),
-                    ValueSome [| IsInst.InstType.WithValue(tp.Compile()) |],
+                    ValueSome [| IsInst.InstType.WithValue(value.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member IsInstPat(tp: string) =
+        static member IsInstPat(value: string) =
             WidgetBuilder<Pattern>(
                 IsInst.WidgetKey,
                 AttributesBundle(
                     StackList.one(IsInst.Token.WithValue(SingleTextNode.isInstance)),
-                    ValueSome [| IsInst.InstType.WithValue(Ast.TypeLongIdent(tp).Compile()) |],
+                    ValueSome [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
                     ValueNone
                 )
             )
 
-        static member IsInstPat(token: string, tp: string) =
+        static member IsInstPat(token: string, value: string) =
             WidgetBuilder<Pattern>(
                 IsInst.WidgetKey,
                 AttributesBundle(
                     StackList.one(IsInst.Token.WithValue(SingleTextNode.Create(token))),
-                    ValueSome [| IsInst.InstType.WithValue(Ast.TypeLongIdent(tp).Compile()) |],
+                    ValueSome [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
                     ValueNone
                 )
             )

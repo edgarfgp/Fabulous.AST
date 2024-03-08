@@ -31,7 +31,7 @@ let x = 12
                     "GdmtSubcommands",
                     ArrayExpr() {
                         for subcommand in subcommands do
-                            ConstantStringExpr(subcommand)
+                            ConstantExpr(subcommand)
                     }
                 )
             }
@@ -57,9 +57,9 @@ module Subcommands =
                     NamedPat("z")
                 },
                 TupleExpr() {
-                    ConstantExpr("1")
-                    ConstantExpr("2")
-                    ConstantExpr("3")
+                    ConstantExpr("1", false)
+                    ConstantExpr("2", false)
+                    ConstantExpr("3", false)
                 }
             )
         }
@@ -84,18 +84,18 @@ let x: int = 12
     let ``Simple Let binding with return widget type`` () =
         AnonymousModule() {
             Value("x", "12", false).returnType("int")
-            Value("y", "12", false).returnType(TypeLongIdent("int"))
+            Value("y", "12", false).returnType(LongIdent("int"))
 
             Value("z", "12", false)
-                .returnType(TypeFuns(TypeLongIdent("string")) { TypeLongIdent("int") })
+                .returnType(Funs(LongIdent("string")) { LongIdent("int") })
 
             Value("a", "12", false)
-                .returnType(TypeFuns("string") { TypeLongIdent("int") })
+                .returnType(Funs("string") { LongIdent("int") })
 
             Value("b", "12", false).returnType("string -> int")
 
             Value("c", "12", false)
-                .returnType(TypeHashConstraint(TypeLongIdent("int")))
+                .returnType(HashConstraint(LongIdent("int")))
         }
         |> produces
             """
@@ -111,7 +111,7 @@ let c: #int = 12
 
     [<Test>]
     let ``Simple Let binding with an expression`` () =
-        AnonymousModule() { Value("x", ConstantExpr("12")) }
+        AnonymousModule() { Value("x", ConstantExpr("12", false)) }
         |> produces
             """
 
@@ -148,7 +148,7 @@ let x<'a, 'b, 'c> = 12
     [<Test>]
     let ``Simple Let binding with type params SinglePrefix`` () =
         AnonymousModule() {
-            Value("x", [ "'T" ], ConstantExpr("12"))
+            Value("x", [ "'T" ], ConstantExpr("12", false))
 
             Value("x", [ "'T" ], "12", false)
         }
@@ -314,7 +314,7 @@ let mutable x: int = 12
 
     [<Test>]
     let ``Produces a top level mutable let binding with an expression`` () =
-        AnonymousModule() { Value("x", ConstantExpr("12")).toMutable() }
+        AnonymousModule() { Value("x", ConstantExpr("12", false)).toMutable() }
         |> produces
             """
         
@@ -324,7 +324,7 @@ let mutable x = 12
 
     [<Test>]
     let ``Produces a top level inlined let binding with type params and an expression`` () =
-        AnonymousModule() { Value("x", [ "'a" ], ConstantExpr("12")).toInlined() }
+        AnonymousModule() { Value("x", [ "'a" ], ConstantExpr("12", false)).toInlined() }
         |> produces
             """
         

@@ -43,7 +43,7 @@ module TypeAppPrefix =
 [<AutoOpen>]
 module TypeAppPrefixBuilders =
     type Ast with
-        static member TypeAppPrefix(t: WidgetBuilder<Type>, arguments: WidgetBuilder<Type>) =
+        static member AppPrefix(t: WidgetBuilder<Type>, arguments: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,
                 AttributesBundle(
@@ -55,12 +55,7 @@ module TypeAppPrefixBuilders =
                 )
             )
 
-        static member TypeAppPrefix
-            (
-                t: WidgetBuilder<Type>,
-                postIdentifier: string list,
-                arguments: WidgetBuilder<Type>
-            ) =
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, arguments: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,
                 AttributesBundle(

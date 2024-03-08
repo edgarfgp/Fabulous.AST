@@ -15,9 +15,9 @@ module HashDirectives =
             Open("System")
 
             (Record("HEX") {
-                Field("R", TypeLongIdent("int"))
-                Field("G", TypeLongIdent("int"))
-                Field("B", TypeLongIdent("int"))
+                Field("R", LongIdent("int"))
+                Field("G", LongIdent("int"))
+                Field("B", LongIdent("int"))
             })
                 .attribute(Attribute "Obsolete")
         }
@@ -37,9 +37,9 @@ type HEX = { R: int; G: int; B: int }
             Open("System")
 
             (Record("HEX") {
-                Field("R", TypeLongIdent("int"))
-                Field("G", TypeLongIdent("int"))
-                Field("B", TypeLongIdent("int"))
+                Field("R", LongIdent("int"))
+                Field("G", LongIdent("int"))
+                Field("B", LongIdent("int"))
             })
                 .attribute("Obsolete")
         }
@@ -60,9 +60,9 @@ type HEX = { R: int; G: int; B: int }
             Open("System")
 
             (Record("HEX") {
-                Field("R", TypeLongIdent("int"))
-                Field("G", TypeLongIdent("int"))
-                Field("B", TypeLongIdent("int"))
+                Field("R", LongIdent("int"))
+                Field("G", LongIdent("int"))
+                Field("B", LongIdent("int"))
             })
                 .attribute("Obsolete")
         }
@@ -83,9 +83,9 @@ type HEX = { R: int; G: int; B: int }
             Open("System")
 
             (Record("HEX") {
-                Field("R", TypeLongIdent("int"))
-                Field("G", TypeLongIdent("int"))
-                Field("B", TypeLongIdent("int"))
+                Field("R", LongIdent("int"))
+                Field("G", LongIdent("int"))
+                Field("B", LongIdent("int"))
             })
                 .attribute(Attribute "Obsolete")
         }
@@ -104,9 +104,9 @@ type HEX = { R: int; G: int; B: int }
     let ``Produces an Namespace with Conditional directive`` () =
         AnonymousModule() {
             HashDirective("if", "!DEBUG")
-            Value("str", ConstantStringExpr(("Not debugging!")))
+            Value("str", ConstantExpr(("Not debugging!")))
             HashDirective("else")
-            Value("str", ConstantStringExpr("Debugging!"))
+            Value("str", ConstantExpr("Debugging!"))
             HashDirective("endif")
         }
         |> produces

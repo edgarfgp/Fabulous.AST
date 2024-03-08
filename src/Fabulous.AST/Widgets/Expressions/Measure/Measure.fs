@@ -125,16 +125,16 @@ module MeasureBuilders =
                 )
             )
 
-        static member MeasureMultiply(content: string list) =
+        static member MeasureMultiple(content: string list) =
             WidgetBuilder<Measure>(
                 Measure.WidgetMeasureMultiplyKey,
                 AttributesBundle(StackList.one(Measure.Content.WithValue(content)), ValueNone, ValueNone)
             )
 
-        static member MeasureSequence() =
+        static member MeasureSeq() =
             CollectionBuilder<Measure, Measure>(Measure.WidgetSequenceKey, Measure.Measures)
 
-        static member MeasureParenthesis(measure: WidgetBuilder<Measure>) =
+        static member MeasureParen(measure: WidgetBuilder<Measure>) =
             WidgetBuilder<Measure>(
                 Measure.WidgetParenthesisKey,
                 AttributesBundle(

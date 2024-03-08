@@ -14,12 +14,12 @@ module TypeStaticConstant =
 [<AutoOpen>]
 module TypeStaticConstantBuilders =
     type Ast with
-        static member TypeStaticConstant(t: WidgetBuilder<Constant>) =
+        static member StaticConstant(value: WidgetBuilder<Constant>) =
             WidgetBuilder<Type>(
                 TypeStaticConstant.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| TypeStaticConstant.TypeWidget.WithValue(t.Compile()) |],
+                    ValueSome [| TypeStaticConstant.TypeWidget.WithValue(value.Compile()) |],
                     ValueNone
                 )
             )

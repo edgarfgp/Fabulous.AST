@@ -76,7 +76,7 @@ module ImplicitConstructor =
 [<AutoOpen>]
 module ImplicitConstructorBuilders =
     type Ast with
-        static member ImplicitConstructor() =
+        static member Constructor() =
             CollectionBuilder<ImplicitConstructorNode, SimplePatNode>(
                 ImplicitConstructor.WidgetKey,
                 ImplicitConstructor.SimplePats,

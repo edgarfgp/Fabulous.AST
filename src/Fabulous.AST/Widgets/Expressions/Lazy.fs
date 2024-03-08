@@ -21,3 +21,25 @@ module LazyBuilders =
                 Lazy.WidgetKey,
                 AttributesBundle(StackList.empty(), ValueSome [| Lazy.Value.WithValue(value.Compile()) |], ValueNone)
             )
+
+        static member LazyExpr(value: string, ?hasQuotes) =
+            match hasQuotes with
+            | None
+            | Some true ->
+                WidgetBuilder<Expr>(
+                    Lazy.WidgetKey,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Lazy.Value.WithValue(Ast.ConstantExpr(value, true).Compile()) |],
+                        ValueNone
+                    )
+                )
+            | _ ->
+                WidgetBuilder<Expr>(
+                    Lazy.WidgetKey,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Lazy.Value.WithValue(Ast.ConstantExpr(value, false).Compile()) |],
+                        ValueNone
+                    )
+                )

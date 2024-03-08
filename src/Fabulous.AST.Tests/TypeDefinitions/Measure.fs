@@ -8,7 +8,6 @@ open Fabulous.AST
 open type Fabulous.AST.Ast
 open type Fantomas.Core.SyntaxOak.Type
 
-
 module UnitsOfMeasure =
 
     [<Test>]
@@ -16,7 +15,7 @@ module UnitsOfMeasure =
         AnonymousModule() {
             Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-            Measure("ml", TypeMeasurePower("cm", "3"))
+            Measure("ml", MeasurePowerInteger("cm", "3"))
                 .xmlDocs([ "Ml, milliliters." ])
 
             Measure("g").xmlDocs([ "Mass, grams." ])
@@ -28,12 +27,12 @@ module UnitsOfMeasure =
             Measure("ft").xmlDocs([ "Distance, feet" ])
             Measure("s").xmlDocs([ "Time, seconds." ])
 
-            Measure("N", TypeTuple("kg", "m", TypeMeasurePower([ "s" ], "2")))
+            Measure("N", Tuple("kg", "m", MeasurePowerInteger([ "s" ], "2")))
                 .xmlDocs([ "Force, Newtons." ])
 
             Measure("bar").xmlDocs([ "Pressure, bar." ])
 
-            Measure("Pa", TypeTuple(TypeLongIdent "N", TypeMeasurePower([ "m" ], "2")))
+            Measure("Pa", Tuple(LongIdent "N", MeasurePowerInteger([ "m" ], "2")))
                 .xmlDocs([ "Pressure, Pascals" ])
 
             Measure("ml").xmlDocs([ "Volume, milliliters." ])

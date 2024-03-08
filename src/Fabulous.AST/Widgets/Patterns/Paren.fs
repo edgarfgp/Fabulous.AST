@@ -20,8 +20,18 @@ module ParenPat =
 module ParenPatBuilders =
     type Ast with
 
-        static member ParenPat(rhs: WidgetBuilder<Pattern>) =
+        static member ParenPat(pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<Pattern>(
                 ParenPat.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| ParenPat.Pat.WithValue(rhs.Compile()) |], ValueNone)
+                AttributesBundle(StackList.empty(), ValueSome [| ParenPat.Pat.WithValue(pat.Compile()) |], ValueNone)
+            )
+
+        static member ParenPat(pat: string) =
+            WidgetBuilder<Pattern>(
+                ParenPat.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome [| ParenPat.Pat.WithValue(Ast.NamedPat(pat).Compile()) |],
+                    ValueNone
+                )
             )

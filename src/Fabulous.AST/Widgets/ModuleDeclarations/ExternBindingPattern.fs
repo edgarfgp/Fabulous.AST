@@ -51,19 +51,19 @@ module ExternBindingPattern =
 module ExternBindingPatternNodeBuilders =
     type Ast with
 
-        static member ExternBindingPattern(``type``: string, pat: WidgetBuilder<Pattern>) =
+        static member ExternBindingPat(``type``: string, pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<ExternBindingPatternNode>(
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
                     ValueSome
                         [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
-                           ExternBindingPattern.Type.WithValue(Ast.TypeLongIdent(``type``).Compile()) |],
+                           ExternBindingPattern.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
                     ValueNone
                 )
             )
 
-        static member ExternBindingPattern(``type``: WidgetBuilder<Type>, pat: WidgetBuilder<Pattern>) =
+        static member ExternBindingPat(``type``: WidgetBuilder<Type>, pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<ExternBindingPatternNode>(
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(

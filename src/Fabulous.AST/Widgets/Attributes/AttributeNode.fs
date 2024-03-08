@@ -29,7 +29,6 @@ module AttributeNode =
             let typeName = Helpers.getScalarValue widget TypeName
             AttributeNode(typeName, expr, target, Range.Zero))
 
-
 [<AutoOpen>]
 module AttributeNodeBuilders =
     type Ast with
@@ -62,14 +61,14 @@ module AttributeNodeBuilders =
 
             WidgetBuilder<AttributeNode>(AttributeNode.WidgetKey, AttributesBundle(scalars, widgets, ValueNone))
 
-        static member Attribute(typeName: string) =
-            Ast.BaseAttributeNode(typeName, ValueNone, ValueNone)
+        static member Attribute(value: string) =
+            Ast.BaseAttributeNode(value, ValueNone, ValueNone)
 
-        static member Attribute(typeName: string, target: string) =
-            Ast.BaseAttributeNode(typeName, ValueNone, ValueSome target)
+        static member Attribute(value: string, target: string) =
+            Ast.BaseAttributeNode(value, ValueNone, ValueSome target)
 
-        static member Attribute(typeName: string, expr: WidgetBuilder<Expr>) =
-            Ast.BaseAttributeNode(typeName, ValueSome expr, ValueNone)
+        static member Attribute(value: string, expr: WidgetBuilder<Expr>) =
+            Ast.BaseAttributeNode(value, ValueSome expr, ValueNone)
 
-        static member Attribute(typeName: string, expr: WidgetBuilder<Expr>, target: string) =
-            Ast.BaseAttributeNode(typeName, ValueSome expr, ValueSome target)
+        static member Attribute(value: string, expr: WidgetBuilder<Expr>, target: string) =
+            Ast.BaseAttributeNode(value, ValueSome expr, ValueSome target)

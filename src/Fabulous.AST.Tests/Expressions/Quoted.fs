@@ -10,7 +10,7 @@ open type Ast
 module Quoted =
     [<Test>]
     let ``let value with a Quoted expression`` () =
-        AnonymousModule() { Value("x", QuotedExpr(ConstantExpr(Constant "12"))) }
+        AnonymousModule() { Value("x", QuotedExpr(ConstantExpr(Constant("12", false)))) }
         |> produces
             """
 

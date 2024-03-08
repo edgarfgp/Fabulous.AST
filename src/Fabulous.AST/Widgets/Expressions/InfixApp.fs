@@ -32,3 +32,15 @@ module InfixAppBuilders =
                     ValueNone
                 )
             )
+
+        static member inline InfixAppExpr(lhs: string, operator: string, rhs: string) =
+            WidgetBuilder<Expr>(
+                InfixApp.WidgetKey,
+                AttributesBundle(
+                    StackList.one(InfixApp.Operator.WithValue(operator)),
+                    ValueSome
+                        [| InfixApp.LeftHandSide.WithValue(Ast.ConstantExpr(lhs, false).Compile())
+                           InfixApp.RightHandSide.WithValue(Ast.ConstantExpr(rhs, false).Compile()) |],
+                    ValueNone
+                )
+            )

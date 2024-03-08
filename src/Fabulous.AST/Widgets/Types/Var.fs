@@ -15,8 +15,8 @@ module TypeVar =
 [<AutoOpen>]
 module TypeVarBuilders =
     type Ast with
-        static member TypeVar(identifier: string) =
+        static member Var(value: string) =
             WidgetBuilder<Type>(
                 TypeVar.WidgetKey,
-                AttributesBundle(StackList.one(TypeVar.Identifier.WithValue(identifier)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(TypeVar.Identifier.WithValue(value)), ValueNone, ValueNone)
             )

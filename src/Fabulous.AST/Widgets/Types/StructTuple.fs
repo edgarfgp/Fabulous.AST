@@ -22,5 +22,5 @@ module TypeStructTuple =
 [<AutoOpen>]
 module TypeStructTupleBuilders =
     type Ast with
-        static member TypeStructTuple() =
+        static member StructTuple() =
             CollectionBuilder<Type, Type>(TypeStructTuple.WidgetKey, TypeStructTuple.Items)

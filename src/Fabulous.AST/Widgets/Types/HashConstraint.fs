@@ -15,12 +15,12 @@ module TypeHashConstraint =
 [<AutoOpen>]
 module TypeHashConstraintBuilders =
     type Ast with
-        static member TypeHashConstraint(t: WidgetBuilder<Type>) =
+        static member HashConstraint(value: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeHashConstraint.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| TypeHashConstraint.TypeWidget.WithValue(t.Compile()) |],
+                    ValueSome [| TypeHashConstraint.TypeWidget.WithValue(value.Compile()) |],
                     ValueNone
                 )
             )

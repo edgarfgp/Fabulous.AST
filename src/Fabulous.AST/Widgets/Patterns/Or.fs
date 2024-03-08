@@ -14,9 +14,9 @@ module Or =
     let WidgetKey =
         Widgets.register "Or" (fun widget ->
             let lhs = Helpers.getNodeFromWidget widget LHSPattern
-            let mhs = Helpers.getScalarValue widget MHSPattern
+            let middle = Helpers.getScalarValue widget MHSPattern
             let rhs = Helpers.getNodeFromWidget widget RHSPattern
-            Pattern.Or(PatLeftMiddleRight(lhs, Choice1Of2(mhs), rhs, Range.Zero)))
+            Pattern.Or(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.Zero)))
 
 [<AutoOpen>]
 module OrBuilders =
@@ -34,14 +34,38 @@ module OrBuilders =
                 )
             )
 
-        static member OrPat(lhs: WidgetBuilder<Pattern>, mhs: string, rhs: WidgetBuilder<Pattern>) =
+        static member OrPat(lhs: string, rhs: string) =
             WidgetBuilder<Pattern>(
                 Or.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Or.MHSPattern.WithValue(SingleTextNode.Create(mhs))),
+                    StackList.one(Or.MHSPattern.WithValue(SingleTextNode.bar)),
+                    ValueSome
+                        [| Or.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                           Or.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member OrPat(lhs: WidgetBuilder<Pattern>, middle: string, rhs: WidgetBuilder<Pattern>) =
+            WidgetBuilder<Pattern>(
+                Or.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Or.MHSPattern.WithValue(SingleTextNode.Create(middle))),
                     ValueSome
                         [| Or.LHSPattern.WithValue(lhs.Compile())
                            Or.RHSPattern.WithValue(rhs.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member OrPat(lhs: string, middle: string, rhs: string) =
+            WidgetBuilder<Pattern>(
+                Or.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Or.MHSPattern.WithValue(SingleTextNode.Create(middle))),
+                    ValueSome
+                        [| Or.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                           Or.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
                     ValueNone
                 )
             )

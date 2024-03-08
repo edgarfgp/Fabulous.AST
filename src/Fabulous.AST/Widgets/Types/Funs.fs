@@ -28,7 +28,7 @@ module TypeFuns =
 module FunsBuilders =
     type Ast with
 
-        static member TypeFuns(returnType: WidgetBuilder<Type>) =
+        static member Funs(returnType: WidgetBuilder<Type>) =
             CollectionBuilder<Type, Type>(
                 TypeFuns.WidgetKey,
                 TypeFuns.Parameters,
@@ -39,13 +39,13 @@ module FunsBuilders =
                 )
             )
 
-        static member TypeFuns(returnType: string) =
+        static member Funs(returnType: string) =
             CollectionBuilder<Type, Type>(
                 TypeFuns.WidgetKey,
                 TypeFuns.Parameters,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| TypeFuns.Return.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| TypeFuns.Return.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
             )

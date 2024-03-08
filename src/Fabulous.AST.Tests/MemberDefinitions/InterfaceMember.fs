@@ -10,15 +10,15 @@ module InterfaceMembers =
     [<Test>]
     let ``Produces a record with TypeParams and interface member`` () =
         AnonymousModule() {
-            Interface("IMyInterface") { AbstractCurriedMethodMember("GetValue", [ Unit() ], String()) }
+            Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", TypeLongIdent("string"))
-                Field("Blue", TypeLongIdent("'other"))
-                Field("Yellow", TypeLongIdent("int"))
+                Field("Green", LongIdent("string"))
+                Field("Blue", LongIdent("'other"))
+                Field("Yellow", LongIdent("int"))
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2")) }
+                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2", false)) }
             }
         }
 
@@ -43,15 +43,15 @@ type Colors<'other> =
         AnonymousModule() {
             Interface("IMyInterface") {
                 let parameters = [ Unit() ]
-                AbstractCurriedMethodMember("GetValue", parameters, String())
+                AbstractCurriedMethod("GetValue", parameters, String())
             }
 
             (Record("MyRecord") {
-                Field("MyField1", TypeLongIdent("int"))
-                Field("MyField2", TypeLongIdent("string"))
+                Field("MyField1", LongIdent("int"))
+                Field("MyField2", LongIdent("string"))
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2")) }
+                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2", false)) }
             }
         }
         |> produces
@@ -71,9 +71,9 @@ type MyRecord =
     [<Test>]
     let ``Produces a class with a interface member`` () =
         AnonymousModule() {
-            Interface("Meh") { AbstractPropertyMember("Name", String()) }
+            Interface("Meh") { AbstractProperty("Name", String()) }
 
-            Class("Person") { InterfaceMember("Meh") { Property("this.Name", ConstantStringExpr("23")) } }
+            Class("Person") { InterfaceMember("Meh") { Property("this.Name", ConstantExpr("23")) } }
         }
         |> produces
             """

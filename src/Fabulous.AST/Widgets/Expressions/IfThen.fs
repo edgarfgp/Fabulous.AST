@@ -65,6 +65,18 @@ module IfThenBuilders =
                 )
             )
 
+        static member inline IfThen(ifExpr: string, thenExpr: string) =
+            WidgetBuilder<ExprIfThenNode>(
+                IfThen.WidgetIfThenKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThen.IfExpr.WithValue(Ast.ConstantExpr(ifExpr, false).Compile())
+                           IfThen.ThenExpr.WithValue(Ast.ConstantExpr(thenExpr, false).Compile()) |],
+                    ValueNone
+                )
+            )
+
         static member inline ElIfThen(elIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<ExprIfThenNode>(
                 IfThen.WidgetElIfThenKey,
@@ -77,6 +89,18 @@ module IfThenBuilders =
                 )
             )
 
+        static member inline ElIfThen(elIfExpr: string, thenExpr: string) =
+            WidgetBuilder<ExprIfThenNode>(
+                IfThen.WidgetElIfThenKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThen.IfExpr.WithValue(Ast.ConstantExpr(elIfExpr, false).Compile())
+                           IfThen.ThenExpr.WithValue(Ast.ConstantExpr(thenExpr, false).Compile()) |],
+                    ValueNone
+                )
+            )
+
         static member inline ElseIfThen(elseIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<ExprIfThenNode>(
                 IfThen.WidgetElseIfThenKey,
@@ -85,6 +109,18 @@ module IfThenBuilders =
                     ValueSome
                         [| IfThen.IfExpr.WithValue(elseIfExpr.Compile())
                            IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member inline ElseIfThen(elseIfExpr: string, thenExpr: string) =
+            WidgetBuilder<ExprIfThenNode>(
+                IfThen.WidgetElseIfThenKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThen.IfExpr.WithValue(Ast.ConstantExpr(elseIfExpr, false).Compile())
+                           IfThen.ThenExpr.WithValue(Ast.ConstantExpr(thenExpr, false).Compile()) |],
                     ValueNone
                 )
             )

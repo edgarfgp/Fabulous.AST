@@ -45,6 +45,17 @@ module IfThenElifBuilders =
                 )
             )
 
+        static member inline ConditionalExpr(elseExpr: string) =
+            CollectionBuilder<ExprIfThenElifNode, ExprIfThenNode>(
+                IfThenElif.WidgetKey,
+                IfThenElif.Branches,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome [| IfThenElif.ElseExpr.WithValue(Ast.ConstantExpr(elseExpr, false).Compile()) |],
+                    ValueNone
+                )
+            )
+
         static member inline ConditionalExpr() =
             CollectionBuilder<ExprIfThenElifNode, ExprIfThenNode>(
                 IfThenElif.WidgetKey,

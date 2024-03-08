@@ -18,32 +18,44 @@ module TypeMeasurePower =
 [<AutoOpen>]
 module TypeMeasurePowerBuilders =
     type Ast with
-        static member TypeMeasurePower(t: WidgetBuilder<Type>, rational: WidgetBuilder<RationalConstNode>) =
+        static member MeasurePower(value: WidgetBuilder<Type>, rational: WidgetBuilder<RationalConstNode>) =
             WidgetBuilder<Type>(
                 TypeMeasurePower.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
                     ValueSome
-                        [| TypeMeasurePower.TypeWidget.WithValue(t.Compile())
+                        [| TypeMeasurePower.TypeWidget.WithValue(value.Compile())
                            TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
                     ValueNone
                 )
             )
-            
-        static member TypeMeasurePower(t: string, rational: WidgetBuilder<RationalConstNode>) =
+
+        static member MeasurePower(value: string, rational: WidgetBuilder<RationalConstNode>) =
             WidgetBuilder<Type>(
                 TypeMeasurePower.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
                     ValueSome
-                        [| TypeMeasurePower.TypeWidget.WithValue(Ast.TypeLongIdent(t).Compile())
+                        [| TypeMeasurePower.TypeWidget.WithValue(Ast.LongIdent(value).Compile())
                            TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member TypeMeasurePower(t: string, rational: string) =
-            Ast.TypeMeasurePower(Ast.TypeLongIdent(t), Ast.Integer(rational))
+        static member MeasurePower(value: string list, rational: WidgetBuilder<RationalConstNode>) =
+            WidgetBuilder<Type>(
+                TypeMeasurePower.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| TypeMeasurePower.TypeWidget.WithValue(Ast.LongIdent(value).Compile())
+                           TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
+                    ValueNone
+                )
+            )
 
-        static member TypeMeasurePower(t: string list, rational: string) =
-            Ast.TypeMeasurePower(Ast.TypeLongIdent(t), Ast.Integer(rational))
+        static member MeasurePowerInteger(value: string, rational: string) =
+            Ast.MeasurePower(Ast.LongIdent(value), Ast.Integer(rational))
+
+        static member MeasurePowerInteger(value: string list, rational: string) =
+            Ast.MeasurePower(Ast.LongIdent(value), Ast.Integer(rational))

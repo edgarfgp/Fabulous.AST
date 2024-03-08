@@ -17,12 +17,12 @@ module TypeArray =
 [<AutoOpen>]
 module TypeArrayBuilders =
     type Ast with
-        static member TypeArray(t: WidgetBuilder<Type>, rank: int) =
+        static member Array(value: WidgetBuilder<Type>, rank: int) =
             WidgetBuilder<Type>(
                 TypeArray.WidgetKey,
                 AttributesBundle(
                     StackList.one(TypeArray.Rank.WithValue(rank)),
-                    ValueSome [| TypeArray.T.WithValue(t.Compile()) |],
+                    ValueSome [| TypeArray.T.WithValue(value.Compile()) |],
                     ValueNone
                 )
             )

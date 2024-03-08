@@ -29,5 +29,10 @@ module NewBuilders =
                 )
             )
 
-        static member NewExpr(t: string, value: WidgetBuilder<Expr>) =
-            Ast.NewExpr(Ast.TypeLongIdent(t), value)
+        static member NewExpr(t: string, value: WidgetBuilder<Expr>) = Ast.NewExpr(Ast.LongIdent(t), value)
+
+        static member NewExpr(t: string, value: string, ?hasQuotes) =
+            match hasQuotes with
+            | None
+            | Some true -> Ast.NewExpr(Ast.LongIdent(t), Ast.ConstantExpr(value, true))
+            | _ -> Ast.NewExpr(Ast.LongIdent(t), Ast.ConstantExpr(value, false))

@@ -11,7 +11,7 @@ module App =
 
     [<Test>]
     let ``let value with a App expression`` () =
-        AnonymousModule() { Value("x", AppExpr("printfn") { ConstantExpr(ConstantString("a")) }) }
+        AnonymousModule() { Value("x", AppExpr("printfn") { ConstantExpr("a") }) }
         |> produces
             """
 

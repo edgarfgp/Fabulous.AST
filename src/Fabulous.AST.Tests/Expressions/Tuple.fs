@@ -15,9 +15,9 @@ module Tuple =
             Value(
                 "x",
                 TupleExpr() {
-                    ConstantExpr("1")
-                    ConstantExpr("2")
-                    ConstantExpr("3")
+                    ConstantExpr("1", false)
+                    ConstantExpr("2", false)
+                    ConstantExpr("3", false)
                 }
             )
         }
@@ -34,9 +34,9 @@ let x = 1, 2, 3
                 "x",
                 ParenExpr(
                     TupleExpr() {
-                        ConstantExpr("1")
-                        ConstantExpr("2")
-                        ConstantExpr("3")
+                        ConstantExpr("1", false)
+                        ConstantExpr("2", false)
+                        ConstantExpr("3", false)
                     }
                 )
             )

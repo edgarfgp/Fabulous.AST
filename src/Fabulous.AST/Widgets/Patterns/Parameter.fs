@@ -43,19 +43,13 @@ module ParameterBuilders =
         static member ParameterPat(name: WidgetBuilder<Pattern>) = Ast.BaseParameter(name, ValueNone)
 
         static member ParameterPat(name: string, pType: WidgetBuilder<Type>) =
-            Ast.BaseParameter(
-                Ast.EscapeHatch(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(name), Range.Zero))),
-                ValueSome pType
-            )
+            Ast.BaseParameter(Ast.NamedPat(name), ValueSome pType)
 
         static member ParameterPat(name: string) =
-            Ast.BaseParameter(
-                Ast.EscapeHatch(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(name), Range.Zero))),
-                ValueNone
-            )
+            Ast.BaseParameter(Ast.NamedPat(name), ValueNone)
 
         static member ParameterPat(name: WidgetBuilder<Pattern>, pType: string) =
-            Ast.BaseParameter(name, ValueSome(Ast.TypeLongIdent pType))
+            Ast.BaseParameter(name, ValueSome(Ast.LongIdent pType))
 
         static member ParameterPat(name: string, pType: string) =
-            Ast.ParameterPat(name, Ast.TypeLongIdent pType)
+            Ast.ParameterPat(name, Ast.LongIdent pType)

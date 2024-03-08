@@ -126,7 +126,7 @@ module TypeDefnAbbrevNodeBuilders =
             )
 
         static member inline Measure(name: string, powerType: string) =
-            Ast.Measure(name, Ast.TypeLongIdent(powerType))
+            Ast.Measure(name, Ast.LongIdent(powerType))
 
 [<Extension>]
 type TypeNameNodeModifiers =
