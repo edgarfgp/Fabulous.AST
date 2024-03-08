@@ -33,19 +33,19 @@ module InterfaceMember =
 module InterfaceMemberBuilders =
     type Ast with
 
-        static member InterfaceMember(``type``: WidgetBuilder<Type>) =
+        static member InterfaceMember(value: WidgetBuilder<Type>) =
             CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| InterfaceMember.Type.WithValue(``type``.Compile()) |],
+                    ValueSome [| InterfaceMember.Type.WithValue(value.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member InterfaceMember(``type``: string) =
-            Ast.InterfaceMember(Ast.TypeLongIdent(``type``))
+        static member InterfaceMember(value: string) =
+            Ast.InterfaceMember(Ast.LongIdent(value))
 
 [<Extension>]
 type InterfaceMemberYieldExtensions =

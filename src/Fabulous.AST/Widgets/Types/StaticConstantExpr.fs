@@ -17,7 +17,7 @@ module TypeStaticConstantExpr =
 [<AutoOpen>]
 module TypeStaticConstantExprBuilders =
     type Ast with
-        static member TypeStaticConstantExpr(constant: string, expr: WidgetBuilder<Expr>) =
+        static member StaticConstantExpr(constant: string, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<Type>(
                 TypeStaticConstantExpr.WidgetKey,
                 AttributesBundle(

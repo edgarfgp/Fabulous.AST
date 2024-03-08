@@ -39,7 +39,7 @@ type Colors =
 
             Interface("IMyInterface") {
                 let parameters = [ Unit() ]
-                AbstractCurriedMethodMember("GetValue", parameters, String())
+                AbstractCurriedMethod("GetValue", parameters, String())
             }
 
             (Union("Colors") {
@@ -49,7 +49,7 @@ type Colors =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantStringExpr("")) }
+                InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr("")) }
             }
 
         }
@@ -179,7 +179,7 @@ module GenericUnion =
             GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
                     Field("a", String())
-                    Field("b", TypeLongIdent("'other"))
+                    Field("b", LongIdent("'other"))
                 }
 
                 UnionCase("Green")
@@ -202,12 +202,12 @@ type Colors<'other> =
     [<Test>]
     let ``Produces an union with TypeParams and interface member`` () =
         AnonymousModule() {
-            Interface("IMyInterface") { AbstractCurriedMethodMember("GetValue", [ Unit() ], String()) }
+            Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
                     Field("a", String())
-                    Field("b", TypeLongIdent("'other"))
+                    Field("b", LongIdent("'other"))
                 }
 
                 UnionCase("Green")
@@ -215,7 +215,7 @@ type Colors<'other> =
                 UnionCase("Yellow")
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantStringExpr("")) }
+                InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr("")) }
             }
         }
 
@@ -241,7 +241,7 @@ type Colors<'other> =
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
                     Field("a", String())
-                    Field("b", TypeLongIdent("'other"))
+                    Field("b", LongIdent("'other"))
                 }
 
                 UnionCase("Green")

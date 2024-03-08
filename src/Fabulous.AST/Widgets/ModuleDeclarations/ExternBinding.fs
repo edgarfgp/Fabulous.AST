@@ -94,17 +94,17 @@ module ExternBinding =
 module ExternBindingNodeBuilders =
     type Ast with
 
-        static member ExternBindingNode(name: string, ``type``: string) =
+        static member ExternBinding(name: string, ``type``: string) =
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
                 AttributesBundle(
                     StackList.one(ExternBinding.Identifier.WithValue(name)),
-                    ValueSome [| ExternBinding.Type.WithValue(Ast.TypeLongIdent(``type``).Compile()) |],
+                    ValueSome [| ExternBinding.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
                     ValueNone
                 )
             )
 
-        static member ExternBindingNode(name: string, ``type``: WidgetBuilder<Type>) =
+        static member ExternBinding(name: string, ``type``: WidgetBuilder<Type>) =
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
                 AttributesBundle(

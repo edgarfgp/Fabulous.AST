@@ -11,31 +11,31 @@ module AbstractMembers =
     let ``Produces a classes with a abstract members`` () =
         AnonymousModule() {
             Interface("Meh") {
-                AbstractGetMember("Area", Float())
-                AbstractGetMember("Area1", "float")
+                AbstractGet("Area", Float())
+                AbstractGet("Area1", "float")
 
-                AbstractSetMember("Area2", Float())
-                AbstractSetMember("Area3", "float")
+                AbstractSet("Area2", Float())
+                AbstractSet("Area3", "float")
 
-                AbstractGetSetMember("Area4", Float())
-                AbstractGetSetMember("Area5", "float")
+                AbstractGetSet("Area4", Float())
+                AbstractGetSet("Area5", "float")
 
-                AbstractPropertyMember("Pi", Float())
-                AbstractPropertyMember("Pi2", "float")
+                AbstractProperty("Pi", Float())
+                AbstractProperty("Pi2", "float")
 
-                AbstractTupledMethodMember("Add", [ "int"; "int" ], "int")
-                AbstractTupledMethodMember("Add2", [ Int32(); Int32() ], Int32())
+                AbstractTupledMethod("Add", [ "int"; "int" ], "int")
+                AbstractTupledMethod("Add2", [ Int32(); Int32() ], Int32())
 
-                AbstractTupledMethodMember("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                AbstractTupledMethod("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
-                AbstractTupledMethodMember("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                AbstractTupledMethod("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
-                AbstractCurriedMethodMember("Add5", [ "int"; "int" ], "int")
-                AbstractCurriedMethodMember("Add6", [ Int32(); Int32() ], Int32())
+                AbstractCurriedMethod("Add5", [ "int"; "int" ], "int")
+                AbstractCurriedMethod("Add6", [ Int32(); Int32() ], Int32())
 
-                AbstractCurriedMethodMember("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                AbstractCurriedMethod("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
-                AbstractCurriedMethodMember("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                AbstractCurriedMethod("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
             }
         }
@@ -65,31 +65,31 @@ type Meh =
     let ``Produces a genetic interface with multiple abstract members types`` () =
         AnonymousModule() {
             Interface("Meh", [ "'other"; "'another" ]) {
-                AbstractGetMember("Area", Float())
-                AbstractGetMember("Area1", "float")
+                AbstractGet("Area", Float())
+                AbstractGet("Area1", "float")
 
-                AbstractSetMember("Area2", Float())
-                AbstractSetMember("Area3", "float")
+                AbstractSet("Area2", Float())
+                AbstractSet("Area3", "float")
 
-                AbstractGetSetMember("Area4", Float())
-                AbstractGetSetMember("Area5", "float")
+                AbstractGetSet("Area4", Float())
+                AbstractGetSet("Area5", "float")
 
-                AbstractPropertyMember("Pi", Float())
-                AbstractPropertyMember("Pi2", "float")
+                AbstractProperty("Pi", Float())
+                AbstractProperty("Pi2", "float")
 
-                AbstractTupledMethodMember("Add", [ "int"; "int" ], "int")
-                AbstractTupledMethodMember("Add2", [ Int32(); Int32() ], Int32())
+                AbstractTupledMethod("Add", [ "int"; "int" ], "int")
+                AbstractTupledMethod("Add2", [ Int32(); Int32() ], Int32())
 
-                AbstractTupledMethodMember("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                AbstractTupledMethod("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
-                AbstractTupledMethodMember("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                AbstractTupledMethod("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
-                AbstractCurriedMethodMember("Add5", [ "int"; "int" ], "int")
-                AbstractCurriedMethodMember("Add6", [ Int32(); Int32() ], Int32())
+                AbstractCurriedMethod("Add5", [ "int"; "int" ], "int")
+                AbstractCurriedMethod("Add6", [ Int32(); Int32() ], Int32())
 
-                AbstractCurriedMethodMember("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                AbstractCurriedMethod("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
 
-                AbstractCurriedMethodMember("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                AbstractCurriedMethod("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
             }
         }

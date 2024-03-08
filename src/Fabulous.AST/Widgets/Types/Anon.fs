@@ -15,8 +15,8 @@ module TypeAnon =
 [<AutoOpen>]
 module TypeAnonBuilders =
     type Ast with
-        static member TypeAnon(identifier: string) =
+        static member Anon(value: string) =
             WidgetBuilder<Type>(
                 TypeAnon.WidgetKey,
-                AttributesBundle(StackList.one(TypeAnon.Identifier.WithValue(identifier)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(TypeAnon.Identifier.WithValue(value)), ValueNone, ValueNone)
             )

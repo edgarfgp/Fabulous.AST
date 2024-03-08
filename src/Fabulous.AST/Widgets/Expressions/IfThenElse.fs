@@ -49,6 +49,19 @@ module IfThenElseBuilders =
                 )
             )
 
+        static member inline IfThenElse(ifExpr: string, thenExpr: string, elseExpr: string) =
+            WidgetBuilder<ExprIfThenElseNode>(
+                IfThenElse.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    ValueSome
+                        [| IfThenElse.IfExpr.WithValue(Ast.ConstantExpr(ifExpr, false).Compile())
+                           IfThenElse.ThenExpr.WithValue(Ast.ConstantExpr(thenExpr, false).Compile())
+                           IfThenElse.ElseExpr.WithValue(Ast.ConstantExpr(elseExpr, false).Compile()) |],
+                    ValueNone
+                )
+            )
+
 [<Extension>]
 type IfThenElseYieldExtensions =
     [<Extension>]

@@ -44,3 +44,40 @@ module SingleBuilders =
                     ValueNone
                 )
             )
+
+        static member SingleExpr
+            (
+                leading: string,
+                addSpace: bool,
+                supportsStroustrup: bool,
+                value: string,
+                ?hasQuotes: bool
+            ) =
+            match hasQuotes with
+            | None
+            | Some true ->
+                WidgetBuilder<Expr>(
+                    Single.WidgetKey,
+                    AttributesBundle(
+                        StackList.three(
+                            Single.Leading.WithValue(leading),
+                            Single.AddSpace.WithValue(addSpace),
+                            Single.SupportsStroustrup.WithValue(supportsStroustrup)
+                        ),
+                        ValueSome [| Single.Value.WithValue(Ast.ConstantExpr(value, true).Compile()) |],
+                        ValueNone
+                    )
+                )
+            | _ ->
+                WidgetBuilder<Expr>(
+                    Single.WidgetKey,
+                    AttributesBundle(
+                        StackList.three(
+                            Single.Leading.WithValue(leading),
+                            Single.AddSpace.WithValue(addSpace),
+                            Single.SupportsStroustrup.WithValue(supportsStroustrup)
+                        ),
+                        ValueSome [| Single.Value.WithValue(Ast.ConstantExpr(value, false).Compile()) |],
+                        ValueNone
+                    )
+                )

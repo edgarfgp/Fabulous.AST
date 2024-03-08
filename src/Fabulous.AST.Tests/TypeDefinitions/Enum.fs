@@ -35,7 +35,7 @@ type Colors =
         AnonymousModule() {
             Enum("Colors") {
                 EnumCase("Red", "0")
-                EnumCase("Green", ConstantExpr("1"))
+                EnumCase("Green", ConstantExpr("1", false))
                 EnumCase("Blue", "2")
             }
         }

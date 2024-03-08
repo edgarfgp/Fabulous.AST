@@ -36,6 +36,30 @@ module MatchBuilders =
                 )
             )
 
+        static member inline MatchExpr(matchExpr: string, ?hasQuotes: bool) =
+            match hasQuotes with
+            | None
+            | Some true ->
+                CollectionBuilder<Expr, MatchClauseNode>(
+                    Match.WidgetKey,
+                    Match.MatchClauses,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Match.MatchExpr.WithValue(Ast.ConstantExpr(matchExpr, true).Compile()) |],
+                        ValueNone
+                    )
+                )
+            | _ ->
+                CollectionBuilder<Expr, MatchClauseNode>(
+                    Match.WidgetKey,
+                    Match.MatchClauses,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Match.MatchExpr.WithValue(Ast.ConstantExpr(matchExpr, false).Compile()) |],
+                        ValueNone
+                    )
+                )
+
 [<Extension>]
 type MatchYieldExtensions =
     [<Extension>]

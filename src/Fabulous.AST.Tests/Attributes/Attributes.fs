@@ -22,7 +22,7 @@ let x = 12
     let ``Simple AttributeNode with expr`` () =
         AnonymousModule() {
             Value("x", "12", false)
-                .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(ConstantString("This is obsolete")))))
+                .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))))
         }
         |> produces
             """
@@ -33,9 +33,7 @@ let x = 12
     [<Test>]
     let ``Multiple attributes`` () =
         AnonymousModule() {
-            Value("x", "12", false).attributes() {
-                Attribute("Obsolete", ParenExpr(ConstantExpr(ConstantString("This is obsolete"))))
-            }
+            Value("x", "12", false).attributes() { Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))) }
         }
         |> produces
             """

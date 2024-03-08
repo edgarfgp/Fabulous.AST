@@ -30,7 +30,7 @@ module TypeTuple =
 [<AutoOpen>]
 module TypeTupleBuilders =
     type Ast with
-        static member TypeTuple(first: WidgetBuilder<Type>, exponent: WidgetBuilder<Type>) =
+        static member Tuple(first: WidgetBuilder<Type>, exponent: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeTuple.WidgetKey,
                 AttributesBundle(
@@ -42,11 +42,11 @@ module TypeTupleBuilders =
                 )
             )
 
-        static member TypeTuple(first: string, exponent: string) =
-            Ast.TypeTuple(Ast.TypeLongIdent(first), Ast.TypeLongIdent(exponent))
+        static member Tuple(first: string, exponent: string) =
+            Ast.Tuple(Ast.LongIdent(first), Ast.LongIdent(exponent))
 
-        static member TypeTuple(first: string, second: string, exponent: WidgetBuilder<Type>) =
-            Ast.TypeTuple(Ast.TypeAppPostfix(Ast.TypeLongIdent first, Ast.TypeLongIdent second), exponent)
+        static member Tuple(first: string, second: string, exponent: WidgetBuilder<Type>) =
+            Ast.Tuple(Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent second), exponent)
 
-        static member TypeTuple(first: string list, second: string list, exponent: WidgetBuilder<Type>) =
-            Ast.TypeTuple(Ast.TypeAppPostfix(Ast.TypeLongIdent first, Ast.TypeLongIdent second), exponent)
+        static member Tuple(first: string list, second: string list, exponent: WidgetBuilder<Type>) =
+            Ast.Tuple(Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent second), exponent)

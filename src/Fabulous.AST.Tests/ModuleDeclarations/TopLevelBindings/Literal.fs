@@ -30,8 +30,7 @@ let x = 12
 
         AnonymousModule() {
             for name, value in images do
-                Value(name, ConstantStringExpr($"{value}"))
-                    .attribute("Literal")
+                Value(name, ConstantExpr($"{value}")).attribute("Literal")
         }
         |> produces
             """

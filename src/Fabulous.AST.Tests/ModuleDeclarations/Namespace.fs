@@ -105,8 +105,8 @@ module AST =
                     let rec mkType (value: string list) =
                         match value with
                         | [] -> failwith "unexpected"
-                        | [ single ] -> TypeLongIdent(single)
-                        | head :: tail -> TypeAppPostfix(mkType(tail), TypeLongIdent(head))
+                        | [ single ] -> LongIdent(single)
+                        | head :: tail -> AppPostfix(mkType(tail), LongIdent(head))
 
                     let myFields =
                         props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))

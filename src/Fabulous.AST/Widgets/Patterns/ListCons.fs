@@ -7,16 +7,16 @@ open Fantomas.FCS.Text
 module ListCons =
     let LHSPattern = Attributes.defineWidget "LHSPattern"
 
-    let MHSPattern = Attributes.defineScalar<SingleTextNode> "MHSPattern"
+    let MiddlePattern = Attributes.defineScalar<SingleTextNode> "MHSPattern"
 
     let RHSPattern = Attributes.defineWidget "RHSPattern"
 
     let WidgetKey =
         Widgets.register "ListCons" (fun widget ->
             let lhs = Helpers.getNodeFromWidget widget LHSPattern
-            let mhs = Helpers.getScalarValue widget MHSPattern
+            let middle = Helpers.getScalarValue widget MiddlePattern
             let rhs = Helpers.getNodeFromWidget widget RHSPattern
-            Pattern.ListCons(PatLeftMiddleRight(lhs, Choice1Of2(mhs), rhs, Range.Zero)))
+            Pattern.ListCons(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.Zero)))
 
 [<AutoOpen>]
 module ListConsBuilders =
@@ -26,7 +26,7 @@ module ListConsBuilders =
             WidgetBuilder<Pattern>(
                 ListCons.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ListCons.MHSPattern.WithValue(SingleTextNode.doubleColon)),
+                    StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.doubleColon)),
                     ValueSome
                         [| ListCons.LHSPattern.WithValue(lhs.Compile())
                            ListCons.RHSPattern.WithValue(rhs.Compile()) |],
@@ -34,14 +34,38 @@ module ListConsBuilders =
                 )
             )
 
-        static member ListConsPat(lhs: WidgetBuilder<Pattern>, mhs: string, rhs: WidgetBuilder<Pattern>) =
+        static member ListConsPat(lhs: string, rhs: string) =
             WidgetBuilder<Pattern>(
                 ListCons.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ListCons.MHSPattern.WithValue(SingleTextNode.Create(mhs))),
+                    StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.doubleColon)),
+                    ValueSome
+                        [| ListCons.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                           ListCons.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member ListConsPat(lhs: WidgetBuilder<Pattern>, middle: string, rhs: WidgetBuilder<Pattern>) =
+            WidgetBuilder<Pattern>(
+                ListCons.WidgetKey,
+                AttributesBundle(
+                    StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.Create(middle))),
                     ValueSome
                         [| ListCons.LHSPattern.WithValue(lhs.Compile())
                            ListCons.RHSPattern.WithValue(rhs.Compile()) |],
+                    ValueNone
+                )
+            )
+
+        static member ListConsPat(lhs: string, middle: string, rhs: string) =
+            WidgetBuilder<Pattern>(
+                ListCons.WidgetKey,
+                AttributesBundle(
+                    StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.Create(middle))),
+                    ValueSome
+                        [| ListCons.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                           ListCons.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
                     ValueNone
                 )
             )

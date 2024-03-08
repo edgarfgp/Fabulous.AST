@@ -65,7 +65,7 @@ type ValueModifiers =
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
-        ValueModifiers.returnType(this, Ast.TypeLongIdent(returnType))
+        ValueModifiers.returnType(this, Ast.LongIdent(returnType))
 
     [<Extension>]
     static member inline toMutable(this: WidgetBuilder<BindingNode>) =

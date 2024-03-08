@@ -77,7 +77,7 @@ module SimplePatNodeBuilders =
                 SimplePat.WidgetKey,
                 AttributesBundle(
                     StackList.two(SimplePat.Name.WithValue(name), SimplePat.IsOptional.WithValue(isOptional)),
-                    ValueSome [| SimplePat.Typed.WithValue(Ast.TypeLongIdent(tp).Compile()) |],
+                    ValueSome [| SimplePat.Typed.WithValue(Ast.LongIdent(tp).Compile()) |],
                     ValueNone
                 )
             )

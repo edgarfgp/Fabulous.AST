@@ -18,7 +18,7 @@ module TypeAppPostfix =
 [<AutoOpen>]
 module TypeAppPostfixBuilders =
     type Ast with
-        static member TypeAppPostfix(first: WidgetBuilder<Type>, last: WidgetBuilder<Type>) =
+        static member AppPostfix(first: WidgetBuilder<Type>, last: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeAppPostfix.WidgetKey,
                 AttributesBundle(

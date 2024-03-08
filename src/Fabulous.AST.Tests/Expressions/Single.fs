@@ -10,7 +10,7 @@ open type Ast
 module Single =
     [<Test>]
     let ``let value with a Single expression`` () =
-        AnonymousModule() { Value("x", SingleExpr("a", true, false, ConstantExpr(Constant "b"))) }
+        AnonymousModule() { Value("x", SingleExpr("a", true, false, ConstantExpr(Constant("b", false)))) }
         |> produces
             """
 

@@ -21,3 +21,25 @@ module QuotedBuilders =
                 Quoted.WidgetKey,
                 AttributesBundle(StackList.empty(), ValueSome [| Quoted.Value.WithValue(value.Compile()) |], ValueNone)
             )
+
+        static member QuotedExpr(value: string, ?hasQuotes: bool) =
+            match hasQuotes with
+            | None
+            | Some true ->
+                WidgetBuilder<Expr>(
+                    Quoted.WidgetKey,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Quoted.Value.WithValue(Ast.ConstantExpr(value, true).Compile()) |],
+                        ValueNone
+                    )
+                )
+            | _ ->
+                WidgetBuilder<Expr>(
+                    Quoted.WidgetKey,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Quoted.Value.WithValue(Ast.ConstantExpr(value, false).Compile()) |],
+                        ValueNone
+                    )
+                )

@@ -51,8 +51,7 @@ module AbbrevBuilders =
                 )
             )
 
-        static member Abbrev(name: string, alias: string) =
-            Ast.Abbrev(name, Ast.TypeLongIdent(alias))
+        static member Abbrev(name: string, alias: string) = Ast.Abbrev(name, Ast.LongIdent(alias))
 
 [<Extension>]
 type AbbrevYieldExtensions =

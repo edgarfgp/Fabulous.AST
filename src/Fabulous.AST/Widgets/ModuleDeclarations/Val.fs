@@ -129,7 +129,7 @@ module ValBuilders =
         static member Val(identifier: string, returnType: WidgetBuilder<Type>) = Ast.BaseVal(identifier, returnType)
 
         static member Val(identifier: string, returnType: string) =
-            Ast.BaseVal(identifier, Ast.TypeLongIdent(returnType))
+            Ast.BaseVal(identifier, Ast.LongIdent(returnType))
 
 [<Extension>]
 type ValNodeModifiers =

@@ -108,7 +108,7 @@ module AbstractMember =
                 | ValueSome(false, false)
                 | ValueNone -> None
 
-            let parameters, returnTYpe = typeFun
+            let parameters, returnType = typeFun
 
             MemberDefnAbstractSlotNode(
                 xmlDocs,
@@ -116,7 +116,7 @@ module AbstractMember =
                 MultipleTextsNode.Create([ "abstract"; "member" ]),
                 SingleTextNode(identifier, Range.Zero),
                 None,
-                Type.Funs(TypeFunsNode(parameters, returnTYpe, Range.Zero)),
+                Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero)),
                 withGetSetText,
                 Range.Zero
             ))
@@ -125,7 +125,7 @@ module AbstractMember =
 module AbstractMemberBuilders =
     type Ast with
 
-        static member AbstractPropertyMember(identifier: string, returnType: WidgetBuilder<Type>) =
+        static member AbstractProperty(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -138,7 +138,7 @@ module AbstractMemberBuilders =
                 )
             )
 
-        static member AbstractPropertyMember(identifier: string, returnType: string) =
+        static member AbstractProperty(identifier: string, returnType: string) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -146,12 +146,12 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(false, false)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
             )
 
-        static member AbstractGetMember(identifier: string, returnType: WidgetBuilder<Type>) =
+        static member AbstractGet(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -162,12 +162,9 @@ module AbstractMemberBuilders =
                     ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.HasGetterSetter.WithValue(true, false),
-            // AbstractMember.ReturnType.WithValue(returnType)
             )
 
-        static member AbstractGetMember(identifier: string, returnType: string) =
+        static member AbstractGet(identifier: string, returnType: string) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -175,15 +172,12 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(true, false)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.HasGetterSetter.WithValue(true, false),
-            // AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType))
             )
 
-        static member AbstractSetMember(identifier: string, returnType: WidgetBuilder<Type>) =
+        static member AbstractSet(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -194,12 +188,9 @@ module AbstractMemberBuilders =
                     ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.HasGetterSetter.WithValue(false, true),
-            // AbstractMember.ReturnType.WithValue(returnType)
             )
 
-        static member AbstractSetMember(identifier: string, returnType: string) =
+        static member AbstractSet(identifier: string, returnType: string) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -207,15 +198,12 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(false, true)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.HasGetterSetter.WithValue(false, true),
-            // AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType))
             )
 
-        static member AbstractGetSetMember(identifier: string, returnType: WidgetBuilder<Type>) =
+        static member AbstractGetSet(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -226,12 +214,9 @@ module AbstractMemberBuilders =
                     ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.HasGetterSetter.WithValue(true, true),
-            // AbstractMember.ReturnType.WithValue(returnType)
             )
 
-        static member AbstractGetSetMember(identifier: string, returnType: string) =
+        static member AbstractGetSet(identifier: string, returnType: string) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -239,15 +224,12 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(true, true)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.HasGetterSetter.WithValue(true, true),
-            // AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType))
             )
 
-        static member AbstractTupledMethodMember
+        static member AbstractTupledMethod
             (
                 identifier: string,
                 parameters: WidgetBuilder<Type> list,
@@ -263,13 +245,10 @@ module AbstractMemberBuilders =
                     ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(returnType),
-            // AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
             )
 
-        static member AbstractTupledMethodMember(identifier: string, parameters: string list, returnType: string) =
-            let parameters = parameters |> List.map(Ast.TypeLongIdent)
+        static member AbstractTupledMethod(identifier: string, parameters: string list, returnType: string) =
+            let parameters = parameters |> List.map(Ast.LongIdent)
 
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -278,15 +257,12 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
-            // AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
             )
 
-        static member AbstractTupledMethodMember
+        static member AbstractTupledMethod
             (
                 identifier: string,
                 parameters: (string option * WidgetBuilder<Type>) list,
@@ -302,19 +278,16 @@ module AbstractMemberBuilders =
                     ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(returnType),
-            // AbstractMember.Parameters.WithValue(Named(parameters, true))
             )
 
-        static member AbstractTupledMethodMember
+        static member AbstractTupledMethod
             (
                 identifier: string,
                 parameters: (string option * string) list,
                 returnType: string
             ) =
             let parameters =
-                parameters |> List.map(fun (name, value) -> name, Ast.TypeLongIdent value)
+                parameters |> List.map(fun (name, value) -> name, Ast.LongIdent value)
 
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -323,16 +296,13 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(Named(parameters, true))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
-            // AbstractMember.Parameters.WithValue(Named(parameters, true))
             )
 
 
-        static member AbstractCurriedMethodMember
+        static member AbstractCurriedMethod
             (
                 identifier: string,
                 parameters: WidgetBuilder<Type> list,
@@ -348,13 +318,10 @@ module AbstractMemberBuilders =
                     ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(returnType),
-            // AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
             )
 
-        static member AbstractCurriedMethodMember(identifier: string, parameters: string list, returnType: string) =
-            let parameters = parameters |> List.map Ast.TypeLongIdent
+        static member AbstractCurriedMethod(identifier: string, parameters: string list, returnType: string) =
+            let parameters = parameters |> List.map Ast.LongIdent
 
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -363,15 +330,12 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
-            // AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
             )
 
-        static member AbstractCurriedMethodMember
+        static member AbstractCurriedMethod
             (
                 identifier: string,
                 parameters: (string option * WidgetBuilder<Type>) list,
@@ -387,19 +351,16 @@ module AbstractMemberBuilders =
                     ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(returnType),
-            // AbstractMember.Parameters.WithValue(Named(parameters, false))
             )
 
-        static member AbstractCurriedMethodMember
+        static member AbstractCurriedMethod
             (
                 identifier: string,
                 parameters: (string option * string) list,
                 returnType: string
             ) =
             let parameters =
-                parameters |> List.map(fun (name, value) -> name, Ast.TypeLongIdent value)
+                parameters |> List.map(fun (name, value) -> name, Ast.LongIdent value)
 
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -408,12 +369,9 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(Named(parameters, false))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.TypeLongIdent(returnType).Compile()) |],
+                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
                     ValueNone
                 )
-            // AbstractMember.Identifier.WithValue(identifier),
-            // AbstractMember.ReturnType.WithValue(CommonType.mkLongIdent(returnType)),
-            // AbstractMember.Parameters.WithValue(Named(parameters, false))
             )
 
 [<Extension>]

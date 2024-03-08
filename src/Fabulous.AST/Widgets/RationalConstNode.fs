@@ -20,9 +20,9 @@ module RationalConstNode =
 
     let WidgetNegateKey =
         Widgets.register "RationalConstNodeNegate" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
-            let node = Helpers.getNodeFromWidget<RationalConstNode> widget Node
-            RationalConstNode.Negate(NegateRationalNode(SingleTextNode.Create(value), node, Range.Zero)))
+            let minus = Helpers.getScalarValue widget Value
+            let rationalConst = Helpers.getNodeFromWidget<RationalConstNode> widget Node
+            RationalConstNode.Negate(NegateRationalNode(SingleTextNode.Create(minus), rationalConst, Range.Zero)))
 
     let WidgetRationalKey =
         Widgets.register "RationalConstNodeRational" (fun widget ->
@@ -44,24 +44,23 @@ module RationalConstNode =
 [<AutoOpen>]
 module RationalConstNodeBuilders =
     type Ast with
-
-        static member RationalConstInteger(value: string) =
+        static member Integer(value: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetIntegerKey,
                 AttributesBundle(StackList.one(RationalConstNode.Value.WithValue(value)), ValueNone, ValueNone)
             )
 
-        static member RationalConstNegate(value: string, node: WidgetBuilder<RationalConstNode>) =
+        static member Negate(minus: string, rationalConst: WidgetBuilder<RationalConstNode>) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetNegateKey,
                 AttributesBundle(
-                    StackList.one(RationalConstNode.Value.WithValue(value)),
-                    ValueSome [| RationalConstNode.Node.WithValue(node.Compile()) |],
+                    StackList.one(RationalConstNode.Value.WithValue(minus)),
+                    ValueSome [| RationalConstNode.Node.WithValue(rationalConst.Compile()) |],
                     ValueNone
                 )
             )
 
-        static member RationalConstRational(numerator: string, divOp: string, denominator: string) =
+        static member Rational(numerator: string, divOp: string, denominator: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetRationalKey,
                 AttributesBundle(

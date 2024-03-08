@@ -25,27 +25,30 @@ module ExprBuilders =
                 AttributesBundle(StackList.empty(), ValueSome [| Expr.Value.WithValue(value.Compile()) |], ValueNone)
             )
 
-        static member ConstantExpr(value: string) =
-            WidgetBuilder<Expr>(
-                Expr.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Expr.Value.WithValue(Ast.Constant(value).Compile()) |],
-                    ValueNone
+        static member ConstantExpr(value: string, ?hasQuotes: bool) =
+            match hasQuotes with
+            | None
+            | Some true ->
+                WidgetBuilder<Expr>(
+                    Expr.WidgetKey,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Expr.Value.WithValue(Ast.Constant(value, true).Compile()) |],
+                        ValueNone
+                    )
                 )
-            )
-
-        static member ConstantStringExpr(value: string) =
-            WidgetBuilder<Expr>(
-                Expr.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Expr.Value.WithValue(Ast.ConstantString(value).Compile()) |],
-                    ValueNone
+            | _ ->
+                WidgetBuilder<Expr>(
+                    Expr.WidgetKey,
+                    AttributesBundle(
+                        StackList.empty(),
+                        ValueSome [| Expr.Value.WithValue(Ast.Constant(value, false).Compile()) |],
+                        ValueNone
+                    )
                 )
-            )
 
-        static member NUllExpr() =
+
+        static member NullExpr() =
             WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))
 
 [<Extension>]

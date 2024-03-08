@@ -11,38 +11,38 @@ module MethodMembers =
     let ``Produces MethodMembers`` () =
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", TypeLongIdent("string")) })
+            (Record("Colors") { Field("X", LongIdent("string")) })
                 .members() {
-                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
 
 
-                Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toInlined()
 
-                Method("B", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("B", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toStatic()
 
-                Method("D", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("D", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toInlined()
                     .toStatic()
 
-                Method("this.E", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("this.E", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                 |> _.returnType(String())
 
-                Method("this.F", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
-                    .toInlined()
-                |> _.returnType(String())
-
-                Method("G", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
-                    .toStatic()
-                |> _.returnType(String())
-
-                Method("H", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
-                    .toStatic()
+                Method("this.F", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toInlined()
                 |> _.returnType(String())
 
-                Method("this.I", ParametersPat(true) { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("G", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    .toStatic()
+                |> _.returnType(String())
+
+                Method("H", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    .toStatic()
+                    .toInlined()
+                |> _.returnType(String())
+
+                Method("this.I", ParametersPat(true) { ParameterPat("p", String()) }, ConstantExpr(""))
 
                 Method(
                     "this.J",
@@ -50,7 +50,7 @@ module MethodMembers =
                         ParameterPat("p", String())
                         ParameterPat("p2", String())
                     },
-                    ConstantStringExpr("")
+                    ConstantExpr("")
                 )
 
                 Method(
@@ -59,7 +59,7 @@ module MethodMembers =
                         ParameterPat("p", String())
                         ParameterPat("p2", String())
                     },
-                    ConstantStringExpr("")
+                    ConstantExpr("")
                 )
             }
         }
@@ -87,12 +87,12 @@ type Colors =
     let ``Produces a record with TypeParams and method member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", TypeLongIdent("string"))
-                Field("Blue", TypeLongIdent("'other"))
-                Field("Yellow", TypeLongIdent("int"))
+                Field("Green", LongIdent("string"))
+                Field("Blue", LongIdent("'other"))
+                Field("Yellow", LongIdent("int"))
             })
                 .members() {
-                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
             }
         }
 
@@ -112,12 +112,12 @@ type Colors<'other> =
     let ``Produces a record with TypeParams and static method member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", TypeLongIdent("string"))
-                Field("Blue", TypeLongIdent("'other"))
-                Field("Yellow", TypeLongIdent("int"))
+                Field("Green", LongIdent("string"))
+                Field("Blue", LongIdent("'other"))
+                Field("Yellow", LongIdent("int"))
             })
                 .members() {
-                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toStatic()
             }
         }
@@ -137,9 +137,9 @@ type Colors<'other> =
     [<Test>]
     let ``Produces a record with method member`` () =
         AnonymousModule() {
-            (Record("Colors") { Field("X", TypeLongIdent("string")) })
+            (Record("Colors") { Field("X", LongIdent("string")) })
                 .members() {
-                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
             }
         }
         |> produces
@@ -155,9 +155,9 @@ type Colors =
     [<Test>]
     let ``Produces a record with static method member`` () =
         AnonymousModule() {
-            (Record("Colors") { Field("X", TypeLongIdent("string")) })
+            (Record("Colors") { Field("X", LongIdent("string")) })
                 .members() {
-                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantStringExpr(""))
+                Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toStatic()
             }
         }
@@ -174,7 +174,7 @@ type Colors =
 
     [<Test>]
     let ``Produces a classes with a method member`` () =
-        AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23")) } }
+        AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)) } }
         |> produces
             """
 type Person () =
@@ -185,7 +185,7 @@ type Person () =
     let ``Produces a classes with a method member and parameter`` () =
         AnonymousModule() {
             Class("Person") {
-                Method("this.Name", ParametersPat() { ParameterPat("params", String()) }, ConstantExpr("23"))
+                Method("this.Name", ParametersPat() { ParameterPat("params", String()) }, ConstantExpr("23", false))
             }
         }
         |> produces
@@ -204,7 +204,7 @@ type Person () =
                         ParameterPat("name", String())
                         ParameterPat("age", Int32())
                     },
-                    ConstantExpr("23")
+                    ConstantExpr("23", false)
                 )
             }
         }
@@ -224,7 +224,7 @@ type Person () =
                         ParameterPat("name", String())
                         ParameterPat("age", Int32())
                     },
-                    ConstantExpr("23")
+                    ConstantExpr("23", false)
                 )
             }
         }
@@ -238,7 +238,7 @@ type Person () =
     let ``Produces a method member with attributes`` () =
         AnonymousModule() {
             Class("Person") {
-                Method("this.Name", UnitPat(), ConstantExpr("23"))
+                Method("this.Name", UnitPat(), ConstantExpr("23", false))
                     .attribute("Obsolete")
             }
         }
@@ -254,7 +254,7 @@ type Person () =
     let ``Produces an inline method member`` () =
         AnonymousModule() {
             Class("Person") {
-                Method("this.Name", UnitPat(), ConstantExpr("23"))
+                Method("this.Name", UnitPat(), ConstantExpr("23", false))
                     .toInlined()
             }
         }
@@ -268,7 +268,7 @@ type Person () =
     let ``Produces an method member with type parameters`` () =
         AnonymousModule() {
             Class("Person") {
-                Method("this.Name", UnitPat(), ConstantExpr("23"))
+                Method("this.Name", UnitPat(), ConstantExpr("23", false))
                     .typeParameters([ "'other" ])
             }
         }
@@ -281,9 +281,7 @@ type Person () =
     [<Test>]
     let ``Produces a union with a method member `` () =
         AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() {
-                Method("this.Name", UnitPat(), ConstantStringExpr("name"))
-            }
+            (Union("Person") { UnionCase("Name") }).members() { Method("this.Name", UnitPat(), ConstantExpr("name")) }
         }
         |> produces
             """
@@ -299,8 +297,8 @@ type Person =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
-                    Field("a", TypeLongIdent("string"))
-                    Field("b", TypeLongIdent "'other")
+                    Field("a", LongIdent("string"))
+                    Field("b", LongIdent "'other")
                 }
 
                 UnionCase("Green")
@@ -308,7 +306,7 @@ type Person =
                 UnionCase("Yellow")
             })
                 .members() {
-                Method("this.Name", UnitPat(), ConstantStringExpr("name"))
+                Method("this.Name", UnitPat(), ConstantExpr("name"))
             }
 
         }

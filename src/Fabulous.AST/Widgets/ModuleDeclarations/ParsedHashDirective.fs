@@ -25,7 +25,7 @@ module HashDirectiveBuilders =
         static member private BaseHashDirective(ident: string, args: string list, wrappedInQuotes: bool) =
             let args =
                 if wrappedInQuotes then
-                    args |> List.map(fun arg -> $"\"{arg}\"")
+                    args |> List.map(fun value -> $"\"{value}\"")
                 else
                     args
 
@@ -35,19 +35,19 @@ module HashDirectiveBuilders =
                 HashDirective.Args.WithValue(args)
             )
 
-        static member NoWarn(arg: string) =
-            Ast.BaseHashDirective("nowarn", [ arg ], true)
+        static member NoWarn(value: string) =
+            Ast.BaseHashDirective("nowarn", [ value ], true)
 
-        static member NoWarn(args: string list) =
-            Ast.BaseHashDirective("nowarn", args, true)
+        static member NoWarn(value: string list) =
+            Ast.BaseHashDirective("nowarn", value, true)
 
-        static member HashDirective(ident: string, args: string) =
-            Ast.BaseHashDirective(ident, [ args ], false)
+        static member HashDirective(ident: string, value: string) =
+            Ast.BaseHashDirective(ident, [ value ], false)
 
         static member HashDirective(ident: string) = Ast.BaseHashDirective(ident, [], false)
 
-        static member HashDirective(ident: string, args: string list) =
-            Ast.BaseHashDirective(ident, args, false)
+        static member HashDirective(ident: string, value: string list) =
+            Ast.BaseHashDirective(ident, value, false)
 
 
 [<Extension>]

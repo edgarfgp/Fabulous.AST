@@ -83,7 +83,7 @@ module FieldBuilders =
                 Field.WidgetKey,
                 AttributesBundle(
                     StackList.one(Field.Name.WithValue(name)),
-                    ValueSome [| Field.FieldType.WithValue(Ast.TypeLongIdent(filedType).Compile()) |],
+                    ValueSome [| Field.FieldType.WithValue(Ast.LongIdent(filedType).Compile()) |],
                     ValueNone
                 )
             )

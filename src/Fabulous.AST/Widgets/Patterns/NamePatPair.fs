@@ -28,3 +28,13 @@ module NamePatPairBuilders =
                     ValueNone
                 )
             )
+
+        static member NamePatPairPat(ident: string, pat: string) =
+            WidgetBuilder<NamePatPair>(
+                NamePatPair.WidgetKey,
+                AttributesBundle(
+                    StackList.one(NamePatPair.Ident.WithValue(ident)),
+                    ValueSome [| NamePatPair.Pat.WithValue(Ast.NamedPat(pat).Compile()) |],
+                    ValueNone
+                )
+            )
