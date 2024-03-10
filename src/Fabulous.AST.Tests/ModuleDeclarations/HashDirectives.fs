@@ -1,14 +1,14 @@
 namespace Fabulous.AST.Tests.ModuleDeclarations
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
 open type Ast
 
 module HashDirectives =
-    [<Test>]
+    [<Fact>]
     let ``Produces an AnonymousModule with NoWarn directive`` () =
         AnonymousModule() {
             NoWarn("0044")
@@ -30,7 +30,7 @@ open System
 type HEX = { R: int; G: int; B: int }
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an AnonymousModule with multiple NoWarn directive`` () =
         AnonymousModule() {
             NoWarn([ "0044"; "0045" ])
@@ -52,7 +52,7 @@ open System
 type HEX = { R: int; G: int; B: int }
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an AnonymousModule with multiple line NoWarn directive`` () =
         AnonymousModule() {
             NoWarn("0044")
@@ -76,7 +76,7 @@ open System
 type HEX = { R: int; G: int; B: int }
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an Namespace with NoWarn directive`` () =
         Namespace("MyApp") {
             NoWarn("0044")
@@ -100,7 +100,7 @@ open System
 type HEX = { R: int; G: int; B: int }
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an Namespace with Conditional directive`` () =
         AnonymousModule() {
             HashDirective("if", "!DEBUG")

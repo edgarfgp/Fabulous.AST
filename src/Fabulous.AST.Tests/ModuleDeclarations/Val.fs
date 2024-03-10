@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.ModuleDeclarations
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -9,7 +9,7 @@ open type Ast
 
 module ValTests =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a Val`` () =
         AnonymousModule() { Val("x", "string") }
 
@@ -18,7 +18,7 @@ module ValTests =
 val x: string
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a MutableVal`` () =
         AnonymousModule() { Val("x", String()).toMutable() }
 
@@ -27,7 +27,7 @@ val x: string
 val mutable x: string
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a InlinedVal`` () =
         AnonymousModule() { Val("x", "string").toInlined() }
 
@@ -36,7 +36,7 @@ val mutable x: string
 val inline x: string
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a Val with attribute`` () =
         AnonymousModule() { Val("x", String()).attribute("DefaultValue") }
 
@@ -46,7 +46,7 @@ val inline x: string
 val x: string
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a Val with attributes`` () =
         AnonymousModule() {
             Val("x", String())
@@ -59,7 +59,7 @@ val x: string
 val x: string
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a Val with accessControl`` () =
         AnonymousModule() {
             Val("x", String()).attribute("DefaultValue").toInternal()
@@ -81,7 +81,7 @@ val private y: string
 val public z: string
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a Val with type parameters`` () =
         AnonymousModule() { Val("x", String()).typeParameters([ "a"; "b" ]) }
 

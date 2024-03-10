@@ -1,15 +1,15 @@
 namespace Fabulous.AST.Tests.Core
 
 open Fantomas.Core
-open NUnit.Framework
 
 open Fabulous.AST
 
 open type Fabulous.AST.Ast
+open Xunit
 
 module APISketchTests =
 
-    [<Test>]
+    [<Fact>]
     let ``Multiple Widgets for loops in builder`` () =
         let result =
             Namespace("DummyNamespace") {
@@ -31,7 +31,7 @@ module APISketchTests =
 
         Assert.NotNull result
 
-    [<Test>]
+    [<Fact>]
     let ``Multiple for loops in builder`` () =
         let result =
             Namespace("DummyNamespace") {

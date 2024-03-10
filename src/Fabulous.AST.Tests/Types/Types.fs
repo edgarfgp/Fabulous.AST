@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.Types
 
 open System
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -30,7 +30,7 @@ module Types =
 | string    | String    | Unicode text.                                                                         | "str"                      |
 | unit      | NA        | Indicates the absence of an actual value. The type has only one formal value, which is denoted (). The unit value, (), is often used as a placeholder where a value is needed but no real value is available or makes sense. | () |
 *)
-    [<Test>]
+    [<Fact>]
     let ``Value with return primitive types`` () =
         AnonymousModule() {
             Value("a", "false", false).returnType(Boolean())

@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module New =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a New expression`` () =
         AnonymousModule() { Value("x", NewExpr(LongIdent("MyType"), ConstantExpr(Constant("12", false)))) }
         |> produces
@@ -18,7 +18,7 @@ module New =
 let x = new MyType 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a New expression with parenthesis`` () =
         AnonymousModule() { Value("x", NewExpr("MyType", ParenExpr(ConstantExpr(Constant("12", false))))) }
         |> produces

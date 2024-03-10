@@ -3,14 +3,14 @@ namespace Fabulous.AST.Tests.ModuleDeclarations
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
 open type Ast
 
 module Namespace =
-    [<Test>]
+    [<Fact>]
     let ``Produces a namespace with binding`` () =
         (Namespace("Fabulous.AST") { Value("x", "3", false) })
         |> produces
@@ -20,7 +20,7 @@ namespace Fabulous.AST
 let x = 3
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a rec namespace with binding`` () =
         (Namespace("Fabulous.AST") { Value("x", "3", false) })
             .toRecursive()
@@ -31,7 +31,7 @@ namespace rec Fabulous.AST
 let x = 3
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a namespace using the EscapeHatch widget`` () =
         Namespace("Fabulous.AST") {
             BindingNode(
@@ -57,7 +57,7 @@ namespace Fabulous.AST
 let x = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a namespace with nested module`` () =
         Namespace("Fabulous") {
             NestedModule("AST") {
@@ -90,7 +90,7 @@ module AST =
         { typename: string
           props: Map<string, string list> }
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a namespace with nested module using yield bang`` () =
         let records =
             [ { typename = "Person"

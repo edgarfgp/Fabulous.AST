@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module Match =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Match expression`` () =
         AnonymousModule() {
             MatchExpr(

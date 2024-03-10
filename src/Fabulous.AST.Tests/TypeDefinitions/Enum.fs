@@ -3,7 +3,7 @@ namespace Fabulous.AST.Tests.TypeDefinitions
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -11,7 +11,7 @@ open type Fabulous.AST.Ast
 
 module Enum =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum`` () =
         AnonymousModule() {
             Enum("Colors") {
@@ -30,7 +30,7 @@ type Colors =
     | Blue = 2
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum with value Expr`` () =
         AnonymousModule() {
             Enum("Colors") {
@@ -49,7 +49,7 @@ type Colors =
     | Blue = 2
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum with SingleTextNode`` () =
         AnonymousModule() {
             Enum("Colors") {
@@ -68,7 +68,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum case using EnumCaseNode`` () =
         AnonymousModule() {
             Enum("Colors") {
@@ -98,7 +98,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum case using Widget and escape hatch`` () =
         let enumCaseNode =
             EnumCaseNode(
@@ -130,7 +130,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum case for a list`` () =
         let colors = [ "Red"; "Green"; "Blue"; "Black" ]
 
@@ -153,7 +153,7 @@ type Colors =
 """
 
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum with attribute`` () =
         let colors = [ "Red"; "Green"; "Blue"; "Black" ]
 
@@ -177,7 +177,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an enum case with attributes`` () =
         AnonymousModule() {
             (Enum("Colors") {

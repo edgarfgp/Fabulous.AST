@@ -1,14 +1,15 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
+
 
 open Fabulous.AST
 open type Ast
 
 module Record =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with an attribute`` () =
         AnonymousModule() {
             (Record("Colors") {
@@ -25,7 +26,7 @@ type Colors = { Red: int; Green: int; Blue: int }
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record field with an attribute`` () =
         AnonymousModule() {
             Record("Colors") {
@@ -46,7 +47,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic record`` () =
         AnonymousModule() {
             GenericRecord("Colors", [ "'other" ]) {
@@ -66,7 +67,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a struct generic record`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
@@ -87,7 +88,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an obsolete struct generic record`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {

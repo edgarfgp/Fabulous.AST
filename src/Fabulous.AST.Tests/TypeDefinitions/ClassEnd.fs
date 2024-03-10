@@ -1,13 +1,13 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 open type Ast
 
 module ClassEnd =
-    [<Test>]
+    [<Fact>]
     let ``Produces a class end`` () =
         AnonymousModule() { ClassEnd("MyClass") }
         |> produces
@@ -15,7 +15,7 @@ module ClassEnd =
 type MyClass = class end
             """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class end with constructor`` () =
         AnonymousModule() { ClassEnd("MyClass", true) }
         |> produces
@@ -23,7 +23,7 @@ type MyClass = class end
 type MyClass () = class end
             """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class end with constructor and attributes`` () =
         AnonymousModule() {
             ClassEnd("MyClass", true).attributes() {
@@ -38,7 +38,7 @@ type MyClass () = class end
 type MyClass () = class end
             """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class end with constructor params`` () =
         AnonymousModule() {
             ClassEnd("MyClass", Constructor() { SimplePat("name", String(), false) })
@@ -54,7 +54,7 @@ type MyClass () = class end
 type MyClass (name: string) = class end
             """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class end with constructor params and type args`` () =
         AnonymousModule() {
             ClassEnd("MyClass", [ "'a" ], Constructor() { SimplePat("name", String(), false) })
@@ -70,7 +70,7 @@ type MyClass (name: string) = class end
 type MyClass <'a>(name: string) = class end
             """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class end with type params`` () =
         AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ]) }
         |> produces
@@ -78,7 +78,7 @@ type MyClass <'a>(name: string) = class end
 type MyClass <'a, 'b> = class end
             """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class end with constructor and  type params`` () =
         AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ], true) }
         |> produces

@@ -1,13 +1,13 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 open type Ast
 
 module Augmentation =
-    [<Test>]
+    [<Fact>]
     let ``Produces an Augment`` () =
         AnonymousModule() {
             Augmentation("DateTime") {

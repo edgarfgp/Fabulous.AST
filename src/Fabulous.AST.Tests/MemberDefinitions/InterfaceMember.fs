@@ -2,12 +2,13 @@ namespace Fabulous.AST.Tests.MethodDefinitions
 
 open Fabulous.AST
 open Fabulous.AST.Tests
-open type Ast
 open Microsoft.FSharp.Core
-open NUnit.Framework
+open Xunit
+
+open type Ast
 
 module InterfaceMembers =
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with TypeParams and interface member`` () =
         AnonymousModule() {
             Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
@@ -37,7 +38,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with interface member`` () =
 
         AnonymousModule() {
@@ -68,7 +69,7 @@ type MyRecord =
         member x.GetValue() = x.MyField2
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class with a interface member`` () =
         AnonymousModule() {
             Interface("Meh") { AbstractProperty("Name", String()) }

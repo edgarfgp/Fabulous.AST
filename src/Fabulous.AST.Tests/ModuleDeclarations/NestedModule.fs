@@ -3,7 +3,7 @@ namespace Fabulous.AST.Tests.ModuleDeclarations
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -11,7 +11,7 @@ open type Ast
 
 module NestedModule =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a NestedModule`` () =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } }
 
@@ -23,7 +23,7 @@ module A =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a NestedModule using escape hatch`` () =
         AnonymousModule() {
             NestedModule("A") {
@@ -53,7 +53,7 @@ module A =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a recursive NestedModule`` () =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toRecursive() }
 
@@ -65,7 +65,7 @@ module rec A =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a private NestedModule`` () =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toPrivate() }
         |> produces
@@ -76,7 +76,7 @@ module private A =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a internal NestedModule`` () =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toInternal() }
         |> produces
@@ -87,7 +87,7 @@ module internal A =
     
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a module with nested module`` () =
         Module("Fabulous.AST") {
             NestedModule("Foo") {
@@ -117,7 +117,7 @@ module Foo =
     let x = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a module with multiple nested module`` () =
         Module("Fabulous.AST") {
             NestedModule("Foo") {

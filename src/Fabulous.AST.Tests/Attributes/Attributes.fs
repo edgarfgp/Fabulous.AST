@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Attributes
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module AttributesNodes =
 
-    [<Test>]
+    [<Fact>]
     let ``Simple AttributeNode`` () =
         AnonymousModule() { Value("x", "12", false).attribute("Obsolete") }
         |> produces
@@ -18,7 +18,7 @@ module AttributesNodes =
 let x = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Simple AttributeNode with expr`` () =
         AnonymousModule() {
             Value("x", "12", false)
@@ -30,7 +30,7 @@ let x = 12
 let x = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Multiple attributes`` () =
         AnonymousModule() {
             Value("x", "12", false).attributes() { Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))) }
@@ -41,7 +41,7 @@ let x = 12
 let x = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Simple AttributeNode type name and target`` () =
         AnonymousModule() {
             Value("x", "12", false)

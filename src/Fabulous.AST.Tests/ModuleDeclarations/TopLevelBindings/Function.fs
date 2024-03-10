@@ -2,14 +2,13 @@ namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
 open Fabulous.AST
 open Fabulous.AST.Tests
+open Xunit
 
 open type Ast
-open Microsoft.VisualBasic
-open NUnit.Framework
 
 module Function =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with parameter`` () =
         AnonymousModule() { Function("x", ParameterPat("i"), ConstantExpr(ConstantUnit())) }
         |> produces
@@ -19,7 +18,7 @@ let x i = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with single tupled parameter`` () =
         AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())) }
         |> produces
@@ -28,7 +27,7 @@ let x i = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with single parameter`` () =
         AnonymousModule() { Function("x", ParenPat(NamedPat("i")), ConstantExpr(ConstantUnit())) }
         |> produces
@@ -37,7 +36,7 @@ let x (i) = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with single tupled typed parameter`` () =
         AnonymousModule() {
             Function("x", ParenPat(ParameterPat(NamedPat("i"), Int32())), ConstantExpr(ConstantUnit()))
@@ -48,7 +47,7 @@ let x (i: int) = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with tupled parameters`` () =
         AnonymousModule() {
             Function(
@@ -67,7 +66,7 @@ let x (i, j, k) = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with curried parameters`` () =
         AnonymousModule() {
             Function(
@@ -86,7 +85,7 @@ let x i j k = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with tupled typed parameters`` () =
         AnonymousModule() {
             Function(
@@ -105,7 +104,7 @@ let x (i: int, j: string, k: bool) = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with parameters and an attribute`` () =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
@@ -118,7 +117,7 @@ let x i = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with parameters and Xml Doc`` () =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
@@ -131,7 +130,7 @@ let x i = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with parameters and return type`` () =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
@@ -143,7 +142,7 @@ let x i : unit = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with parameters, return type and typeParams `` () =
         AnonymousModule() {
             (Function(
@@ -162,7 +161,7 @@ let foo (x: 'T, i: 'U) : unit = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an inlined function with parameters`` () =
         AnonymousModule() {
             Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))
@@ -175,7 +174,7 @@ let inline x i = ()
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a function with parameters and access controls`` () =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))

@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module Constant =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantString`` () =
         AnonymousModule() { Value("x", ConstantExpr("a")) }
         |> produces
@@ -18,7 +18,7 @@ module Constant =
 let x = "a"
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantMeasure`` () =
         AnonymousModule() { Value("x", ConstantExpr(ConstantMeasure(Constant("1.0", false), MeasureSingle("cm")))) }
         |> produces
@@ -27,7 +27,7 @@ let x = "a"
 let x = 1.0<cm>
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantUnit`` () =
         AnonymousModule() { Value("x", ConstantExpr(ConstantUnit())) }
         |> produces
@@ -36,7 +36,7 @@ let x = 1.0<cm>
 let x = ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ConstantExpr expression with MeasureOperator`` () =
         AnonymousModule() {
             Value(
@@ -55,7 +55,7 @@ let x = ()
 let x = 55.0f<miles * hour>
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ConstantExpr expression with MeasureDivide`` () =
         AnonymousModule() {
             Value(
@@ -74,7 +74,7 @@ let x = 55.0f<miles * hour>
 let x = 55.0f<miles / hour>
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ConstantExpr expression with MeasureDivide 2`` () =
         AnonymousModule() {
             Value(
@@ -98,7 +98,7 @@ let x = 55.0f / 1000.0<g / kg>
 """
 
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ConstantExpr expression with MeasurePower`` () =
         AnonymousModule() {
             Value(

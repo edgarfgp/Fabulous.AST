@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module ArrayOrListPat =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a List pattern`` () =
         AnonymousModule() {
             Value(
@@ -26,7 +26,7 @@ module ArrayOrListPat =
 let [ a; b ] = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with an Array pattern`` () =
         AnonymousModule() {
             Value(

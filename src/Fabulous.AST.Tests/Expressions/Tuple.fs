@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module Tuple =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Tuple expression`` () =
         AnonymousModule() {
             Value(
@@ -27,7 +27,7 @@ module Tuple =
 let x = 1, 2, 3
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Tuple expression with parenthesis`` () =
         AnonymousModule() {
             Value(

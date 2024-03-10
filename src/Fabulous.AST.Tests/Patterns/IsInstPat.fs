@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module IsInstPat =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a IsInstPat pattern`` () =
         AnonymousModule() {
             MatchExpr(ConstantExpr(Constant("12", false))) {
@@ -23,7 +23,7 @@ match 12 with
 """
 
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a custom IsInstPat pattern`` () =
         AnonymousModule() {
             MatchExpr(ConstantExpr(Constant("12", false))) {

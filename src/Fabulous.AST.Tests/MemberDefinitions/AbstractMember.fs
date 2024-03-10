@@ -2,12 +2,13 @@ namespace Fabulous.AST.Tests.MethodDefinitions
 
 open Fabulous.AST
 open Fabulous.AST.Tests
+open Xunit
+
 open type Ast
-open NUnit.Framework
 
 module AbstractMembers =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a classes with a abstract members`` () =
         AnonymousModule() {
             Interface("Meh") {
@@ -61,7 +62,7 @@ type Meh =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a genetic interface with multiple abstract members types`` () =
         AnonymousModule() {
             Interface("Meh", [ "'other"; "'another" ]) {

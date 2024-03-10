@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module ArrayOrList =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Array expression`` () =
         AnonymousModule() {
             Value(
@@ -27,7 +27,7 @@ module ArrayOrList =
 let x = [| 1; 2; 3 |]
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a List expression`` () =
         AnonymousModule() {
             Value(

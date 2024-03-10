@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module RecordExpr =
 
-    [<Test>]
+    [<Fact>]
     let ``RecordExpr expression`` () =
         AnonymousModule() { RecordExpr() { RecordFieldExpr("A", ConstantExpr("1", false)) } }
         |> produces
@@ -17,7 +17,7 @@ module RecordExpr =
 { A = 1 }
 """
 
-    [<Test>]
+    [<Fact>]
     let ``RecordExpr expression with copy info`` () =
         AnonymousModule() { RecordExpr(ConstantExpr("A", false)) { RecordFieldExpr("B", ConstantExpr("1", false)) } }
         |> produces
@@ -25,7 +25,7 @@ module RecordExpr =
 { A with B = 1 }
 """
 
-    [<Test>]
+    [<Fact>]
     let ``AnonRecordExpr expression`` () =
         AnonymousModule() { AnonRecordExpr() { RecordFieldExpr("A", ConstantExpr("1", false)) } }
         |> produces
@@ -33,7 +33,7 @@ module RecordExpr =
 {| A = 1 |}
 """
 
-    [<Test>]
+    [<Fact>]
     let ``AnonRecordExpr expression with copy info`` () =
         AnonymousModule() {
             AnonRecordExpr(ConstantExpr("A", false)) { RecordFieldExpr("B", ConstantExpr("1", false)) }

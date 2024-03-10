@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module Or =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Or pattern`` () =
         AnonymousModule() { Value(OrPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Constant("12", false))) }
         |> produces
@@ -18,7 +18,7 @@ module Or =
 let A | B = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Or custom middle pattern`` () =
         AnonymousModule() { Value(OrPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(Constant("12", false))) }
         |> produces

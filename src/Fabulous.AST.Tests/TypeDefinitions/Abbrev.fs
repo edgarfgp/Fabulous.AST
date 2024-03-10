@@ -3,7 +3,7 @@ namespace Fabulous.AST.Tests.TypeDefinitions
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -11,7 +11,7 @@ open type Fabulous.AST.Ast
 
 module Abbrev =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces type Abbrev`` () =
         AnonymousModule() { Abbrev("MyInt", Int32()) }
 
@@ -22,7 +22,7 @@ type MyInt = int
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces type Abbrev using an escape hatch`` () =
         let alias =
             TypeDefnAbbrevNode(
@@ -57,7 +57,7 @@ type MyFloat = float
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces type Abbrev with TypeDefnAbbrevNode`` () =
         AnonymousModule() {
             Abbrev("MyInt", Int32())

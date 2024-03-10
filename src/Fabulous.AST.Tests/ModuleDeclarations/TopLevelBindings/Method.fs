@@ -2,12 +2,13 @@ namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
 open Fabulous.AST
 open Fabulous.AST.Tests
+open Xunit
+
 open type Ast
-open NUnit.Framework
 
 module MethodMembers =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces MethodMembers`` () =
 
         AnonymousModule() {
@@ -83,7 +84,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with TypeParams and method member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
@@ -108,7 +109,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with TypeParams and static method member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
@@ -134,7 +135,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with method member`` () =
         AnonymousModule() {
             (Record("Colors") { Field("X", LongIdent("string")) })
@@ -152,7 +153,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with static method member`` () =
         AnonymousModule() {
             (Record("Colors") { Field("X", LongIdent("string")) })
@@ -172,7 +173,7 @@ type Colors =
 """
 
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a classes with a method member`` () =
         AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)) } }
         |> produces
@@ -181,7 +182,7 @@ type Person () =
     member this.Name() = 23
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a classes with a method member and parameter`` () =
         AnonymousModule() {
             Class("Person") {
@@ -194,7 +195,7 @@ type Person () =
     member this.Name (params: string) = 23
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a method member with tupled parameter`` () =
         AnonymousModule() {
             Class("Person") {
@@ -214,7 +215,7 @@ type Person () =
     member this.Name(name: string, age: int) = 23
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a method member with multiple parameter`` () =
         AnonymousModule() {
             Class("Person") {
@@ -234,7 +235,7 @@ type Person () =
     member this.Name (name: string) (age: int) = 23
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a method member with attributes`` () =
         AnonymousModule() {
             Class("Person") {
@@ -250,7 +251,7 @@ type Person () =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an inline method member`` () =
         AnonymousModule() {
             Class("Person") {
@@ -264,7 +265,7 @@ type Person () =
     member inline this.Name() = 23
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an method member with type parameters`` () =
         AnonymousModule() {
             Class("Person") {
@@ -278,7 +279,7 @@ type Person () =
     member this.Name<'other>() = 23
             """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a union with a method member `` () =
         AnonymousModule() {
             (Union("Person") { UnionCase("Name") }).members() { Method("this.Name", UnitPat(), ConstantExpr("name")) }
@@ -292,7 +293,7 @@ type Person =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic union with a method member`` () =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {

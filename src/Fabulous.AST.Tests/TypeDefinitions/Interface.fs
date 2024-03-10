@@ -1,13 +1,13 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 open type Ast
 
 module Interface =
-    [<Test>]
+    [<Fact>]
     let ``Produces an interface abstract method`` () =
         AnonymousModule() {
             Interface("INumericFSharp") { AbstractCurriedMethod("Add", [ Int32(); Int32() ], Int32()) }
@@ -26,7 +26,7 @@ type INumericDotNet =
 
 module GenericInterface =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic interface with TypeParams`` () =
         AnonymousModule() {
             Interface("MyInterface", [ "'other"; "'another" ]) {

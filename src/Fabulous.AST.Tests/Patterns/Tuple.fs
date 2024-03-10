@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module TuplePat =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Tuple pattern`` () =
         AnonymousModule() {
             Value(

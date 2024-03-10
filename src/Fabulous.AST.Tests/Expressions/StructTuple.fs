@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module StructTuple =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a StructTuple expression`` () =
         AnonymousModule() {
             Value(
@@ -27,7 +27,7 @@ module StructTuple =
 let x = struct (1, 2, 3)
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a StructTuple expression with parenthesis`` () =
         AnonymousModule() {
             Value(

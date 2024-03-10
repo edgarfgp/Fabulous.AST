@@ -3,7 +3,7 @@ namespace Fabulous.AST.Tests.OpenDirectives
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -11,7 +11,7 @@ open type Ast
 
 module Open =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a simple open directive from a string`` () =
         AnonymousModule() { Open("ABC") }
         |> produces
@@ -21,7 +21,7 @@ open ABC
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an open directive from a node`` () =
         AnonymousModule() {
             Open(
