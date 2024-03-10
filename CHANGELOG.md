@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+# [0.8.1] - 2024-03-10
+
+### Added
+- Escape content in from String by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/64
+
 ## [0.8.0] - 2024-03-08
 
 ### Updated
@@ -97,7 +102,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.8.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.8.1...HEAD
+[0.8.1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.1
 [0.8.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.0
 [0.7.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.7.0
 [0.6.2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.6.2
