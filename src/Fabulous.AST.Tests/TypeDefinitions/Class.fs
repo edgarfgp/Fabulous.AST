@@ -3,13 +3,13 @@ namespace Fabulous.AST.Tests.TypeDefinitions
 open Fantomas.FCS.Text
 open Fabulous.AST.Tests
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 open type Ast
 
 module Class =
-    [<Test>]
+    [<Fact>]
     let ``Produces a class implicit constructor`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
 
@@ -21,7 +21,7 @@ type Person () =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class explicit constructor with no params`` () =
 
         AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr("")) } }
@@ -32,7 +32,7 @@ type Person () =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class explicit constructor with params`` () =
         AnonymousModule() {
             Class(
@@ -54,7 +54,7 @@ type Person (name, lastName, age) =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class explicit constructor with typed params`` () =
         AnonymousModule() {
             Class(
@@ -74,7 +74,7 @@ type Person (name: string, lastName: string, ?age: int) =
     member this.Name = name
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class explicit constructor with multiple typed params`` () =
         AnonymousModule() {
             Class(
@@ -94,7 +94,7 @@ type Person (name: string, age: int) =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class marked as a Struct explicit constructor with typed params`` () =
         AnonymousModule() {
             (Class("Person", Constructor() { SimplePat("name", String(), false) }) {
@@ -110,7 +110,7 @@ type Person (name: string) =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class marked with multiple attributes`` () =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
 
@@ -130,7 +130,7 @@ type Person () =
 """
 
 module GenericClass =
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic class`` () =
         AnonymousModule() {
             Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantExpr("")) }
@@ -143,7 +143,7 @@ type Person <'a, 'b>() =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic class with a constructor`` () =
 
         AnonymousModule() {
@@ -157,7 +157,7 @@ type Person <'a, 'b>() =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a struct generic class with a constructor`` () =
         AnonymousModule() {
             (Class("Person", [ "'a"; "'b" ]) { Property("this.Name", ConstantExpr("")) })

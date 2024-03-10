@@ -3,14 +3,14 @@ namespace Fabulous.AST.Tests.ModuleDeclarations
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
 open type Ast
 
 module Module =
-    [<Test>]
+    [<Fact>]
     let ``Produces a module with binding`` () =
         Module("Fabulous.AST") { Value("x", "3", false) }
         |> produces
@@ -20,7 +20,7 @@ module Fabulous.AST
 let x = 3
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a recursive module`` () =
         Module("Fabulous.AST") { Value("x", "3", false) }
         |> _.toRecursive()
@@ -31,7 +31,7 @@ module rec Fabulous.AST
 let x = 3
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a module with unit`` () =
         Module("Fabulous.AST") { ConstantExpr(ConstantUnit()) }
         |> produces
@@ -41,7 +41,7 @@ module Fabulous.AST
 ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a module with IdentListNode`` () =
         Module("Fabulous.AST") { Value("x", "3", false) }
         |> produces
@@ -51,7 +51,7 @@ module Fabulous.AST
 let x = 3
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a module with IdentListNode and BindingNode`` () =
         Module("Fabulous.AST") {
             BindingNode(

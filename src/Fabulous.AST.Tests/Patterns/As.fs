@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module As =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a As pattern`` () =
         AnonymousModule() { Value(AsPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Constant("12", false))) }
         |> produces
@@ -18,7 +18,7 @@ module As =
 let A as B = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a As custom middle pattern`` () =
         AnonymousModule() { Value(AsPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(Constant("12", false))) }
         |> produces

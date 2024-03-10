@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.ModuleDeclarations
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -9,7 +9,7 @@ open type Ast
 
 module ModuleDeclAttributes =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a do expr`` () =
         AnonymousModule() {
             ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"", false))
@@ -23,7 +23,7 @@ module ModuleDeclAttributes =
 do printfn "Executing..."
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a ModuleDeclAttributes`` () =
         AnonymousModule() {
             ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"", false))

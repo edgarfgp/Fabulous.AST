@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -10,7 +10,7 @@ open type Fantomas.Core.SyntaxOak.Type
 
 module UnitsOfMeasure =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces type Unit of measure`` () =
         AnonymousModule() {
             Measure("cm").xmlDocs([ "Cm, centimeters." ])

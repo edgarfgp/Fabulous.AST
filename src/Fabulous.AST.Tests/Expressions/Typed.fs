@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -8,7 +8,7 @@ open Fabulous.AST
 open type Ast
 
 module Typed =
-    [<Test>]
+    [<Fact>]
     let ``let value with a typed expression`` () =
         AnonymousModule() { Value("x", TypedExpr(ConstantExpr(Constant("2", false)), ":", LongIdent("string"))) }
         |> produces

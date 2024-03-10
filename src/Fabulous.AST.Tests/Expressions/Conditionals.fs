@@ -1,15 +1,15 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
 open Fantomas.FCS.Text
+open Xunit
 open Fabulous.AST
 open Fabulous.AST.Tests
-
-open type Ast
 open Fantomas.Core.SyntaxOak
 
+open type Ast
+
 module IfThen =
-    [<Test>]
+    [<Fact>]
     let ``Produces if-then expression with EscapeHatch`` () =
         let ifExp =
             Expr.InfixApp(
@@ -39,7 +39,7 @@ if x = 12 then
     ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces if-then expression  with expr widgets`` () =
         AnonymousModule() { IfThen(InfixAppExpr("x", "=", "12"), ConstantExpr(ConstantUnit())) }
         |> produces
@@ -49,7 +49,7 @@ if x = 12 then
     ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces elif-then expression with EscapeHatch`` () =
         let ifExp =
             Expr.InfixApp(
@@ -79,7 +79,7 @@ elif x = 12 then
     ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces elif-then expression with expr widget`` () =
         AnonymousModule() {
             ElIfThen(
@@ -94,7 +94,7 @@ elif x = 12 then
     ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces elseif-then expression with expr widget`` () =
         AnonymousModule() {
             ElseIfThen(
@@ -110,7 +110,7 @@ else if x = 12 then
 """
 
 module ConditionalExpr =
-    [<Test>]
+    [<Fact>]
     let ``Produces If Then Elif Then expression with widgets`` () =
         AnonymousModule() {
             ConditionalExpr() {
@@ -133,7 +133,7 @@ elif x = 11 then
     ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces If Then Elif Then Else expression with widgets`` () =
         AnonymousModule() {
             ConditionalExpr(ConstantExpr(ConstantUnit())) {
@@ -155,7 +155,7 @@ elif x = 11 then ()
 else ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces if-then-else expression with EscapeHatch`` () =
         let ifExp =
             Expr.InfixApp(
@@ -202,7 +202,7 @@ else ()
 if x = 12 then () else ()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces if-then-else expression with widgets`` () =
 
         AnonymousModule() {

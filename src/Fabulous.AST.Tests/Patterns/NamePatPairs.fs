@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module NamePatPairsPat =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a NamePatPairs pattern`` () =
         AnonymousModule() {
             Value(
@@ -26,7 +26,7 @@ module NamePatPairsPat =
 let x (A = B; B = A) = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a NamePatPairs pattern with type params`` () =
         AnonymousModule() {
             Value(

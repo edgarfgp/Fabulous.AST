@@ -2,12 +2,13 @@ namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
 open Fabulous.AST
 open Fabulous.AST.Tests
+open Xunit
+
 open type Ast
-open NUnit.Framework
 
 module PropertyMember =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces PropertiesMembers`` () =
 
         AnonymousModule() {
@@ -46,7 +47,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces Properties with Patterns`` () =
 
         AnonymousModule() {
@@ -86,7 +87,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with property member`` () =
         AnonymousModule() {
             (Record("Colors") { Field("X", LongIdent("string")) })
@@ -104,7 +105,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with static property member`` () =
 
         AnonymousModule() {
@@ -123,7 +124,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with TypeParams and property member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
@@ -148,7 +149,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with TypeParams and static property member`` () =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
@@ -174,7 +175,7 @@ type Colors<'other> =
 """
 
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class with a static and not static member property `` () =
 
         AnonymousModule() {
@@ -192,7 +193,7 @@ type Person () =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic class with a static and not static member property `` () =
         AnonymousModule() {
             Class("Person", [ "'other" ]) {
@@ -209,7 +210,7 @@ type Person <'other>() =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class with a member property with xml comments`` () =
         AnonymousModule() {
             Class("Person") {
@@ -225,7 +226,7 @@ type Person () =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class with a member property and accessibility controls`` () =
         let data =
             [ "Name", AccessControl.Public
@@ -255,7 +256,7 @@ type Person () =
     
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class with a member property and return type`` () =
         AnonymousModule() {
             Class("Person") { Property("this.Name", ConstantExpr("23", false)) |> _.returnType("int") }
@@ -267,7 +268,7 @@ type Person () =
     member this.Name: int = 23
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class with a member property inlined`` () =
         AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr("name")).toInlined() } }
         |> produces
@@ -277,7 +278,7 @@ type Person () =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a class with property member with attributes`` () =
         AnonymousModule() {
             Class("Person") {
@@ -293,7 +294,7 @@ type Person () =
     member this.Name = 23
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a record with a member property `` () =
         AnonymousModule() {
             (Record("Person") { Field("Name", LongIdent("string")) })
@@ -311,7 +312,7 @@ type Person =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic record with a member property `` () =
         AnonymousModule() {
             (GenericRecord("Person", [ "'other" ]) { Field("Name", LongIdent("'other")) })
@@ -329,7 +330,7 @@ type Person<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a union with a member property `` () =
         AnonymousModule() {
             (Union("Person") { UnionCase("Name") }).members() { Property("this.Name", ConstantExpr("name")) }
@@ -344,7 +345,7 @@ type Person =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a union with a static member property `` () =
         AnonymousModule() {
             (Union("Person") { UnionCase("Name") }).members() { Property("Name", ConstantExpr("name")).toStatic() }
@@ -359,7 +360,7 @@ type Person =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic union with a member property `` () =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
@@ -389,7 +390,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a generic union with a static member property `` () =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {

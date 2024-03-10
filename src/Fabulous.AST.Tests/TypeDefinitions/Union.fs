@@ -3,7 +3,7 @@ namespace Fabulous.AST.Tests.TypeDefinitions
 open Fabulous.AST.Tests
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -11,7 +11,7 @@ open type Fabulous.AST.Ast
 
 module Union =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union`` () =
         AnonymousModule() {
             Union("Colors") {
@@ -33,7 +33,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union with interface member`` () =
         AnonymousModule() {
 
@@ -70,7 +70,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union with fields`` () =
         AnonymousModule() {
             Union("Colors") {
@@ -96,7 +96,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union with SingleTextNode`` () =
         AnonymousModule() {
             Union("Colors") {
@@ -117,7 +117,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union using Widget and escape hatch`` () =
         AnonymousModule() {
             Union("Colors") {
@@ -140,7 +140,7 @@ type Colors =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union with attribute`` () =
         AnonymousModule() {
             (Union("Colors") { UnionCase("Red") })
@@ -153,7 +153,7 @@ type Colors =
 type Colors = | Red
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union case with attributes`` () =
         AnonymousModule() {
             (Union("Colors") {
@@ -173,7 +173,7 @@ type Colors = | [<Obsolete; Test>] Red
 
 module GenericUnion =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union with TypeParams`` () =
         AnonymousModule() {
             GenericUnion("Colors", [ "'other" ]) {
@@ -199,7 +199,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an union with TypeParams and interface member`` () =
         AnonymousModule() {
             Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
@@ -235,7 +235,7 @@ type Colors<'other> =
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an struct union with TypeParams`` () =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {

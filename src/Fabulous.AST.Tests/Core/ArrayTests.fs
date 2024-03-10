@@ -2,14 +2,14 @@ namespace Fabulous.AST.Tests.Core
 
 open System
 open Fabulous.AST.StackAllocatedCollections
-open NUnit.Framework
+open Xunit
 
 
 open type Fabulous.AST.Ast
 
 module ArrayTests =
 
-    [<Test>]
+    [<Fact>]
     let ``MutStackArray1.combineMut reuses array B if can fit all data`` () =
         let arrB = Array.zeroCreate 7
 
@@ -20,7 +20,7 @@ module ArrayTests =
         let struct (usedC, arrC) = cOpt.Value
 
         // We should have the same number of used items
-        Assert.AreEqual(7us, usedC)
+        Assert.Equal(7us, usedC)
 
         // Reference should be equal to arrB since the array was reused
         Assert.True(Object.ReferenceEquals(arrC, arrB))

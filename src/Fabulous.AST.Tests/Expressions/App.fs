@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Expressions
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module App =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a App expression`` () =
         AnonymousModule() { Value("x", AppExpr("printfn") { ConstantExpr("a") }) }
         |> produces

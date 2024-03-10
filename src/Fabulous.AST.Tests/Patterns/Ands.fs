@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module Ands =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a Ands pattern`` () =
         AnonymousModule() {
             Value(

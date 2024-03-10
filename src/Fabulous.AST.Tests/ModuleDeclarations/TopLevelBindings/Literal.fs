@@ -3,14 +3,14 @@ namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 open Fantomas.Core
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 open Fabulous.AST
 
 open type Ast
 
 module Literal =
-    [<Test>]
+    [<Fact>]
     let ``Produces a Literal constant`` () =
         AnonymousModule() { Value("x", "12", false).attribute("Literal") }
         |> produces
@@ -20,7 +20,7 @@ let x = 12
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces multiple Literal constants`` () =
         let images =
             [ "Daisy", "daisy.png"
@@ -48,7 +48,7 @@ let Sunflower = "sunflower.png"
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces a Literal constant with xml docs`` () =
         AnonymousModule() {
             Value("x", "12", false)
@@ -63,7 +63,7 @@ let x = 12
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces Literal constant with an access control `` () =
         AnonymousModule() { Value("x", "12", false).attribute("Literal").toInternal() }
         |> produces
@@ -74,7 +74,7 @@ let internal x = 12
 
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces Literal constant with escape hatch`` () =
         AnonymousModule() {
             BindingNode(

@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module LongIdent =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a LongIdent pattern`` () =
         AnonymousModule() {
             Value(
@@ -25,7 +25,7 @@ module LongIdent =
 let x B A = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a NamePatPairs pattern with type params`` () =
         AnonymousModule() {
             Value(

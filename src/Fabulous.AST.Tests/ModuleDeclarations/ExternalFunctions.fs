@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.ModuleDeclarations
 
 open Fabulous.AST.Tests
-open NUnit.Framework
+open Xunit
 
 open Fabulous.AST
 
@@ -9,7 +9,7 @@ open type Ast
 
 module ExternalFunctions =
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an ExternBindingNodeNoParams`` () =
         AnonymousModule() { ExternBinding("HelloWorld", "void") }
         |> produces
@@ -17,7 +17,7 @@ module ExternalFunctions =
 extern void HelloWorld()
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an ExternBindingNode with parameter`` () =
         AnonymousModule() {
             ExternBinding("HelloWorld", "void")
@@ -28,7 +28,7 @@ extern void HelloWorld()
 extern void HelloWorld(string x)
 """
 
-    [<Test>]
+    [<Fact>]
     let ``Produces an ExternBindingNode with parameters`` () =
         AnonymousModule() {
             ExternBinding("HelloWorld", "void").parameters() {

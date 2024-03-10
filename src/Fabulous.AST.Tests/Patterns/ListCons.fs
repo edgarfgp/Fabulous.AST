@@ -1,6 +1,6 @@
 namespace Fabulous.AST.Tests.Patterns
 
-open NUnit.Framework
+open Xunit
 open Fabulous.AST.Tests
 
 open Fabulous.AST
@@ -9,7 +9,7 @@ open type Ast
 
 module ListCons =
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a ListCons pattern`` () =
         AnonymousModule() { Value(ListConsPat(NamedPat("a"), NamedPat("b")), ConstantExpr(Constant("12", false))) }
         |> produces
@@ -17,7 +17,7 @@ module ListCons =
 let a :: b = 12
 """
 
-    [<Test>]
+    [<Fact>]
     let ``let value with a custom ListCons pattern`` () =
         AnonymousModule() {
             Value(ListConsPat(NamedPat("a"), ";;", NamedPat("b")), ConstantExpr(Constant("12", false)))

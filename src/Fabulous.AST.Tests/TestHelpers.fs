@@ -3,7 +3,7 @@ namespace Fabulous.AST.Tests
 open Fabulous.AST
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
-open NUnit.Framework
+open Xunit
 
 [<AutoOpen>]
 module TestHelpers =
@@ -16,4 +16,4 @@ module TestHelpers =
 
         let res = CodeFormatter.FormatOakAsync(oak, config) |> Async.RunSynchronously
 
-        Assert.AreEqual(expected.Trim(), res.Trim())
+        Assert.Equal(expected.Trim(), res.Trim())

@@ -1,14 +1,14 @@
 namespace Fabulous.AST.Tests
 
 open Fantomas.Core
-open NUnit.Framework
 
 open Fabulous.AST
 
 open type Ast
+open Xunit
 
 module WidgetTests =
-    [<Test>]
+    [<Fact>]
     let ``string -> OAK`` () =
         let source =
             """
