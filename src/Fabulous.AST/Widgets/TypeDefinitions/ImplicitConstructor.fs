@@ -102,10 +102,8 @@ type ImplicitConstructorModifiers =
 
     [<Extension>]
     static member inline attribute
-        (
-            this: WidgetBuilder<ImplicitConstructorNode>,
-            attribute: WidgetBuilder<AttributeNode>
-        ) =
+        (this: WidgetBuilder<ImplicitConstructorNode>, attribute: WidgetBuilder<AttributeNode>)
+        =
         AttributeCollectionBuilder<ImplicitConstructorNode, AttributeNode>(this, ImplicitConstructor.MultipleAttributes) {
             attribute
         }
@@ -121,9 +119,7 @@ type ImplicitConstructorYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<ImplicitConstructorNode, SimplePatNode>,
-            x: SimplePatNode
-        ) : CollectionContent =
+        (_: CollectionBuilder<ImplicitConstructorNode, SimplePatNode>, x: SimplePatNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }

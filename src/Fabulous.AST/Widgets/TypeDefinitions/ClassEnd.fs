@@ -164,11 +164,8 @@ module ClassEndBuilders =
             Ast.BaseClassEnd(name, ValueSome parameters, ValueNone, hasConstructor)
 
         static member ClassEnd
-            (
-                name: string,
-                parameters: string list,
-                constructor: WidgetBuilder<ImplicitConstructorNode>
-            ) =
+            (name: string, parameters: string list, constructor: WidgetBuilder<ImplicitConstructorNode>)
+            =
             Ast.BaseClassEnd(name, ValueSome parameters, ValueSome constructor, false)
 
 [<Extension>]
@@ -198,10 +195,8 @@ type ClassEndModifiers =
 type ClassEndYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<TypeDefnExplicitNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnExplicitNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let typeDefn = TypeDefn.Explicit(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
@@ -210,9 +205,7 @@ type ClassEndYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnExplicitNode, MemberDefn>,
-            x: MemberDefn
-        ) : CollectionContent =
+        (_: CollectionBuilder<TypeDefnExplicitNode, MemberDefn>, x: MemberDefn)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }

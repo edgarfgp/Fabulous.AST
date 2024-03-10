@@ -84,10 +84,8 @@ type NestedModuleModifiers =
 type NestedModuleYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<NestedModuleNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<NestedModuleNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.NestedModule node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

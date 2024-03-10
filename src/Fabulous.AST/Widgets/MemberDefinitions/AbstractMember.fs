@@ -230,11 +230,8 @@ module AbstractMemberBuilders =
             )
 
         static member AbstractTupledMethod
-            (
-                identifier: string,
-                parameters: WidgetBuilder<Type> list,
-                returnType: WidgetBuilder<Type>
-            ) =
+            (identifier: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>)
+            =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -263,11 +260,7 @@ module AbstractMemberBuilders =
             )
 
         static member AbstractTupledMethod
-            (
-                identifier: string,
-                parameters: (string option * WidgetBuilder<Type>) list,
-                returnType: WidgetBuilder<Type>
-            ) =
+            (identifier: string, parameters: (string option * WidgetBuilder<Type>) list, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -281,11 +274,8 @@ module AbstractMemberBuilders =
             )
 
         static member AbstractTupledMethod
-            (
-                identifier: string,
-                parameters: (string option * string) list,
-                returnType: string
-            ) =
+            (identifier: string, parameters: (string option * string) list, returnType: string)
+            =
             let parameters =
                 parameters |> List.map(fun (name, value) -> name, Ast.LongIdent value)
 
@@ -303,11 +293,8 @@ module AbstractMemberBuilders =
 
 
         static member AbstractCurriedMethod
-            (
-                identifier: string,
-                parameters: WidgetBuilder<Type> list,
-                returnType: WidgetBuilder<Type>
-            ) =
+            (identifier: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>)
+            =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -336,11 +323,7 @@ module AbstractMemberBuilders =
             )
 
         static member AbstractCurriedMethod
-            (
-                identifier: string,
-                parameters: (string option * WidgetBuilder<Type>) list,
-                returnType: WidgetBuilder<Type>
-            ) =
+            (identifier: string, parameters: (string option * WidgetBuilder<Type>) list, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
@@ -354,11 +337,8 @@ module AbstractMemberBuilders =
             )
 
         static member AbstractCurriedMethod
-            (
-                identifier: string,
-                parameters: (string option * string) list,
-                returnType: string
-            ) =
+            (identifier: string, parameters: (string option * string) list, returnType: string)
+            =
             let parameters =
                 parameters |> List.map(fun (name, value) -> name, Ast.LongIdent value)
 
@@ -393,10 +373,8 @@ type AbstractMemberModifiers =
 
     [<Extension>]
     static member inline attribute
-        (
-            this: WidgetBuilder<MemberDefnAbstractSlotNode>,
-            attribute: WidgetBuilder<AttributeNode>
-        ) =
+        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, attribute: WidgetBuilder<AttributeNode>)
+        =
         AttributeCollectionBuilder<MemberDefnAbstractSlotNode, AttributeNode>(this, AbstractMember.MultipleAttributes) {
             attribute
         }

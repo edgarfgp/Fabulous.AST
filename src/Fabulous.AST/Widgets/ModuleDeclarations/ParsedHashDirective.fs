@@ -55,10 +55,8 @@ type HashDirectiveNodeExtensions =
 
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ParsedHashDirectiveNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ParsedHashDirectiveNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ]))
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

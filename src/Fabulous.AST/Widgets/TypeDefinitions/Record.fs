@@ -159,10 +159,8 @@ type RecordModifiers =
 type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<TypeDefnRecordNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnRecordNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let typeDefn = TypeDefn.Record(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
@@ -176,54 +174,41 @@ type RecordYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (
-            _: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: BindingNode
-        ) : CollectionContent =
+        (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: BindingNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: WidgetBuilder<BindingNode>
-        ) : CollectionContent =
+        (this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         RecordYieldExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: MemberDefnInterfaceNode
-        ) : CollectionContent =
+        (_: CollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: MemberDefnInterfaceNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: WidgetBuilder<MemberDefnInterfaceNode>
-        ) : CollectionContent =
+        (this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         RecordYieldExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
-        (
-            _: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: MemberDefnInterfaceNode
-        ) : CollectionContent =
+        (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: MemberDefnInterfaceNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>,
-            x: WidgetBuilder<MemberDefnInterfaceNode>
-        ) : CollectionContent =
+        (this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>) : CollectionContent =
         let node = Gen.mkOak x
         RecordYieldExtensions.Yield(this, node)

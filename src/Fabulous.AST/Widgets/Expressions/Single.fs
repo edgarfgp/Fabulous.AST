@@ -26,12 +26,8 @@ module SingleBuilders =
     type Ast with
 
         static member SingleExpr
-            (
-                leading: string,
-                addSpace: bool,
-                supportsStroustrup: bool,
-                value: WidgetBuilder<Expr>
-            ) =
+            (leading: string, addSpace: bool, supportsStroustrup: bool, value: WidgetBuilder<Expr>)
+            =
             WidgetBuilder<Expr>(
                 Single.WidgetKey,
                 AttributesBundle(
@@ -46,13 +42,8 @@ module SingleBuilders =
             )
 
         static member SingleExpr
-            (
-                leading: string,
-                addSpace: bool,
-                supportsStroustrup: bool,
-                value: string,
-                ?hasQuotes: bool
-            ) =
+            (leading: string, addSpace: bool, supportsStroustrup: bool, value: string, ?hasQuotes: bool)
+            =
             match hasQuotes with
             | None
             | Some true ->

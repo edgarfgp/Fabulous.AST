@@ -64,8 +64,6 @@ module MatchBuilders =
 type MatchYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<Expr, MatchClauseNode>,
-            x: WidgetBuilder<MatchClauseNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<Expr, MatchClauseNode>, x: WidgetBuilder<MatchClauseNode>)
+        : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }
