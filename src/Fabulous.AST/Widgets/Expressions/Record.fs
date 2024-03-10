@@ -34,11 +34,7 @@ module RecordExprBuilders =
     type Ast with
 
         static member private BaseRecordExpr
-            (
-                copyInfo: WidgetBuilder<Expr> voption,
-                leftSingleNode: SingleTextNode,
-                rightSingleNode: SingleTextNode
-            ) =
+            (copyInfo: WidgetBuilder<Expr> voption, leftSingleNode: SingleTextNode, rightSingleNode: SingleTextNode) =
             let copyInfo =
                 match copyInfo with
                 | ValueSome copyInfo -> ValueSome [| RecordExpr.CopyInfo.WithValue(copyInfo.Compile()) |]
@@ -77,8 +73,6 @@ module RecordExprBuilders =
 type RecordExprYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<Expr, RecordFieldNode>,
-            x: WidgetBuilder<RecordFieldNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<Expr, RecordFieldNode>, x: WidgetBuilder<RecordFieldNode>)
+        : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }

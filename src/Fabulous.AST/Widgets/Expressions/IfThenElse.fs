@@ -32,11 +32,8 @@ module IfThenElseBuilders =
     type Ast with
 
         static member inline IfThenElse
-            (
-                ifExpr: WidgetBuilder<Expr>,
-                thenExpr: WidgetBuilder<Expr>,
-                elseExpr: WidgetBuilder<Expr>
-            ) =
+            (ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>)
+            =
             WidgetBuilder<ExprIfThenElseNode>(
                 IfThenElse.WidgetKey,
                 AttributesBundle(
@@ -66,10 +63,8 @@ module IfThenElseBuilders =
 type IfThenElseYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ExprIfThenElseNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExprIfThenElseNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let expIfThen = Expr.IfThenElse(node)
         let moduleDecl = ModuleDecl.DeclExpr expIfThen

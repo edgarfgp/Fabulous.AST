@@ -134,10 +134,5 @@ module BindingFunctionBuilders =
             Ast.BaseFunction(name, ValueNone, value, parameters)
 
         static member Function
-            (
-                name: string,
-                typeParams: string list,
-                parameters: WidgetBuilder<Pattern>,
-                value: WidgetBuilder<Expr>
-            ) =
+            (name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
             Ast.BaseFunction(name, ValueSome typeParams, value, parameters)

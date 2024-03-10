@@ -10,6 +10,21 @@ open Fabulous.AST
 open type Ast
 
 module Value =
+
+    [<Theory>]
+    [<InlineData("Red Blue", "``Red Blue``")>]
+    [<InlineData("Red_Blue", "Red_Blue")>]
+    [<InlineData(" Red Blue ", "``Red Blue``")>]
+    [<InlineData("net6.0", "``net6.0``")>]
+    [<InlineData(" net6.0 ", "``net6.0``")>]
+    let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
+        AnonymousModule() { Value(value, "12", false) }
+        |> produces
+            $$"""
+
+let {{expected}} = 12
+"""
+
     [<Fact>]
     let ``Simple Let binding`` () =
         AnonymousModule() { Value("x", "12", false) }

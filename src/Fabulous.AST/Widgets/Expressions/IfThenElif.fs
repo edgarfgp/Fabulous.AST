@@ -67,10 +67,8 @@ module IfThenElifBuilders =
 type IfThenIfYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ExprIfThenElifNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExprIfThenElifNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let expIfThen = Expr.IfThenElif(node)
         let moduleDecl = ModuleDecl.DeclExpr expIfThen
@@ -79,9 +77,7 @@ type IfThenIfYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<ExprIfThenElifNode, ExprIfThenNode>,
-            x: ExprIfThenNode
-        ) : CollectionContent =
+        (_: CollectionBuilder<ExprIfThenElifNode, ExprIfThenNode>, x: ExprIfThenNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }

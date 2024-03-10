@@ -88,10 +88,8 @@ type ValueModifiers =
 type ValueYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<BindingNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.TopLevelBinding node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

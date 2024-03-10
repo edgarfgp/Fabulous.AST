@@ -145,10 +145,8 @@ type UnitsOfTypeDefnAbbrevNodeAbbrevModifiers =
 type TypeDefnAbbrevNodeYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<TypeNameNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeNameNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let typeDefn = TypeDefn.None(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)

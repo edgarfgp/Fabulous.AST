@@ -96,10 +96,8 @@ type ExternBindingPatternNodeModifiers =
 
     [<Extension>]
     static member inline attribute
-        (
-            this: WidgetBuilder<ExternBindingPatternNode>,
-            attribute: WidgetBuilder<AttributeNode>
-        ) =
+        (this: WidgetBuilder<ExternBindingPatternNode>, attribute: WidgetBuilder<AttributeNode>)
+        =
         AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
             this,
             ExternBindingPattern.MultipleAttributes

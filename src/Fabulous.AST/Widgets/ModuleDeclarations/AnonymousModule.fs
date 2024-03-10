@@ -13,7 +13,12 @@ module AnonymousModule =
 
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
-            let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
+            let decls = Helpers.tryGetNodesFromWidgetCollection<ModuleDecl> widget Decls
+
+            let decls =
+                match decls with
+                | None -> []
+                | Some value -> value
 
             let hashDirectives =
                 Helpers.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives

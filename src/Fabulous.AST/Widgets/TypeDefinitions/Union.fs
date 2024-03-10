@@ -155,10 +155,8 @@ type UnionModifiers =
 type UnionYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<TypeDefnUnionNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnUnionNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let typeDefn = TypeDefn.Union(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
@@ -169,45 +167,34 @@ type UnionYieldExtensions =
 type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>,
-            x: WidgetBuilder<UnionCaseNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode>)
+        : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }
 
     [<Extension>]
     static member inline Yield
-        (
-            _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
-            x: WidgetBuilder<BindingNode>
-        ) : CollectionContent =
+        (_: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
-            x: BindingNode
-        ) : CollectionContent =
+        (_: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: BindingNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            _: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
-            x: MemberDefnInterfaceNode
-        ) : CollectionContent =
+        (_: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: MemberDefnInterfaceNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            this: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>,
-            x: WidgetBuilder<MemberDefnInterfaceNode>
-        ) : CollectionContent =
+        (this: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>) : CollectionContent =
         let node = Gen.mkOak x
         UnionParameterizedCaseYieldExtensions.Yield(this, node)

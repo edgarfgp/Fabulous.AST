@@ -71,10 +71,8 @@ type ModuleDeclAttributeModifiers =
 
     [<Extension>]
     static member inline attribute
-        (
-            this: WidgetBuilder<ModuleDeclAttributesNode>,
-            attribute: WidgetBuilder<AttributeNode>
-        ) =
+        (this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: WidgetBuilder<AttributeNode>)
+        =
         AttributeCollectionBuilder<ModuleDeclAttributesNode, AttributeNode>(
             this,
             ModuleDeclAttributes.MultipleAttributes
@@ -95,10 +93,8 @@ type ModuleDeclAttributeModifiers =
 type ModuleDeclAttributesYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ModuleDeclAttributesNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ModuleDeclAttributesNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.Attributes node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

@@ -145,10 +145,13 @@ type CollectionBuilder<'marker, 'itemMarker> =
               Attributes = AttributesBundle(StackList.one scalar, ValueNone, ValueNone)
               Attr = attr }
 
-        new(key: WidgetKey,
-            attr: WidgetCollectionAttributeDefinition,
-            scalarA: ScalarAttribute,
-            scalarB: ScalarAttribute) =
+        new
+            (
+                key: WidgetKey,
+                attr: WidgetCollectionAttributeDefinition,
+                scalarA: ScalarAttribute,
+                scalarB: ScalarAttribute
+            ) =
             { Key = key
               Attributes = AttributesBundle(StackList.two(scalarA, scalarB), ValueNone, ValueNone)
               Attr = attr }
@@ -216,8 +219,7 @@ type AttributeCollectionBuilder<'marker, 'itemMarker> =
         val Widget: WidgetBuilder<'marker>
         val Attr: WidgetCollectionAttributeDefinition
 
-        new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition) =
-            { Widget = widget; Attr = attr }
+        new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition)= { Widget = widget; Attr = attr }
 
         member inline x.Run(c: CollectionContent) =
             let attrValue =
