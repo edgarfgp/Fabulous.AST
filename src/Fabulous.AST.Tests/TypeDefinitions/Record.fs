@@ -9,6 +9,21 @@ open type Ast
 
 module Record =
 
+    [<Theory>]
+    [<InlineData("First Name", "``First Name``")>]
+    [<InlineData(" First Name ", "``First Name``")>]
+    [<InlineData("First_Name", "First_Name")>]
+    [<InlineData("net.6", "``net.6``")>]
+    [<InlineData("net.6", "``net.6``")>]
+    let ``Produces a record with fields with backticks`` (value: string) (expected: string) =
+        AnonymousModule() { Record("Person ") { Field(value, LongIdent("int")) } }
+        |> produces
+            $$"""
+
+type Person = { {{expected}: int }
+
+"""
+
     [<Fact>]
     let ``Produces a record with an attribute`` () =
         AnonymousModule() {

@@ -10,6 +10,26 @@ open Fabulous.AST
 open type Fabulous.AST.Ast
 
 module Union =
+    
+    [<Theory>]
+    [<InlineData("Red Blue", "``Red Blue``")>]
+    [<InlineData("Red_Blue", "Red_Blue")>]
+    [<InlineData(" Red Blue ", "``Red Blue``")>]
+    [<InlineData("net6.0", "``net6.0``")>]
+    [<InlineData(" net6.0 " , "``net6.0``")>]
+    let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
+        AnonymousModule() {
+            Union("Colors ") {
+                UnionCase(value)
+            }
+        }
+        |> produces
+            $$"""
+
+type Colors = | {{expected}}
+
+"""
+
 
     [<Fact>]
     let ``Produces an union`` () =

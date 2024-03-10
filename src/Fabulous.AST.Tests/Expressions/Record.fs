@@ -8,6 +8,40 @@ open Fabulous.AST
 open type Ast
 
 module RecordExpr =
+    
+    [<Theory>]
+    [<InlineData("Red Blue", "``Red Blue``")>]
+    [<InlineData("Red_Blue", "Red_Blue")>]
+    [<InlineData(" Red Blue ", "``Red Blue``")>]
+    [<InlineData("net6.0", "``net6.0``")>]
+    [<InlineData(" net6.0 " , "``net6.0``")>]
+    let ``Produces an AnonRecordExpr with fields with backticks`` (value: string) (expected: string) =
+        AnonymousModule() {
+           AnonRecordExpr() { RecordFieldExpr(value, ConstantExpr("1", false)) }
+        }
+        |> produces
+            $$"""
+
+{| {{expected}} = 1 |}
+
+"""
+
+    [<Theory>]
+    [<InlineData("Red Blue", "``Red Blue``")>]
+    [<InlineData("Red_Blue", "Red_Blue")>]
+    [<InlineData(" Red Blue ", "``Red Blue``")>]
+    [<InlineData("net6.0", "``net6.0``")>]
+    [<InlineData(" net6.0 " , "``net6.0``")>]
+    let ``Produces an RecordExpr with fields with backticks`` (value: string) (expected: string) =
+        AnonymousModule() {
+           RecordExpr() { RecordFieldExpr(value, ConstantExpr("1", false)) }
+        }
+        |> produces
+                $$"""
+    
+{ {{expected}} = 1 }
+    
+    """
 
     [<Fact>]
     let ``RecordExpr expression`` () =
