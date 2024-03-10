@@ -51,18 +51,14 @@ module InterfaceMemberBuilders =
 type InterfaceMemberYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>,
-            x: BindingNode
-        ) : CollectionContent =
+        (_: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, x: BindingNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>,
-            x: WidgetBuilder<BindingNode>
-        ) : CollectionContent =
+        (this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         InterfaceMemberYieldExtensions.Yield(this, node)

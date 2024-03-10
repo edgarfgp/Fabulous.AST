@@ -115,10 +115,8 @@ type EnumModifiers =
 type EnumYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<TypeDefnEnumNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnEnumNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let typeDefn = TypeDefn.Enum(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
@@ -127,18 +125,14 @@ type EnumYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>,
-            x: EnumCaseNode
-        ) : CollectionContent =
+        (_: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: EnumCaseNode)
+        : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (
-            this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>,
-            x: WidgetBuilder<EnumCaseNode>
-        ) : CollectionContent =
+        (this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         EnumYieldExtensions.Yield(this, node)

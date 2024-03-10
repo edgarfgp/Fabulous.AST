@@ -129,10 +129,8 @@ module IfThenBuilders =
 type IfThenYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ExprIfThenNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExprIfThenNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let expIfThen = Expr.IfThen(node)
         let moduleDecl = ModuleDecl.DeclExpr expIfThen

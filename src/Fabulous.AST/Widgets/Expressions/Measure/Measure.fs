@@ -109,11 +109,8 @@ module MeasureBuilders =
             )
 
         static member MeasurePower
-            (
-                operator: string,
-                measure: WidgetBuilder<Measure>,
-                node: WidgetBuilder<RationalConstNode>
-            ) =
+            (operator: string, measure: WidgetBuilder<Measure>, node: WidgetBuilder<RationalConstNode>)
+            =
             WidgetBuilder<Measure>(
                 Measure.WidgetMeasurePowerKey,
                 AttributesBundle(

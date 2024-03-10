@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -21,7 +22,13 @@ module Field =
 
             let name =
                 match name with
-                | ValueSome name -> Some(SingleTextNode.Create(name))
+                | ValueSome name ->
+                    let name =
+                        match name with
+                        | SingleTextNode.WrapWithBackTicks name -> name
+                        | _ -> SingleTextNode.Create(name)
+
+                    Some(name)
                 | ValueNone -> None
 
             let fieldType = Helpers.getNodeFromWidget widget FieldType

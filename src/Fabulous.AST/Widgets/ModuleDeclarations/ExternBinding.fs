@@ -158,10 +158,8 @@ type ExternBindingNodeModifiers =
 
     [<Extension>]
     static member inline parameter
-        (
-            this: WidgetBuilder<ExternBindingNode>,
-            parameter: WidgetBuilder<ExternBindingPatternNode>
-        ) =
+        (this: WidgetBuilder<ExternBindingNode>, parameter: WidgetBuilder<ExternBindingPatternNode>)
+        =
         AttributeCollectionBuilder<ExternBindingNode, ExternBindingPatternNode>(this, ExternBinding.Parameters) {
             parameter
         }
@@ -174,10 +172,8 @@ type ExternBindingNodeModifiers =
 type ExternBindingNodeYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<ExternBindingNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExternBindingNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let moduleDecl = ModuleDecl.ExternBinding node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()

@@ -19,6 +19,12 @@ module UnionCase =
     let WidgetKey =
         Widgets.register "UnionCase" (fun widget ->
             let name = Helpers.getScalarValue widget Name
+
+            let name =
+                match name with
+                | SingleTextNode.WrapWithBackTicks name -> name
+                | _ -> SingleTextNode.Create(name)
+
             let fields = Helpers.tryGetNodesFromWidgetCollection<FieldNode> widget Fields
 
             let fields =
@@ -54,7 +60,7 @@ module UnionCase =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            UnionCaseNode(None, multipleAttributes, None, SingleTextNode.Create(name), fields, Range.Zero))
+            UnionCaseNode(xmlDocs, multipleAttributes, None, name, fields, Range.Zero))
 
 [<AutoOpen>]
 module UnionCaseBuilders =

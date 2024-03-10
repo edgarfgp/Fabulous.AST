@@ -68,10 +68,8 @@ module NamePatPairsBuilders =
 type NamePatPairsYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, NamePatPair>,
-            x: WidgetBuilder<NamePatPair>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, NamePatPair>, x: WidgetBuilder<NamePatPair>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let widget = Ast.EscapeHatch(node).Compile()
         { Widgets = MutStackArray1.One(widget) }

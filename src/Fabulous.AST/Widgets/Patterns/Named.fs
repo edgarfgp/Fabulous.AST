@@ -10,7 +10,13 @@ module Named =
     let WidgetKey =
         Widgets.register "Named" (fun widget ->
             let value = Helpers.getScalarValue widget Value
-            Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value), Range.Zero)))
+
+            let name =
+                match value with
+                | SingleTextNode.WrapWithBackTicks name -> name
+                | _ -> SingleTextNode.Create(value)
+
+            Pattern.Named(PatNamedNode(None, name, Range.Zero)))
 
 [<AutoOpen>]
 module NamedBuilders =

@@ -34,11 +34,8 @@ module MatchClauseBuilders =
     type Ast with
 
         static member inline MatchClauseExpr
-            (
-                pattern: WidgetBuilder<Pattern>,
-                whenExpr: WidgetBuilder<Expr>,
-                bodyExpr: WidgetBuilder<Expr>
-            ) =
+            (pattern: WidgetBuilder<Pattern>, whenExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>)
+            =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
                 AttributesBundle(

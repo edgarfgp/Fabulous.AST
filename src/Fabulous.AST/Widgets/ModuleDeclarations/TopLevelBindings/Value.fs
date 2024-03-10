@@ -111,11 +111,8 @@ module BindingValue =
 module BindingValueBuilders =
     type Ast with
         static member private BaseValue
-            (
-                name: WidgetBuilder<Pattern>,
-                typeParams: string list voption,
-                value: WidgetBuilder<Expr>
-            ) =
+            (name: WidgetBuilder<Pattern>, typeParams: string list voption, value: WidgetBuilder<Expr>)
+            =
             let scalars =
                 match typeParams with
                 | ValueNone -> StackList.empty()

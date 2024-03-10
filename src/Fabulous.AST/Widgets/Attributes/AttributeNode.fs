@@ -33,11 +33,8 @@ module AttributeNode =
 module AttributeNodeBuilders =
     type Ast with
         static member private BaseAttributeNode
-            (
-                typeName: string,
-                expr: WidgetBuilder<Expr> voption,
-                target: string voption
-            ) =
+            (typeName: string, expr: WidgetBuilder<Expr> voption, target: string voption)
+            =
             let widgets =
                 match expr with
                 | ValueNone -> ValueNone

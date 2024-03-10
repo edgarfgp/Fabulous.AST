@@ -59,9 +59,7 @@ type FunsYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (
-            this: CollectionBuilder<TypeFunsNode, Type>,
-            x: WidgetBuilder<Type>
-        ) : CollectionContent =
+        (this: CollectionBuilder<TypeFunsNode, Type>, x: WidgetBuilder<Type>)
+        : CollectionContent =
         let node = Gen.mkOak x
         FunsYieldExtensions.Yield(this, node)

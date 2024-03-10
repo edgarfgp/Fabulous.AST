@@ -40,10 +40,8 @@ module OpenTypeBuilders =
 type OpenTypeYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (
-            _: CollectionBuilder<'parent, ModuleDecl>,
-            x: WidgetBuilder<OpenTypeNode>
-        ) : CollectionContent =
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenTypeNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         let openList = OpenListNode([ Open.Target node ])
         let moduleDecl = ModuleDecl.OpenList openList

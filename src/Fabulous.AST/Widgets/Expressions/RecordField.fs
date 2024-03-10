@@ -14,8 +14,13 @@ module RecordField =
             let expr = Helpers.getNodeFromWidget<Expr> widget RecordExpr
             let name = Helpers.getScalarValue widget Name
 
+            let name =
+                match name with
+                | SingleTextNode.WrapWithBackTicks name -> name
+                | _ -> SingleTextNode.Create(name)
+
             RecordFieldNode(
-                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
                 SingleTextNode.equals,
                 expr,
                 Range.Zero
