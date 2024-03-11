@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 
 type SingleTextNode =
     static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)
@@ -15,9 +16,9 @@ module SingleTextNode =
             failwith "This is not a valid identifier"
         else
             let str = str.Trim()
-
-            if str.Contains(".") || str.Contains(" ") then
-                ValueSome(SingleTextNode.Create($"``{str}``"))
+            let normalized = PrettyNaming.NormalizeIdentifierBackticks(str)
+            if normalized <> str then
+                ValueSome(SingleTextNode.Create(normalized))
             else
                 ValueNone
 
