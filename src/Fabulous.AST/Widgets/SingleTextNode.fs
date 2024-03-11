@@ -10,18 +10,6 @@ type SingleTextNode =
 /// Contains all the single text nodes that are used in the AST
 [<RequireQualifiedAccess>]
 module SingleTextNode =
-    [<return: Struct>]
-    let (|WrapWithBackTicks|_|) (str: string) =
-        if System.String.IsNullOrEmpty str then
-            failwith "This is not a valid identifier"
-        else
-            let str = str.Trim()
-            let normalized = PrettyNaming.NormalizeIdentifierBackticks(str)
-            if normalized <> str then
-                ValueSome(SingleTextNode.Create(normalized))
-            else
-                ValueNone
-
     let lessThan = SingleTextNode.Create "<"
     let greaterThan = SingleTextNode.Create ">"
     let equals = SingleTextNode.Create "="

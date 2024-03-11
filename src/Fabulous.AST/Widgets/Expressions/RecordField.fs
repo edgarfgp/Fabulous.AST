@@ -12,12 +12,10 @@ module RecordField =
     let WidgetKey =
         Widgets.register "RecordField" (fun widget ->
             let expr = Helpers.getNodeFromWidget<Expr> widget RecordExpr
-            let name = Helpers.getScalarValue widget Name
-
-            let name =
-                match name with
-                | SingleTextNode.WrapWithBackTicks name -> name
-                | _ -> SingleTextNode.Create(name)
+            let name = 
+                Helpers.getScalarValue widget Name
+                |> Helpers.normalizeIdentifierBackticks
+                |> SingleTextNode.Create
 
             RecordFieldNode(
                 IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),

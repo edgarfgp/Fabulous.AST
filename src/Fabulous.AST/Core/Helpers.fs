@@ -24,6 +24,14 @@ module Helpers =
         | ValueNone -> failwith $"Could not find scalar attribute {def.Name} on widget {widget}"
         | ValueSome value -> value
 
+    /// Adds double backticks to the identifier if necessary.
+    let normalizeIdentifierBackticks (identifier: string) = 
+        if System.String.IsNullOrEmpty identifier then
+            failwith "This is not a valid identifier"
+        else
+            let trimmed = identifier.Trim()
+            Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks trimmed
+
     let tryGetWidgetValue (widget: Widget) (def: WidgetAttributeDefinition) =
         match widget.WidgetAttributes with
         | ValueNone -> ValueNone
