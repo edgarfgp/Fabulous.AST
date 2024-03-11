@@ -9,7 +9,7 @@ module Named =
 
     let WidgetKey =
         Widgets.register "Named" (fun widget ->
-            let name = 
+            let name =
                 Helpers.getScalarValue widget Value
                 |> Helpers.normalizeIdentifierBackticks
                 |> SingleTextNode.Create

@@ -22,11 +22,7 @@ module Field =
 
             let name =
                 match name with
-                | ValueSome name ->
-                    name
-                    |> Helpers.normalizeIdentifierBackticks
-                    |> SingleTextNode.Create
-                    |> Some
+                | ValueSome name -> name |> Helpers.normalizeIdentifierBackticks |> SingleTextNode.Create |> Some
                 | ValueNone -> None
 
             let fieldType = Helpers.getNodeFromWidget widget FieldType

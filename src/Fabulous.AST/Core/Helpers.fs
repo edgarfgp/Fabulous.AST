@@ -25,7 +25,7 @@ module Helpers =
         | ValueSome value -> value
 
     /// Adds double backticks to the identifier if necessary.
-    let normalizeIdentifierBackticks (identifier: string) = 
+    let normalizeIdentifierBackticks (identifier: string) =
         if System.String.IsNullOrEmpty identifier then
             failwith "This is not a valid identifier"
         else
