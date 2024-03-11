@@ -22,19 +22,19 @@ module Union =
 
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
+            let name = Widgets.getScalarValue widget Name
 
             let unionCaseNode =
-                Helpers.getNodesFromWidgetCollection<UnionCaseNode> widget UnionCaseNode
+                Widgets.getNodesFromWidgetCollection<UnionCaseNode> widget UnionCaseNode
 
-            let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
             let members =
                 match members with
                 | Some members -> members
                 | None -> []
 
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -44,7 +44,7 @@ module Union =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -62,7 +62,7 @@ module Union =
                     )
                 | None -> None
 
-            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let typeParams =
                 match typeParams with

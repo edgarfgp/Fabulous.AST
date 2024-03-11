@@ -13,9 +13,9 @@ module As =
 
     let WidgetKey =
         Widgets.register "As" (fun widget ->
-            let lhs = Helpers.getNodeFromWidget widget LHSPattern
-            let middle = Helpers.getScalarValue widget MiddlePattern
-            let rhs = Helpers.getNodeFromWidget widget RHSPattern
+            let lhs = Widgets.getNodeFromWidget widget LHSPattern
+            let middle = Widgets.getScalarValue widget MiddlePattern
+            let rhs = Widgets.getNodeFromWidget widget RHSPattern
             Pattern.As(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.Zero)))
 
 [<AutoOpen>]

@@ -9,8 +9,8 @@ module Parameters =
 
     let WidgetKey =
         Widgets.register "Parameters" (fun widget ->
-            let parameters = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
-            let isTupled = Helpers.getScalarValue widget HasTupledParameters
+            let parameters = Widgets.getNodesFromWidgetCollection<Pattern> widget Parameters
+            let isTupled = Widgets.getScalarValue widget HasTupledParameters
 
             if isTupled then
                 parameters

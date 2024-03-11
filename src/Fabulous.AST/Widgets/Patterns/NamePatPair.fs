@@ -11,8 +11,8 @@ module NamePatPair =
 
     let WidgetKey =
         Widgets.register "NamePatPair" (fun widget ->
-            let ident = Helpers.getScalarValue widget Ident
-            let pat = Helpers.getNodeFromWidget widget Pat
+            let ident = Widgets.getScalarValue widget Ident
+            let pat = Widgets.getNodeFromWidget widget Pat
             NamePatPair(SingleTextNode.Create(ident), SingleTextNode.equals, pat, Range.Zero))
 
 [<AutoOpen>]

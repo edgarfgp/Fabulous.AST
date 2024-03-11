@@ -23,16 +23,16 @@ module Record =
 
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
-            let fields = Helpers.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
-            let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let name = Widgets.getScalarValue widget Name
+            let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
+            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
             let members =
                 match members with
                 | Some members -> members
                 | None -> []
 
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -42,7 +42,7 @@ module Record =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
 
             let multipleAttributes =
@@ -61,7 +61,7 @@ module Record =
                     )
                 | None -> None
 
-            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let typeParams =
                 match typeParams with

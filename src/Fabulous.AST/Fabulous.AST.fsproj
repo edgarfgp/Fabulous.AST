@@ -24,18 +24,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Core\Array.fs" />
-        <Compile Include="Core\Primitives.fs" />
-        <Compile Include="Core\AttributeDefinitions.fs" />
-        <Compile Include="Core\Builders.fs" />
-        <Compile Include="Core\WidgetDefinitions.fs" />
-        <Compile Include="Core\Helpers.fs" />
-        <Compile Include="Core\Widgets.fs" />
-        <Compile Include="Core\Attributes.fs" />
-        <Compile Include="Gen.fs" />
-        <Compile Include="Widgets\EscapeHatch.fs" />
+        <Compile Include="DSL\Array.fs" />
+        <Compile Include="DSL\Primitives.fs" />
+        <Compile Include="DSL\AttributeDefinitions.fs" />
+        <Compile Include="DSL\Builders.fs" />
+        <Compile Include="DSL\WidgetDefinitions.fs" />
+        <Compile Include="DSL\Widgets.fs" />
+        <Compile Include="DSL\Attributes.fs" />
+        <Compile Include="DSL\Gen.fs" />
         <Compile Include="Widgets\SingleTextNode.fs" />
         <Compile Include="Widgets\Common.fs" />
+        <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\RationalConstNode.fs" />
         <Compile Include="Widgets\Types\LongIdent.fs" />
         <Compile Include="Widgets\Types\HashConstraint.fs" />

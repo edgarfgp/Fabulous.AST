@@ -11,8 +11,8 @@ module TypeAppPostfix =
 
     let WidgetKey =
         Widgets.register "TypeAppPostfix" (fun widget ->
-            let first = Helpers.getNodeFromWidget<Type> widget First
-            let last = Helpers.getNodeFromWidget<Type> widget Last
+            let first = Widgets.getNodeFromWidget<Type> widget First
+            let last = Widgets.getNodeFromWidget<Type> widget Last
             Type.AppPostfix(TypeAppPostFixNode(first, last, Range.Zero)))
 
 [<AutoOpen>]

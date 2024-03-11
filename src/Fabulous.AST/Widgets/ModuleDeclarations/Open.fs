@@ -14,7 +14,7 @@ module Open =
 
     let WidgetKey =
         Widgets.register "Open" (fun widget ->
-            let identList = Helpers.getNodeFromWidget<IdentListNode> widget IdentList
+            let identList = Widgets.getNodeFromWidget<IdentListNode> widget IdentList
             OpenNode identList)
 
 [<AutoOpen>]

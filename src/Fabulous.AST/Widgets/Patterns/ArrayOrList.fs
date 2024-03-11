@@ -13,9 +13,9 @@ module ArrayOrListPat =
 
     let WidgetKey =
         Widgets.register "ArrayOrList" (fun widget ->
-            let openTextNode = Helpers.getScalarValue widget OpenTextNode
-            let values = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
-            let closeTextNode = Helpers.getScalarValue widget CloseTextNode
+            let openTextNode = Widgets.getScalarValue widget OpenTextNode
+            let values = Widgets.getNodesFromWidgetCollection<Pattern> widget Parameters
+            let closeTextNode = Widgets.getScalarValue widget CloseTextNode
 
             Pattern.ArrayOrList(PatArrayOrListNode(openTextNode, values, closeTextNode, Range.Zero)))
 

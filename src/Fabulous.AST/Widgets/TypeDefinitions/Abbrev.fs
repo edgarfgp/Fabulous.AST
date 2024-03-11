@@ -14,9 +14,9 @@ module Abbrev =
 
     let WidgetKey =
         Widgets.register "Alias" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
+            let name = Widgets.getScalarValue widget Name
 
-            let aliasType = Helpers.getNodeFromWidget widget AliasType
+            let aliasType = Widgets.getNodeFromWidget widget AliasType
 
             TypeDefnAbbrevNode(
                 TypeNameNode(

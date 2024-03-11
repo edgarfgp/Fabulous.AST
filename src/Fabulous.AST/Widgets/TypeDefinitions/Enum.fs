@@ -18,12 +18,12 @@ module Enum =
 
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
+            let name = Widgets.getScalarValue widget Name
 
             let enumCaseNodes =
-                Helpers.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
+                Widgets.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
 
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -33,7 +33,7 @@ module Enum =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
 
             let multipleAttributes =

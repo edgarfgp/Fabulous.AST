@@ -22,7 +22,7 @@ module ImplicitConstructor =
     let WidgetKey =
         Widgets.register "ImplicitConstructor" (fun widget ->
             let simplePatNodes =
-                Helpers.getNodesFromWidgetCollection<SimplePatNode> widget SimplePats
+                Widgets.getNodesFromWidgetCollection<SimplePatNode> widget SimplePats
 
             let simplePats =
                 match simplePatNodes with
@@ -33,7 +33,7 @@ module ImplicitConstructor =
                           yield Choice2Of2 SingleTextNode.comma
                           yield Choice1Of2 p ]
 
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -43,7 +43,7 @@ module ImplicitConstructor =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with

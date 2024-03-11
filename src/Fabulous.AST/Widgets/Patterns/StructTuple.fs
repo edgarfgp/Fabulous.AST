@@ -8,7 +8,7 @@ module StructTuplePat =
 
     let WidgetKey =
         Widgets.register "StructTuple" (fun widget ->
-            let values = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
+            let values = Widgets.getNodesFromWidgetCollection<Pattern> widget Parameters
 
             Pattern.StructTuple(PatStructTupleNode(values, Range.Zero)))
 

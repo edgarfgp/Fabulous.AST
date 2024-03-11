@@ -18,8 +18,8 @@ module TypeDefnAbbrevNode =
 
     let WidgetKey =
         Widgets.register "TypeDefnAbbrevNode" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let name = Widgets.getScalarValue widget Name
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -59,9 +59,9 @@ module TypeDefnAbbrevNode =
 
     let WidgetAbbrevKey =
         Widgets.register "TypeDefnAbbrevNode" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
-            let powerType = Helpers.getNodeFromWidget widget PowerType
-            let lines = Helpers.tryGetScalarValue widget XmlDocsAbbrev
+            let name = Widgets.getScalarValue widget Name
+            let powerType = Widgets.getNodeFromWidget widget PowerType
+            let lines = Widgets.tryGetScalarValue widget XmlDocsAbbrev
 
             let xmlDocs =
                 match lines with

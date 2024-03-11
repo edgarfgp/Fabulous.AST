@@ -17,18 +17,22 @@ module Field =
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
-            let name = Helpers.tryGetScalarValue widget Name
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let name = Widgets.tryGetScalarValue widget Name
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let name =
                 match name with
-                | ValueSome name -> name |> Helpers.normalizeIdentifierBackticks |> SingleTextNode.Create |> Some
+                | ValueSome name ->
+                    name
+                    |> StringParsing.normalizeIdentifierBackticks
+                    |> SingleTextNode.Create
+                    |> Some
                 | ValueNone -> None
 
-            let fieldType = Helpers.getNodeFromWidget widget FieldType
+            let fieldType = Widgets.getNodeFromWidget widget FieldType
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with

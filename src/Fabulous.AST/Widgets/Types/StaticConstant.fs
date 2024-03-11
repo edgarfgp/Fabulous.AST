@@ -8,7 +8,7 @@ module TypeStaticConstant =
 
     let WidgetKey =
         Widgets.register "TypeStaticConstant" (fun widget ->
-            let typeWidget = Helpers.getNodeFromWidget<Constant> widget TypeWidget
+            let typeWidget = Widgets.getNodeFromWidget<Constant> widget TypeWidget
             Type.StaticConstant(typeWidget))
 
 [<AutoOpen>]

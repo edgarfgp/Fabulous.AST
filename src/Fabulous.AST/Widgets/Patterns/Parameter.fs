@@ -10,8 +10,8 @@ module Parameter =
 
     let WidgetKey =
         Widgets.register "Parameter" (fun widget ->
-            let value = Helpers.getNodeFromWidget<Pattern> widget Value
-            let typeValue = Helpers.tryGetNodeFromWidget<Type> widget Type
+            let value = Widgets.getNodeFromWidget<Pattern> widget Value
+            let typeValue = Widgets.tryGetNodeFromWidget<Type> widget Type
 
             let typeValue =
                 match typeValue with

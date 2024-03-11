@@ -8,7 +8,7 @@ module Tuple =
 
     let WidgetKey =
         Widgets.register "Tuple" (fun widget ->
-            let values = Helpers.getNodesFromWidgetCollection<Expr> widget Items
+            let values = Widgets.getNodesFromWidgetCollection<Expr> widget Items
 
             let value =
                 values

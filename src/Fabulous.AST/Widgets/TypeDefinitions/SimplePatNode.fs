@@ -17,9 +17,9 @@ module SimplePat =
 
     let WidgetKey =
         Widgets.register "SimplePatNode" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
-            let isOptional = Helpers.getScalarValue widget IsOptional
-            let typed = Helpers.tryGetNodeFromWidget<Type> widget Typed
+            let name = Widgets.getScalarValue widget Name
+            let isOptional = Widgets.getScalarValue widget IsOptional
+            let typed = Widgets.tryGetNodeFromWidget<Type> widget Typed
 
             let typed =
                 match typed with
@@ -27,7 +27,7 @@ module SimplePat =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
 
             let multipleAttributes =

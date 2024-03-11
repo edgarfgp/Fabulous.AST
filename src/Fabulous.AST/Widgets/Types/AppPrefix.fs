@@ -13,8 +13,8 @@ module TypeAppPrefix =
 
     let WidgetKey =
         Widgets.register "TypeAppPrefix" (fun widget ->
-            let identifier = Helpers.getNodeFromWidget<Type> widget Identifier
-            let postIdentifier = Helpers.tryGetScalarValue widget PostIdentifier
+            let identifier = Widgets.getNodeFromWidget<Type> widget Identifier
+            let postIdentifier = Widgets.tryGetScalarValue widget PostIdentifier
 
             let postIdentifier =
                 match postIdentifier with
@@ -27,7 +27,7 @@ module TypeAppPrefix =
                     |> Some
                 | ValueNone -> None
 
-            let arguments = Helpers.getNodeFromWidget<Type> widget Arguments
+            let arguments = Widgets.getNodeFromWidget<Type> widget Arguments
 
             Type.AppPrefix(
                 TypeAppPrefixNode(

@@ -11,18 +11,18 @@ open type Fabulous.AST.Ast
 module BindingProperty =
     let WidgetKey =
         Widgets.register "PropertyMember" (fun widget ->
-            let name = Helpers.getScalarValue widget BindingNode.NameString
-            let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
-            let isInlined = Helpers.tryGetScalarValue widget BindingNode.IsInlined
+            let name = Widgets.getScalarValue widget BindingNode.NameString
+            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
 
             let isStatic =
-                Helpers.tryGetScalarValue widget BindingNode.IsStatic
+                Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Helpers.tryGetNodeFromWidget<Type> widget BindingNode.Return
+            let returnType = Widgets.tryGetNodeFromWidget<Type> widget BindingNode.Return
 
             let accessControl =
-                Helpers.tryGetScalarValue widget BindingNode.Accessibility
+                Widgets.tryGetScalarValue widget BindingNode.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -32,7 +32,7 @@ module BindingProperty =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Helpers.tryGetScalarValue widget BindingNode.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -47,7 +47,7 @@ module BindingProperty =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -71,7 +71,7 @@ module BindingProperty =
                 | ValueSome false -> None
                 | ValueNone -> None
 
-            let typeParams = Helpers.tryGetScalarValue widget BindingNode.TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
 
             let typeParams =
                 match typeParams with

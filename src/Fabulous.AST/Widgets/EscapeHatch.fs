@@ -6,7 +6,7 @@ module EscapeHatch =
 
     let WidgetKey =
         Widgets.register "EscapeHatch" (fun widget ->
-            let node = Helpers.getScalarValue widget Node
+            let node = Widgets.getScalarValue widget Node
             node)
 
 [<AutoOpen>]

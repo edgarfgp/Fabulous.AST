@@ -11,9 +11,9 @@ module MatchClause =
 
     let WidgetKey =
         Widgets.register "MatchClause" (fun widget ->
-            let pattern = Helpers.getNodeFromWidget<Pattern> widget PatternNamed
-            let whenExpr = Helpers.tryGetNodeFromWidget<Expr> widget WhenExpr
-            let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BodyExpr
+            let pattern = Widgets.getNodeFromWidget<Pattern> widget PatternNamed
+            let whenExpr = Widgets.tryGetNodeFromWidget<Expr> widget WhenExpr
+            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BodyExpr
 
             let whenExpr =
                 match whenExpr with

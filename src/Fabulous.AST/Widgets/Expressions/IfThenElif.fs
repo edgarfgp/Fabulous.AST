@@ -15,14 +15,14 @@ module IfThenElif =
     let WidgetKey =
         Widgets.register "IfThen" (fun widget ->
             let branches =
-                Helpers.tryGetNodesFromWidgetCollection<ExprIfThenNode> widget Branches
+                Widgets.tryGetNodesFromWidgetCollection<ExprIfThenNode> widget Branches
 
             let branches =
                 match branches with
                 | Some branches -> branches
                 | None -> []
 
-            let elseExpr = Helpers.tryGetNodeFromWidget<Expr> widget ElseExpr
+            let elseExpr = Widgets.tryGetNodeFromWidget<Expr> widget ElseExpr
 
             let elseExpr =
                 match elseExpr with

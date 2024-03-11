@@ -12,8 +12,8 @@ module IfThen =
 
     let WidgetIfThenKey =
         Widgets.register "IfThen" (fun widget ->
-            let ifExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
-            let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
+            let ifExpr = Widgets.getNodeFromWidget<Expr> widget IfExpr
+            let thenExpr = Widgets.getNodeFromWidget<Expr> widget ThenExpr
 
             ExprIfThenNode(
                 IfKeywordNode.SingleWord(SingleTextNode.``if``),
@@ -25,8 +25,8 @@ module IfThen =
 
     let WidgetElIfThenKey =
         Widgets.register "ElIfThen" (fun widget ->
-            let ifExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
-            let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
+            let ifExpr = Widgets.getNodeFromWidget<Expr> widget IfExpr
+            let thenExpr = Widgets.getNodeFromWidget<Expr> widget ThenExpr
 
             ExprIfThenNode(
                 IfKeywordNode.SingleWord(SingleTextNode.``elif``),
@@ -38,8 +38,8 @@ module IfThen =
 
     let WidgetElseIfThenKey =
         Widgets.register "ElIfThen" (fun widget ->
-            let elseIfExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
-            let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
+            let elseIfExpr = Widgets.getNodeFromWidget<Expr> widget IfExpr
+            let thenExpr = Widgets.getNodeFromWidget<Expr> widget ThenExpr
 
             ExprIfThenNode(
                 IfKeywordNode.ElseIf(ElseIfNode(Range.Zero, Range.Zero, Unchecked.defaultof<Node>, Range.Zero)),

@@ -9,7 +9,7 @@ module TypeHashConstraint =
 
     let WidgetKey =
         Widgets.register "TypeHashConstraint" (fun widget ->
-            let typeWidget = Helpers.getNodeFromWidget widget TypeWidget
+            let typeWidget = Widgets.getNodeFromWidget widget TypeWidget
             Type.HashConstraint(TypeHashConstraintNode(SingleTextNode.hash, typeWidget, Range.Zero)))
 
 [<AutoOpen>]

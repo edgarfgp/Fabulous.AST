@@ -26,7 +26,7 @@ module Val =
 
     let WidgetKey =
         Widgets.register "ValNode" (fun widget ->
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -36,7 +36,7 @@ module Val =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -54,7 +54,7 @@ module Val =
                     )
                 | None -> None
 
-            let inlined = Helpers.tryGetScalarValue widget IsInlined
+            let inlined = Widgets.tryGetScalarValue widget IsInlined
 
             let inlined =
                 match inlined with
@@ -62,15 +62,15 @@ module Val =
                 | ValueNone -> None
 
             let isMutable =
-                Helpers.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue(false)
+                Widgets.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue(false)
 
-            let identifier = Helpers.getScalarValue widget Identifier
+            let identifier = Widgets.getScalarValue widget Identifier
             let identifier = SingleTextNode.Create(identifier)
 
-            let returnType = Helpers.getNodeFromWidget<Type> widget ReturnType
+            let returnType = Widgets.getNodeFromWidget<Type> widget ReturnType
 
             let accessControl =
-                Helpers.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -80,7 +80,7 @@ module Val =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let typeParams =
                 match typeParams with

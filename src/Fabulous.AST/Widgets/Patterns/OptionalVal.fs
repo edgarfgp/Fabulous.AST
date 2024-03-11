@@ -8,7 +8,7 @@ module OptionalVal =
 
     let WidgetKey =
         Widgets.register "Pattern" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
+            let value = Widgets.getScalarValue widget Value
             Pattern.OptionalVal(SingleTextNode.Create(value)))
 
 [<AutoOpen>]

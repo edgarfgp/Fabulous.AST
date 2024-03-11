@@ -8,7 +8,7 @@ module Ands =
 
     let WidgetKey =
         Widgets.register "Ands" (fun widget ->
-            let items = Helpers.getNodesFromWidgetCollection<Pattern> widget Items
+            let items = Widgets.getNodesFromWidgetCollection<Pattern> widget Items
             Pattern.Ands((PatAndsNode(items, Range.Zero))))
 
 [<AutoOpen>]

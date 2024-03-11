@@ -19,14 +19,14 @@ module Class =
 
     let WidgetKey =
         Widgets.register "TypeDefnRegularNode" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
+            let name = Widgets.getScalarValue widget Name
 
             let implicitConstructor =
-                Helpers.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
+                Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
 
-            let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
-            let typeParams = Helpers.tryGetScalarValue widget TypeParams
-            let isClass = Helpers.getScalarValue widget IsClass
+            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let typeParams = Widgets.tryGetScalarValue widget TypeParams
+            let isClass = Widgets.getScalarValue widget IsClass
 
             let typeParams =
                 match typeParams with
@@ -43,7 +43,7 @@ module Class =
                     |> Some
                 | ValueNone -> None
 
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -53,7 +53,7 @@ module Class =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with

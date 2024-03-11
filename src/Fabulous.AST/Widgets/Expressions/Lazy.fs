@@ -9,7 +9,7 @@ module Lazy =
 
     let WidgetKey =
         Widgets.register "Lazy" (fun widget ->
-            let expr = Helpers.getNodeFromWidget<Expr> widget Value
+            let expr = Widgets.getNodeFromWidget<Expr> widget Value
             Expr.Lazy(ExprLazyNode(SingleTextNode.``lazy``, expr, Range.Zero)))
 
 [<AutoOpen>]

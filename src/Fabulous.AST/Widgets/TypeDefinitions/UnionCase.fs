@@ -19,11 +19,11 @@ module UnionCase =
     let WidgetKey =
         Widgets.register "UnionCase" (fun widget ->
             let name =
-                Helpers.getScalarValue widget Name
-                |> Helpers.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name
+                |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
-            let fields = Helpers.tryGetNodesFromWidgetCollection<FieldNode> widget Fields
+            let fields = Widgets.tryGetNodesFromWidgetCollection<FieldNode> widget Fields
 
             let fields =
                 match fields with
@@ -31,7 +31,7 @@ module UnionCase =
                 | None -> []
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -49,7 +49,7 @@ module UnionCase =
                     )
                 | None -> None
 
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with

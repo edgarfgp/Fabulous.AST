@@ -9,7 +9,7 @@ module Paren =
 
     let WidgetKey =
         Widgets.register "Paren" (fun widget ->
-            let expr = Helpers.getNodeFromWidget<Expr> widget Value
+            let expr = Widgets.getNodeFromWidget<Expr> widget Value
 
             Expr.Paren(
                 ExprParenNode(SingleTextNode.leftParenthesis, expr, SingleTextNode.rightParenthesis, Range.Zero)

@@ -12,8 +12,8 @@ module IsInst =
 
     let WidgetKey =
         Widgets.register "IsInst" (fun widget ->
-            let token = Helpers.getScalarValue widget Token
-            let instType = Helpers.getNodeFromWidget widget InstType
+            let token = Widgets.getScalarValue widget Token
+            let instType = Widgets.getNodeFromWidget widget InstType
 
             Pattern.IsInst(PatIsInstNode(token, instType, Range.Zero)))
 

@@ -11,8 +11,8 @@ module New =
 
     let WidgetKey =
         Widgets.register "New" (fun widget ->
-            let expr = Helpers.getNodeFromWidget<Expr> widget Value
-            let typ = Helpers.getNodeFromWidget widget Type
+            let expr = Widgets.getNodeFromWidget<Expr> widget Value
+            let typ = Widgets.getNodeFromWidget widget Type
             Expr.New(ExprNewNode(SingleTextNode.``new``, typ, expr, Range.Zero)))
 
 [<AutoOpen>]

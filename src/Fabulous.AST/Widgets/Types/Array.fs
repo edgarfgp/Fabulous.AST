@@ -10,8 +10,8 @@ module TypeArray =
 
     let WidgetKey =
         Widgets.register "TypeArray" (fun widget ->
-            let t = Helpers.getNodeFromWidget<Type> widget T
-            let rank = Helpers.getScalarValue widget Rank
+            let t = Widgets.getNodeFromWidget<Type> widget T
+            let rank = Widgets.getScalarValue widget Rank
             Type.Array(TypeArrayNode(t, rank, Range.Zero)))
 
 [<AutoOpen>]

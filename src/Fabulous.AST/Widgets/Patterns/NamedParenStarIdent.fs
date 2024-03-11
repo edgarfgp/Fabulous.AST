@@ -9,7 +9,7 @@ module NamedParenStarIdent =
 
     let WidgetKey =
         Widgets.register "NamedParenStarIdent" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
+            let value = Widgets.getScalarValue widget Value
 
             Pattern.NamedParenStarIdent(
                 PatNamedParenStarIdentNode(

@@ -9,7 +9,7 @@ module TypeVar =
 
     let WidgetKey =
         Widgets.register "TypeVar" (fun widget ->
-            let identifier = Helpers.getScalarValue widget Identifier
+            let identifier = Widgets.getScalarValue widget Identifier
             Type.Var(SingleTextNode.Create(identifier)))
 
 [<AutoOpen>]

@@ -12,9 +12,9 @@ module HashDirective =
 
     let WidgetKey =
         Widgets.register "HashDirective" (fun widget ->
-            let ident = Helpers.getScalarValue widget Ident
+            let ident = Widgets.getScalarValue widget Ident
 
-            let args = Helpers.getScalarValue widget Args |> List.map(SingleTextNode.Create)
+            let args = Widgets.getScalarValue widget Args |> List.map(SingleTextNode.Create)
 
             ParsedHashDirectiveNode(ident, args, Range.Zero))
 

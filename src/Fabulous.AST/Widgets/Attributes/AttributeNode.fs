@@ -13,8 +13,8 @@ module AttributeNode =
 
     let WidgetKey =
         Widgets.register "AttributeNode" (fun widget ->
-            let expr = Helpers.tryGetNodeFromWidget<Expr> widget Expr
-            let target = Helpers.tryGetScalarValue widget Target
+            let expr = Widgets.tryGetNodeFromWidget<Expr> widget Expr
+            let target = Widgets.tryGetScalarValue widget Target
 
             let expr =
                 match expr with
@@ -26,7 +26,7 @@ module AttributeNode =
                 | ValueNone -> None
                 | ValueSome target -> Some(SingleTextNode.Create(target))
 
-            let typeName = Helpers.getScalarValue widget TypeName
+            let typeName = Widgets.getScalarValue widget TypeName
             AttributeNode(typeName, expr, target, Range.Zero))
 
 [<AutoOpen>]

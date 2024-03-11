@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
+open Microsoft.FSharp.Core.CompilerServices
 
 type AccessControl =
     | Public
@@ -115,3 +116,30 @@ module CommonExtensions =
             TyparDecls.SinglePrefix(TyparDeclNode(None, SingleTextNode.Create decl, [], Range.Zero))
 
         static member inline SinglePrefix(decl: TyparDeclNode) = TyparDecls.SinglePrefix(decl)
+
+[<RequireQualifiedAccess>]
+module List =
+    let intersperse separator (source: List<'T>) =
+        let mutable coll = new ListCollector<'T>()
+
+        let mutable notFirst = false
+
+        source
+        |> List.iter(fun element ->
+            if notFirst then
+                coll.Add separator
+
+            coll.Add element
+            notFirst <- true)
+
+        coll.Close()
+
+[<RequireQualifiedAccess>]
+module StringParsing =
+    /// Adds double backticks to the identifier if necessary.
+    let normalizeIdentifierBackticks (identifier: string) =
+        if System.String.IsNullOrEmpty identifier then
+            failwith "This is not a valid identifier"
+        else
+            let trimmed = identifier.Trim()
+            Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks trimmed

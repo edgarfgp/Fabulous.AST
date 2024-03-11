@@ -14,8 +14,8 @@ module NamePatPairs =
 
     let WidgetKey =
         Widgets.register "Ands" (fun widget ->
-            let items = Helpers.getNodesFromWidgetCollection<NamePatPair> widget Pairs
-            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+            let items = Widgets.getNodesFromWidgetCollection<NamePatPair> widget Pairs
+            let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let typeParams =
                 match typeParams with
@@ -32,7 +32,7 @@ module NamePatPairs =
                     |> Some
                 | ValueNone -> None
 
-            let identifier = Helpers.getScalarValue widget Identifiers
+            let identifier = Widgets.getScalarValue widget Identifiers
 
             Pattern.NamePatPairs(
                 PatNamePatPairsNode(

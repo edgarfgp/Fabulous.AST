@@ -12,8 +12,8 @@ module App =
 
     let WidgetKey =
         Widgets.register "Call" (fun widget ->
-            let name = Helpers.getNodeFromWidget widget Name
-            let items = Helpers.getNodesFromWidgetCollection<Expr> widget Items
+            let name = Widgets.getNodeFromWidget widget Name
+            let items = Widgets.getNodesFromWidgetCollection<Expr> widget Items
             Expr.App(ExprAppNode(name, items, Range.Zero)))
 
 [<AutoOpen>]

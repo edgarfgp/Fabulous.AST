@@ -10,8 +10,8 @@ module TypeStaticConstantNamed =
 
     let WidgetKey =
         Widgets.register "TypeStaticConstantNamed" (fun widget ->
-            let identifier = Helpers.getNodeFromWidget<Type> widget Identifier
-            let value = Helpers.getNodeFromWidget<Type> widget Value
+            let identifier = Widgets.getNodeFromWidget<Type> widget Identifier
+            let value = Widgets.getNodeFromWidget<Type> widget Value
             Type.StaticConstantNamed(TypeStaticConstantNamedNode(identifier, value, Range.Zero)))
 
 [<AutoOpen>]

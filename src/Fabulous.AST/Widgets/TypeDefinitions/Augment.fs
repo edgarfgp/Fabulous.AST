@@ -13,8 +13,8 @@ module Augmentation =
 
     let WidgetKey =
         Widgets.register "Augmentation" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
-            let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let name = Widgets.getScalarValue widget Name
+            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
             let members =
                 match members with

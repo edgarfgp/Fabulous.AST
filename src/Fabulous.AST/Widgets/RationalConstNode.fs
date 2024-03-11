@@ -15,20 +15,20 @@ module RationalConstNode =
 
     let WidgetIntegerKey =
         Widgets.register "RationalConstNodeInteger" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
+            let value = Widgets.getScalarValue widget Value
             RationalConstNode.Integer(SingleTextNode.Create(value)))
 
     let WidgetNegateKey =
         Widgets.register "RationalConstNodeNegate" (fun widget ->
-            let minus = Helpers.getScalarValue widget Value
-            let rationalConst = Helpers.getNodeFromWidget<RationalConstNode> widget Node
+            let minus = Widgets.getScalarValue widget Value
+            let rationalConst = Widgets.getNodeFromWidget<RationalConstNode> widget Node
             RationalConstNode.Negate(NegateRationalNode(SingleTextNode.Create(minus), rationalConst, Range.Zero)))
 
     let WidgetRationalKey =
         Widgets.register "RationalConstNodeRational" (fun widget ->
-            let numerator = Helpers.getScalarValue widget Value
-            let divOp = Helpers.getScalarValue widget DivOp
-            let denominator = Helpers.getScalarValue widget Denominator
+            let numerator = Widgets.getScalarValue widget Value
+            let divOp = Widgets.getScalarValue widget DivOp
+            let denominator = Widgets.getScalarValue widget Denominator
 
             RationalConstNode.Rational(
                 RationalNode(

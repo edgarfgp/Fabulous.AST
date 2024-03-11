@@ -9,7 +9,7 @@ module TypeAnon =
 
     let WidgetKey =
         Widgets.register "TypeAnon" (fun widget ->
-            let identifier = Helpers.getScalarValue widget Identifier
+            let identifier = Widgets.getScalarValue widget Identifier
             Type.Anon(SingleTextNode.Create(identifier)))
 
 [<AutoOpen>]

@@ -18,9 +18,9 @@ module ModuleOrNamespace =
 
     let WidgetKey =
         Widgets.register "Namespace" (fun widget ->
-            let decls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-            let identList = Helpers.getScalarValue widget IdentList
-            let isNameSpace = Helpers.getScalarValue widget IsNameSpace
+            let decls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
+            let identList = Widgets.getScalarValue widget IdentList
+            let isNameSpace = Widgets.getScalarValue widget IsNameSpace
 
             let textNode =
                 if isNameSpace then
@@ -29,10 +29,10 @@ module ModuleOrNamespace =
                     SingleTextNode.``module``
 
             let isRecursive =
-                Helpers.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
 
             let hashDirectives =
-                Helpers.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives
+                Widgets.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives
 
             let hashDirectives =
                 match hashDirectives with
@@ -40,7 +40,7 @@ module ModuleOrNamespace =
                 | None -> []
 
             let accessControl =
-                Helpers.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =

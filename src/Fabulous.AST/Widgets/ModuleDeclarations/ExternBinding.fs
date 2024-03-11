@@ -17,7 +17,7 @@ module ExternBinding =
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -27,7 +27,7 @@ module ExternBinding =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -46,17 +46,17 @@ module ExternBinding =
                 | None -> None
 
             let attributesOfType =
-                Helpers.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
+                Widgets.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
 
             let multipleAttributesOfType =
                 match attributesOfType with
                 | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
-            let ``type`` = Helpers.getNodeFromWidget widget Type
+            let ``type`` = Widgets.getNodeFromWidget widget Type
 
             let accessControl =
-                Helpers.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -66,10 +66,10 @@ module ExternBinding =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let name = Helpers.getScalarValue widget Identifier
+            let name = Widgets.getScalarValue widget Identifier
 
             let parameters =
-                Helpers.tryGetNodesFromWidgetCollection<ExternBindingPatternNode> widget Parameters
+                Widgets.tryGetNodesFromWidgetCollection<ExternBindingPatternNode> widget Parameters
 
             let parameters =
                 match parameters with

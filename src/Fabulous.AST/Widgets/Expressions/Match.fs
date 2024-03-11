@@ -12,10 +12,10 @@ module Match =
 
     let WidgetKey =
         Widgets.register "Match" (fun widget ->
-            let matchExpr = Helpers.getNodeFromWidget<Expr> widget MatchExpr
+            let matchExpr = Widgets.getNodeFromWidget<Expr> widget MatchExpr
 
             let matchClauses =
-                Helpers.getNodesFromWidgetCollection<MatchClauseNode> widget MatchClauses
+                Widgets.getNodesFromWidgetCollection<MatchClauseNode> widget MatchClauses
 
             Expr.Match(
                 ExprMatchNode(SingleTextNode.``match``, matchExpr, SingleTextNode.``with``, matchClauses, Range.Zero)

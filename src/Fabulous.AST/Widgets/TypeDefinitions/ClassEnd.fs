@@ -17,10 +17,10 @@ module ClassEnd =
 
     let WidgetKey =
         Widgets.register "ClassEnd" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
+            let name = Widgets.getScalarValue widget Name
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -38,12 +38,12 @@ module ClassEnd =
                     )
                 | None -> None
 
-            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let implicitConstructor =
-                Helpers.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
+                Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
 
-            let hasConstructor = Helpers.getScalarValue widget HasConstructor
+            let hasConstructor = Widgets.getScalarValue widget HasConstructor
 
             let implicitConstructor =
                 match implicitConstructor with

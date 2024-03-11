@@ -10,7 +10,7 @@ module TypeLongIdent =
 
     let WidgetKey =
         Widgets.register "LongIdentType" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
+            let value = Widgets.getScalarValue widget Value
 
             Type.LongIdent(
                 IdentListNode(

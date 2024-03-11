@@ -12,13 +12,13 @@ module Constant =
 
     let WidgetFromTextKey =
         Widgets.register "ConstantFromText" (fun widget ->
-            let value = Helpers.getScalarValue widget ValueString
+            let value = Widgets.getScalarValue widget ValueString
             Constant.FromText(SingleTextNode.Create(value)))
 
     let WidgetMeasureKey =
         Widgets.register "ConstantMeasure" (fun widget ->
-            let value = Helpers.getNodeFromWidget<Constant> widget Value
-            let measure = Helpers.getNodeFromWidget<Measure> widget Measure
+            let value = Widgets.getNodeFromWidget<Constant> widget Value
+            let measure = Widgets.getNodeFromWidget<Measure> widget Measure
 
             Constant.Measure(
                 ConstantMeasureNode(

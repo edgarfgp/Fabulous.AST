@@ -11,12 +11,12 @@ open type Fabulous.AST.Ast
 module BindingValue =
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
-            let name = Helpers.getNodeFromWidget<Pattern> widget BindingNode.NameWidget
-            let bodyExpr = Helpers.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
-            let parameters = Helpers.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
+            let name = Widgets.getNodeFromWidget<Pattern> widget BindingNode.NameWidget
+            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
 
             let accessControl =
-                Helpers.tryGetScalarValue widget BindingNode.Accessibility
+                Widgets.tryGetScalarValue widget BindingNode.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -26,7 +26,7 @@ module BindingValue =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Helpers.tryGetScalarValue widget BindingNode.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -36,7 +36,7 @@ module BindingValue =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -55,21 +55,21 @@ module BindingValue =
                 | None -> None
 
             let isMutable =
-                Helpers.tryGetScalarValue widget BindingNode.IsMutable
+                Widgets.tryGetScalarValue widget BindingNode.IsMutable
                 |> ValueOption.defaultValue false
 
             let isInlined =
-                Helpers.tryGetScalarValue widget BindingNode.IsInlined
+                Widgets.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Helpers.tryGetNodeFromWidget<Type> widget BindingNode.Return
+            let returnType = Widgets.tryGetNodeFromWidget<Type> widget BindingNode.Return
 
             let returnType =
                 match returnType with
                 | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
 
-            let typeParams = Helpers.tryGetScalarValue widget BindingNode.TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
 
             let typeParams =
                 match typeParams with

@@ -13,8 +13,8 @@ module InterfaceMember =
 
     let WidgetKey =
         Widgets.register "InterfaceMember" (fun widget ->
-            let ``type`` = Helpers.getNodeFromWidget widget Type
-            let members = Helpers.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let ``type`` = Widgets.getNodeFromWidget widget Type
+            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
             let members =
                 match members with

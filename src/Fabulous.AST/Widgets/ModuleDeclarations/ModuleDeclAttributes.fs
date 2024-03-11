@@ -12,10 +12,10 @@ module ModuleDeclAttributes =
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
-            let doExpression = Helpers.getNodeFromWidget<Expr> widget DoExpression
+            let doExpression = Widgets.getNodeFromWidget<Expr> widget DoExpression
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
 
             let multipleAttributes =

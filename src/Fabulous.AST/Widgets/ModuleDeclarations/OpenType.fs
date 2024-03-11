@@ -14,7 +14,7 @@ module OpenType =
 
     let WidgetKey =
         Widgets.register "OpenType" (fun widget ->
-            let target = Helpers.getNodeFromWidget<IdentListNode> widget Target
+            let target = Widgets.getNodeFromWidget<IdentListNode> widget Target
             OpenTypeNode target)
 
 [<AutoOpen>]

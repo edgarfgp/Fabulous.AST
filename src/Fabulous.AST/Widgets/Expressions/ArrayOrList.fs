@@ -12,9 +12,9 @@ module ArrayOrList =
 
     let WidgetKey =
         Widgets.register "ArrayOrList" (fun widget ->
-            let values = Helpers.getNodesFromWidgetCollection<Expr> widget Items
-            let openNode = Helpers.getScalarValue widget OpeningNode
-            let closeNode = Helpers.getScalarValue widget ClosingNode
+            let values = Widgets.getNodesFromWidgetCollection<Expr> widget Items
+            let openNode = Widgets.getScalarValue widget OpeningNode
+            let closeNode = Widgets.getScalarValue widget ClosingNode
             Expr.ArrayOrList(ExprArrayOrListNode(openNode, values, closeNode, Range.Zero)))
 
 [<AutoOpen>]

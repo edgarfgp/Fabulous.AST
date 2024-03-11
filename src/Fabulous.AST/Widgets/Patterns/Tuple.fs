@@ -8,7 +8,7 @@ module TuplePat =
 
     let WidgetKey =
         Widgets.register "Tuple" (fun widget ->
-            let values = Helpers.getNodesFromWidgetCollection<Pattern> widget Parameters
+            let values = Widgets.getNodesFromWidgetCollection<Pattern> widget Parameters
 
             let values =
                 values

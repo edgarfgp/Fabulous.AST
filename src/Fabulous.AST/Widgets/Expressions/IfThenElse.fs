@@ -13,9 +13,9 @@ module IfThenElse =
 
     let WidgetKey =
         Widgets.register "IfThenElse" (fun widget ->
-            let ifExpr = Helpers.getNodeFromWidget<Expr> widget IfExpr
-            let thenExpr = Helpers.getNodeFromWidget<Expr> widget ThenExpr
-            let elseExpr = Helpers.getNodeFromWidget<Expr> widget ElseExpr
+            let ifExpr = Widgets.getNodeFromWidget<Expr> widget IfExpr
+            let thenExpr = Widgets.getNodeFromWidget<Expr> widget ThenExpr
+            let elseExpr = Widgets.getNodeFromWidget<Expr> widget ElseExpr
 
             ExprIfThenElseNode(
                 IfKeywordNode.SingleWord(SingleTextNode.``if``),

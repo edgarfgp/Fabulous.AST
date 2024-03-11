@@ -11,7 +11,7 @@ module Pattern =
 
     let WidgetKey =
         Widgets.register "Parameters" (fun widget ->
-            let value = Helpers.getNodeFromWidget<Pattern> widget Value
+            let value = Widgets.getNodeFromWidget<Pattern> widget Value
             value)
 
 [<AutoOpen>]

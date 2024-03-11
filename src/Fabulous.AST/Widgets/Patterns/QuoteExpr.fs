@@ -9,7 +9,7 @@ module QuoteExpr =
 
     let WidgetKey =
         Widgets.register "IsInst" (fun widget ->
-            let value = Helpers.getNodeFromWidget widget Value
+            let value = Widgets.getNodeFromWidget widget Value
 
             Pattern.QuoteExpr(
                 ExprQuoteNode(SingleTextNode.leftQuotation, value, SingleTextNode.rightQuotation, Range.Zero)

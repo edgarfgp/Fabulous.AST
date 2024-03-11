@@ -12,8 +12,8 @@ module LongIdentPattern =
 
     let WidgetKey =
         Widgets.register "LongIdent" (fun widget ->
-            let items = Helpers.getNodesFromWidgetCollection<Pattern> widget Pairs
-            let typeParams = Helpers.tryGetScalarValue widget TypeParams
+            let items = Widgets.getNodesFromWidgetCollection<Pattern> widget Pairs
+            let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let typeParams =
                 match typeParams with
@@ -30,7 +30,7 @@ module LongIdentPattern =
                     |> Some
                 | ValueNone -> None
 
-            let identifier = Helpers.getScalarValue widget Identifiers
+            let identifier = Widgets.getScalarValue widget Identifiers
 
             Pattern.LongIdent(
                 PatLongIdentNode(

@@ -16,16 +16,16 @@ module RecordExpr =
 
     let WidgetKey =
         Widgets.register "Match" (fun widget ->
-            let openBrace = Helpers.getScalarValue widget OpenBrace
-            let closeBrace = Helpers.getScalarValue widget CloseBrace
-            let copyInfo = Helpers.tryGetNodeFromWidget<Expr> widget CopyInfo
+            let openBrace = Widgets.getScalarValue widget OpenBrace
+            let closeBrace = Widgets.getScalarValue widget CloseBrace
+            let copyInfo = Widgets.tryGetNodeFromWidget<Expr> widget CopyInfo
 
             let copyInfo =
                 match copyInfo with
                 | ValueSome copyInfo -> Some copyInfo
                 | ValueNone -> None
 
-            let fields = Helpers.getNodesFromWidgetCollection<RecordFieldNode> widget Fields
+            let fields = Widgets.getNodesFromWidgetCollection<RecordFieldNode> widget Fields
 
             Expr.Record(ExprRecordNode(openBrace, copyInfo, fields, closeBrace, Range.Zero)))
 

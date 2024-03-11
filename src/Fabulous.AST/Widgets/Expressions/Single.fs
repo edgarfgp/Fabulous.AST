@@ -15,10 +15,10 @@ module Single =
 
     let WidgetKey =
         Widgets.register "Single" (fun widget ->
-            let expr = Helpers.getNodeFromWidget<Expr> widget Value
-            let supportsStroustrup = Helpers.getScalarValue widget SupportsStroustrup
-            let addSpace = Helpers.getScalarValue widget AddSpace
-            let leading = Helpers.getScalarValue widget Leading
+            let expr = Widgets.getNodeFromWidget<Expr> widget Value
+            let supportsStroustrup = Widgets.getScalarValue widget SupportsStroustrup
+            let addSpace = Widgets.getScalarValue widget AddSpace
+            let leading = Widgets.getScalarValue widget Leading
             Expr.Single(ExprSingleNode(SingleTextNode.Create(leading), addSpace, supportsStroustrup, expr, Range.Zero)))
 
 [<AutoOpen>]

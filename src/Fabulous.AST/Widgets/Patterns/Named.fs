@@ -10,8 +10,8 @@ module Named =
     let WidgetKey =
         Widgets.register "Named" (fun widget ->
             let name =
-                Helpers.getScalarValue widget Value
-                |> Helpers.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Value
+                |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
             Pattern.Named(PatNamedNode(None, name, Range.Zero)))

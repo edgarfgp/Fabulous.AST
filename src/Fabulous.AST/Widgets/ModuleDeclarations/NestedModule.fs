@@ -18,15 +18,15 @@ module NestedModule =
 
     let WidgetKey =
         Widgets.register "NestedModule" (fun widget ->
-            let identList = Helpers.getScalarValue widget IdentList
+            let identList = Widgets.getScalarValue widget IdentList
 
-            let moduleDecls = Helpers.getNodesFromWidgetCollection<ModuleDecl> widget Decls
+            let moduleDecls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
 
             let isRecursive =
-                Helpers.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
 
             let accessControl =
-                Helpers.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =

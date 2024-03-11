@@ -11,13 +11,13 @@ module TypeAnonRecord =
 
     let WidgetKey =
         Widgets.register "TypeStructTuple" (fun widget ->
-            let fields = Helpers.getScalarValue widget Fields
+            let fields = Widgets.getScalarValue widget Fields
 
             let fields =
                 fields
                 |> List.map(fun (name, widget) -> (SingleTextNode.Create(name), Gen.mkOak widget))
 
-            let isStructNode = Helpers.getScalarValue widget IsStructNode
+            let isStructNode = Widgets.getScalarValue widget IsStructNode
 
             let structNode =
                 if isStructNode then

@@ -14,8 +14,8 @@ module TypeFuns =
 
     let WidgetKey =
         Widgets.register "TypeFuns" (fun widget ->
-            let returnType = Helpers.getNodeFromWidget<Type> widget Return
-            let parameters = Helpers.tryGetNodesFromWidgetCollection<Type> widget Parameters
+            let returnType = Widgets.getNodeFromWidget<Type> widget Return
+            let parameters = Widgets.tryGetNodesFromWidgetCollection<Type> widget Parameters
 
             let members =
                 match parameters with

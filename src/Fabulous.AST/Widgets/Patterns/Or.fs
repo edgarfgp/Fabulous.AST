@@ -13,9 +13,9 @@ module Or =
 
     let WidgetKey =
         Widgets.register "Or" (fun widget ->
-            let lhs = Helpers.getNodeFromWidget widget LHSPattern
-            let middle = Helpers.getScalarValue widget MHSPattern
-            let rhs = Helpers.getNodeFromWidget widget RHSPattern
+            let lhs = Widgets.getNodeFromWidget widget LHSPattern
+            let middle = Widgets.getScalarValue widget MHSPattern
+            let rhs = Widgets.getNodeFromWidget widget RHSPattern
             Pattern.Or(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.Zero)))
 
 [<AutoOpen>]

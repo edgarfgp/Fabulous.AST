@@ -8,7 +8,7 @@ module Const =
 
     let WidgetKey =
         Widgets.register "Const" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
+            let value = Widgets.getScalarValue widget Value
             Pattern.Const(value))
 
 [<AutoOpen>]

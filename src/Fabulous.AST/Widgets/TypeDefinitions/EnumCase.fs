@@ -17,9 +17,9 @@ module EnumCase =
 
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
-            let name = Helpers.getScalarValue widget Name
-            let value = Helpers.getNodeFromWidget<Expr> widget Value
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let name = Widgets.getScalarValue widget Name
+            let value = Widgets.getNodeFromWidget<Expr> widget Value
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -29,7 +29,7 @@ module EnumCase =
                 | ValueNone -> None
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
 
             let multipleAttributes =

@@ -20,13 +20,13 @@ module AbstractMember =
 
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
-            let identifier = Helpers.getScalarValue widget Identifier
-            let returnType = Helpers.getNodeFromWidget widget ReturnType
-            let parameters = Helpers.tryGetScalarValue widget Parameters
-            let hasGetterSetter = Helpers.tryGetScalarValue widget HasGetterSetter
+            let identifier = Widgets.getScalarValue widget Identifier
+            let returnType = Widgets.getNodeFromWidget widget ReturnType
+            let parameters = Widgets.tryGetScalarValue widget Parameters
+            let hasGetterSetter = Widgets.tryGetScalarValue widget HasGetterSetter
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -44,7 +44,7 @@ module AbstractMember =
                     )
                 | None -> None
 
-            let lines = Helpers.tryGetScalarValue widget XmlDocs
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with

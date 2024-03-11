@@ -11,9 +11,9 @@ module InfixApp =
 
     let WidgetKey =
         Widgets.register "Condition" (fun widget ->
-            let lhs = Helpers.getNodeFromWidget<Expr> widget LeftHandSide
-            let operator = Helpers.getScalarValue widget Operator
-            let rhs = Helpers.getNodeFromWidget<Expr> widget RightHandSide
+            let lhs = Widgets.getNodeFromWidget<Expr> widget LeftHandSide
+            let operator = Widgets.getScalarValue widget Operator
+            let rhs = Widgets.getNodeFromWidget<Expr> widget RightHandSide
 
             Expr.InfixApp(ExprInfixAppNode(lhs, SingleTextNode.Create(operator), rhs, Range.Zero)))
 

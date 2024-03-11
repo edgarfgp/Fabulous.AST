@@ -11,11 +11,11 @@ module RecordField =
 
     let WidgetKey =
         Widgets.register "RecordField" (fun widget ->
-            let expr = Helpers.getNodeFromWidget<Expr> widget RecordExpr
+            let expr = Widgets.getNodeFromWidget<Expr> widget RecordExpr
 
             let name =
-                Helpers.getScalarValue widget Name
-                |> Helpers.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name
+                |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
             RecordFieldNode(

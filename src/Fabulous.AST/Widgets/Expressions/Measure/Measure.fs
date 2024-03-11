@@ -21,21 +21,21 @@ module Measure =
 
     let WidgetMeasureSingleKey =
         Widgets.register "MeasureSingle" (fun widget ->
-            let value = Helpers.getScalarValue widget Value
+            let value = Widgets.getScalarValue widget Value
             Measure.Single(SingleTextNode.Create(value)))
 
     let WidgetMeasureOperatorKey =
         Widgets.register "MeasureOperator" (fun widget ->
-            let operator = Helpers.getScalarValue widget Value
-            let lhs = Helpers.getNodeFromWidget<Measure> widget LHS
-            let rhs = Helpers.getNodeFromWidget<Measure> widget RHS
+            let operator = Widgets.getScalarValue widget Value
+            let lhs = Widgets.getNodeFromWidget<Measure> widget LHS
+            let rhs = Widgets.getNodeFromWidget<Measure> widget RHS
             Measure.Operator(MeasureOperatorNode(lhs, SingleTextNode.Create(operator), rhs, Range.Zero)))
 
     let WidgetMeasureDivideKey =
         Widgets.register "MeasureDivide" (fun widget ->
-            let operator = Helpers.getScalarValue widget Value
-            let lhs = Helpers.tryGetNodeFromWidget<Measure> widget LHS
-            let rhs = Helpers.getNodeFromWidget<Measure> widget RHS
+            let operator = Widgets.getScalarValue widget Value
+            let lhs = Widgets.tryGetNodeFromWidget<Measure> widget LHS
+            let rhs = Widgets.getNodeFromWidget<Measure> widget RHS
 
             let lhs =
                 match lhs with
@@ -46,14 +46,14 @@ module Measure =
 
     let WidgetMeasurePowerKey =
         Widgets.register "MeasurePower" (fun widget ->
-            let operator = Helpers.getScalarValue widget Value
-            let measure = Helpers.getNodeFromWidget<Measure> widget LHS
-            let node = Helpers.getNodeFromWidget<RationalConstNode> widget RHS
+            let operator = Widgets.getScalarValue widget Value
+            let measure = Widgets.getNodeFromWidget<Measure> widget LHS
+            let node = Widgets.getNodeFromWidget<RationalConstNode> widget RHS
             Measure.Power(MeasurePowerNode(measure, SingleTextNode.Create(operator), node, Range.Zero)))
 
     let WidgetMeasureMultiplyKey =
         Widgets.register "MeasureMultiply" (fun widget ->
-            let content = Helpers.getScalarValue widget Content
+            let content = Widgets.getScalarValue widget Content
 
             Measure.Multiple(
                 IdentListNode(
@@ -66,12 +66,12 @@ module Measure =
 
     let WidgetSequenceKey =
         Widgets.register "Sequence" (fun widget ->
-            let measures = Helpers.getNodesFromWidgetCollection<Measure> widget Measures
+            let measures = Widgets.getNodesFromWidgetCollection<Measure> widget Measures
             Measure.Seq(MeasureSequenceNode(measures, Range.Zero)))
 
     let WidgetParenthesisKey =
         Widgets.register "Parenthesis" (fun widget ->
-            let measure = Helpers.getNodeFromWidget<Measure> widget Node
+            let measure = Widgets.getNodeFromWidget<Measure> widget Node
 
             Measure.Paren(
                 MeasureParenNode(SingleTextNode.leftParenthesis, measure, SingleTextNode.rightParenthesis, Range.Zero)

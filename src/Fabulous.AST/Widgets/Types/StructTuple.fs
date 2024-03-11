@@ -8,7 +8,7 @@ module TypeStructTuple =
 
     let WidgetKey =
         Widgets.register "TypeStructTuple" (fun widget ->
-            let values = Helpers.getNodesFromWidgetCollection<Type> widget Items
+            let values = Widgets.getNodesFromWidgetCollection<Type> widget Items
 
             let values =
                 values

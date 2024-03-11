@@ -10,7 +10,7 @@ module Expr =
 
     let WidgetKey =
         Widgets.register "Expr" (fun widget ->
-            let value = Helpers.getNodeFromWidget<Constant> widget Value
+            let value = Widgets.getNodeFromWidget<Constant> widget Value
             Expr.Constant(value))
 
     let WidgetNullKey =

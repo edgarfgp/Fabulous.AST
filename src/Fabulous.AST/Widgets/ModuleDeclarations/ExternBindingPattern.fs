@@ -12,12 +12,12 @@ module ExternBindingPattern =
 
     let WidgetKey =
         Widgets.register "ExternBindingPattern" (fun widget ->
-            let pat = Helpers.tryGetNodeFromWidget<Pattern> widget Pattern
+            let pat = Widgets.tryGetNodeFromWidget<Pattern> widget Pattern
 
             let attributes =
-                Helpers.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
-            let ``type`` = Helpers.tryGetNodeFromWidget widget Type
+            let ``type`` = Widgets.tryGetNodeFromWidget widget Type
 
             let ``type`` =
                 match ``type`` with

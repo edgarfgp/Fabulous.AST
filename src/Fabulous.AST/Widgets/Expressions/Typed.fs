@@ -13,9 +13,9 @@ module Typed =
 
     let WidgetKey =
         Widgets.register "Typed" (fun widget ->
-            let expr = Helpers.getNodeFromWidget<Expr> widget Value
-            let typed = Helpers.getNodeFromWidget widget Typed
-            let text = Helpers.getScalarValue widget Text
+            let expr = Widgets.getNodeFromWidget<Expr> widget Value
+            let typed = Widgets.getNodeFromWidget widget Typed
+            let text = Widgets.getScalarValue widget Text
             Expr.Typed(ExprTypedNode(expr, text, typed, Range.Zero)))
 
 [<AutoOpen>]

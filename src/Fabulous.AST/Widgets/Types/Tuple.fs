@@ -11,8 +11,8 @@ module TypeTuple =
 
     let WidgetKey =
         Widgets.register "TypeTuple" (fun widget ->
-            let path = Helpers.getNodeFromWidget<Type> widget Path
-            let exponent = Helpers.getNodeFromWidget<Type> widget Exponent
+            let path = Widgets.getNodeFromWidget<Type> widget Path
+            let exponent = Widgets.getNodeFromWidget<Type> widget Exponent
 
             Type.Tuple(
                 TypeTupleNode(

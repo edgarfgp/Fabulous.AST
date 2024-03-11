@@ -10,7 +10,7 @@ module ParenPat =
 
     let WidgetKey =
         Widgets.register "Paren" (fun widget ->
-            let pat = Helpers.getNodeFromWidget widget Pat
+            let pat = Widgets.getNodeFromWidget widget Pat
 
             Pattern.Paren(
                 PatParenNode(SingleTextNode.leftParenthesis, pat, SingleTextNode.rightParenthesis, Range.Zero)
