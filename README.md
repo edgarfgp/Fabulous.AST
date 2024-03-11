@@ -1,5 +1,5 @@
 # Fabulous.AST
-[![build](https://img.shields.io/github/actions/workflow/status/edgarfgp/Fabulous.AST/build.yml?branch=main)](https://github.com/edgarfgp/Fabulous.AST/actions/workflows/build.yml) [![NuGet version](https://img.shields.io/nuget/v/Fabulous.AST)](https://www.nuget.org/packages/Fabulous.Avalonia) [![NuGet downloads](https://img.shields.io/nuget/dt/Fabulous.AST)](https://www.nuget.org/packages/Fabulous.AST)
+[![build](https://img.shields.io/github/actions/workflow/status/edgarfgp/Fabulous.AST/build.yml?branch=main)](https://github.com/edgarfgp/Fabulous.AST/actions/workflows/build.yml) [![NuGet version](https://img.shields.io/nuget/v/Fabulous.AST)](https://www.nuget.org/packages/Fabulous.AST) [![NuGet downloads](https://img.shields.io/nuget/dt/Fabulous.AST)](https://www.nuget.org/packages/Fabulous.AST)
 
 Welcome to the Fabulous.AST, an Abstract Syntax Tree (AST) Domain Specific Language (DSL) for F#.
 
@@ -64,3 +64,25 @@ produces the following code:
 ```fsharp
 let x = 12
 ```
+
+## Documentation
+
+The full documentation for Fabulous.Avalonia can be found at [Fabulous.AST](https://edgarfgp.github.io/Fabulous.AST/).
+
+Other useful links:
+- [The official Fabulous.AST website](https://edgarfgp.github.io/Fabulous.AST/)
+- [API Reference](https://edgarfgp.github.io/Fabulous.AST/reference/index.html)
+- [Contributor Guide](CONTRIBUTING.md)
+
+## Supporting Fabulous.AST
+
+The simplest way to show us your support is by giving this project and the [Fabulous project](https://github.com/edgarfgp/Fabulous.AST) a star.
+
+You can also support us by becoming our sponsor on the GitHub Sponsors program.  
+This is a fantastic way to support all the efforts going into making Fabulous the best declarative UI framework for dotnet.
+
+## Contributing
+
+Have you found a bug or have a suggestion of how to enhance Fabulous? Open an issue and we will take a look at it as soon as possible.
+
+Do you want to contribute with a PR? PRs are always welcome, just make sure to create it from the correct branch (main) and follow the [Contributor Guide](CONTRIBUTING.md).
