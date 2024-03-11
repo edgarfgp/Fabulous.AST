@@ -114,7 +114,6 @@ module ExternBindingNodeBuilders =
                 )
             )
 
-
 [<Extension>]
 type ExternBindingNodeModifiers =
     [<Extension>]

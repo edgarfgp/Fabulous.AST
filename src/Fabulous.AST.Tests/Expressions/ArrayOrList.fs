@@ -10,7 +10,7 @@ open type Ast
 module ArrayOrList =
 
     [<Fact>]
-    let ``let value with a Array expression`` () =
+    let ``let value with a Array expression``() =
         AnonymousModule() {
             Value(
                 "x",
@@ -28,7 +28,7 @@ let x = [| 1; 2; 3 |]
 """
 
     [<Fact>]
-    let ``let value with a List expression`` () =
+    let ``let value with a List expression``() =
         AnonymousModule() {
             Value(
                 "x",

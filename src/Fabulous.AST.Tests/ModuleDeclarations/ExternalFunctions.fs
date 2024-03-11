@@ -10,7 +10,7 @@ open type Ast
 module ExternalFunctions =
 
     [<Fact>]
-    let ``Produces an ExternBindingNodeNoParams`` () =
+    let ``Produces an ExternBindingNodeNoParams``() =
         AnonymousModule() { ExternBinding("HelloWorld", "void") }
         |> produces
             """
@@ -18,7 +18,7 @@ extern void HelloWorld()
 """
 
     [<Fact>]
-    let ``Produces an ExternBindingNode with parameter`` () =
+    let ``Produces an ExternBindingNode with parameter``() =
         AnonymousModule() {
             ExternBinding("HelloWorld", "void")
                 .parameter(ExternBindingPat("string", ConstantPat("x")))
@@ -29,7 +29,7 @@ extern void HelloWorld(string x)
 """
 
     [<Fact>]
-    let ``Produces an ExternBindingNode with parameters`` () =
+    let ``Produces an ExternBindingNode with parameters``() =
         AnonymousModule() {
             ExternBinding("HelloWorld", "void").parameters() {
                 ExternBindingPat("string", ConstantPat("x"))

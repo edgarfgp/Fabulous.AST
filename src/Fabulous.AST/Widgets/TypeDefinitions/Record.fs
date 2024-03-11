@@ -44,7 +44,6 @@ module Record =
             let attributes =
                 Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
-
             let multipleAttributes =
                 match attributes with
                 | Some values ->
@@ -153,7 +152,6 @@ type RecordModifiers =
         AttributeCollectionBuilder<TypeDefnRecordNode, AttributeNode>(this, Record.MultipleAttributes) {
             Ast.Attribute(attribute)
         }
-
 
 [<Extension>]
 type RecordYieldExtensions =

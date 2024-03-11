@@ -12,7 +12,7 @@ open type Ast
 module NestedModule =
 
     [<Fact>]
-    let ``Produces a NestedModule`` () =
+    let ``Produces a NestedModule``() =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } }
 
         |> produces
@@ -24,7 +24,7 @@ module A =
 """
 
     [<Fact>]
-    let ``Produces a NestedModule using escape hatch`` () =
+    let ``Produces a NestedModule using escape hatch``() =
         AnonymousModule() {
             NestedModule("A") {
                 BindingNode(
@@ -54,7 +54,7 @@ module A =
 """
 
     [<Fact>]
-    let ``Produces a recursive NestedModule`` () =
+    let ``Produces a recursive NestedModule``() =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toRecursive() }
 
         |> produces
@@ -66,7 +66,7 @@ module rec A =
 """
 
     [<Fact>]
-    let ``Produces a private NestedModule`` () =
+    let ``Produces a private NestedModule``() =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toPrivate() }
         |> produces
             """
@@ -77,7 +77,7 @@ module private A =
 """
 
     [<Fact>]
-    let ``Produces a internal NestedModule`` () =
+    let ``Produces a internal NestedModule``() =
         AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toInternal() }
         |> produces
             """
@@ -88,7 +88,7 @@ module internal A =
 """
 
     [<Fact>]
-    let ``Produces a module with nested module`` () =
+    let ``Produces a module with nested module``() =
         Module("Fabulous.AST") {
             NestedModule("Foo") {
                 BindingNode(
@@ -118,7 +118,7 @@ module Foo =
 """
 
     [<Fact>]
-    let ``Produces a module with multiple nested module`` () =
+    let ``Produces a module with multiple nested module``() =
         Module("Fabulous.AST") {
             NestedModule("Foo") {
                 BindingNode(

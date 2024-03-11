@@ -14,21 +14,21 @@ open System.Runtime.CompilerServices
 type ArraySlice<'v> = (struct (uint16 * 'v array))
 
 module ArraySlice =
-    let inline toSpan (a: ArraySlice<'v>) =
+    let inline toSpan(a: ArraySlice<'v>) =
         let struct (size, arr) = a
 
         match size with
         | 0us -> Span.Empty
         | size -> Span(arr, 0, int size)
 
-    let inline emptyWithNull () : ArraySlice<'v> = (0us, null) // note null in here
+    let inline emptyWithNull() : ArraySlice<'v> = (0us, null) // note null in here
 
-    let inline fromArrayOpt (arr: 'v[] option) : ArraySlice<'v> voption =
+    let inline fromArrayOpt(arr: 'v[] option) : ArraySlice<'v> voption =
         match arr with
         | None -> ValueNone
         | Some arr -> ValueSome(uint16 arr.Length, arr)
 
-    let inline fromArray (arr: 'v[]) : ArraySlice<'v> voption =
+    let inline fromArray(arr: 'v[]) : ArraySlice<'v> voption =
         match arr.Length with
         | 0 -> ValueNone
         | size -> ValueSome(uint16 size, arr)
@@ -73,16 +73,15 @@ module Array =
 
         attrs
 
-
 module StackAllocatedCollections =
     module StackList =
         type private Items<'v> = (struct ('v * 'v * 'v))
 
         module private Items =
-            let inline one<'v> (v: 'v) =
+            let inline one<'v>(v: 'v) =
                 Items(v, Unchecked.defaultof<'v>, Unchecked.defaultof<'v>)
 
-            let inline two<'v> (v1: 'v, v2: 'v) = Items(v1, v2, Unchecked.defaultof<'v>)
+            let inline two<'v>(v1: 'v, v2: 'v) = Items(v1, v2, Unchecked.defaultof<'v>)
 
         /// reference type that holds the chain of tuples that come before Data
         /// this is basically List
@@ -246,15 +245,11 @@ module StackAllocatedCollections =
                         | struct (false, _) -> data
             end
 
-
-
-
     type Size =
         | Zero = 0uy
         | One = 1uy
         | Two = 2uy
         | Three = 3uy
-
 
     [<Struct; NoComparison; NoEquality>]
     type StackArray3<'v> =
@@ -263,20 +258,20 @@ module StackAllocatedCollections =
 
     module StackArray3 =
 
-        let inline empty () : StackArray3<'v> =
+        let inline empty() : StackArray3<'v> =
             Few(Size.Zero, Unchecked.defaultof<'v>, Unchecked.defaultof<'v>, Unchecked.defaultof<'v>)
 
-        let inline one (v0: 'v) : StackArray3<'v> =
+        let inline one(v0: 'v) : StackArray3<'v> =
             Few(Size.One, v0, Unchecked.defaultof<'v>, Unchecked.defaultof<'v>)
 
-        let inline two (v0: 'v, v1: 'v) : StackArray3<'v> =
+        let inline two(v0: 'v, v1: 'v) : StackArray3<'v> =
             Few(Size.Two, v0, v1, Unchecked.defaultof<'v>)
 
-        let inline three (v0: 'v, v1: 'v, v2: 'v) : StackArray3<'v> = Few(Size.Three, v0, v1, v2)
+        let inline three(v0: 'v, v1: 'v, v2: 'v) : StackArray3<'v> = Few(Size.Three, v0, v1, v2)
 
-        let inline many (arr: 'v array) : StackArray3<'v> = Many arr
+        let inline many(arr: 'v array) : StackArray3<'v> = Many arr
 
-        let add (arr: StackArray3<'v> inref, v: 'v) : StackArray3<'v> =
+        let add(arr: StackArray3<'v> inref, v: 'v) : StackArray3<'v> =
             match arr with
             | Few(struct (size, v0, v1, v2)) ->
                 match size with
@@ -287,12 +282,10 @@ module StackAllocatedCollections =
                 | _ -> empty() // should never happen but don't want to throw there
             | Many arr -> many(Array.appendOne v arr)
 
-
-        let inline length (arr: StackArray3<'v> inref) : int =
+        let inline length(arr: StackArray3<'v> inref) : int =
             match arr with
             | Few(struct (size, _, _, _)) -> int size
             | Many arr -> arr.Length
-
 
         let get (arr: StackArray3<'v> inref) (index: int) : 'v =
             match arr with
@@ -307,7 +300,6 @@ module StackAllocatedCollections =
 
             | Many arr -> arr.[index]
 
-
         let find (test: 'v -> bool) (arr: StackArray3<'v> inref) : 'v =
             match arr with
             | Few(struct (size, v0, v1, v2)) ->
@@ -320,7 +312,6 @@ module StackAllocatedCollections =
                 | Size.Three, false, false, true -> v2
                 | _ -> KeyNotFoundException() |> raise
             | Many arr -> Array.find test arr
-
 
         /// Note that you should always use the result,
         /// In Few mode it creates a new stack allocated array
@@ -357,17 +348,15 @@ module StackAllocatedCollections =
                     // a, b, c left, thus already sorted
                     | _ -> arr
 
-
                 | _ -> empty() // should never happen but don't want to throw there
             | Many arr -> many(Array.sortInPlace getKey arr)
 
+        let inline private arr0() = [||]
+        let inline private arr1(v: 'v) = [| v |]
+        let inline private arr2(v0: 'v, v1: 'v) = [| v0; v1 |]
+        let inline private arr3(v0: 'v, v1: 'v, v2: 'v) = [| v0; v1; v2 |]
 
-        let inline private arr0 () = [||]
-        let inline private arr1 (v: 'v) = [| v |]
-        let inline private arr2 (v0: 'v, v1: 'v) = [| v0; v1 |]
-        let inline private arr3 (v0: 'v, v1: 'v, v2: 'v) = [| v0; v1; v2 |]
-
-        let toArray (arr: StackArray3<'v> inref) : 'v array =
+        let toArray(arr: StackArray3<'v> inref) : 'v array =
             match arr with
             | Few(struct (size, v0, v1, v2)) ->
                 match size with
@@ -376,7 +365,6 @@ module StackAllocatedCollections =
                 | Size.Two -> arr2(v0, v1)
                 | _ -> arr3(v0, v1, v2)
             | Many arr -> arr
-
 
         let combine (a: StackArray3<'v>) (b: StackArray3<'v>) : StackArray3<'v> =
             match (a, b) with
@@ -399,11 +387,6 @@ module StackAllocatedCollections =
             | Many arr1, Few _ -> many(Array.append arr1 (toArray &b)) // TODO optimize
             | Many arr1, Many arr2 -> many(Array.append arr1 arr2)
 
-
-
-
-
-
     module MutStackArray1 =
         [<Struct; NoComparison; NoEquality>]
         type T<'v> =
@@ -413,7 +396,7 @@ module StackAllocatedCollections =
 
         let inline private grow size = max ((size * 3) / 2) size + 1
 
-        let addMut (arr: T<'v> inref, value: 'v) : T<'v> =
+        let addMut(arr: T<'v> inref, value: 'v) : T<'v> =
             match arr with
             | Empty -> One value
             | One v -> Many struct (2us, [| v; value; Unchecked.defaultof<'v>; Unchecked.defaultof<'v> |])
@@ -436,31 +419,31 @@ module StackAllocatedCollections =
                     res.[countInt] <- value
                     Many(count + 1us, res)
 
-        let inline toArray (arr: T<'v> inref) : 'v array =
+        let inline toArray(arr: T<'v> inref) : 'v array =
             match arr with
             | Empty -> Array.empty
             | One v -> [| v |]
             | Many(struct (count, arr)) -> Array.take (int count) arr
 
-        let inline fromArray (arr: 'v array) : T<'v> =
+        let inline fromArray(arr: 'v array) : T<'v> =
             match arr.Length with
             | 0 -> Empty
             | 1 -> One arr.[0]
             | size -> Many(uint16 size, arr)
 
-        let inline toArraySlice (arr: T<'v> inref) : ArraySlice<'v> voption =
+        let inline toArraySlice(arr: T<'v> inref) : ArraySlice<'v> voption =
             match arr with
             | Empty -> ValueNone
             | One v -> ValueSome(1us, [| v |])
             | Many slice -> ValueSome slice
 
-        let inline length (arr: T<'v> inref) : int =
+        let inline length(arr: T<'v> inref) : int =
             match arr with
             | Empty -> 0
             | One _ -> 1
             | Many(struct (count, _)) -> int count
 
-        let combineMut (a: T<'v> inref, b: T<'v>) : T<'v> =
+        let combineMut(a: T<'v> inref, b: T<'v>) : T<'v> =
             match b with
             | Empty -> a
             | One bv -> addMut(&a, bv)
@@ -512,7 +495,6 @@ module StackAllocatedCollections =
 
                         Many(newSize, newArr)
 
-
     //        match (a, b) with
     //        | Empty, _ -> b
     //        | _, Empty -> a
@@ -563,17 +545,14 @@ module StackAllocatedCollections =
     //
     //                Many(newSize, newArr)
 
-
     open FSharp.NativeInterop
 
-    let inline stackalloc<'a when 'a: unmanaged> (length: int) : Span<'a> =
+    let inline stackalloc<'a when 'a: unmanaged>(length: int) : Span<'a> =
         let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
 
         Span<'a>(p, length)
 
     //let t = stackalloc<uint16>(3)
-
-
 
     [<IsByRefLike>]
     type DiffBuilder =
@@ -587,8 +566,6 @@ module StackAllocatedCollections =
                   cursor = cursor
                   rest = null }
         end
-
-
 
     module DiffBuilder =
         // 2 bytes
@@ -609,15 +586,13 @@ module StackAllocatedCollections =
             [<Literal>]
             let ChangeCode = 3us
 
-
         [<Struct>]
         type Op =
             | Added of added: uint16
             | Removed of removed: uint16
             | Changed of changed: uint16
 
-
-        let inline create () = DiffBuilder(stackalloc<uint16> 8, 0)
+        let inline create() = DiffBuilder(stackalloc<uint16> 8, 0)
 
         // reserve 2bits for op
         let valueMask = UInt16.MaxValue >>> 2
@@ -639,10 +614,9 @@ module StackAllocatedCollections =
             builder.ops.[builder.cursor] <- encodedValue
             builder.cursor <- builder.cursor + 1
 
+        let inline lenght(builder: DiffBuilder byref) = builder.cursor
 
-        let inline lenght (builder: DiffBuilder byref) = builder.cursor
-
-        let inline private decode (encodedValue: uint16) : Op =
+        let inline private decode(encodedValue: uint16) : Op =
             let op = encodedValue >>> 14
 
             let value = encodedValue &&& valueMask

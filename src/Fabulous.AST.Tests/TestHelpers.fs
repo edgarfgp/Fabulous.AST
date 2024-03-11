@@ -10,10 +10,8 @@ module TestHelpers =
     let produces (expected: string) (source: WidgetBuilder<#Oak>) =
         let oak = Gen.mkOak source
 
-        let config =
-            { FormatConfig.Default with
-                InsertFinalNewline = false }
-
-        let res = CodeFormatter.FormatOakAsync(oak, config) |> Async.RunSynchronously
+        let res =
+            CodeFormatter.FormatOakAsync(oak, FormatConfig.Default)
+            |> Async.RunSynchronously
 
         Assert.Equal(expected.Trim(), res.Trim())

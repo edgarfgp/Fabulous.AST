@@ -5,7 +5,6 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
-
 module AnonymousModule =
     let Decls = Attributes.defineWidgetCollection "Decls"
 

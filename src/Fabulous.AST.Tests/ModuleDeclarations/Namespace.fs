@@ -11,7 +11,7 @@ open type Ast
 
 module Namespace =
     [<Fact>]
-    let ``Produces a namespace with binding`` () =
+    let ``Produces a namespace with binding``() =
         (Namespace("Fabulous.AST") { Value("x", "3", false) })
         |> produces
             """
@@ -21,9 +21,8 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a rec namespace with binding`` () =
-        (Namespace("Fabulous.AST") { Value("x", "3", false) })
-            .toRecursive()
+    let ``Produces a rec namespace with binding``() =
+        (Namespace("Fabulous.AST") { Value("x", "3", false) }).toRecursive()
         |> produces
             """
 namespace rec Fabulous.AST
@@ -32,7 +31,7 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a namespace using the EscapeHatch widget`` () =
+    let ``Produces a namespace using the EscapeHatch widget``() =
         Namespace("Fabulous.AST") {
             BindingNode(
                 None,
@@ -58,7 +57,7 @@ let x = 12
 """
 
     [<Fact>]
-    let ``Produces a namespace with nested module`` () =
+    let ``Produces a namespace with nested module``() =
         Namespace("Fabulous") {
             NestedModule("AST") {
                 BindingNode(
@@ -91,29 +90,32 @@ module AST =
           props: Map<string, string list> }
 
     [<Fact>]
-    let ``Produces a namespace with nested module using yield bang`` () =
+    let ``Produces a namespace with nested module using yield bang``() =
         let records =
             [ { typename = "Person"
                 props = [ ("Age", [ "int" ]); ("Name", [ "string" ]) ] |> Map.ofList } ]
 
         let recordTypes =
             records
-            |> List.map(fun { typename = name; props = props } ->
-                if Map.isEmpty props then
-                    Abbrev(name, Obj()) |> Gen.mkOak |> TypeDefn.Abbrev |> ModuleDecl.TypeDefn
-                else
-                    let rec mkType (value: string list) =
-                        match value with
-                        | [] -> failwith "unexpected"
-                        | [ single ] -> LongIdent(single)
-                        | head :: tail -> AppPostfix(mkType(tail), LongIdent(head))
+            |> List.map
+                (fun
+                    { typename = name
+                      props = props } ->
+                    if Map.isEmpty props then
+                        Abbrev(name, Obj()) |> Gen.mkOak |> TypeDefn.Abbrev |> ModuleDecl.TypeDefn
+                    else
+                        let rec mkType(value: string list) =
+                            match value with
+                            | [] -> failwith "unexpected"
+                            | [ single ] -> LongIdent(single)
+                            | head :: tail -> AppPostfix(mkType(tail), LongIdent(head))
 
-                    let myFields =
-                        props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))
+                        let myFields =
+                            props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))
 
-                    let fields = Record(name) { yield! myFields } |> Gen.mkOak
-                    let record = TypeDefn.Record(fields)
-                    ModuleDecl.TypeDefn(record))
+                        let fields = Record(name) { yield! myFields } |> Gen.mkOak
+                        let record = TypeDefn.Record(fields)
+                        ModuleDecl.TypeDefn(record))
 
         Namespace("Json") {
             for recordType in recordTypes do

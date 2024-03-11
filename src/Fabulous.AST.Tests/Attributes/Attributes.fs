@@ -10,7 +10,7 @@ open type Ast
 module AttributesNodes =
 
     [<Fact>]
-    let ``Simple AttributeNode`` () =
+    let ``Simple AttributeNode``() =
         AnonymousModule() { Value("x", "12", false).attribute("Obsolete") }
         |> produces
             """
@@ -19,7 +19,7 @@ let x = 12
 """
 
     [<Fact>]
-    let ``Simple AttributeNode with expr`` () =
+    let ``Simple AttributeNode with expr``() =
         AnonymousModule() {
             Value("x", "12", false)
                 .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))))
@@ -31,7 +31,7 @@ let x = 12
 """
 
     [<Fact>]
-    let ``Multiple attributes`` () =
+    let ``Multiple attributes``() =
         AnonymousModule() {
             Value("x", "12", false).attributes() { Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))) }
         }
@@ -42,11 +42,8 @@ let x = 12
 """
 
     [<Fact>]
-    let ``Simple AttributeNode type name and target`` () =
-        AnonymousModule() {
-            Value("x", "12", false)
-                .attribute(Attribute("Struct", "return"))
-        }
+    let ``Simple AttributeNode type name and target``() =
+        AnonymousModule() { Value("x", "12", false).attribute(Attribute("Struct", "return")) }
         |> produces
             """
 [<return: Struct>]

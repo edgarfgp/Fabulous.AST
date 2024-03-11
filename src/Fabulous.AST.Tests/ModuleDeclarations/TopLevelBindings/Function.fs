@@ -9,7 +9,7 @@ open type Ast
 module Function =
 
     [<Fact>]
-    let ``Produces a function with parameter`` () =
+    let ``Produces a function with parameter``() =
         AnonymousModule() { Function("x", ParameterPat("i"), ConstantExpr(ConstantUnit())) }
         |> produces
             """
@@ -19,7 +19,7 @@ let x i = ()
 """
 
     [<Fact>]
-    let ``Produces a function with single tupled parameter`` () =
+    let ``Produces a function with single tupled parameter``() =
         AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())) }
         |> produces
             """
@@ -28,7 +28,7 @@ let x i = ()
 """
 
     [<Fact>]
-    let ``Produces a function with single parameter`` () =
+    let ``Produces a function with single parameter``() =
         AnonymousModule() { Function("x", ParenPat(NamedPat("i")), ConstantExpr(ConstantUnit())) }
         |> produces
             """
@@ -37,7 +37,7 @@ let x (i) = ()
 """
 
     [<Fact>]
-    let ``Produces a function with single tupled typed parameter`` () =
+    let ``Produces a function with single tupled typed parameter``() =
         AnonymousModule() {
             Function("x", ParenPat(ParameterPat(NamedPat("i"), Int32())), ConstantExpr(ConstantUnit()))
         }
@@ -48,7 +48,7 @@ let x (i: int) = ()
 """
 
     [<Fact>]
-    let ``Produces a function with tupled parameters`` () =
+    let ``Produces a function with tupled parameters``() =
         AnonymousModule() {
             Function(
                 "x",
@@ -67,7 +67,7 @@ let x (i, j, k) = ()
 """
 
     [<Fact>]
-    let ``Produces a function with curried parameters`` () =
+    let ``Produces a function with curried parameters``() =
         AnonymousModule() {
             Function(
                 "x",
@@ -86,7 +86,7 @@ let x i j k = ()
 """
 
     [<Fact>]
-    let ``Produces a function with tupled typed parameters`` () =
+    let ``Produces a function with tupled typed parameters``() =
         AnonymousModule() {
             Function(
                 "x",
@@ -105,7 +105,7 @@ let x (i: int, j: string, k: bool) = ()
 """
 
     [<Fact>]
-    let ``Produces a function with parameters and an attribute`` () =
+    let ``Produces a function with parameters and an attribute``() =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr("Use bar instead"))))
@@ -118,7 +118,7 @@ let x i = ()
 """
 
     [<Fact>]
-    let ``Produces a function with parameters and Xml Doc`` () =
+    let ``Produces a function with parameters and Xml Doc``() =
         AnonymousModule() {
             (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
                 .xmlDocs([ "Im a function" ])
@@ -131,11 +131,8 @@ let x i = ()
 """
 
     [<Fact>]
-    let ``Produces a function with parameters and return type`` () =
-        AnonymousModule() {
-            (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                .returnType(Unit())
-        }
+    let ``Produces a function with parameters and return type``() =
+        AnonymousModule() { (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))).returnType(Unit()) }
         |> produces
             """
 let x i : unit = ()
@@ -143,7 +140,7 @@ let x i : unit = ()
 """
 
     [<Fact>]
-    let ``Produces a function with parameters, return type and typeParams `` () =
+    let ``Produces a function with parameters, return type and typeParams ``() =
         AnonymousModule() {
             (Function(
                 "foo",
@@ -162,11 +159,8 @@ let foo (x: 'T, i: 'U) : unit = ()
 """
 
     [<Fact>]
-    let ``Produces an inlined function with parameters`` () =
-        AnonymousModule() {
-            Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))
-                .toInlined()
-        }
+    let ``Produces an inlined function with parameters``() =
+        AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())).toInlined() }
         |> produces
             """
 
@@ -175,16 +169,13 @@ let inline x i = ()
 """
 
     [<Fact>]
-    let ``Produces a function with parameters and access controls`` () =
+    let ``Produces a function with parameters and access controls``() =
         AnonymousModule() {
-            (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                .toPublic()
+            (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))).toPublic()
 
-            (Function("y", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                .toPrivate()
+            (Function("y", NamedPat("i"), ConstantExpr(ConstantUnit()))).toPrivate()
 
-            (Function("z", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                .toInternal()
+            (Function("z", NamedPat("i"), ConstantExpr(ConstantUnit()))).toInternal()
         }
         |> produces
             """

@@ -47,7 +47,6 @@ module ExprBuilders =
                     )
                 )
 
-
         static member NullExpr() =
             WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))
 

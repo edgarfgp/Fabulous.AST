@@ -31,7 +31,6 @@ module EnumCase =
             let attributes =
                 Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
-
             let multipleAttributes =
                 match attributes with
                 | Some values ->

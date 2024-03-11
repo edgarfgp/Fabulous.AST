@@ -1,6 +1,5 @@
 namespace Fabulous.AST.Tests.Types
 
-open System
 open Xunit
 open Fabulous.AST.Tests
 
@@ -31,7 +30,7 @@ module Types =
 | unit      | NA        | Indicates the absence of an actual value. The type has only one formal value, which is denoted (). The unit value, (), is often used as a placeholder where a value is needed but no real value is available or makes sense. | () |
 *)
     [<Fact>]
-    let ``Value with return primitive types`` () =
+    let ``Value with return primitive types``() =
         AnonymousModule() {
             Value("a", "false", false).returnType(Boolean())
             Value("b", "0uy", false).returnType(Byte())

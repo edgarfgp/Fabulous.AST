@@ -10,7 +10,7 @@ open type Ast
 module Tuple =
 
     [<Fact>]
-    let ``let value with a Tuple expression`` () =
+    let ``let value with a Tuple expression``() =
         AnonymousModule() {
             Value(
                 "x",
@@ -28,7 +28,7 @@ let x = 1, 2, 3
 """
 
     [<Fact>]
-    let ``let value with a Tuple expression with parenthesis`` () =
+    let ``let value with a Tuple expression with parenthesis``() =
         AnonymousModule() {
             Value(
                 "x",

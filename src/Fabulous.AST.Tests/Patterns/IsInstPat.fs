@@ -10,7 +10,7 @@ open type Ast
 module IsInstPat =
 
     [<Fact>]
-    let ``let value with a IsInstPat pattern`` () =
+    let ``let value with a IsInstPat pattern``() =
         AnonymousModule() {
             MatchExpr(ConstantExpr(Constant("12", false))) {
                 MatchClauseExpr(IsInstPat(String()), ConstantExpr(Constant("12", false)))
@@ -22,9 +22,8 @@ match 12 with
 | :? string -> 12
 """
 
-
     [<Fact>]
-    let ``let value with a custom IsInstPat pattern`` () =
+    let ``let value with a custom IsInstPat pattern``() =
         AnonymousModule() {
             MatchExpr(ConstantExpr(Constant("12", false))) {
                 MatchClauseExpr(IsInstPat("<:", "string"), ConstantExpr(Constant("12", false)))

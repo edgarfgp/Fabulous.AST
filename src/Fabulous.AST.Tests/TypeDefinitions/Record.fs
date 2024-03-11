@@ -3,7 +3,6 @@ namespace Fabulous.AST.Tests.TypeDefinitions
 open Fabulous.AST.Tests
 open Xunit
 
-
 open Fabulous.AST
 open type Ast
 
@@ -27,7 +26,7 @@ type Person = { {{expected}}: int }
 """
 
     [<Fact>]
-    let ``Produces a record with an attribute`` () =
+    let ``Produces a record with an attribute``() =
         AnonymousModule() {
             (Record("Colors") {
                 for colour in [ "Red"; "Green"; "Blue" ] do
@@ -44,7 +43,7 @@ type Colors = { Red: int; Green: int; Blue: int }
 """
 
     [<Fact>]
-    let ``Produces a record field with an attribute`` () =
+    let ``Produces a record field with an attribute``() =
         AnonymousModule() {
             Record("Colors") {
                 Field("Red", LongIdent("int")).attribute("Obsolete")
@@ -65,7 +64,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces a generic record`` () =
+    let ``Produces a generic record``() =
         AnonymousModule() {
             GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", LongIdent("string"))
@@ -85,7 +84,7 @@ type Colors<'other> =
 """
 
     [<Fact>]
-    let ``Produces a struct generic record`` () =
+    let ``Produces a struct generic record``() =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", LongIdent("string"))
@@ -106,7 +105,7 @@ type Colors<'other> =
 """
 
     [<Fact>]
-    let ``Produces an obsolete struct generic record`` () =
+    let ``Produces an obsolete struct generic record``() =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", LongIdent("string"))

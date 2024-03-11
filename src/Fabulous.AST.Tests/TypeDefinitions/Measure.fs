@@ -11,12 +11,11 @@ open type Fantomas.Core.SyntaxOak.Type
 module UnitsOfMeasure =
 
     [<Fact>]
-    let ``Produces type Unit of measure`` () =
+    let ``Produces type Unit of measure``() =
         AnonymousModule() {
             Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-            Measure("ml", MeasurePowerInteger("cm", "3"))
-                .xmlDocs([ "Ml, milliliters." ])
+            Measure("ml", MeasurePowerInteger("cm", "3")).xmlDocs([ "Ml, milliliters." ])
 
             Measure("g").xmlDocs([ "Mass, grams." ])
             Measure("kg").xmlDocs([ "Mass, kilograms." ])

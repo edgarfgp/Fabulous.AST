@@ -11,7 +11,7 @@ open type Ast
 
 module Literal =
     [<Fact>]
-    let ``Produces a Literal constant`` () =
+    let ``Produces a Literal constant``() =
         AnonymousModule() { Value("x", "12", false).attribute("Literal") }
         |> produces
             """
@@ -21,7 +21,7 @@ let x = 12
 """
 
     [<Fact>]
-    let ``Produces multiple Literal constants`` () =
+    let ``Produces multiple Literal constants``() =
         let images =
             [ "Daisy", "daisy.png"
               "Rose", "rose.png"
@@ -49,12 +49,8 @@ let Sunflower = "sunflower.png"
 """
 
     [<Fact>]
-    let ``Produces a Literal constant with xml docs`` () =
-        AnonymousModule() {
-            Value("x", "12", false)
-                .attribute("Literal")
-                .xmlDocs([ "This is a comment" ])
-        }
+    let ``Produces a Literal constant with xml docs``() =
+        AnonymousModule() { Value("x", "12", false).attribute("Literal").xmlDocs([ "This is a comment" ]) }
         |> produces
             """
 /// This is a comment
@@ -64,7 +60,7 @@ let x = 12
 """
 
     [<Fact>]
-    let ``Produces Literal constant with an access control `` () =
+    let ``Produces Literal constant with an access control ``() =
         AnonymousModule() { Value("x", "12", false).attribute("Literal").toInternal() }
         |> produces
             """
@@ -75,7 +71,7 @@ let internal x = 12
 """
 
     [<Fact>]
-    let ``Produces Literal constant with escape hatch`` () =
+    let ``Produces Literal constant with escape hatch``() =
         AnonymousModule() {
             BindingNode(
                 None,

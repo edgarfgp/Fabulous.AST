@@ -11,7 +11,7 @@ open type Ast
 
 module Module =
     [<Fact>]
-    let ``Produces a module with binding`` () =
+    let ``Produces a module with binding``() =
         Module("Fabulous.AST") { Value("x", "3", false) }
         |> produces
             """
@@ -21,7 +21,7 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a recursive module`` () =
+    let ``Produces a recursive module``() =
         Module("Fabulous.AST") { Value("x", "3", false) }
         |> _.toRecursive()
         |> produces
@@ -32,7 +32,7 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a module with unit`` () =
+    let ``Produces a module with unit``() =
         Module("Fabulous.AST") { ConstantExpr(ConstantUnit()) }
         |> produces
             """
@@ -42,7 +42,7 @@ module Fabulous.AST
 """
 
     [<Fact>]
-    let ``Produces a module with IdentListNode`` () =
+    let ``Produces a module with IdentListNode``() =
         Module("Fabulous.AST") { Value("x", "3", false) }
         |> produces
             """
@@ -52,7 +52,7 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a module with IdentListNode and BindingNode`` () =
+    let ``Produces a module with IdentListNode and BindingNode``() =
         Module("Fabulous.AST") {
             BindingNode(
                 None,

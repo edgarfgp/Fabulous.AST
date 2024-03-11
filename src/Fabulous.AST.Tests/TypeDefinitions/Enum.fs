@@ -12,7 +12,7 @@ open type Fabulous.AST.Ast
 module Enum =
 
     [<Fact>]
-    let ``Produces an enum`` () =
+    let ``Produces an enum``() =
         AnonymousModule() {
             Enum("Colors") {
                 EnumCase("Red", "0")
@@ -31,7 +31,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an enum with value Expr`` () =
+    let ``Produces an enum with value Expr``() =
         AnonymousModule() {
             Enum("Colors") {
                 EnumCase("Red", "0")
@@ -50,7 +50,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an enum with SingleTextNode`` () =
+    let ``Produces an enum with SingleTextNode``() =
         AnonymousModule() {
             Enum("Colors") {
                 EnumCase("Red", "0")
@@ -69,7 +69,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an enum case using EnumCaseNode`` () =
+    let ``Produces an enum case using EnumCaseNode``() =
         AnonymousModule() {
             Enum("Colors") {
                 EnumCase("Red", "0")
@@ -99,7 +99,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an enum case using Widget and escape hatch`` () =
+    let ``Produces an enum case using Widget and escape hatch``() =
         let enumCaseNode =
             EnumCaseNode(
                 None,
@@ -131,7 +131,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an enum case for a list`` () =
+    let ``Produces an enum case for a list``() =
         let colors = [ "Red"; "Green"; "Blue"; "Black" ]
 
         AnonymousModule() {
@@ -152,9 +152,8 @@ type Colors =
 
 """
 
-
     [<Fact>]
-    let ``Produces an enum with attribute`` () =
+    let ``Produces an enum with attribute``() =
         let colors = [ "Red"; "Green"; "Blue"; "Black" ]
 
         AnonymousModule() {
@@ -178,11 +177,10 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an enum case with attributes`` () =
+    let ``Produces an enum case with attributes``() =
         AnonymousModule() {
             (Enum("Colors") {
-                EnumCase("Red", "0")
-                    .attributes([ "Obsolete"; "MyAttribute" ])
+                EnumCase("Red", "0").attributes([ "Obsolete"; "MyAttribute" ])
 
                 EnumCase("Green", "1")
                 EnumCase("Blue", "2")

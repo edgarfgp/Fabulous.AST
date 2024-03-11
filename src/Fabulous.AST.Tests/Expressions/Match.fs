@@ -10,7 +10,7 @@ open type Ast
 module Match =
 
     [<Fact>]
-    let ``let value with a Match expression`` () =
+    let ``let value with a Match expression``() =
         AnonymousModule() {
             MatchExpr(
                 ListExpr() {

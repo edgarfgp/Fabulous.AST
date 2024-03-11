@@ -42,7 +42,7 @@ module RecordExpr =
     """
 
     [<Fact>]
-    let ``RecordExpr expression`` () =
+    let ``RecordExpr expression``() =
         AnonymousModule() { RecordExpr() { RecordFieldExpr("A", ConstantExpr("1", false)) } }
         |> produces
             """
@@ -50,7 +50,7 @@ module RecordExpr =
 """
 
     [<Fact>]
-    let ``RecordExpr expression with copy info`` () =
+    let ``RecordExpr expression with copy info``() =
         AnonymousModule() { RecordExpr(ConstantExpr("A", false)) { RecordFieldExpr("B", ConstantExpr("1", false)) } }
         |> produces
             """
@@ -58,7 +58,7 @@ module RecordExpr =
 """
 
     [<Fact>]
-    let ``AnonRecordExpr expression`` () =
+    let ``AnonRecordExpr expression``() =
         AnonymousModule() { AnonRecordExpr() { RecordFieldExpr("A", ConstantExpr("1", false)) } }
         |> produces
             """
@@ -66,7 +66,7 @@ module RecordExpr =
 """
 
     [<Fact>]
-    let ``AnonRecordExpr expression with copy info`` () =
+    let ``AnonRecordExpr expression with copy info``() =
         AnonymousModule() {
             AnonRecordExpr(ConstantExpr("A", false)) { RecordFieldExpr("B", ConstantExpr("1", false)) }
         }

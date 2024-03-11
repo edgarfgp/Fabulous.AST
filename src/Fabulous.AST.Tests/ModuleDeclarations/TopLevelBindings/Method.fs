@@ -9,13 +9,11 @@ open type Ast
 module MethodMembers =
 
     [<Fact>]
-    let ``Produces MethodMembers`` () =
+    let ``Produces MethodMembers``() =
 
         AnonymousModule() {
-            (Record("Colors") { Field("X", LongIdent("string")) })
-                .members() {
+            (Record("Colors") { Field("X", LongIdent("string")) }).members() {
                 Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
-
 
                 Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toInlined()
@@ -85,7 +83,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces a record with TypeParams and method member`` () =
+    let ``Produces a record with TypeParams and method member``() =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", LongIdent("string"))
@@ -110,7 +108,7 @@ type Colors<'other> =
 """
 
     [<Fact>]
-    let ``Produces a record with TypeParams and static method member`` () =
+    let ``Produces a record with TypeParams and static method member``() =
         AnonymousModule() {
             (GenericRecord("Colors", [ "'other" ]) {
                 Field("Green", LongIdent("string"))
@@ -136,10 +134,9 @@ type Colors<'other> =
 """
 
     [<Fact>]
-    let ``Produces a record with method member`` () =
+    let ``Produces a record with method member``() =
         AnonymousModule() {
-            (Record("Colors") { Field("X", LongIdent("string")) })
-                .members() {
+            (Record("Colors") { Field("X", LongIdent("string")) }).members() {
                 Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
             }
         }
@@ -154,10 +151,9 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces a record with static method member`` () =
+    let ``Produces a record with static method member``() =
         AnonymousModule() {
-            (Record("Colors") { Field("X", LongIdent("string")) })
-                .members() {
+            (Record("Colors") { Field("X", LongIdent("string")) }).members() {
                 Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
                     .toStatic()
             }
@@ -172,9 +168,8 @@ type Colors =
 
 """
 
-
     [<Fact>]
-    let ``Produces a classes with a method member`` () =
+    let ``Produces a classes with a method member``() =
         AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)) } }
         |> produces
             """
@@ -183,7 +178,7 @@ type Person () =
 """
 
     [<Fact>]
-    let ``Produces a classes with a method member and parameter`` () =
+    let ``Produces a classes with a method member and parameter``() =
         AnonymousModule() {
             Class("Person") {
                 Method("this.Name", ParametersPat() { ParameterPat("params", String()) }, ConstantExpr("23", false))
@@ -196,7 +191,7 @@ type Person () =
 """
 
     [<Fact>]
-    let ``Produces a method member with tupled parameter`` () =
+    let ``Produces a method member with tupled parameter``() =
         AnonymousModule() {
             Class("Person") {
                 Method(
@@ -216,7 +211,7 @@ type Person () =
 """
 
     [<Fact>]
-    let ``Produces a method member with multiple parameter`` () =
+    let ``Produces a method member with multiple parameter``() =
         AnonymousModule() {
             Class("Person") {
                 Method(
@@ -236,12 +231,9 @@ type Person () =
 """
 
     [<Fact>]
-    let ``Produces a method member with attributes`` () =
+    let ``Produces a method member with attributes``() =
         AnonymousModule() {
-            Class("Person") {
-                Method("this.Name", UnitPat(), ConstantExpr("23", false))
-                    .attribute("Obsolete")
-            }
+            Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)).attribute("Obsolete") }
         }
         |> produces
             """
@@ -252,13 +244,8 @@ type Person () =
 """
 
     [<Fact>]
-    let ``Produces an inline method member`` () =
-        AnonymousModule() {
-            Class("Person") {
-                Method("this.Name", UnitPat(), ConstantExpr("23", false))
-                    .toInlined()
-            }
-        }
+    let ``Produces an inline method member``() =
+        AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)).toInlined() } }
         |> produces
             """
 type Person () =
@@ -266,7 +253,7 @@ type Person () =
 """
 
     [<Fact>]
-    let ``Produces an method member with type parameters`` () =
+    let ``Produces an method member with type parameters``() =
         AnonymousModule() {
             Class("Person") {
                 Method("this.Name", UnitPat(), ConstantExpr("23", false))
@@ -280,7 +267,7 @@ type Person () =
             """
 
     [<Fact>]
-    let ``Produces a union with a method member `` () =
+    let ``Produces a union with a method member ``() =
         AnonymousModule() {
             (Union("Person") { UnionCase("Name") }).members() { Method("this.Name", UnitPat(), ConstantExpr("name")) }
         }
@@ -294,7 +281,7 @@ type Person =
 """
 
     [<Fact>]
-    let ``Produces a generic union with a method member`` () =
+    let ``Produces a generic union with a method member``() =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {

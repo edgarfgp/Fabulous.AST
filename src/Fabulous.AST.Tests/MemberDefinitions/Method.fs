@@ -9,7 +9,7 @@ open NUnit.Framework
 
 module Methods =
     [<Test>]
-    let ``A member property `` () =
+    let ``A member property ``() =
         let constExpr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
 
         let memberNode = Method("Name") { EscapeHatch(constExpr) }
@@ -23,7 +23,7 @@ type Person =
 """
 
     [<Test>]
-    let ``Produces a static member`` () =
+    let ``Produces a static member``() =
 
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
@@ -39,12 +39,11 @@ type Person () =
 """
 
     [<Test>]
-    let ``Produces a member with a parameter`` () =
+    let ``Produces a member with a parameter``() =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         let parameters =
             PatternWithTupledParameters([ ("params", Some(Type.FromString("string"))) ])
-
 
         let memberNode = Method("Name", parameters) { EscapeHatch(expr) }
 
@@ -56,7 +55,7 @@ type Person () =
 """
 
     [<Test>]
-    let ``Produces a member with multiple parameter`` () =
+    let ``Produces a member with multiple parameter``() =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         let parameters =
@@ -75,7 +74,7 @@ type Person () =
 """
 
     [<Test>]
-    let ``Produces a member with tupled parameter`` () =
+    let ``Produces a member with tupled parameter``() =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         let parameters =
@@ -94,13 +93,11 @@ type Person () =
 """
 
     [<Test>]
-    let ``A member with attributes`` () =
+    let ``A member with attributes``() =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         let memberNode =
-            (Method("Name") { EscapeHatch(expr) })
-                .attributes([ "Extension" ])
-                .isStatic()
+            (Method("Name") { EscapeHatch(expr) }).attributes([ "Extension" ]).isStatic()
 
         AnonymousModule() { Class("Person", []) { memberNode } }
         |> produces
@@ -111,13 +108,10 @@ type Person () =
 """
 
     [<Test>]
-    let ``An inline member`` () =
+    let ``An inline member``() =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
-        let memberNode =
-            (Method("Name") { EscapeHatch(expr) })
-                .isInlined()
-                .isStatic()
+        let memberNode = (Method("Name") { EscapeHatch(expr) }).isInlined().isStatic()
 
         AnonymousModule() { Class("Person", []) { memberNode } }
         |> produces
@@ -127,7 +121,7 @@ type Person () =
 """
 
     [<Test>]
-    let ``Add return info`` () =
+    let ``Add return info``() =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("23", Range.Zero)))
 
         let memberNode =

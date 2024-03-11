@@ -28,9 +28,8 @@ type Colors = | {{expected}}
 
 """
 
-
     [<Fact>]
-    let ``Produces an union`` () =
+    let ``Produces an union``() =
         AnonymousModule() {
             Union("Colors") {
                 UnionCase("Red")
@@ -52,7 +51,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an union with interface member`` () =
+    let ``Produces an union with interface member``() =
         AnonymousModule() {
 
             Interface("IMyInterface") {
@@ -89,7 +88,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an union with fields`` () =
+    let ``Produces an union with fields``() =
         AnonymousModule() {
             Union("Colors") {
                 UnionParamsCase("Red") {
@@ -115,7 +114,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an union with SingleTextNode`` () =
+    let ``Produces an union with SingleTextNode``() =
         AnonymousModule() {
             Union("Colors") {
                 UnionCase("Red")
@@ -136,7 +135,7 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an union using Widget and escape hatch`` () =
+    let ``Produces an union using Widget and escape hatch``() =
         AnonymousModule() {
             Union("Colors") {
                 UnionCase("Red")
@@ -159,11 +158,8 @@ type Colors =
 """
 
     [<Fact>]
-    let ``Produces an union with attribute`` () =
-        AnonymousModule() {
-            (Union("Colors") { UnionCase("Red") })
-                .attribute(Attribute "Test")
-        }
+    let ``Produces an union with attribute``() =
+        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attribute(Attribute "Test") }
         |> produces
             """
 
@@ -172,7 +168,7 @@ type Colors = | Red
 """
 
     [<Fact>]
-    let ``Produces an union case with attributes`` () =
+    let ``Produces an union case with attributes``() =
         AnonymousModule() {
             (Union("Colors") {
                 UnionCase("Red").attributes() {
@@ -192,7 +188,7 @@ type Colors = | [<Obsolete; Test>] Red
 module GenericUnion =
 
     [<Fact>]
-    let ``Produces an union with TypeParams`` () =
+    let ``Produces an union with TypeParams``() =
         AnonymousModule() {
             GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {
@@ -218,7 +214,7 @@ type Colors<'other> =
 """
 
     [<Fact>]
-    let ``Produces an union with TypeParams and interface member`` () =
+    let ``Produces an union with TypeParams and interface member``() =
         AnonymousModule() {
             Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
@@ -254,7 +250,7 @@ type Colors<'other> =
 """
 
     [<Fact>]
-    let ``Produces an struct union with TypeParams`` () =
+    let ``Produces an struct union with TypeParams``() =
         AnonymousModule() {
             (GenericUnion("Colors", [ "'other" ]) {
                 UnionParamsCase("Red") {

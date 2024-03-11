@@ -9,7 +9,7 @@ open type Ast
 
 module Typed =
     [<Fact>]
-    let ``let value with a typed expression`` () =
+    let ``let value with a typed expression``() =
         AnonymousModule() { Value("x", TypedExpr(ConstantExpr(Constant("2", false)), ":", LongIdent("string"))) }
         |> produces
             """

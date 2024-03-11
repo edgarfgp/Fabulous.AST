@@ -10,7 +10,7 @@ open type Ast
 module App =
 
     [<Fact>]
-    let ``let value with a App expression`` () =
+    let ``let value with a App expression``() =
         AnonymousModule() { Value("x", AppExpr("printfn") { ConstantExpr("a") }) }
         |> produces
             """

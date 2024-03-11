@@ -2,7 +2,6 @@ namespace Fabulous.AST
 
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
-open Fantomas.FCS.Text
 
 module TypeVar =
     let Identifier = Attributes.defineScalar<string> "Identifier"

@@ -9,7 +9,7 @@ open type Ast
 module AbstractMembers =
 
     [<Fact>]
-    let ``Produces a classes with a abstract members`` () =
+    let ``Produces a classes with a abstract members``() =
         AnonymousModule() {
             Interface("Meh") {
                 AbstractGet("Area", Float())
@@ -63,7 +63,7 @@ type Meh =
 """
 
     [<Fact>]
-    let ``Produces a genetic interface with multiple abstract members types`` () =
+    let ``Produces a genetic interface with multiple abstract members types``() =
         AnonymousModule() {
             Interface("Meh", [ "'other"; "'another" ]) {
                 AbstractGet("Area", Float())

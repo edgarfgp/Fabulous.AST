@@ -12,7 +12,7 @@ open type Fabulous.AST.Ast
 module Abbrev =
 
     [<Fact>]
-    let ``Produces type Abbrev`` () =
+    let ``Produces type Abbrev``() =
         AnonymousModule() { Abbrev("MyInt", Int32()) }
 
         |> produces
@@ -23,7 +23,7 @@ type MyInt = int
 """
 
     [<Fact>]
-    let ``Produces type Abbrev using an escape hatch`` () =
+    let ``Produces type Abbrev using an escape hatch``() =
         let alias =
             TypeDefnAbbrevNode(
                 TypeNameNode(
@@ -58,7 +58,7 @@ type MyFloat = float
 """
 
     [<Fact>]
-    let ``Produces type Abbrev with TypeDefnAbbrevNode`` () =
+    let ``Produces type Abbrev with TypeDefnAbbrevNode``() =
         AnonymousModule() {
             Abbrev("MyInt", Int32())
 

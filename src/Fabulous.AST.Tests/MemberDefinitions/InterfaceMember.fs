@@ -9,7 +9,7 @@ open type Ast
 
 module InterfaceMembers =
     [<Fact>]
-    let ``Produces a record with TypeParams and interface member`` () =
+    let ``Produces a record with TypeParams and interface member``() =
         AnonymousModule() {
             Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
@@ -39,7 +39,7 @@ type Colors<'other> =
 """
 
     [<Fact>]
-    let ``Produces a record with interface member`` () =
+    let ``Produces a record with interface member``() =
 
         AnonymousModule() {
             Interface("IMyInterface") {
@@ -70,7 +70,7 @@ type MyRecord =
 """
 
     [<Fact>]
-    let ``Produces a class with a interface member`` () =
+    let ``Produces a class with a interface member``() =
         AnonymousModule() {
             Interface("Meh") { AbstractProperty("Name", String()) }
 

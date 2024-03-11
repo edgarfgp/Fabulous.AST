@@ -3,7 +3,6 @@ namespace Fabulous.AST
 open System.ComponentModel
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
-open Fabulous.AST.WidgetAttributeDefinitions
 open Fabulous.AST.WidgetCollectionAttributeDefinitions
 
 type AttributesBundle =
@@ -15,7 +14,9 @@ type WidgetBuilder<'marker> =
         val Key: WidgetKey
         val Attributes: AttributesBundle
 
-        new(key: WidgetKey, attributes: AttributesBundle) = { Key = key; Attributes = attributes }
+        new(key: WidgetKey, attributes: AttributesBundle) =
+            { Key = key
+              Attributes = attributes }
 
         new(key: WidgetKey, scalar: ScalarAttribute) =
             { Key = key
@@ -40,7 +41,6 @@ type WidgetBuilder<'marker> =
                 | _ -> ValueSome(Array.sortInPlace (fun a -> a.Key) (StackList.toArray &scalarAttributes))
 
               WidgetAttributes = ValueOption.map (Array.sortInPlace(fun a -> a.Key)) widgetAttributes
-
 
               WidgetCollectionAttributes =
                 widgetCollectionAttributes |> ValueOption.map(Array.sortInPlace(fun a -> a.Key)) }
@@ -219,7 +219,9 @@ type AttributeCollectionBuilder<'marker, 'itemMarker> =
         val Widget: WidgetBuilder<'marker>
         val Attr: WidgetCollectionAttributeDefinition
 
-        new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition)= { Widget = widget; Attr = attr }
+        new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition) =
+            { Widget = widget
+              Attr = attr }
 
         member inline x.Run(c: CollectionContent) =
             let attrValue =

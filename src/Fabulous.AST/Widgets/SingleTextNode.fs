@@ -2,7 +2,6 @@ namespace Fabulous.AST
 
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Syntax
 
 type SingleTextNode =
     static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)

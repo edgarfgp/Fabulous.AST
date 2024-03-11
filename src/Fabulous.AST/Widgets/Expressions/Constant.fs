@@ -4,7 +4,6 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
-
 module Constant =
     let ValueString = Attributes.defineScalar<string> "Value"
     let Value = Attributes.defineWidget "Value"
@@ -52,7 +51,6 @@ module ConstantBuilders =
                     Constant.WidgetFromTextKey,
                     AttributesBundle(StackList.one(Constant.ValueString.WithValue(value)), ValueNone, ValueNone)
                 )
-
 
         static member ConstantMeasure(constant: WidgetBuilder<Constant>, measure: WidgetBuilder<Measure>) =
             WidgetBuilder<Constant>(

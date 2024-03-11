@@ -10,7 +10,7 @@ open type Ast
 module NamePatPairsPat =
 
     [<Fact>]
-    let ``let value with a NamePatPairs pattern`` () =
+    let ``let value with a NamePatPairs pattern``() =
         AnonymousModule() {
             Value(
                 NamePatPairsPat("x") {
@@ -27,7 +27,7 @@ let x (A = B; B = A) = 12
 """
 
     [<Fact>]
-    let ``let value with a NamePatPairs pattern with type params`` () =
+    let ``let value with a NamePatPairs pattern with type params``() =
         AnonymousModule() {
             Value(
                 NamePatPairsPat("x", [ "'a"; "'b" ]) {

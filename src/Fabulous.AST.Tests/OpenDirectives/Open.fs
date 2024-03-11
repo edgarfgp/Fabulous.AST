@@ -12,7 +12,7 @@ open type Ast
 module Open =
 
     [<Fact>]
-    let ``Produces a simple open directive from a string`` () =
+    let ``Produces a simple open directive from a string``() =
         AnonymousModule() { Open("ABC") }
         |> produces
             """
@@ -22,7 +22,7 @@ open ABC
 """
 
     [<Fact>]
-    let ``Produces an open directive from a node`` () =
+    let ``Produces an open directive from a node``() =
         AnonymousModule() {
             Open(
                 IdentListNode(

@@ -8,7 +8,7 @@ open type Ast
 
 module Interface =
     [<Fact>]
-    let ``Produces an interface abstract method`` () =
+    let ``Produces an interface abstract method``() =
         AnonymousModule() {
             Interface("INumericFSharp") { AbstractCurriedMethod("Add", [ Int32(); Int32() ], Int32()) }
 
@@ -27,7 +27,7 @@ type INumericDotNet =
 module GenericInterface =
 
     [<Fact>]
-    let ``Produces a generic interface with TypeParams`` () =
+    let ``Produces a generic interface with TypeParams``() =
         AnonymousModule() {
             Interface("MyInterface", [ "'other"; "'another" ]) {
                 let parameters = [ Int32(); Int32(); String() ]

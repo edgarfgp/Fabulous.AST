@@ -77,7 +77,6 @@ module Measure =
                 MeasureParenNode(SingleTextNode.leftParenthesis, measure, SingleTextNode.rightParenthesis, Range.Zero)
             ))
 
-
 [<AutoOpen>]
 module MeasureBuilders =
     type Ast with

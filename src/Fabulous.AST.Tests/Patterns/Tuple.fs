@@ -10,7 +10,7 @@ open type Ast
 module TuplePat =
 
     [<Fact>]
-    let ``let value with a Tuple pattern`` () =
+    let ``let value with a Tuple pattern``() =
         AnonymousModule() {
             Value(
                 TuplePat() {

@@ -9,7 +9,7 @@ open Xunit
 
 module WidgetTests =
     [<Fact>]
-    let ``string -> OAK`` () =
+    let ``string -> OAK``() =
         let source =
             """
 

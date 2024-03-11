@@ -33,24 +33,25 @@ module WidgetCollectionAttributeDefinitions =
           Name: string }
 
         member inline x.WithValue(value: ArraySlice<Widget>) : WidgetCollectionAttribute =
-            { Key = x.Key; Value = value }
+            { Key = x.Key
+              Value = value }
 
 module AttributeDefinitionStore =
     let mutable private _scalarsCount = 0
     let mutable private _widgetsCount = 0
     let mutable private _widgetCollectionsCount = 0
 
-    let getNextKeyForScalar () : ScalarAttributeKey =
+    let getNextKeyForScalar() : ScalarAttributeKey =
         let key = _scalarsCount * 1<scalarAttributeKey>
         _scalarsCount <- _scalarsCount + 1
         key
 
-    let getNextKeyForWidget () : WidgetAttributeKey =
+    let getNextKeyForWidget() : WidgetAttributeKey =
         let key = _scalarsCount * 1<widgetAttributeKey>
         _scalarsCount <- _scalarsCount + 1
         key
 
-    let getNextKeyForWidgetCollection () : WidgetCollectionAttributeKey =
+    let getNextKeyForWidgetCollection() : WidgetCollectionAttributeKey =
         let key = _scalarsCount * 1<widgetCollectionAttributeKey>
         _scalarsCount <- _scalarsCount + 1
         key

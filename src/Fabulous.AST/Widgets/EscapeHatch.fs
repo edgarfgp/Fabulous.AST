@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-
 module EscapeHatch =
     let Node = Attributes.defineScalar<obj> "Node"
 

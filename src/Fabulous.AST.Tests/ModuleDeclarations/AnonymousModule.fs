@@ -9,7 +9,7 @@ open type Ast
 
 module AnonymousModule =
     [<Fact>]
-    let ``Produces a simple hello world console app`` () =
+    let ``Produces a simple hello world console app``() =
         AnonymousModule() { AppExpr("printfn") { ConstantExpr("hello, world") } }
         |> produces
             """
@@ -19,7 +19,7 @@ printfn "hello, world"
 """
 
     [<Fact>]
-    let ``Produces Hello world with a let binding`` () =
+    let ``Produces Hello world with a let binding``() =
         AnonymousModule() {
             Value("x", "hello, world", true)
 
@@ -37,7 +37,7 @@ printfn "%s" x
 """
 
     [<Fact>]
-    let ``Produces several Call nodes`` () =
+    let ``Produces several Call nodes``() =
         AnonymousModule() {
             for i = 0 to 2 do
                 AppExpr("printfn") {

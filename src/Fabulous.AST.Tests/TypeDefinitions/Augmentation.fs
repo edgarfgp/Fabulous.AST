@@ -8,7 +8,7 @@ open type Ast
 
 module Augmentation =
     [<Fact>]
-    let ``Produces an Augment`` () =
+    let ``Produces an Augment``() =
         AnonymousModule() {
             Augmentation("DateTime") {
                 Property("this.Print", ConstantExpr(ConstantUnit()))

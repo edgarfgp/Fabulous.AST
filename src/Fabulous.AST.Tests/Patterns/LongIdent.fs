@@ -10,7 +10,7 @@ open type Ast
 module LongIdent =
 
     [<Fact>]
-    let ``let value with a LongIdent pattern`` () =
+    let ``let value with a LongIdent pattern``() =
         AnonymousModule() {
             Value(
                 LongIdentPat("x") {
@@ -26,7 +26,7 @@ let x B A = 12
 """
 
     [<Fact>]
-    let ``let value with a NamePatPairs pattern with type params`` () =
+    let ``let value with a NamePatPairs pattern with type params``() =
         AnonymousModule() {
             Value(
                 LongIdentPat("x", [ "'a"; "'b" ]) {

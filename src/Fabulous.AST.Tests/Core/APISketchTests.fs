@@ -10,7 +10,7 @@ open Xunit
 module APISketchTests =
 
     [<Fact>]
-    let ``Multiple Widgets for loops in builder`` () =
+    let ``Multiple Widgets for loops in builder``() =
         let result =
             Namespace("DummyNamespace") {
                 Abbrev("Foo", String())
@@ -32,7 +32,7 @@ module APISketchTests =
         Assert.NotNull result
 
     [<Fact>]
-    let ``Multiple for loops in builder`` () =
+    let ``Multiple for loops in builder``() =
         let result =
             Namespace("DummyNamespace") {
                 for i = 0 to 10 do

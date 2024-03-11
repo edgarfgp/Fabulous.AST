@@ -83,7 +83,6 @@ type ValueModifiers =
     static member inline typeParameters(this: WidgetBuilder<BindingNode>, typeParams: string list) =
         this.AddScalar(BindingNode.TypeParams.WithValue(typeParams))
 
-
 [<Extension>]
 type ValueYieldExtensions =
     [<Extension>]

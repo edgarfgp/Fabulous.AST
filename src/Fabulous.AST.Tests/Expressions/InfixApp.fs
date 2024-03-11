@@ -10,7 +10,7 @@ open type Ast
 module InfixApp =
 
     [<Fact>]
-    let ``let value with a InfixApp expression`` () =
+    let ``let value with a InfixApp expression``() =
         AnonymousModule() { InfixAppExpr(ConstantExpr(Constant("a", false)), "|>", ConstantExpr(Constant("b", false))) }
         |> produces
             """

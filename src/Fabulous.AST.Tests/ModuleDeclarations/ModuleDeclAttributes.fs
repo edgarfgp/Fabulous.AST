@@ -10,7 +10,7 @@ open type Ast
 module ModuleDeclAttributes =
 
     [<Fact>]
-    let ``Produces a do expr`` () =
+    let ``Produces a do expr``() =
         AnonymousModule() {
             ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"", false))
                 .attributes() {
@@ -24,7 +24,7 @@ do printfn "Executing..."
 """
 
     [<Fact>]
-    let ``Produces a ModuleDeclAttributes`` () =
+    let ``Produces a ModuleDeclAttributes``() =
         AnonymousModule() {
             ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"", false))
                 .attributes() {

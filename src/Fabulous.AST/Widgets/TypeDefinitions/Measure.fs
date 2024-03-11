@@ -104,7 +104,6 @@ module TypeDefnAbbrevNode =
                 Range.Zero
             ))
 
-
 [<AutoOpen>]
 module TypeDefnAbbrevNodeBuilders =
     type Ast with

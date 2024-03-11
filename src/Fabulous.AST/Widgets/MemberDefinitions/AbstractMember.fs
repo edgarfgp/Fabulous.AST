@@ -291,7 +291,6 @@ module AbstractMemberBuilders =
                 )
             )
 
-
         static member AbstractCurriedMethod
             (identifier: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>)
             =

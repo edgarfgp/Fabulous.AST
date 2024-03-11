@@ -4,13 +4,12 @@ open System
 open Fabulous.AST.StackAllocatedCollections
 open Xunit
 
-
 open type Fabulous.AST.Ast
 
 module ArrayTests =
 
     [<Fact>]
-    let ``MutStackArray1.combineMut reuses array B if can fit all data`` () =
+    let ``MutStackArray1.combineMut reuses array B if can fit all data``() =
         let arrB = Array.zeroCreate 7
 
         let a = MutStackArray1.Many((2us, Array.zeroCreate 4))

@@ -10,7 +10,7 @@ open type Ast
 module Ands =
 
     [<Fact>]
-    let ``let value with a Ands pattern`` () =
+    let ``let value with a Ands pattern``() =
         AnonymousModule() {
             Value(
                 AndsPat() {

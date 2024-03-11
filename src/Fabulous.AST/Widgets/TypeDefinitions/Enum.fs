@@ -35,7 +35,6 @@ module Enum =
             let attributes =
                 Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
-
             let multipleAttributes =
                 match attributes with
                 | Some values ->
@@ -51,7 +50,6 @@ module Enum =
                         )
                     )
                 | None -> None
-
 
             TypeDefnEnumNode(
                 TypeNameNode(
@@ -109,7 +107,6 @@ type EnumModifiers =
         AttributeCollectionBuilder<TypeDefnEnumNode, AttributeNode>(this, Enum.MultipleAttributes) {
             Ast.Attribute(attribute)
         }
-
 
 [<Extension>]
 type EnumYieldExtensions =

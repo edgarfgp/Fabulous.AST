@@ -10,7 +10,7 @@ open type Ast
 module StructTuple =
 
     [<Fact>]
-    let ``let value with a StructTuple expression`` () =
+    let ``let value with a StructTuple expression``() =
         AnonymousModule() {
             Value(
                 "x",
@@ -28,7 +28,7 @@ let x = struct (1, 2, 3)
 """
 
     [<Fact>]
-    let ``let value with a StructTuple expression with parenthesis`` () =
+    let ``let value with a StructTuple expression with parenthesis``() =
         AnonymousModule() {
             Value(
                 "x",

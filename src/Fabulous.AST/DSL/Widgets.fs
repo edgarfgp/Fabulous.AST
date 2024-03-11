@@ -16,7 +16,7 @@ module Widgets =
         WidgetDefinitionStore.set key definition
         key
 
-    let createValueForWidget<'T> (widget: Widget) =
+    let createValueForWidget<'T>(widget: Widget) =
         let definition = WidgetDefinitionStore.get widget.Key
         let value = definition.CreateView widget
         unbox<'T> value
@@ -90,9 +90,8 @@ module Widgets =
         | None -> None
         | Some widgets -> Some(widgets |> List.map createValueForWidget<'T>)
 
-    let createNodeFromBuilder (builder: WidgetBuilder<'T>) : 'U =
+    let createNodeFromBuilder(builder: WidgetBuilder<'T>) : 'U =
         builder.Compile() |> createValueForWidget<'U>
-
 
 [<AbstractClass; Sealed>]
 type Ast = class end

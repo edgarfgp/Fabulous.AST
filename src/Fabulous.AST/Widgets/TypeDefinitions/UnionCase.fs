@@ -5,7 +5,6 @@ open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
-
 module UnionCase =
 
     let Name = Attributes.defineScalar<string> "Name"
@@ -14,7 +13,6 @@ module UnionCase =
 
     let Fields = Attributes.defineWidgetCollection "Fields"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-
 
     let WidgetKey =
         Widgets.register "UnionCase" (fun widget ->
@@ -75,7 +73,6 @@ module UnionCaseBuilders =
                 UnionCase.Fields,
                 AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), ValueNone, ValueNone)
             )
-
 
 [<Extension>]
 type UnionCaseModifiers =

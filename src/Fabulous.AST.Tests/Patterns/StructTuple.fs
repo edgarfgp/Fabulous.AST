@@ -10,7 +10,7 @@ open type Ast
 module StructTuplePat =
 
     [<Fact>]
-    let ``let value with a StructTuple pattern`` () =
+    let ``let value with a StructTuple pattern``() =
         AnonymousModule() {
             Value(
                 StructTuplePat() {

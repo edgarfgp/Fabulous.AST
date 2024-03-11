@@ -61,7 +61,6 @@ module ImplicitConstructor =
                     )
                 | None -> None
 
-
             ImplicitConstructorNode(
                 xmlDocs,
                 multipleAttributes,

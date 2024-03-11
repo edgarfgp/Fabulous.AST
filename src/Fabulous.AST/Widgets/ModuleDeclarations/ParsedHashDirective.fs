@@ -49,7 +49,6 @@ module HashDirectiveBuilders =
         static member HashDirective(ident: string, value: string list) =
             Ast.BaseHashDirective(ident, value, false)
 
-
 [<Extension>]
 type HashDirectiveNodeExtensions =
 
