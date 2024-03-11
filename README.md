@@ -75,7 +75,7 @@ Other useful links:
 
 ## Supporting Fabulous.AST
 
-The simplest way to show us your support is by giving this project and the [Fabulous project](https://github.com/edgarfgp/Fabulous.AST) a star.
+The simplest way to show us your support is by giving this project and the [Fabulous.AST project](https://github.com/edgarfgp/Fabulous.AST) a star.
 
 You can also support us by becoming our sponsor on the GitHub Sponsors program.  
 This is a fantastic way to support all the efforts going into making Fabulous the best declarative UI framework for dotnet.
