@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.8.2] - 2024-03-11
+
+### Changed
+-  Add backticks for reserved keywords by @JordanMarr in https://github.com/edgarfgp/Fabulous.AST/pull/68
+
 ## [0.8.1] - 2024-03-10
 
 ### Added
@@ -15,7 +20,7 @@ _No unreleased changes_
 
 ## [0.8.0] - 2024-03-08
 
-### Updated
+### Changed
 - Rework constant widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/57
 - Update fsdocs-tool to 20.0.0
 - Unify Module and Namespace
@@ -102,7 +107,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.8.1...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.8.2...HEAD
+[0.8.2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.2
 [0.8.1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.1
 [0.8.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.0
 [0.7.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.7.0
