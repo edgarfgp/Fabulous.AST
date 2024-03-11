@@ -67,10 +67,9 @@ let x = 12
 
 ## Documentation
 
-The full documentation for Fabulous.Avalonia can be found at [Fabulous.AST](https://edgarfgp.github.io/Fabulous.AST/).
+The full documentation for Fabulous.AST can be found at [Fabulous.AST](https://edgarfgp.github.io/Fabulous.AST/).
 
 Other useful links:
-- [The official Fabulous.AST website](https://edgarfgp.github.io/Fabulous.AST/)
 - [API Reference](https://edgarfgp.github.io/Fabulous.AST/reference/index.html)
 - [Contributor Guide](CONTRIBUTING.md)
 
