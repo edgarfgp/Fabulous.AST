@@ -17,6 +17,8 @@ module Value =
     [<InlineData(" Red Blue ", "``Red Blue``")>]
     [<InlineData("net6.0", "``net6.0``")>]
     [<InlineData(" net6.0 ", "``net6.0``")>]
+    [<InlineData("class", "``class``")>]
+    [<InlineData("2013", "``2013``")>]
     let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
         AnonymousModule() { Value(value, "12", false) }
         |> produces

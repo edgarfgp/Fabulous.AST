@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 
 type SingleTextNode =
     static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)
@@ -9,18 +10,6 @@ type SingleTextNode =
 /// Contains all the single text nodes that are used in the AST
 [<RequireQualifiedAccess>]
 module SingleTextNode =
-    [<return: Struct>]
-    let (|WrapWithBackTicks|_|) (str: string) =
-        if System.String.IsNullOrEmpty str then
-            failwith "This is not a valid identifier"
-        else
-            let str = str.Trim()
-
-            if str.Contains(".") || str.Contains(" ") then
-                ValueSome(SingleTextNode.Create($"``{str}``"))
-            else
-                ValueNone
-
     let lessThan = SingleTextNode.Create "<"
     let greaterThan = SingleTextNode.Create ">"
     let equals = SingleTextNode.Create "="

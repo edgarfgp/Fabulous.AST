@@ -15,6 +15,8 @@ module RecordExpr =
     [<InlineData(" Red Blue ", "``Red Blue``")>]
     [<InlineData("net6.0", "``net6.0``")>]
     [<InlineData(" net6.0 ", "``net6.0``")>]
+    [<InlineData("class", "``class``")>]
+    [<InlineData("2013", "``2013``")>]
     let ``Produces an AnonRecordExpr with fields with backticks`` (value: string) (expected: string) =
         AnonymousModule() { AnonRecordExpr() { RecordFieldExpr(value, ConstantExpr("1", false)) } }
         |> produces

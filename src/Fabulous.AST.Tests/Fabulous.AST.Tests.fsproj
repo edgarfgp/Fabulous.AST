@@ -7,7 +7,7 @@
         <GenerateProgramFile>false</GenerateProgramFile>
         <WarnOn>3390;$(WarnOn)</WarnOn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>FS3186;NETSDK1206</NoWarn>
+        <NoWarn>FS3186;NETSDK1206;NU1507</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

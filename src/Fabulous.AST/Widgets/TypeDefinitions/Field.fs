@@ -22,13 +22,7 @@ module Field =
 
             let name =
                 match name with
-                | ValueSome name ->
-                    let name =
-                        match name with
-                        | SingleTextNode.WrapWithBackTicks name -> name
-                        | _ -> SingleTextNode.Create(name)
-
-                    Some(name)
+                | ValueSome name -> name |> Helpers.normalizeIdentifierBackticks |> SingleTextNode.Create |> Some
                 | ValueNone -> None
 
             let fieldType = Helpers.getNodeFromWidget widget FieldType
