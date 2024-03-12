@@ -14,11 +14,13 @@ module NestedModule =
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Decls = Attributes.defineWidgetCollection "Decls"
-    let IdentList = Attributes.defineScalar<IdentListNode> "IdentList"
 
     let WidgetKey =
         Widgets.register "NestedModule" (fun widget ->
-            let identList = Widgets.getScalarValue widget IdentList
+            let name = Widgets.getScalarValue widget Name
+
+            let name =
+                name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
 
             let moduleDecls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
 
@@ -42,7 +44,7 @@ module NestedModule =
                 SingleTextNode.``module``,
                 accessControl,
                 isRecursive,
-                identList,
+                IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
                 SingleTextNode.equals,
                 moduleDecls,
                 Range.Zero
@@ -51,16 +53,12 @@ module NestedModule =
 [<AutoOpen>]
 module NestedModuleBuilders =
     type Ast with
-
-        static member BaseNestedModule(identList: IdentListNode) =
+        static member NestedModule(name: string) =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(
                 NestedModule.WidgetKey,
                 NestedModule.Decls,
-                AttributesBundle(StackList.one(NestedModule.IdentList.WithValue(identList)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(NestedModule.Name.WithValue(name)), ValueNone, ValueNone)
             )
-
-        static member NestedModule(name: string) =
-            Ast.BaseNestedModule(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
 
 [<Extension>]
 type NestedModuleModifiers =

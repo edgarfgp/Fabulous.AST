@@ -125,5 +125,5 @@ module AST =
             """
 namespace Json
 
-type Person = { Age: int; Name: string } 
+type Person = { Age: int; Name: string }
 """

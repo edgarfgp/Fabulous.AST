@@ -8,19 +8,13 @@ open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
 module ModuleOrNamespace =
-    let Decls = Attributes.defineWidgetCollection "Decls"
-    let IdentList = Attributes.defineScalar<IdentListNode> "IdentList"
-    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
-    let ParsedHashDirectives = Attributes.defineWidgetCollection "ParsedHashDirectives"
-
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
-    let IsNameSpace = Attributes.defineScalar<bool> "IsNameSpace"
+    let Name = Attributes.defineScalar<string> "IdentList"
 
     let WidgetKey =
         Widgets.register "Namespace" (fun widget ->
-            let decls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-            let identList = Widgets.getScalarValue widget IdentList
-            let isNameSpace = Widgets.getScalarValue widget IsNameSpace
+            let decls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Oak.Decls
+            let name = Widgets.getScalarValue widget Name
+            let isNameSpace = Widgets.getScalarValue widget Oak.IsNameSpace
 
             let textNode =
                 if isNameSpace then
@@ -29,10 +23,11 @@ module ModuleOrNamespace =
                     SingleTextNode.``module``
 
             let isRecursive =
-                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget Oak.IsRecursive
+                |> ValueOption.defaultValue false
 
             let hashDirectives =
-                Widgets.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives
+                Widgets.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget Oak.ParsedHashDirectives
 
             let hashDirectives =
                 match hashDirectives with
@@ -40,7 +35,7 @@ module ModuleOrNamespace =
                 | None -> []
 
             let accessControl =
-                Widgets.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget Oak.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -60,7 +55,7 @@ module ModuleOrNamespace =
                               MultipleTextsNode([ textNode ], Range.Zero),
                               (if isNameSpace then None else accessControl),
                               isRecursive,
-                              Some(identList),
+                              Some(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
                               Range.Zero
                           )
                       ),
@@ -76,14 +71,9 @@ module NamespaceBuilders =
         static member Namespace(name: string) =
             CollectionBuilder<Oak, ModuleDecl>(
                 ModuleOrNamespace.WidgetKey,
-                ModuleOrNamespace.Decls,
+                Oak.Decls,
                 AttributesBundle(
-                    StackList.two(
-                        ModuleOrNamespace.IdentList.WithValue(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)
-                        ),
-                        ModuleOrNamespace.IsNameSpace.WithValue(true)
-                    ),
+                    StackList.two(ModuleOrNamespace.Name.WithValue(name), Oak.IsNameSpace.WithValue(true)),
                     ValueNone,
                     ValueNone
                 )
@@ -92,37 +82,10 @@ module NamespaceBuilders =
         static member Module(name: string) =
             CollectionBuilder<Oak, ModuleDecl>(
                 ModuleOrNamespace.WidgetKey,
-                ModuleOrNamespace.Decls,
+                Oak.Decls,
                 AttributesBundle(
-                    StackList.two(
-                        ModuleOrNamespace.IdentList.WithValue(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)
-                        ),
-                        ModuleOrNamespace.IsNameSpace.WithValue(false)
-                    ),
+                    StackList.two(ModuleOrNamespace.Name.WithValue(name), Oak.IsNameSpace.WithValue(false)),
                     ValueNone,
                     ValueNone
                 )
             )
-
-[<Extension>]
-type NamespaceModifiers =
-    [<Extension>]
-    static member inline hashDirectives(this: WidgetBuilder<Oak>) =
-        AttributeCollectionBuilder<Oak, ParsedHashDirectiveNode>(this, ModuleOrNamespace.ParsedHashDirectives)
-
-    [<Extension>]
-    static member inline toRecursive(this: WidgetBuilder<Oak>) =
-        this.AddScalar(ModuleOrNamespace.IsRecursive.WithValue(true))
-
-    [<Extension>]
-    static member inline toPrivate(this: WidgetBuilder<Oak>) =
-        this.AddScalar(ModuleOrNamespace.Accessibility.WithValue(AccessControl.Private))
-
-    [<Extension>]
-    static member inline toPublic(this: WidgetBuilder<Oak>) =
-        this.AddScalar(ModuleOrNamespace.Accessibility.WithValue(AccessControl.Public))
-
-    [<Extension>]
-    static member inline toInternal(this: WidgetBuilder<Oak>) =
-        this.AddScalar(ModuleOrNamespace.Accessibility.WithValue(AccessControl.Internal))

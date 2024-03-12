@@ -6,21 +6,12 @@ open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
 module AnonymousModule =
-    let Decls = Attributes.defineWidgetCollection "Decls"
-
-    let ParsedHashDirectives = Attributes.defineWidgetCollection "ParsedHashDirectives"
-
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
-            let decls = Widgets.tryGetNodesFromWidgetCollection<ModuleDecl> widget Decls
-
-            let decls =
-                match decls with
-                | None -> []
-                | Some value -> value
+            let decls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Oak.Decls
 
             let hashDirectives =
-                Widgets.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives
+                Widgets.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget Oak.ParsedHashDirectives
 
             let hashDirectives =
                 match hashDirectives with
@@ -33,7 +24,7 @@ module AnonymousModule =
 module AnonymousModuleBuilders =
     type Ast with
         static member AnonymousModule() =
-            CollectionBuilder<Oak, ModuleDecl>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
+            CollectionBuilder<Oak, ModuleDecl>(AnonymousModule.WidgetKey, Oak.Decls)
 
 [<Extension>]
 type AnonymousModuleExtensions =
