@@ -60,6 +60,17 @@ module MethodMembers =
                     },
                     ConstantExpr("")
                 )
+
+                Method(
+                    "__.DoSomething",
+                    UnitPat(),
+                    IfThenElseExpr(
+                        InfixAppExpr(ConstantExpr(Constant("x", false)), "=", ConstantExpr(Constant("12", false))),
+                        ConstantExpr(ConstantUnit()),
+                        ConstantExpr(ConstantUnit())
+                    )
+
+                )
             }
         }
         |> produces
@@ -79,6 +90,7 @@ type Colors =
     member this.I(p: string) = ""
     member this.J(p: string, p2: string) = ""
     member this.K (p: string) (p2: string) = ""
+    member __.DoSomething() = if x = 12 then () else ()
 
 """
 
