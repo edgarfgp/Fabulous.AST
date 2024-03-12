@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [0.9.0] - 2024-03-12
+
+### Fixed
+-  Unable to return IfThenElse expression from a Method by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/70
+
 ## [0.8.2] - 2024-03-11
 
 ### Changed
@@ -107,7 +112,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.8.2...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.9.0
 [0.8.2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.2
 [0.8.1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.1
 [0.8.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.0
