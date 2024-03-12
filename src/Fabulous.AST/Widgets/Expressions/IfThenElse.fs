@@ -17,24 +17,26 @@ module IfThenElse =
             let thenExpr = Widgets.getNodeFromWidget<Expr> widget ThenExpr
             let elseExpr = Widgets.getNodeFromWidget<Expr> widget ElseExpr
 
-            ExprIfThenElseNode(
-                IfKeywordNode.SingleWord(SingleTextNode.``if``),
-                ifExpr,
-                SingleTextNode.``then``,
-                thenExpr,
-                SingleTextNode.``else``,
-                elseExpr,
-                Range.Zero
+            Expr.IfThenElse(
+                ExprIfThenElseNode(
+                    IfKeywordNode.SingleWord(SingleTextNode.``if``),
+                    ifExpr,
+                    SingleTextNode.``then``,
+                    thenExpr,
+                    SingleTextNode.``else``,
+                    elseExpr,
+                    Range.Zero
+                )
             ))
 
 [<AutoOpen>]
 module IfThenElseBuilders =
     type Ast with
 
-        static member inline IfThenElse
+        static member inline IfThenElseExpr
             (ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>)
             =
-            WidgetBuilder<ExprIfThenElseNode>(
+            WidgetBuilder<Expr>(
                 IfThenElse.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
@@ -46,8 +48,8 @@ module IfThenElseBuilders =
                 )
             )
 
-        static member inline IfThenElse(ifExpr: string, thenExpr: string, elseExpr: string) =
-            WidgetBuilder<ExprIfThenElseNode>(
+        static member inline IfThenElseExpr(ifExpr: string, thenExpr: string, elseExpr: string) =
+            WidgetBuilder<Expr>(
                 IfThenElse.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
@@ -58,15 +60,3 @@ module IfThenElseBuilders =
                     ValueNone
                 )
             )
-
-[<Extension>]
-type IfThenElseYieldExtensions =
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExprIfThenElseNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let expIfThen = Expr.IfThenElse(node)
-        let moduleDecl = ModuleDecl.DeclExpr expIfThen
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
