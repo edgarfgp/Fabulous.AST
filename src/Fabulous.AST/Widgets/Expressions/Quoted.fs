@@ -5,11 +5,25 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Quoted =
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
 
     let WidgetKey =
         Widgets.register "Quoted" (fun widget ->
-            let expr = Widgets.getNodeFromWidget<Expr> widget Value
+            let expr = Widgets.getScalarValue widget Value
+
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
+
+            let expr =
+                match expr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(
+                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                        )
+                    )
+                | StringOrWidget.WidgetExpr expr -> expr
+
             Expr.Quote(ExprQuoteNode(SingleTextNode.leftQuotation, expr, SingleTextNode.rightQuotation, Range.Zero)))
 
 [<AutoOpen>]
@@ -19,27 +33,19 @@ module QuotedBuilders =
         static member QuotedExpr(value: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 Quoted.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| Quoted.Value.WithValue(value.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.one(Quoted.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
+                    ValueNone,
+                    ValueNone
+                )
             )
 
-        static member QuotedExpr(value: string, ?hasQuotes: bool) =
-            match hasQuotes with
-            | None
-            | Some true ->
-                WidgetBuilder<Expr>(
-                    Quoted.WidgetKey,
-                    AttributesBundle(
-                        StackList.empty(),
-                        ValueSome [| Quoted.Value.WithValue(Ast.ConstantExpr(value, true).Compile()) |],
-                        ValueNone
-                    )
+        static member QuotedExpr(value: string) =
+            WidgetBuilder<Expr>(
+                Quoted.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Quoted.Value.WithValue(StringOrWidget.StringExpr(value))),
+                    ValueNone,
+                    ValueNone
                 )
-            | _ ->
-                WidgetBuilder<Expr>(
-                    Quoted.WidgetKey,
-                    AttributesBundle(
-                        StackList.empty(),
-                        ValueSome [| Quoted.Value.WithValue(Ast.ConstantExpr(value, false).Compile()) |],
-                        ValueNone
-                    )
-                )
+            )

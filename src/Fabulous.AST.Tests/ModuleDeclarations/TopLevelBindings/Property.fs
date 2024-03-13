@@ -244,13 +244,16 @@ type Person () =
     member private this.Age = "name"
     member internal this.Address = "name"
     member this.PostalCode = "name"
-    
+
 """
 
     [<Fact>]
     let ``Produces a class with a member property and return type``() =
         AnonymousModule() {
-            Class("Person") { Property("this.Name", ConstantExpr("23", false)) |> _.returnType("int") }
+            Class("Person") {
+                Property("this.Name", ConstantExpr("23").hasQuotes(false))
+                |> _.returnType("int")
+            }
 
         }
         |> produces
@@ -272,7 +275,7 @@ type Person () =
     [<Fact>]
     let ``Produces a class with property member with attributes``() =
         AnonymousModule() {
-            Class("Person") { Property("this.Name", ConstantExpr("23", false)).attribute("Obsolete") }
+            Class("Person") { Property("this.Name", ConstantExpr("23").hasQuotes(false)).attribute("Obsolete") }
 
         }
         |> produces

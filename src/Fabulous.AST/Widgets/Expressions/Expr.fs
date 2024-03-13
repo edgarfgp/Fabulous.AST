@@ -6,11 +6,22 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module Expr =
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
+    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
 
     let WidgetKey =
         Widgets.register "Expr" (fun widget ->
-            let value = Widgets.getNodeFromWidget<Constant> widget Value
+            let value = Widgets.getScalarValue widget Value
+
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget HasQuotes |> ValueOption.defaultValue true
+
+            let value =
+                match value with
+                | StringOrWidget.StringExpr value ->
+                    Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes)))
+                | StringOrWidget.WidgetExpr constant -> constant
+
             Expr.Constant(value))
 
     let WidgetNullKey =
@@ -22,33 +33,31 @@ module ExprBuilders =
         static member ConstantExpr(value: WidgetBuilder<Constant>) =
             WidgetBuilder<Expr>(
                 Expr.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| Expr.Value.WithValue(value.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.one(Expr.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value)))),
+                    ValueNone,
+                    ValueNone
+                )
             )
 
-        static member ConstantExpr(value: string, ?hasQuotes: bool) =
-            match hasQuotes with
-            | None
-            | Some true ->
-                WidgetBuilder<Expr>(
-                    Expr.WidgetKey,
-                    AttributesBundle(
-                        StackList.empty(),
-                        ValueSome [| Expr.Value.WithValue(Ast.Constant(value, true).Compile()) |],
-                        ValueNone
-                    )
+        static member ConstantExpr(value: string) =
+            WidgetBuilder<Expr>(
+                Expr.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Expr.Value.WithValue(StringOrWidget.StringExpr value)),
+                    ValueNone,
+                    ValueNone
                 )
-            | _ ->
-                WidgetBuilder<Expr>(
-                    Expr.WidgetKey,
-                    AttributesBundle(
-                        StackList.empty(),
-                        ValueSome [| Expr.Value.WithValue(Ast.Constant(value, false).Compile()) |],
-                        ValueNone
-                    )
-                )
+            )
 
         static member NullExpr() =
             WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))
+
+[<Extension>]
+type ExprModifiers =
+    [<Extension>]
+    static member inline hasQuotes(this: WidgetBuilder<Expr>, value: bool) =
+        this.AddScalar(Expr.HasQuotes.WithValue(value))
 
 [<Extension>]
 type ExprYieldExtensions =

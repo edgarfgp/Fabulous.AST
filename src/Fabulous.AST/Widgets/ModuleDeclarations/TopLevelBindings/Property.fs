@@ -10,8 +10,22 @@ module BindingProperty =
     let WidgetKey =
         Widgets.register "PropertyMember" (fun widget ->
             let name = Widgets.getScalarValue widget BindingNode.NameString
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
             let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
+
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget BindingNode.HasQuotes
+                |> ValueOption.defaultValue true
+
+            let bodyExpr =
+                match bodyExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(
+                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                        )
+                    )
+                | StringOrWidget.WidgetExpr value -> value
 
             let isStatic =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
@@ -116,8 +130,24 @@ module BindingPropertyBuilders =
             WidgetBuilder<BindingNode>(
                 BindingProperty.WidgetKey,
                 AttributesBundle(
-                    StackList.one(BindingNode.NameString.WithValue(name)),
-                    ValueSome [| BindingNode.BodyExpr.WithValue(body.Compile()) |],
+                    StackList.two(
+                        BindingNode.NameString.WithValue(name),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
+                    ),
+                    ValueNone,
+                    ValueNone
+                )
+            )
+
+        static member Property(name: string, body: string) =
+            WidgetBuilder<BindingNode>(
+                BindingProperty.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        BindingNode.NameString.WithValue(name),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
+                    ),
+                    ValueNone,
                     ValueNone
                 )
             )

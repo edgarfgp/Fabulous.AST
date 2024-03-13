@@ -19,7 +19,9 @@ module InterfaceMembers =
                 Field("Yellow", LongIdent("int"))
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2", false)) }
+                InterfaceMember("IMyInterface") {
+                    Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2").hasQuotes(false))
+                }
             }
         }
 
@@ -52,7 +54,9 @@ type Colors<'other> =
                 Field("MyField2", LongIdent("string"))
             })
                 .members() {
-                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2", false)) }
+                InterfaceMember("IMyInterface") {
+                    Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2").hasQuotes(false))
+                }
             }
         }
         |> produces

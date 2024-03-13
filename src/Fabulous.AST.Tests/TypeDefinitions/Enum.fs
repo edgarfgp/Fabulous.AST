@@ -15,9 +15,9 @@ module Enum =
     let ``Produces an enum``() =
         AnonymousModule() {
             Enum("Colors") {
-                EnumCase("Red", "0")
-                EnumCase("Green", "1")
-                EnumCase("Blue", "2")
+                EnumCase("Red", "0").hasQuotes(false)
+                EnumCase("Green", "1").hasQuotes(false)
+                EnumCase("Blue", "2").hasQuotes(false)
             }
         }
 
@@ -34,9 +34,9 @@ type Colors =
     let ``Produces an enum with value Expr``() =
         AnonymousModule() {
             Enum("Colors") {
-                EnumCase("Red", "0")
-                EnumCase("Green", ConstantExpr("1", false))
-                EnumCase("Blue", "2")
+                EnumCase("Red", "0").hasQuotes(false)
+                EnumCase("Green", ConstantExpr("1").hasQuotes(false))
+                EnumCase("Blue", "2").hasQuotes(false)
             }
         }
 
@@ -53,9 +53,9 @@ type Colors =
     let ``Produces an enum with SingleTextNode``() =
         AnonymousModule() {
             Enum("Colors") {
-                EnumCase("Red", "0")
-                EnumCase("Green", "1")
-                EnumCase("Blue", "2")
+                EnumCase("Red", "0").hasQuotes(false)
+                EnumCase("Green", "1").hasQuotes(false)
+                EnumCase("Blue", "2").hasQuotes(false)
             }
         }
         |> produces
@@ -72,9 +72,9 @@ type Colors =
     let ``Produces an enum case using EnumCaseNode``() =
         AnonymousModule() {
             Enum("Colors") {
-                EnumCase("Red", "0")
-                EnumCase("Green", "1")
-                EnumCase("Blue", "2")
+                EnumCase("Red", "0").hasQuotes(false)
+                EnumCase("Green", "1").hasQuotes(false)
+                EnumCase("Blue", "2").hasQuotes(false)
 
                 EnumCaseNode(
                     None,
@@ -113,9 +113,9 @@ type Colors =
 
         AnonymousModule() {
             Enum("Colors") {
-                EnumCase("Red", "0")
-                EnumCase("Green", "1")
-                EnumCase("Blue", "2")
+                EnumCase("Red", "0").hasQuotes(false)
+                EnumCase("Green", "1").hasQuotes(false)
+                EnumCase("Blue", "2").hasQuotes(false)
                 EscapeHatch(enumCaseNode)
             }
         }
@@ -137,7 +137,7 @@ type Colors =
         AnonymousModule() {
             Enum("Colors") {
                 for i = 0 to colors.Length - 1 do
-                    EnumCase(colors.[i], $"{i}")
+                    EnumCase(colors.[i], $"{i}").hasQuotes(false)
             }
 
         }
@@ -159,7 +159,7 @@ type Colors =
         AnonymousModule() {
             (Enum("Colors") {
                 for i = 0 to colors.Length - 1 do
-                    EnumCase(colors.[i], $"{i}")
+                    EnumCase(colors.[i], $"{i}").hasQuotes(false)
             })
                 .attribute("FlagsAttribute")
 
@@ -180,10 +180,10 @@ type Colors =
     let ``Produces an enum case with attributes``() =
         AnonymousModule() {
             (Enum("Colors") {
-                EnumCase("Red", "0").attributes([ "Obsolete"; "MyAttribute" ])
+                EnumCase("Red", "0").attributes([ "Obsolete"; "MyAttribute" ]).hasQuotes(false)
 
-                EnumCase("Green", "1")
-                EnumCase("Blue", "2")
+                EnumCase("Green", "1").hasQuotes(false)
+                EnumCase("Blue", "2").hasQuotes(false)
             })
                 .attribute("FlagsAttribute")
         }

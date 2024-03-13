@@ -10,6 +10,11 @@ type AccessControl =
     | Internal
     | Unknown
 
+[<RequireQualifiedAccess>]
+type StringOrWidget<'T> =
+    | StringExpr of string
+    | WidgetExpr of 'T
+
 [<AutoOpen>]
 module CommonExtensions =
     type MultipleTextsNode with
@@ -143,3 +148,12 @@ module StringParsing =
         else
             let trimmed = identifier.Trim()
             Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks trimmed
+
+    /// Adds quotes to the identifier if necessary.
+    let normalizeIdentifierQuotes(identifier: string, hasQuotes) =
+        if identifier = null then
+            failwith "This is not a valid identifier"
+        else if hasQuotes then
+            $"\"{identifier}\""
+        else
+            identifier

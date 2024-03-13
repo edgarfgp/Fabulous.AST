@@ -11,7 +11,7 @@ module App =
 
     [<Fact>]
     let ``let value with a App expression``() =
-        AnonymousModule() { Value("x", AppExpr("printfn") { ConstantExpr("a") }) }
+        AnonymousModule() { Value("x", AppExpr("printfn") { ConstantExpr("a") } |> _.hasQuotes(false)) }
         |> produces
             """
 

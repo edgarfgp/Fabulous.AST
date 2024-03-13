@@ -13,7 +13,7 @@ module NestedModule =
 
     [<Fact>]
     let ``Produces a NestedModule``() =
-        AnonymousModule() { NestedModule("A") { Value("x", "12", false) } }
+        AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } }
 
         |> produces
             """
@@ -55,7 +55,7 @@ module A =
 
     [<Fact>]
     let ``Produces a recursive NestedModule``() =
-        AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toRecursive() }
+        AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } |> _.toRecursive() }
 
         |> produces
             """
@@ -67,7 +67,7 @@ module rec A =
 
     [<Fact>]
     let ``Produces a private NestedModule``() =
-        AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toPrivate() }
+        AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } |> _.toPrivate() }
         |> produces
             """
 
@@ -78,13 +78,13 @@ module private A =
 
     [<Fact>]
     let ``Produces a internal NestedModule``() =
-        AnonymousModule() { NestedModule("A") { Value("x", "12", false) } |> _.toInternal() }
+        AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } |> _.toInternal() }
         |> produces
             """
 
 module internal A =
     let x = 12
-    
+
 """
 
     [<Fact>]
@@ -138,7 +138,7 @@ module Foo =
                 )
             }
 
-            NestedModule("Bar") { Value("x", "12", false) }
+            NestedModule("Bar") { Value("x", "12").hasQuotes(false) }
         }
 
         |> produces

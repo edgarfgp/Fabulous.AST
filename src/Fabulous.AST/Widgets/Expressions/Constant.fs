@@ -1,31 +1,36 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Constant =
-    let ValueString = Attributes.defineScalar<string> "Value"
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
     let Measure = Attributes.defineWidget "Measure"
+    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
 
-    let WidgetFromTextKey =
+    let WidgetKey =
         Widgets.register "ConstantFromText" (fun widget ->
-            let value = Widgets.getScalarValue widget ValueString
-            Constant.FromText(SingleTextNode.Create(value)))
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget HasQuotes |> ValueOption.defaultValue true
 
-    let WidgetMeasureKey =
-        Widgets.register "ConstantMeasure" (fun widget ->
-            let value = Widgets.getNodeFromWidget<Constant> widget Value
-            let measure = Widgets.getNodeFromWidget<Measure> widget Measure
+            let value = Widgets.getScalarValue widget Value
 
-            Constant.Measure(
-                ConstantMeasureNode(
-                    value,
-                    UnitOfMeasureNode(SingleTextNode.lessThan, measure, SingleTextNode.greaterThan, Range.Zero),
-                    Range.Zero
-                )
-            ))
+            match value with
+            | StringOrWidget.StringExpr value ->
+                Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes)))
+            | StringOrWidget.WidgetExpr value ->
+                let measure = Widgets.getNodeFromWidget<Measure> widget Measure
+
+                Constant.Measure(
+                    ConstantMeasureNode(
+                        value,
+                        UnitOfMeasureNode(SingleTextNode.lessThan, measure, SingleTextNode.greaterThan, Range.Zero),
+                        Range.Zero
+                    )
+
+                ))
 
     let WidgetUnitKey =
         Widgets.register "ConstantUnit" (fun _ ->
@@ -34,32 +39,22 @@ module Constant =
 [<AutoOpen>]
 module ConstantBuilders =
     type Ast with
-        static member Constant(value: string, ?hasQuotes: bool) =
-            match hasQuotes with
-            | None
-            | Some true ->
-                WidgetBuilder<Constant>(
-                    Constant.WidgetFromTextKey,
-                    AttributesBundle(
-                        StackList.one(Constant.ValueString.WithValue($"\"{value}\"")),
-                        ValueNone,
-                        ValueNone
-                    )
+        static member Constant(value: string) =
+            WidgetBuilder<Constant>(
+                Constant.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Constant.Value.WithValue(StringOrWidget.StringExpr value)),
+                    ValueNone,
+                    ValueNone
                 )
-            | _ ->
-                WidgetBuilder<Constant>(
-                    Constant.WidgetFromTextKey,
-                    AttributesBundle(StackList.one(Constant.ValueString.WithValue(value)), ValueNone, ValueNone)
-                )
+            )
 
         static member ConstantMeasure(constant: WidgetBuilder<Constant>, measure: WidgetBuilder<Measure>) =
             WidgetBuilder<Constant>(
-                Constant.WidgetMeasureKey,
+                Constant.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome
-                        [| Constant.Value.WithValue(constant.Compile())
-                           Constant.Measure.WithValue(measure.Compile()) |],
+                    StackList.one(Constant.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(constant)))),
+                    ValueSome [| Constant.Measure.WithValue(measure.Compile()) |],
                     ValueNone
                 )
             )
@@ -69,3 +64,9 @@ module ConstantBuilders =
                 Constant.WidgetUnitKey,
                 AttributesBundle(StackList.empty(), ValueSome [||], ValueNone)
             )
+
+[<Extension>]
+type ConstantModifiers =
+    [<Extension>]
+    static member inline hasQuotes(this: WidgetBuilder<Constant>, value: bool) =
+        this.AddScalar(Constant.HasQuotes.WithValue(value))

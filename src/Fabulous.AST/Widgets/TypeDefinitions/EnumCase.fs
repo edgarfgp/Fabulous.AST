@@ -9,17 +9,32 @@ module EnumCase =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
 
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
+    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
+
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let value = Widgets.getNodeFromWidget<Expr> widget Value
+            let value = Widgets.getScalarValue widget Value
             let lines = Widgets.tryGetScalarValue widget XmlDocs
+
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget HasQuotes |> ValueOption.defaultValue true
+
+            let value =
+                match value with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(
+                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                        )
+                    )
+                | StringOrWidget.WidgetExpr value -> value
 
             let xmlDocs =
                 match lines with
@@ -65,20 +80,37 @@ module EnumCaseBuilders =
             WidgetBuilder<EnumCaseNode>(
                 EnumCase.WidgetKey,
                 AttributesBundle(
-                    StackList.one(EnumCase.Name.WithValue(name)),
-                    ValueSome [| EnumCase.Value.WithValue(value.Compile()) |],
+                    StackList.two(
+                        EnumCase.Name.WithValue(name),
+                        EnumCase.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
+                    ),
+                    ValueNone,
                     ValueNone
                 )
             )
 
         static member EnumCase(name: string, value: string) =
-            Ast.EnumCase(name, Ast.ConstantExpr(value, false))
+            WidgetBuilder<EnumCaseNode>(
+                EnumCase.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        EnumCase.Name.WithValue(name),
+                        EnumCase.Value.WithValue(StringOrWidget.StringExpr(value))
+                    ),
+                    ValueNone,
+                    ValueNone
+                )
+            )
 
 [<Extension>]
 type EnumCaseModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: string list) =
         this.AddScalar(EnumCase.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
+    static member inline hasQuotes(this: WidgetBuilder<EnumCaseNode>, value: bool) =
+        this.AddScalar(EnumCase.HasQuotes.WithValue(value))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<EnumCaseNode>) =

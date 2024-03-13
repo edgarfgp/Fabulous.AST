@@ -7,25 +7,51 @@ open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
 module App =
-    let Name = Attributes.defineWidget "Name"
+    let Name = Attributes.defineScalar<StringOrWidget<Expr>> "Name"
     let Items = Attributes.defineWidgetCollection "Items"
 
     let WidgetKey =
         Widgets.register "Call" (fun widget ->
-            let name = Widgets.getNodeFromWidget widget Name
+            let expr = Widgets.getScalarValue widget Name
+
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
+
+            let expr =
+                match expr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(
+                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                        )
+                    )
+                | StringOrWidget.WidgetExpr expr -> expr
+
             let items = Widgets.getNodesFromWidgetCollection<Expr> widget Items
-            Expr.App(ExprAppNode(name, items, Range.Zero)))
+            Expr.App(ExprAppNode(expr, items, Range.Zero)))
 
 [<AutoOpen>]
 module AppBuilders =
     type Ast with
 
-        static member inline AppExpr(name: WidgetBuilder<Expr>) =
+        static member AppExpr(name: WidgetBuilder<Expr>) =
             CollectionBuilder<Expr, Expr>(
                 App.WidgetKey,
                 App.Items,
-                AttributesBundle(StackList.empty(), ValueSome [| App.Name.WithValue(name.Compile()) |], ValueNone)
+                AttributesBundle(
+                    StackList.one(App.Name.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak name))),
+                    ValueNone,
+                    ValueNone
+                )
             )
 
-        static member inline AppExpr(name: string) =
-            Ast.AppExpr(Ast.ConstantExpr(name, false))
+        static member AppExpr(name: string) =
+            CollectionBuilder<Expr, Expr>(
+                App.WidgetKey,
+                App.Items,
+                AttributesBundle(
+                    StackList.one(App.Name.WithValue(StringOrWidget.StringExpr(name))),
+                    ValueNone,
+                    ValueNone
+                )
+            )

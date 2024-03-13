@@ -9,7 +9,7 @@ open type Fabulous.AST.Ast
 module BindingNode =
     let NameWidget = Attributes.defineWidget "Name"
     let NameString = Attributes.defineScalar<string> "FunctionName"
-    let BodyExpr = Attributes.defineWidget "Value"
+    let BodyExpr = Attributes.defineScalar<StringOrWidget<Expr>> "BindingBodyExpr"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
@@ -19,12 +19,17 @@ module BindingNode =
     let Return = Attributes.defineWidget "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Parameters = Attributes.defineWidget "Parameters"
+    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
 
 [<Extension>]
 type ValueModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
+    static member inline hasQuotes(this: WidgetBuilder<BindingNode>, value: bool) =
+        this.AddScalar(BindingNode.HasQuotes.WithValue(value))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<BindingNode>) =

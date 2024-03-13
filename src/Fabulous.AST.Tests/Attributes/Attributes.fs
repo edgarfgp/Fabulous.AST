@@ -11,7 +11,7 @@ module AttributesNodes =
 
     [<Fact>]
     let ``Simple AttributeNode``() =
-        AnonymousModule() { Value("x", "12", false).attribute("Obsolete") }
+        AnonymousModule() { Value("x", "12").hasQuotes(false).attribute("Obsolete") }
         |> produces
             """
 [<Obsolete>]
@@ -21,7 +21,8 @@ let x = 12
     [<Fact>]
     let ``Simple AttributeNode with expr``() =
         AnonymousModule() {
-            Value("x", "12", false)
+            Value("x", "12")
+                .hasQuotes(false)
                 .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))))
         }
         |> produces
@@ -33,7 +34,9 @@ let x = 12
     [<Fact>]
     let ``Multiple attributes``() =
         AnonymousModule() {
-            Value("x", "12", false).attributes() { Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))) }
+            Value("x", "12").hasQuotes(false).attributes() {
+                Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete")))
+            }
         }
         |> produces
             """
@@ -43,7 +46,7 @@ let x = 12
 
     [<Fact>]
     let ``Simple AttributeNode type name and target``() =
-        AnonymousModule() { Value("x", "12", false).attribute(Attribute("Struct", "return")) }
+        AnonymousModule() { Value("x", "12").hasQuotes(false).attribute(Attribute("Struct", "return")) }
         |> produces
             """
 [<return: Struct>]

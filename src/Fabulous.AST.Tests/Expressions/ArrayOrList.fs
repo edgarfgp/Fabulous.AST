@@ -15,9 +15,9 @@ module ArrayOrList =
             Value(
                 "x",
                 ArrayExpr() {
-                    ConstantExpr("1", false)
-                    ConstantExpr("2", false)
-                    ConstantExpr("3", false)
+                    ConstantExpr("1").hasQuotes(false)
+                    ConstantExpr("2").hasQuotes(false)
+                    ConstantExpr("3").hasQuotes(false)
                 }
             )
         }
@@ -33,14 +33,14 @@ let x = [| 1; 2; 3 |]
             Value(
                 "x",
                 ListExpr() {
-                    ConstantExpr("1", false)
-                    ConstantExpr("2", false)
-                    ConstantExpr("3", false)
+                    ConstantExpr("1").hasQuotes(false)
+                    ConstantExpr("2").hasQuotes(false)
+                    ConstantExpr("3").hasQuotes(false)
                 }
             )
         }
         |> produces
             """
-    
+
 let x = [ 1; 2; 3 ]
 """

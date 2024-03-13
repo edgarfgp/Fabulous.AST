@@ -43,7 +43,7 @@ type Person () =
                     SimplePat("age", false)
                 }
             ) {
-                Property("this.Name", ConstantExpr("name", false))
+                Property("this.Name", ConstantExpr("name").hasQuotes(false))
             }
 
         }
@@ -65,7 +65,7 @@ type Person (name, lastName, age) =
                     SimplePat("age", Int32(), true)
                 }
             ) {
-                Property("this.Name", ConstantExpr("name", false))
+                Property("this.Name", ConstantExpr("name").hasQuotes(false))
             }
         }
         |> produces
@@ -84,7 +84,7 @@ type Person (name: string, lastName: string, ?age: int) =
                     SimplePat("age", Int32(), false)
                 }
             ) {
-                Property("this.Name", ConstantExpr("name", false))
+                Property("this.Name", ConstantExpr("name").hasQuotes(false))
             }
         }
         |> produces
@@ -98,7 +98,7 @@ type Person (name: string, age: int) =
     let ``Produces a class marked as a Struct explicit constructor with typed params``() =
         AnonymousModule() {
             (Class("Person", Constructor() { SimplePat("name", String(), false) }) {
-                Property("this.Name", ConstantExpr("name", false))
+                Property("this.Name", ConstantExpr("name").hasQuotes(false))
             })
                 .attribute(Attribute("Struct"))
         }

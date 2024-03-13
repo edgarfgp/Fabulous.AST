@@ -10,8 +10,23 @@ module BindingFunction =
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
             let name = Widgets.getScalarValue widget BindingNode.NameString
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
+
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget BindingNode.HasQuotes
+                |> ValueOption.defaultValue true
+
             let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
+
+            let bodyExpr =
+                match bodyExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(
+                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                        )
+                    )
+                | StringOrWidget.WidgetExpr value -> value
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -108,29 +123,35 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 typeParams: string list voption,
-                value: WidgetBuilder<Expr>,
+                bodyExpr: StringOrWidget<Expr>,
                 parameters: WidgetBuilder<Pattern>
             ) =
             let scalars =
                 match typeParams with
-                | ValueNone -> StackList.one(BindingNode.NameString.WithValue(name))
+                | ValueNone ->
+                    StackList.two(BindingNode.BodyExpr.WithValue(bodyExpr), BindingNode.NameString.WithValue(name))
                 | ValueSome typeParams ->
-                    StackList.two(BindingNode.NameString.WithValue(name), BindingNode.TypeParams.WithValue(typeParams))
+                    StackList.three(
+                        BindingNode.NameString.WithValue(name),
+                        BindingNode.BodyExpr.WithValue(bodyExpr),
+                        BindingNode.TypeParams.WithValue(typeParams)
+                    )
 
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
                 AttributesBundle(
                     scalars,
-                    ValueSome
-                        [| BindingNode.BodyExpr.WithValue(value.Compile())
-                           BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    ValueSome [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
                     ValueNone
                 )
             )
 
+        static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: string) =
+            Ast.BaseFunction(name, ValueNone, StringOrWidget.StringExpr(value), parameters)
+
         static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseFunction(name, ValueNone, value, parameters)
+            Ast.BaseFunction(name, ValueNone, StringOrWidget.WidgetExpr(Gen.mkOak value), parameters)
 
         static member Function
             (name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseFunction(name, ValueSome typeParams, value, parameters)
+            Ast.BaseFunction(name, ValueSome typeParams, StringOrWidget.WidgetExpr(Gen.mkOak value), parameters)

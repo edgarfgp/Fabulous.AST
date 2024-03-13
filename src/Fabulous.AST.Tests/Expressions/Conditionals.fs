@@ -43,7 +43,7 @@ if x = 12 then
     let ``Produces if-then expression on a let binding``() =
         let ifThenExpr =
             IfThenExpr(
-                InfixAppExpr(ConstantExpr("x", false), "=", ConstantExpr("12", false)),
+                InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
                 ConstantExpr(ConstantUnit())
             )
 
@@ -53,7 +53,11 @@ if x = 12 then
             Value(
                 "res2",
                 IfThenElseExpr(
-                    InfixAppExpr(ConstantExpr(Constant("x", false)), "=", ConstantExpr(Constant("12", false))),
+                    InfixAppExpr(
+                        ConstantExpr(Constant("x").hasQuotes(false)),
+                        "=",
+                        ConstantExpr(Constant("12").hasQuotes(false))
+                    ),
                     ConstantExpr(ConstantUnit()),
                     ConstantExpr(ConstantUnit())
                 )
@@ -63,12 +67,16 @@ if x = 12 then
                 "res3",
                 IfThenElifExpr(ConstantExpr(ConstantUnit())) {
                     IfThenExpr(
-                        InfixAppExpr(ConstantExpr("x", false), "=", ConstantExpr("12", false)),
+                        InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
                         ConstantExpr(ConstantUnit())
                     )
 
                     ElIfThenExpr(
-                        InfixAppExpr(ConstantExpr(Constant("x", false)), "=", ConstantExpr("11", false)),
+                        InfixAppExpr(
+                            ConstantExpr(Constant("x").hasQuotes(false)),
+                            "=",
+                            ConstantExpr("11").hasQuotes(false)
+                        ),
                         ConstantExpr(ConstantUnit())
                     )
                 }
@@ -93,8 +101,8 @@ let res3 =
     [<Fact>]
     let ``Produces if-then expression  with expr widgets``() =
         AnonymousModule() {
-            IfThenExpr(InfixAppExpr("x", "=", "12"), ConstantExpr(ConstantUnit()))
-            ElIfThenExpr(InfixAppExpr("x", "=", "12"), ConstantExpr(ConstantUnit()))
+            IfThenExpr(InfixAppExpr("x", "=", "12").hasQuotes(false), ConstantExpr(ConstantUnit()))
+            ElIfThenExpr(InfixAppExpr("x", "=", "12").hasQuotes(false), ConstantExpr(ConstantUnit()))
         }
         |> produces
             """
@@ -140,7 +148,7 @@ elif x = 12 then
     let ``Produces elif-then expression with expr widget``() =
         AnonymousModule() {
             ElIfThenExpr(
-                InfixAppExpr(ConstantExpr("x", false), "=", ConstantExpr("12", false)),
+                InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
                 ConstantExpr(ConstantUnit())
             )
         }
@@ -155,7 +163,11 @@ elif x = 12 then
     let ``Produces elseif-then expression with expr widget``() =
         AnonymousModule() {
             ElseIfThenExpr(
-                InfixAppExpr(ConstantExpr(Constant("x", false)), "=", ConstantExpr(Constant("12", false))),
+                InfixAppExpr(
+                    ConstantExpr(Constant("x").hasQuotes(false)),
+                    "=",
+                    ConstantExpr(Constant("12").hasQuotes(false))
+                ),
                 ConstantExpr(ConstantUnit())
             )
         }
@@ -172,12 +184,12 @@ module IfThenElif =
         AnonymousModule() {
             IfThenElifExpr() {
                 IfThenExpr(
-                    InfixAppExpr(ConstantExpr("x", false), "=", ConstantExpr("12", false)),
+                    InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
                     ConstantExpr(ConstantUnit())
                 )
 
                 ElIfThenExpr(
-                    InfixAppExpr(ConstantExpr(Constant("x", false)), "=", ConstantExpr("11", false)),
+                    InfixAppExpr(ConstantExpr(Constant("x").hasQuotes(false)), "=", ConstantExpr("11").hasQuotes(false)),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -195,12 +207,12 @@ elif x = 11 then
         AnonymousModule() {
             IfThenElifExpr(ConstantExpr(ConstantUnit())) {
                 IfThenExpr(
-                    InfixAppExpr(ConstantExpr("x", false), "=", ConstantExpr("12", false)),
+                    InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
                     ConstantExpr(ConstantUnit())
                 )
 
                 ElIfThenExpr(
-                    InfixAppExpr(ConstantExpr("x", false), "=", ConstantExpr("11", false)),
+                    InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("11").hasQuotes(false)),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -264,7 +276,11 @@ if x = 12 then () else ()
 
         AnonymousModule() {
             IfThenElseExpr(
-                InfixAppExpr(ConstantExpr(Constant("x", false)), "=", ConstantExpr(Constant("12", false))),
+                InfixAppExpr(
+                    ConstantExpr(Constant("x").hasQuotes(false)),
+                    "=",
+                    ConstantExpr(Constant("12").hasQuotes(false))
+                ),
                 ConstantExpr(ConstantUnit()),
                 ConstantExpr(ConstantUnit())
             )

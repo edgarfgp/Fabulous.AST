@@ -65,7 +65,11 @@ module MethodMembers =
                     "__.DoSomething",
                     UnitPat(),
                     IfThenElseExpr(
-                        InfixAppExpr(ConstantExpr(Constant("x", false)), "=", ConstantExpr(Constant("12", false))),
+                        InfixAppExpr(
+                            ConstantExpr(Constant("x").hasQuotes(false)),
+                            "=",
+                            ConstantExpr(Constant("12").hasQuotes(false))
+                        ),
                         ConstantExpr(ConstantUnit()),
                         ConstantExpr(ConstantUnit())
                     )
@@ -182,7 +186,7 @@ type Colors =
 
     [<Fact>]
     let ``Produces a classes with a method member``() =
-        AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)) } }
+        AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false)) } }
         |> produces
             """
 type Person () =
@@ -193,7 +197,11 @@ type Person () =
     let ``Produces a classes with a method member and parameter``() =
         AnonymousModule() {
             Class("Person") {
-                Method("this.Name", ParametersPat() { ParameterPat("params", String()) }, ConstantExpr("23", false))
+                Method(
+                    "this.Name",
+                    ParametersPat() { ParameterPat("params", String()) },
+                    ConstantExpr("23").hasQuotes(false)
+                )
             }
         }
         |> produces
@@ -212,7 +220,7 @@ type Person () =
                         ParameterPat("name", String())
                         ParameterPat("age", Int32())
                     },
-                    ConstantExpr("23", false)
+                    ConstantExpr("23").hasQuotes(false)
                 )
             }
         }
@@ -232,7 +240,7 @@ type Person () =
                         ParameterPat("name", String())
                         ParameterPat("age", Int32())
                     },
-                    ConstantExpr("23", false)
+                    ConstantExpr("23").hasQuotes(false)
                 )
             }
         }
@@ -245,7 +253,10 @@ type Person () =
     [<Fact>]
     let ``Produces a method member with attributes``() =
         AnonymousModule() {
-            Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)).attribute("Obsolete") }
+            Class("Person") {
+                Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false))
+                    .attribute("Obsolete")
+            }
         }
         |> produces
             """
@@ -257,7 +268,9 @@ type Person () =
 
     [<Fact>]
     let ``Produces an inline method member``() =
-        AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23", false)).toInlined() } }
+        AnonymousModule() {
+            Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false)).toInlined() }
+        }
         |> produces
             """
 type Person () =
@@ -268,7 +281,7 @@ type Person () =
     let ``Produces an method member with type parameters``() =
         AnonymousModule() {
             Class("Person") {
-                Method("this.Name", UnitPat(), ConstantExpr("23", false))
+                Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false))
                     .typeParameters([ "'other" ])
             }
         }

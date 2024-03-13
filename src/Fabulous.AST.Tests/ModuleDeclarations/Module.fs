@@ -12,7 +12,7 @@ open type Ast
 module Module =
     [<Fact>]
     let ``Produces a module with binding``() =
-        Module("Fabulous.AST") { Value("x", "3", false) }
+        Module("Fabulous.AST") { Value("x", "3").hasQuotes(false) }
         |> produces
             """
 module Fabulous.AST
@@ -22,7 +22,7 @@ let x = 3
 
     [<Fact>]
     let ``Produces a recursive module``() =
-        Module("Fabulous.AST") { Value("x", "3", false) }
+        Module("Fabulous.AST") { Value("x", "3").hasQuotes(false) }
         |> _.toRecursive()
         |> produces
             """
@@ -43,7 +43,7 @@ module Fabulous.AST
 
     [<Fact>]
     let ``Produces a module with IdentListNode``() =
-        Module("Fabulous.AST") { Value("x", "3", false) }
+        Module("Fabulous.AST") { Value("x", "3").hasQuotes(false) }
         |> produces
             """
 module Fabulous.AST

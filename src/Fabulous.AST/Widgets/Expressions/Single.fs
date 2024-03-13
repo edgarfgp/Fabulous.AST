@@ -1,11 +1,13 @@
 namespace Fabulous.AST
 
+open System
+open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Single =
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
 
     let SupportsStroustrup = Attributes.defineScalar<bool> "SupportsStroustrup"
 
@@ -15,7 +17,21 @@ module Single =
 
     let WidgetKey =
         Widgets.register "Single" (fun widget ->
-            let expr = Widgets.getNodeFromWidget<Expr> widget Value
+            let expr = Widgets.getScalarValue widget Value
+
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
+
+            let expr =
+                match expr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(
+                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                        )
+                    )
+                | StringOrWidget.WidgetExpr expr -> expr
+
             let supportsStroustrup = Widgets.getScalarValue widget SupportsStroustrup
             let addSpace = Widgets.getScalarValue widget AddSpace
             let leading = Widgets.getScalarValue widget Leading
@@ -25,50 +41,38 @@ module Single =
 module SingleBuilders =
     type Ast with
 
-        static member SingleExpr
-            (leading: string, addSpace: bool, supportsStroustrup: bool, value: WidgetBuilder<Expr>)
-            =
+        static member SingleExpr(leading: string, value: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 Single.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
+                    StackList.two(
                         Single.Leading.WithValue(leading),
-                        Single.AddSpace.WithValue(addSpace),
-                        Single.SupportsStroustrup.WithValue(supportsStroustrup)
+                        Single.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
                     ),
-                    ValueSome [| Single.Value.WithValue(value.Compile()) |],
+                    ValueNone,
                     ValueNone
                 )
             )
 
-        static member SingleExpr
-            (leading: string, addSpace: bool, supportsStroustrup: bool, value: string, ?hasQuotes: bool)
-            =
-            match hasQuotes with
-            | None
-            | Some true ->
-                WidgetBuilder<Expr>(
-                    Single.WidgetKey,
-                    AttributesBundle(
-                        StackList.three(
-                            Single.Leading.WithValue(leading),
-                            Single.AddSpace.WithValue(addSpace),
-                            Single.SupportsStroustrup.WithValue(supportsStroustrup)
-                        ),
-                        ValueSome [| Single.Value.WithValue(Ast.ConstantExpr(value, true).Compile()) |],
-                        ValueNone
-                    )
+        static member SingleExpr(leading: string, value: string) =
+            WidgetBuilder<Expr>(
+                Single.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        Single.Leading.WithValue(leading),
+                        Single.Value.WithValue(StringOrWidget.StringExpr(value))
+                    ),
+                    ValueNone,
+                    ValueNone
                 )
-            | _ ->
-                WidgetBuilder<Expr>(
-                    Single.WidgetKey,
-                    AttributesBundle(
-                        StackList.three(
-                            Single.Leading.WithValue(leading),
-                            Single.AddSpace.WithValue(addSpace),
-                            Single.SupportsStroustrup.WithValue(supportsStroustrup)
-                        ),
-                        ValueSome [| Single.Value.WithValue(Ast.ConstantExpr(value, false).Compile()) |],
-                        ValueNone
-                    )
-                )
+            )
+
+[<Extension>]
+type SingleExprModifiers =
+    [<Extension>]
+    static member inline addSpace(this: WidgetBuilder<Expr>, value: bool) =
+        this.AddScalar(Single.AddSpace.WithValue(value))
+
+    [<Extension>]
+    static member inline supportsStroustrup(this: WidgetBuilder<Expr>, value: bool) =
+        this.AddScalar(Single.SupportsStroustrup.WithValue(value))

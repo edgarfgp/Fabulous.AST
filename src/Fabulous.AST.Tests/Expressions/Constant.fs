@@ -20,7 +20,9 @@ let x = "a"
 
     [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantMeasure``() =
-        AnonymousModule() { Value("x", ConstantExpr(ConstantMeasure(Constant("1.0", false), MeasureSingle("cm")))) }
+        AnonymousModule() {
+            Value("x", ConstantExpr(ConstantMeasure(Constant("1.0").hasQuotes(false), MeasureSingle("cm"))))
+        }
         |> produces
             """
 
@@ -43,7 +45,7 @@ let x = ()
                 "x",
                 ConstantExpr(
                     ConstantMeasure(
-                        Constant("55.0f", false),
+                        Constant("55.0f").hasQuotes(false),
                         MeasureOperator("*", MeasureSingle("miles"), MeasureSingle("hour"))
                     )
                 )
@@ -62,7 +64,7 @@ let x = 55.0f<miles * hour>
                 "x",
                 ConstantExpr(
                     ConstantMeasure(
-                        Constant("55.0f", false),
+                        Constant("55.0f").hasQuotes(false),
                         MeasureDivide("/", MeasureSingle("miles"), MeasureSingle("hour"))
                     )
                 )
@@ -80,11 +82,11 @@ let x = 55.0f<miles / hour>
             Value(
                 "x",
                 InfixAppExpr(
-                    ConstantExpr(Constant("55.0f", false)),
+                    ConstantExpr(Constant("55.0f").hasQuotes(false)),
                     "/",
                     ConstantExpr(
                         ConstantMeasure(
-                            Constant("1000.0", false),
+                            Constant("1000.0").hasQuotes(false),
                             MeasureDivide("/", MeasureSingle("g"), MeasureSingle("kg"))
                         )
                     )
@@ -104,7 +106,7 @@ let x = 55.0f / 1000.0<g / kg>
                 "x",
                 ConstantExpr(
                     ConstantMeasure(
-                        Constant("55.0f", false),
+                        Constant("55.0f").hasQuotes(false),
                         MeasurePower("*", MeasureSingle("miles"), Integer("hour"))
                     )
                 )

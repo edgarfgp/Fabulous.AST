@@ -12,7 +12,22 @@ module BindingMethodNode =
             let name = Widgets.getScalarValue widget BindingNode.NameString
             let parameters = Widgets.getNodeFromWidget<Pattern> widget BindingNode.Parameters
 
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let hasQuotes =
+                Widgets.tryGetScalarValue widget BindingNode.HasQuotes
+                |> ValueOption.defaultValue true
+
+            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
+
+            let bodyExpr =
+                match bodyExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(
+                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                        )
+                    )
+                | StringOrWidget.WidgetExpr value -> value
+
             let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
 
             let isStatic =
@@ -114,14 +129,29 @@ module BindingMethodNode =
 [<AutoOpen>]
 module BindingMethodBuilders =
     type Ast with
+
+        static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: string) =
+            WidgetBuilder<BindingNode>(
+                BindingMethodNode.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        BindingNode.NameString.WithValue(name),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
+                    ),
+                    ValueSome [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    ValueNone
+                )
+            )
+
         static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
-                    StackList.one(BindingNode.NameString.WithValue(name)),
-                    ValueSome
-                        [| BindingNode.Parameters.WithValue(parameters.Compile())
-                           BindingNode.BodyExpr.WithValue(body.Compile()) |],
+                    StackList.two(
+                        BindingNode.NameString.WithValue(name),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
+                    ),
+                    ValueSome [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
                     ValueNone
                 )
             )
