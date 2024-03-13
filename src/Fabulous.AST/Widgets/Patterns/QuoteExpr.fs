@@ -22,9 +22,5 @@ module QuoteExprBuilders =
         static member QuoteExprPat(value: WidgetBuilder<Expr>) =
             WidgetBuilder<Pattern>(
                 QuoteExpr.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| QuoteExpr.Value.WithValue(value.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.empty(), [| QuoteExpr.Value.WithValue(value.Compile()) |], Array.empty)
             )

@@ -35,8 +35,8 @@ module QuotedBuilders =
                 Quoted.WidgetKey,
                 AttributesBundle(
                     StackList.one(Quoted.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -45,7 +45,7 @@ module QuotedBuilders =
                 Quoted.WidgetKey,
                 AttributesBundle(
                     StackList.one(Quoted.Value.WithValue(StringOrWidget.StringExpr(value))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

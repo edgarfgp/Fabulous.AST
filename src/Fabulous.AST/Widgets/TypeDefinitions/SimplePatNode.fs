@@ -56,8 +56,8 @@ module SimplePatNodeBuilders =
                 SimplePat.WidgetKey,
                 AttributesBundle(
                     StackList.two(SimplePat.Name.WithValue(name), SimplePat.IsOptional.WithValue(isOptional)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -66,8 +66,8 @@ module SimplePatNodeBuilders =
                 SimplePat.WidgetKey,
                 AttributesBundle(
                     StackList.two(SimplePat.Name.WithValue(name), SimplePat.IsOptional.WithValue(isOptional)),
-                    ValueSome [| SimplePat.Typed.WithValue(tp.Compile()) |],
-                    ValueNone
+                    [| SimplePat.Typed.WithValue(tp.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -76,8 +76,8 @@ module SimplePatNodeBuilders =
                 SimplePat.WidgetKey,
                 AttributesBundle(
                     StackList.two(SimplePat.Name.WithValue(name), SimplePat.IsOptional.WithValue(isOptional)),
-                    ValueSome [| SimplePat.Typed.WithValue(Ast.LongIdent(tp).Compile()) |],
-                    ValueNone
+                    [| SimplePat.Typed.WithValue(Ast.LongIdent(tp).Compile()) |],
+                    Array.empty
                 )
             )
 

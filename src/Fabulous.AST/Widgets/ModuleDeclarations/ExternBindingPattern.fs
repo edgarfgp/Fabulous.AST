@@ -56,10 +56,10 @@ module ExternBindingPatternNodeBuilders =
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
-                           ExternBindingPattern.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
-                    ValueNone
+
+                    [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
+                       ExternBindingPattern.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -68,10 +68,9 @@ module ExternBindingPatternNodeBuilders =
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
-                           ExternBindingPattern.Type.WithValue(``type``.Compile()) |],
-                    ValueNone
+                    [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
+                       ExternBindingPattern.Type.WithValue(``type``.Compile()) |],
+                    Array.empty
                 )
             )
 

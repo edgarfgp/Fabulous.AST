@@ -49,8 +49,8 @@ module SingleBuilders =
                         Single.Leading.WithValue(leading),
                         Single.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -62,8 +62,8 @@ module SingleBuilders =
                         Single.Leading.WithValue(leading),
                         Single.Value.WithValue(StringOrWidget.StringExpr(value))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 

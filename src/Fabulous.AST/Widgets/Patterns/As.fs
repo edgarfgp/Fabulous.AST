@@ -27,10 +27,9 @@ module AsBuilders =
                 As.WidgetKey,
                 AttributesBundle(
                     StackList.one(As.MiddlePattern.WithValue(SingleTextNode.``as``)),
-                    ValueSome
-                        [| As.LHSPattern.WithValue(lhs.Compile())
-                           As.RHSPattern.WithValue(rhs.Compile()) |],
-                    ValueNone
+                    [| As.LHSPattern.WithValue(lhs.Compile())
+                       As.RHSPattern.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -39,10 +38,10 @@ module AsBuilders =
                 As.WidgetKey,
                 AttributesBundle(
                     StackList.one(As.MiddlePattern.WithValue(SingleTextNode.``as``)),
-                    ValueSome
-                        [| As.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
-                           As.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
-                    ValueNone
+
+                    [| As.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                       As.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -51,10 +50,9 @@ module AsBuilders =
                 As.WidgetKey,
                 AttributesBundle(
                     StackList.one(As.MiddlePattern.WithValue(SingleTextNode.Create(middle))),
-                    ValueSome
-                        [| As.LHSPattern.WithValue(lhs.Compile())
-                           As.RHSPattern.WithValue(rhs.Compile()) |],
-                    ValueNone
+                    [| As.LHSPattern.WithValue(lhs.Compile())
+                       As.RHSPattern.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -63,9 +61,8 @@ module AsBuilders =
                 As.WidgetKey,
                 AttributesBundle(
                     StackList.one(As.MiddlePattern.WithValue(SingleTextNode.Create(middle))),
-                    ValueSome
-                        [| As.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
-                           As.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
-                    ValueNone
+                    [| As.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                       As.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    Array.empty
                 )
             )

@@ -22,7 +22,7 @@ module TypeStaticConstantExprBuilders =
                 TypeStaticConstantExpr.WidgetKey,
                 AttributesBundle(
                     StackList.one(TypeStaticConstantExpr.Const.WithValue(constant)),
-                    ValueSome [| TypeStaticConstantExpr.Expr.WithValue(expr.Compile()) |],
-                    ValueNone
+                    [| TypeStaticConstantExpr.Expr.WithValue(expr.Compile()) |],
+                    Array.empty
                 )
             )

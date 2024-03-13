@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System.Reflection
 open System.Runtime.CompilerServices
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -73,7 +72,7 @@ module ModuleBuilders =
             CollectionBuilder<Module, ModuleDecl>(
                 Module.WidgetKey,
                 Module.Decls,
-                AttributesBundle(StackList.one(Module.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Module.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]

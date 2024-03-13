@@ -84,7 +84,7 @@ module MeasureBuilders =
         static member MeasureSingle(value: string) =
             WidgetBuilder<Measure>(
                 Measure.WidgetMeasureSingleKey,
-                AttributesBundle(StackList.one(Measure.Value.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Measure.Value.WithValue(value)), Array.empty, Array.empty)
             )
 
         static member MeasureOperator(operator: string, lhs: WidgetBuilder<Measure>, rhs: WidgetBuilder<Measure>) =
@@ -92,8 +92,8 @@ module MeasureBuilders =
                 Measure.WidgetMeasureOperatorKey,
                 AttributesBundle(
                     StackList.one(Measure.Value.WithValue(operator)),
-                    ValueSome [| Measure.LHS.WithValue(lhs.Compile()); Measure.RHS.WithValue(rhs.Compile()) |],
-                    ValueNone
+                    [| Measure.LHS.WithValue(lhs.Compile()); Measure.RHS.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -102,8 +102,8 @@ module MeasureBuilders =
                 Measure.WidgetMeasureDivideKey,
                 AttributesBundle(
                     StackList.one(Measure.Value.WithValue(operator)),
-                    ValueSome [| Measure.LHS.WithValue(lhs.Compile()); Measure.RHS.WithValue(rhs.Compile()) |],
-                    ValueNone
+                    [| Measure.LHS.WithValue(lhs.Compile()); Measure.RHS.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -114,17 +114,16 @@ module MeasureBuilders =
                 Measure.WidgetMeasurePowerKey,
                 AttributesBundle(
                     StackList.one(Measure.Value.WithValue(operator)),
-                    ValueSome
-                        [| Measure.LHS.WithValue(measure.Compile())
-                           Measure.RHS.WithValue(node.Compile()) |],
-                    ValueNone
+                    [| Measure.LHS.WithValue(measure.Compile())
+                       Measure.RHS.WithValue(node.Compile()) |],
+                    Array.empty
                 )
             )
 
         static member MeasureMultiple(content: string list) =
             WidgetBuilder<Measure>(
                 Measure.WidgetMeasureMultiplyKey,
-                AttributesBundle(StackList.one(Measure.Content.WithValue(content)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Measure.Content.WithValue(content)), Array.empty, Array.empty)
             )
 
         static member MeasureSeq() =
@@ -133,11 +132,7 @@ module MeasureBuilders =
         static member MeasureParen(measure: WidgetBuilder<Measure>) =
             WidgetBuilder<Measure>(
                 Measure.WidgetParenthesisKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Measure.Node.WithValue(measure.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.empty(), [| Measure.Node.WithValue(measure.Compile()) |], Array.empty)
             )
 
 [<Extension>]

@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
@@ -47,7 +48,7 @@ module RationalConstNodeBuilders =
         static member Integer(value: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetIntegerKey,
-                AttributesBundle(StackList.one(RationalConstNode.Value.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(RationalConstNode.Value.WithValue(value)), Array.empty, Array.empty)
             )
 
         static member Negate(minus: string, rationalConst: WidgetBuilder<RationalConstNode>) =
@@ -55,8 +56,8 @@ module RationalConstNodeBuilders =
                 RationalConstNode.WidgetNegateKey,
                 AttributesBundle(
                     StackList.one(RationalConstNode.Value.WithValue(minus)),
-                    ValueSome [| RationalConstNode.Node.WithValue(rationalConst.Compile()) |],
-                    ValueNone
+                    [| RationalConstNode.Node.WithValue(rationalConst.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -69,7 +70,7 @@ module RationalConstNodeBuilders =
                         RationalConstNode.DivOp.WithValue(divOp),
                         RationalConstNode.Denominator.WithValue(denominator)
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

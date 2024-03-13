@@ -37,11 +37,7 @@ module InterfaceMemberBuilders =
             CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| InterfaceMember.Type.WithValue(value.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.empty(), [| InterfaceMember.Type.WithValue(value.Compile()) |], Array.empty)
             )
 
         static member InterfaceMember(value: string) =

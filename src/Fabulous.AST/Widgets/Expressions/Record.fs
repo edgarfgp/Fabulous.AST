@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
@@ -37,8 +38,8 @@ module RecordExprBuilders =
             (copyInfo: WidgetBuilder<Expr> voption, leftSingleNode: SingleTextNode, rightSingleNode: SingleTextNode) =
             let copyInfo =
                 match copyInfo with
-                | ValueSome copyInfo -> ValueSome [| RecordExpr.CopyInfo.WithValue(copyInfo.Compile()) |]
-                | ValueNone -> ValueNone
+                | ValueSome copyInfo -> [| RecordExpr.CopyInfo.WithValue(copyInfo.Compile()) |]
+                | ValueNone -> Array.empty
 
             CollectionBuilder<Expr, RecordFieldNode>(
                 RecordExpr.WidgetKey,
@@ -49,7 +50,7 @@ module RecordExprBuilders =
                         RecordExpr.CloseBrace.WithValue(rightSingleNode)
                     ),
                     copyInfo,
-                    ValueNone
+                    Array.empty
                 )
             )
 

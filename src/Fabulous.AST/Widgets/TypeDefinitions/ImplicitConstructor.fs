@@ -79,7 +79,7 @@ module ImplicitConstructorBuilders =
             CollectionBuilder<ImplicitConstructorNode, SimplePatNode>(
                 ImplicitConstructor.WidgetKey,
                 ImplicitConstructor.SimplePats,
-                AttributesBundle(StackList.empty(), ValueNone, ValueNone)
+                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )
 
 [<Extension>]

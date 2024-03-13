@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -67,19 +68,15 @@ module FieldBuilders =
                 Field.WidgetKey,
                 AttributesBundle(
                     StackList.one(Field.Name.WithValue(name)),
-                    ValueSome [| Field.FieldType.WithValue(filedType.Compile()) |],
-                    ValueNone
+                    [| Field.FieldType.WithValue(filedType.Compile()) |],
+                    Array.empty
                 )
             )
 
         static member Field(filedType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Field.FieldType.WithValue(filedType.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(filedType.Compile()) |], Array.empty)
             )
 
         static member Field(name: string, filedType: string) =
@@ -87,8 +84,8 @@ module FieldBuilders =
                 Field.WidgetKey,
                 AttributesBundle(
                     StackList.one(Field.Name.WithValue(name)),
-                    ValueSome [| Field.FieldType.WithValue(Ast.LongIdent(filedType).Compile()) |],
-                    ValueNone
+                    [| Field.FieldType.WithValue(Ast.LongIdent(filedType).Compile()) |],
+                    Array.empty
                 )
             )
 

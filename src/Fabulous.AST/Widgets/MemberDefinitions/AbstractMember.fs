@@ -133,8 +133,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(false, false)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -146,8 +146,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(false, false)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -159,8 +159,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(true, false)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -172,8 +172,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(true, false)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -185,8 +185,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(false, true)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -198,8 +198,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(false, true)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -211,8 +211,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(true, true)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -224,8 +224,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.HasGetterSetter.WithValue(true, true)
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -239,8 +239,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -254,8 +254,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -268,8 +268,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(Named(parameters, true))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -286,8 +286,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(Named(parameters, true))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -301,8 +301,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -316,8 +316,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -330,8 +330,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(Named(parameters, false))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -348,8 +348,8 @@ module AbstractMemberBuilders =
                         AbstractMember.Identifier.WithValue(identifier),
                         AbstractMember.Parameters.WithValue(Named(parameters, false))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 

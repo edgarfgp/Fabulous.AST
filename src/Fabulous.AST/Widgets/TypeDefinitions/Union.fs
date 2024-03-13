@@ -112,7 +112,7 @@ module UnionBuilders =
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                AttributesBundle(scalars, ValueNone, ValueNone)
+                AttributesBundle(scalars, Array.empty, Array.empty)
             )
 
         static member Union(name: string) = Ast.BaseUnion(name, ValueNone)

@@ -22,5 +22,5 @@ module ParenBuilders =
         static member ParenExpr(value: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 Paren.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| Paren.Value.WithValue(value.Compile()) |], ValueNone)
+                AttributesBundle(StackList.empty(), [| Paren.Value.WithValue(value.Compile()) |], Array.empty)
             )

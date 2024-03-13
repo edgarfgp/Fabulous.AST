@@ -138,8 +138,8 @@ module BindingMethodBuilders =
                         BindingNode.NameString.WithValue(name),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
                     ),
-                    ValueSome [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
-                    ValueNone
+                    [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -151,7 +151,7 @@ module BindingMethodBuilders =
                         BindingNode.NameString.WithValue(name),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
                     ),
-                    ValueSome [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
-                    ValueNone
+                    [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    Array.empty
                 )
             )

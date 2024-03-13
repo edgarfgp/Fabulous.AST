@@ -77,8 +77,8 @@ module IfThenElseBuilders =
                         IfThenElse.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr)),
                         IfThenElse.ElseExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -91,7 +91,7 @@ module IfThenElseBuilders =
                         IfThenElse.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr)),
                         IfThenElse.ElseExpr.WithValue(StringOrWidget.StringExpr(elseExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

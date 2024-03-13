@@ -23,9 +23,8 @@ module TypeAppPostfixBuilders =
                 TypeAppPostfix.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeAppPostfix.First.WithValue(first.Compile())
-                           TypeAppPostfix.Last.WithValue(last.Compile()) |],
-                    ValueNone
+                    [| TypeAppPostfix.First.WithValue(first.Compile())
+                       TypeAppPostfix.Last.WithValue(last.Compile()) |],
+                    Array.empty
                 )
             )

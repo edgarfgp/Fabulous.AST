@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -127,8 +128,8 @@ module BindingValueBuilders =
                 BindingValue.WidgetKey,
                 AttributesBundle(
                     StackList.one(BindingNode.BodyExpr.WithValue(bodyExpr)),
-                    ValueSome [| BindingNode.NameWidget.WithValue(name.Compile()) |],
-                    ValueNone
+                    [| BindingNode.NameWidget.WithValue(name.Compile()) |],
+                    Array.empty
                 )
             )
 

@@ -44,8 +44,8 @@ module ModuleDeclAttributeNodeBuilders =
                 ModuleDeclAttributes.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| ModuleDeclAttributes.DoExpression.WithValue(doExpr.Compile()) |],
-                    ValueNone
+                    [| ModuleDeclAttributes.DoExpression.WithValue(doExpr.Compile()) |],
+                    Array.empty
                 )
             )
 

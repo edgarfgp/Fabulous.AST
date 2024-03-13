@@ -99,8 +99,8 @@ module ExternBindingNodeBuilders =
                 ExternBinding.WidgetKey,
                 AttributesBundle(
                     StackList.one(ExternBinding.Identifier.WithValue(name)),
-                    ValueSome [| ExternBinding.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
-                    ValueNone
+                    [| ExternBinding.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -109,8 +109,8 @@ module ExternBindingNodeBuilders =
                 ExternBinding.WidgetKey,
                 AttributesBundle(
                     StackList.one(ExternBinding.Identifier.WithValue(name)),
-                    ValueSome [| ExternBinding.Type.WithValue(``type``.Compile()) |],
-                    ValueNone
+                    [| ExternBinding.Type.WithValue(``type``.Compile()) |],
+                    Array.empty
                 )
             )
 

@@ -24,11 +24,7 @@ module OpenBuilders =
         static member Open(identList: WidgetBuilder<#IdentListNode>) =
             WidgetBuilder<OpenNode>(
                 Open.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Open.IdentList.WithValue(identList.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.empty(), [| Open.IdentList.WithValue(identList.Compile()) |], Array.empty)
             )
 
         static member Open(node: IdentListNode) = Ast.Open(Ast.EscapeHatch(node))

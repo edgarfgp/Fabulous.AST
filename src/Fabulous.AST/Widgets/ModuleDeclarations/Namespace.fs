@@ -62,7 +62,7 @@ module NamespaceBuilders =
             CollectionBuilder<Namespace, ModuleDecl>(
                 Namespace.WidgetKey,
                 Namespace.Decls,
-                AttributesBundle(StackList.one(Namespace.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Namespace.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]

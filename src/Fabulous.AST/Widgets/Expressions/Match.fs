@@ -44,8 +44,8 @@ module MatchBuilders =
                 Match.MatchClauses,
                 AttributesBundle(
                     StackList.one(Match.MatchExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value)))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -55,8 +55,8 @@ module MatchBuilders =
                 Match.MatchClauses,
                 AttributesBundle(
                     StackList.one(Match.MatchExpr.WithValue(StringOrWidget.StringExpr(matchExpr))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 

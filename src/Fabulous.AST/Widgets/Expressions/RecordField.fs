@@ -34,7 +34,7 @@ module RecordFieldBuilders =
                 RecordField.WidgetKey,
                 AttributesBundle(
                     StackList.one(RecordField.Name.WithValue(name)),
-                    ValueSome [| RecordField.RecordExpr.WithValue(expr.Compile()) |],
-                    ValueNone
+                    [| RecordField.RecordExpr.WithValue(expr.Compile()) |],
+                    Array.empty
                 )
             )

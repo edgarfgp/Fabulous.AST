@@ -121,8 +121,8 @@ module ValBuilders =
                 Val.WidgetKey,
                 AttributesBundle(
                     StackList.one(Val.Identifier.WithValue(identifier)),
-                    ValueSome [| Val.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    [| Val.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
                 )
             )
 

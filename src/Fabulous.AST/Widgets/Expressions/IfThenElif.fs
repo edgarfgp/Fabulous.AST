@@ -51,8 +51,8 @@ module IfThenElifBuilders =
                 IfThenElif.Branches,
                 AttributesBundle(
                     StackList.one(IfThenElif.ElseExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseExpr))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -62,8 +62,8 @@ module IfThenElifBuilders =
                 IfThenElif.Branches,
                 AttributesBundle(
                     StackList.one(IfThenElif.ElseExpr.WithValue(StringOrWidget.StringExpr(elseExpr))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -71,5 +71,5 @@ module IfThenElifBuilders =
             CollectionBuilder<Expr, Expr>(
                 IfThenElif.WidgetKey,
                 IfThenElif.Branches,
-                AttributesBundle(StackList.empty(), ValueNone, ValueNone)
+                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )

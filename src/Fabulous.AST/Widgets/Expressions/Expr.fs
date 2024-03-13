@@ -35,8 +35,8 @@ module ExprBuilders =
                 Expr.WidgetKey,
                 AttributesBundle(
                     StackList.one(Expr.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value)))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -45,13 +45,13 @@ module ExprBuilders =
                 Expr.WidgetKey,
                 AttributesBundle(
                     StackList.one(Expr.Value.WithValue(StringOrWidget.StringExpr value)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
         static member NullExpr() =
-            WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), ValueNone, ValueNone))
+            WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
 
 [<Extension>]
 type ExprModifiers =

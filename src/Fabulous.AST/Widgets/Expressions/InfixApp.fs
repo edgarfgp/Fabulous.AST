@@ -54,8 +54,8 @@ module InfixAppBuilders =
                         InfixApp.LeftHandSide.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(lhs))),
                         InfixApp.RightHandSide.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(rhs)))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -68,7 +68,7 @@ module InfixAppBuilders =
                         InfixApp.LeftHandSide.WithValue(StringOrWidget.StringExpr(lhs)),
                         InfixApp.RightHandSide.WithValue(StringOrWidget.StringExpr(rhs))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

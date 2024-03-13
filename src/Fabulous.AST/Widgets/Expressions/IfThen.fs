@@ -56,8 +56,8 @@ module IfThenBuilders =
                         IfThen.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak ifExpr)),
                         IfThen.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -70,8 +70,8 @@ module IfThenBuilders =
                         IfThen.IfExpr.WithValue(StringOrWidget.StringExpr(ifExpr)),
                         IfThen.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -84,8 +84,8 @@ module IfThenBuilders =
                         IfThen.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elIfExpr)),
                         IfThen.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -98,8 +98,8 @@ module IfThenBuilders =
                         IfThen.IfExpr.WithValue(StringOrWidget.StringExpr(elIfExpr)),
                         IfThen.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -116,8 +116,8 @@ module IfThenBuilders =
                         IfThen.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseIfExpr)),
                         IfThen.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -134,7 +134,7 @@ module IfThenBuilders =
                         IfThen.IfExpr.WithValue(StringOrWidget.StringExpr(elseIfExpr)),
                         IfThen.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

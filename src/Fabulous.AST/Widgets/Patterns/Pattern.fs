@@ -21,7 +21,7 @@ module PatternBuilders =
         static member private BasePattern(value: WidgetBuilder<Pattern>) =
             WidgetBuilder<Pattern>(
                 Pattern.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| Pattern.Value.WithValue(value.Compile()) |], ValueNone)
+                AttributesBundle(StackList.empty(), [| Pattern.Value.WithValue(value.Compile()) |], Array.empty)
             )
 
         static member UnitPat() =

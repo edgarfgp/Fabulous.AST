@@ -27,10 +27,9 @@ module OrBuilders =
                 Or.WidgetKey,
                 AttributesBundle(
                     StackList.one(Or.MHSPattern.WithValue(SingleTextNode.bar)),
-                    ValueSome
-                        [| Or.LHSPattern.WithValue(lhs.Compile())
-                           Or.RHSPattern.WithValue(rhs.Compile()) |],
-                    ValueNone
+                    [| Or.LHSPattern.WithValue(lhs.Compile())
+                       Or.RHSPattern.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -39,10 +38,9 @@ module OrBuilders =
                 Or.WidgetKey,
                 AttributesBundle(
                     StackList.one(Or.MHSPattern.WithValue(SingleTextNode.bar)),
-                    ValueSome
-                        [| Or.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
-                           Or.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
-                    ValueNone
+                    [| Or.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                       Or.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -51,10 +49,9 @@ module OrBuilders =
                 Or.WidgetKey,
                 AttributesBundle(
                     StackList.one(Or.MHSPattern.WithValue(SingleTextNode.Create(middle))),
-                    ValueSome
-                        [| Or.LHSPattern.WithValue(lhs.Compile())
-                           Or.RHSPattern.WithValue(rhs.Compile()) |],
-                    ValueNone
+                    [| Or.LHSPattern.WithValue(lhs.Compile())
+                       Or.RHSPattern.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -63,9 +60,8 @@ module OrBuilders =
                 Or.WidgetKey,
                 AttributesBundle(
                     StackList.one(Or.MHSPattern.WithValue(SingleTextNode.Create(middle))),
-                    ValueSome
-                        [| Or.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
-                           Or.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
-                    ValueNone
+                    [| Or.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                       Or.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    Array.empty
                 )
             )

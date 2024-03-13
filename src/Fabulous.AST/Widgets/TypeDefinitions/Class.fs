@@ -138,11 +138,11 @@ module ClassBuilders =
                 Class.Members,
                 AttributesBundle(
                     scalars,
-                    ValueSome
-                        [| match constructor with
-                           | ValueSome constructor -> Class.SimplePats.WithValue(constructor.Compile())
-                           | ValueNone -> () |],
-                    ValueNone
+
+                    [| match constructor with
+                       | ValueSome constructor -> Class.SimplePats.WithValue(constructor.Compile())
+                       | ValueNone -> () |],
+                    Array.empty
                 )
             )
 

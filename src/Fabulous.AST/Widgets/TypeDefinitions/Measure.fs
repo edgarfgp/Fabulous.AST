@@ -111,7 +111,7 @@ module TypeDefnAbbrevNodeBuilders =
         static member inline Measure(name: string) =
             WidgetBuilder<TypeNameNode>(
                 TypeDefnAbbrevNode.WidgetKey,
-                AttributesBundle(StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
         static member inline Measure(name: string, powerType: WidgetBuilder<Type>) =
@@ -119,8 +119,8 @@ module TypeDefnAbbrevNodeBuilders =
                 TypeDefnAbbrevNode.WidgetAbbrevKey,
                 AttributesBundle(
                     StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)),
-                    ValueSome [| TypeDefnAbbrevNode.PowerType.WithValue(powerType.Compile()) |],
-                    ValueNone
+                    [| TypeDefnAbbrevNode.PowerType.WithValue(powerType.Compile()) |],
+                    Array.empty
                 )
             )
 

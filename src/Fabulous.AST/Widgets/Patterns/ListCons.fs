@@ -27,10 +27,9 @@ module ListConsBuilders =
                 ListCons.WidgetKey,
                 AttributesBundle(
                     StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.doubleColon)),
-                    ValueSome
-                        [| ListCons.LHSPattern.WithValue(lhs.Compile())
-                           ListCons.RHSPattern.WithValue(rhs.Compile()) |],
-                    ValueNone
+                    [| ListCons.LHSPattern.WithValue(lhs.Compile())
+                       ListCons.RHSPattern.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -39,10 +38,9 @@ module ListConsBuilders =
                 ListCons.WidgetKey,
                 AttributesBundle(
                     StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.doubleColon)),
-                    ValueSome
-                        [| ListCons.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
-                           ListCons.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
-                    ValueNone
+                    [| ListCons.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                       ListCons.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -51,10 +49,10 @@ module ListConsBuilders =
                 ListCons.WidgetKey,
                 AttributesBundle(
                     StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.Create(middle))),
-                    ValueSome
-                        [| ListCons.LHSPattern.WithValue(lhs.Compile())
-                           ListCons.RHSPattern.WithValue(rhs.Compile()) |],
-                    ValueNone
+
+                    [| ListCons.LHSPattern.WithValue(lhs.Compile())
+                       ListCons.RHSPattern.WithValue(rhs.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -63,9 +61,8 @@ module ListConsBuilders =
                 ListCons.WidgetKey,
                 AttributesBundle(
                     StackList.one(ListCons.MiddlePattern.WithValue(SingleTextNode.Create(middle))),
-                    ValueSome
-                        [| ListCons.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
-                           ListCons.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
-                    ValueNone
+                    [| ListCons.LHSPattern.WithValue(Ast.NamedPat(lhs).Compile())
+                       ListCons.RHSPattern.WithValue(Ast.NamedPat(rhs).Compile()) |],
+                    Array.empty
                 )
             )

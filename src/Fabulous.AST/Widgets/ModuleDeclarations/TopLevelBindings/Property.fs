@@ -134,8 +134,8 @@ module BindingPropertyBuilders =
                         BindingNode.NameString.WithValue(name),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -147,7 +147,7 @@ module BindingPropertyBuilders =
                         BindingNode.NameString.WithValue(name),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

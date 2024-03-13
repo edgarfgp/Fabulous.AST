@@ -114,7 +114,7 @@ module RecordBuilders =
             CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
-                AttributesBundle(scalars, ValueNone, ValueNone)
+                AttributesBundle(scalars, Array.empty, Array.empty)
             )
 
         static member Record(name: string) = Ast.BaseRecord(name, ValueNone)

@@ -139,11 +139,7 @@ module BindingFunctionBuilders =
 
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
-                AttributesBundle(
-                    scalars,
-                    ValueSome [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(scalars, [| BindingNode.Parameters.WithValue(parameters.Compile()) |], Array.empty)
             )
 
         static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: string) =

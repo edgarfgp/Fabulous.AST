@@ -38,8 +38,8 @@ module NewBuilders =
                 New.WidgetKey,
                 AttributesBundle(
                     StackList.one(New.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
-                    ValueSome [| New.Type.WithValue(t.Compile()) |],
-                    ValueNone
+                    [| New.Type.WithValue(t.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -48,8 +48,8 @@ module NewBuilders =
                 New.WidgetKey,
                 AttributesBundle(
                     StackList.one(New.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
-                    ValueSome [| New.Type.WithValue(Ast.LongIdent(t).Compile()) |],
-                    ValueNone
+                    [| New.Type.WithValue(Ast.LongIdent(t).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -58,7 +58,7 @@ module NewBuilders =
                 New.WidgetKey,
                 AttributesBundle(
                     StackList.one(New.Value.WithValue(StringOrWidget.StringExpr(value))),
-                    ValueSome [| New.Type.WithValue(Ast.LongIdent(t).Compile()) |],
-                    ValueNone
+                    [| New.Type.WithValue(Ast.LongIdent(t).Compile()) |],
+                    Array.empty
                 )
             )

@@ -40,11 +40,11 @@ module MatchClauseBuilders =
                 MatchClause.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| MatchClause.PatternNamed.WithValue(pattern.Compile())
-                           MatchClause.WhenExpr.WithValue(whenExpr.Compile())
-                           MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
-                    ValueNone
+
+                    [| MatchClause.PatternNamed.WithValue(pattern.Compile())
+                       MatchClause.WhenExpr.WithValue(whenExpr.Compile())
+                       MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -53,9 +53,10 @@ module MatchClauseBuilders =
                 MatchClause.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| MatchClause.PatternNamed.WithValue(pattern.Compile())
-                           MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
-                    ValueNone
+
+                    [| MatchClause.PatternNamed.WithValue(pattern.Compile())
+                       MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
+
+                    Array.empty
                 )
             )

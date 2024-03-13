@@ -47,7 +47,7 @@ module AugmentBuilders =
             CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>(
                 Augmentation.WidgetKey,
                 Augmentation.Members,
-                AttributesBundle(StackList.one(Augmentation.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Augmentation.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]

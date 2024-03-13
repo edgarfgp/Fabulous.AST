@@ -26,8 +26,8 @@ module IsInstPatBuilders =
                 IsInst.WidgetKey,
                 AttributesBundle(
                     StackList.one(IsInst.Token.WithValue(SingleTextNode.isInstance)),
-                    ValueSome [| IsInst.InstType.WithValue(value.Compile()) |],
-                    ValueNone
+                    [| IsInst.InstType.WithValue(value.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -36,8 +36,8 @@ module IsInstPatBuilders =
                 IsInst.WidgetKey,
                 AttributesBundle(
                     StackList.one(IsInst.Token.WithValue(SingleTextNode.isInstance)),
-                    ValueSome [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
-                    ValueNone
+                    [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -46,7 +46,7 @@ module IsInstPatBuilders =
                 IsInst.WidgetKey,
                 AttributesBundle(
                     StackList.one(IsInst.Token.WithValue(SingleTextNode.Create(token))),
-                    ValueSome [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
-                    ValueNone
+                    [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
+                    Array.empty
                 )
             )

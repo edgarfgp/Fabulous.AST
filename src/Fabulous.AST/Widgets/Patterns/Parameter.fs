@@ -32,10 +32,7 @@ module ParameterBuilders =
                        Parameter.Value.WithValue(name.Compile()) |]
                 | ValueNone -> [| Parameter.Value.WithValue(name.Compile()) |]
 
-            WidgetBuilder<Pattern>(
-                Parameter.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome widgets, ValueNone)
-            )
+            WidgetBuilder<Pattern>(Parameter.WidgetKey, AttributesBundle(StackList.empty(), widgets, Array.empty))
 
         static member ParameterPat(name: WidgetBuilder<Pattern>, pType: WidgetBuilder<Type>) =
             Ast.BaseParameter(name, ValueSome pType)

@@ -23,7 +23,7 @@ module ParenPatBuilders =
         static member ParenPat(pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<Pattern>(
                 ParenPat.WidgetKey,
-                AttributesBundle(StackList.empty(), ValueSome [| ParenPat.Pat.WithValue(pat.Compile()) |], ValueNone)
+                AttributesBundle(StackList.empty(), [| ParenPat.Pat.WithValue(pat.Compile()) |], Array.empty)
             )
 
         static member ParenPat(pat: string) =
@@ -31,7 +31,7 @@ module ParenPatBuilders =
                 ParenPat.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| ParenPat.Pat.WithValue(Ast.NamedPat(pat).Compile()) |],
-                    ValueNone
+                    [| ParenPat.Pat.WithValue(Ast.NamedPat(pat).Compile()) |],
+                    Array.empty
                 )
             )

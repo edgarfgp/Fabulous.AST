@@ -140,11 +140,11 @@ module ClassEndBuilders =
                 ClassEnd.WidgetKey,
                 AttributesBundle(
                     scalars,
-                    ValueSome
-                        [| match constructor with
-                           | ValueSome constructor -> ClassEnd.SimplePats.WithValue(constructor.Compile())
-                           | ValueNone -> () |],
-                    ValueNone
+
+                    [| match constructor with
+                       | ValueSome constructor -> ClassEnd.SimplePats.WithValue(constructor.Compile())
+                       | ValueNone -> () |],
+                    Array.empty
                 )
             )
 

@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -57,7 +58,7 @@ module AttributeNodeBuilders =
         static member Attribute(value: string) =
             WidgetBuilder<AttributeNode>(
                 AttributeNode.WidgetKey,
-                AttributesBundle(StackList.one(AttributeNode.TypeName.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(AttributeNode.TypeName.WithValue(value)), Array.empty, Array.empty)
             )
 
         static member Attribute(value: string, target: string) =
@@ -65,8 +66,8 @@ module AttributeNodeBuilders =
                 AttributeNode.WidgetKey,
                 AttributesBundle(
                     StackList.two(AttributeNode.TypeName.WithValue(value), AttributeNode.Target.WithValue(target)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -78,8 +79,8 @@ module AttributeNodeBuilders =
                         AttributeNode.TypeName.WithValue(value),
                         AttributeNode.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -92,8 +93,8 @@ module AttributeNodeBuilders =
                         AttributeNode.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr)),
                         AttributeNode.Target.WithValue(target)
                     ),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 

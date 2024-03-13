@@ -17,5 +17,5 @@ module TypeAnonBuilders =
         static member Anon(value: string) =
             WidgetBuilder<Type>(
                 TypeAnon.WidgetKey,
-                AttributesBundle(StackList.one(TypeAnon.Identifier.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(TypeAnon.Identifier.WithValue(value)), Array.empty, Array.empty)
             )

@@ -46,8 +46,8 @@ module AbbrevBuilders =
                 Abbrev.WidgetKey,
                 AttributesBundle(
                     StackList.one(Abbrev.Name.WithValue(name)),
-                    ValueSome [| Abbrev.AliasType.WithValue(alias.Compile()) |],
-                    ValueNone
+                    [| Abbrev.AliasType.WithValue(alias.Compile()) |],
+                    Array.empty
                 )
             )
 

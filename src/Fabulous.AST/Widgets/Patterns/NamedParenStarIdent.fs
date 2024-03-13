@@ -28,5 +28,5 @@ module NamedParenStarIdentBuilders =
         static member NamedParenStarIdentPat(name: string) =
             WidgetBuilder<Pattern>(
                 NamedParenStarIdent.WidgetKey,
-                AttributesBundle(StackList.one(NamedParenStarIdent.Value.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(NamedParenStarIdent.Value.WithValue(name)), Array.empty, Array.empty)
             )

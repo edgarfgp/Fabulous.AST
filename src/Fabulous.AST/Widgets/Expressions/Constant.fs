@@ -44,8 +44,8 @@ module ConstantBuilders =
                 Constant.WidgetKey,
                 AttributesBundle(
                     StackList.one(Constant.Value.WithValue(StringOrWidget.StringExpr value)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -54,15 +54,15 @@ module ConstantBuilders =
                 Constant.WidgetKey,
                 AttributesBundle(
                     StackList.one(Constant.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(constant)))),
-                    ValueSome [| Constant.Measure.WithValue(measure.Compile()) |],
-                    ValueNone
+                    [| Constant.Measure.WithValue(measure.Compile()) |],
+                    Array.empty
                 )
             )
 
         static member ConstantUnit() =
             WidgetBuilder<Constant>(
                 Constant.WidgetUnitKey,
-                AttributesBundle(StackList.empty(), ValueSome [||], ValueNone)
+                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )
 
 [<Extension>]

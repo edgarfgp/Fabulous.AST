@@ -24,11 +24,7 @@ module OpenTypeBuilders =
         static member OpenType(identList: WidgetBuilder<#IdentListNode>) =
             WidgetBuilder<OpenTypeNode>(
                 OpenType.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| OpenType.Target.WithValue(identList.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.empty(), [| OpenType.Target.WithValue(identList.Compile()) |], Array.empty)
             )
 
         static member OpenType(node: IdentListNode) = Ast.OpenType(Ast.EscapeHatch(node))

@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Text
@@ -32,11 +33,7 @@ module FunsBuilders =
             CollectionBuilder<Type, Type>(
                 TypeFuns.WidgetKey,
                 TypeFuns.Parameters,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| TypeFuns.Return.WithValue(returnType.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(StackList.empty(), [| TypeFuns.Return.WithValue(returnType.Compile()) |], Array.empty)
             )
 
         static member Funs(returnType: string) =
@@ -45,8 +42,8 @@ module FunsBuilders =
                 TypeFuns.Parameters,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| TypeFuns.Return.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    [| TypeFuns.Return.WithValue(Ast.LongIdent(returnType).Compile()) |],
+                    Array.empty
                 )
             )
 

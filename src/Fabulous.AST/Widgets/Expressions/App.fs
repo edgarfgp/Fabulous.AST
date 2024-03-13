@@ -40,8 +40,8 @@ module AppBuilders =
                 App.Items,
                 AttributesBundle(
                     StackList.one(App.Name.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak name))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -51,7 +51,7 @@ module AppBuilders =
                 App.Items,
                 AttributesBundle(
                     StackList.one(App.Name.WithValue(StringOrWidget.StringExpr(name))),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

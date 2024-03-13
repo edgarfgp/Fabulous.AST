@@ -57,7 +57,7 @@ module NestedModuleBuilders =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(
                 NestedModule.WidgetKey,
                 NestedModule.Decls,
-                AttributesBundle(StackList.one(NestedModule.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(NestedModule.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]
