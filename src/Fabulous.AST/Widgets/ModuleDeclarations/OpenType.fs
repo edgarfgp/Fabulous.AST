@@ -6,37 +6,35 @@ open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
-type OpenTypeNode(target: IdentListNode) =
-    inherit OpenTargetNode(Type.LongIdent target, Range.Zero)
-
 module OpenType =
-    let Target = Attributes.defineWidget "Target"
+    let Target = Attributes.defineScalar<string> "Target"
 
     let WidgetKey =
         Widgets.register "OpenType" (fun widget ->
-            let target = Widgets.getNodeFromWidget<IdentListNode> widget Target
-            OpenTypeNode target)
+            let target = Widgets.getScalarValue widget Target
+
+            OpenTargetNode(
+                Type.LongIdent(
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(target, Range.Zero)) ], Range.Zero)
+                ),
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module OpenTypeBuilders =
     type Ast with
 
-        static member OpenType(identList: WidgetBuilder<#IdentListNode>) =
-            WidgetBuilder<OpenTypeNode>(
-                OpenType.WidgetKey,
-                AttributesBundle(StackList.empty(), [| OpenType.Target.WithValue(identList.Compile()) |], Array.empty)
-            )
-
-        static member OpenType(node: IdentListNode) = Ast.OpenType(Ast.EscapeHatch(node))
-
         static member OpenType(name: string) =
-            Ast.OpenType(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
+            WidgetBuilder<OpenTargetNode>(
+                OpenType.WidgetKey,
+                AttributesBundle(StackList.one(OpenType.Target.WithValue(name)), Array.empty, Array.empty)
+            )
 
 [<Extension>]
 type OpenTypeYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenTypeNode>)
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenTargetNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         let openList = OpenListNode([ Open.Target node ])

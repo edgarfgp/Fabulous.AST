@@ -15,6 +15,12 @@ type StringOrWidget<'T> =
     | StringExpr of string
     | WidgetExpr of 'T
 
+[<RequireQualifiedAccess>]
+type ModuleOrNamespaceDecl =
+    | Module of string array
+    | Namespace of string
+    | Anonymous
+
 [<AutoOpen>]
 module CommonExtensions =
     type MultipleTextsNode with
@@ -157,3 +163,13 @@ module StringParsing =
             $"\"{identifier}\""
         else
             identifier
+
+    let normalizeModuleOrNamespaceName(name: string) =
+        if System.String.IsNullOrEmpty name then
+            ModuleOrNamespaceDecl.Anonymous
+        else if name.Contains(".") then
+            let trimmed = name.Trim()
+            let split = trimmed.Split('.')
+            split |> Array.map normalizeIdentifierBackticks |> ModuleOrNamespaceDecl.Module
+        else
+            ModuleOrNamespaceDecl.Namespace name

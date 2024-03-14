@@ -5,16 +5,13 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
-type AnonymousModule(hashDirectives, decls) =
-    inherit Oak(hashDirectives, [ ModuleOrNamespaceNode(None, decls, Range.Zero) ], Range.Zero)
-
 module AnonymousModule =
     let Decls = Attributes.defineWidgetCollection "Decls"
     let ParsedHashDirectives = Attributes.defineWidgetCollection "ParsedHashDirectives"
 
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
-            let decls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
+            let decls = Widgets.getNodesFromWidgetCollection<ModuleOrNamespaceNode> widget Decls
 
             let hashDirectives =
                 Widgets.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives
@@ -24,19 +21,26 @@ module AnonymousModule =
                 | Some hashDirectives -> hashDirectives
                 | None -> []
 
-            AnonymousModule(hashDirectives, decls))
+            Oak(hashDirectives, decls, Range.Zero))
 
 [<AutoOpen>]
 module AnonymousModuleBuilders =
     type Ast with
-        static member AnonymousModule() =
-            CollectionBuilder<AnonymousModule, ModuleDecl>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
+        static member Oak() =
+            CollectionBuilder<Oak, ModuleOrNamespaceNode>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
+
+[<Extension>]
+type AnonymousModuleModifiers =
+    [<Extension>]
+    static member inline hashDirectives(this: WidgetBuilder<Oak>) =
+        AttributeCollectionBuilder<Oak, ParsedHashDirectiveNode>(this, AnonymousModule.ParsedHashDirectives)
 
 [<Extension>]
 type AnonymousModuleExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<Expr>) : CollectionContent =
+    static member inline Yield
+        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<ModuleOrNamespaceNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.DeclExpr(node)
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
+        let widget = Ast.EscapeHatch(node).Compile()
         { Widgets = MutStackArray1.One(widget) }

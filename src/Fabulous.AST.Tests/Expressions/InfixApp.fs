@@ -11,12 +11,14 @@ module InfixApp =
 
     [<Fact>]
     let ``let value with a InfixApp expression``() =
-        AnonymousModule() {
-            InfixAppExpr(
-                ConstantExpr(Constant("a").hasQuotes(false)),
-                "|>",
-                ConstantExpr(Constant("b").hasQuotes(false))
-            )
+        Oak() {
+            AnonymousModule() {
+                InfixAppExpr(
+                    ConstantExpr(Constant("a").hasQuotes(false)),
+                    "|>",
+                    ConstantExpr(Constant("b").hasQuotes(false))
+                )
+            }
         }
         |> produces
             """

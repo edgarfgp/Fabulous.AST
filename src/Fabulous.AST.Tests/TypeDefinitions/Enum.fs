@@ -13,11 +13,13 @@ module Enum =
 
     [<Fact>]
     let ``Produces an enum``() =
-        AnonymousModule() {
-            Enum("Colors") {
-                EnumCase("Red", "0").hasQuotes(false)
-                EnumCase("Green", "1").hasQuotes(false)
-                EnumCase("Blue", "2").hasQuotes(false)
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", "0").hasQuotes(false)
+                    EnumCase("Green", "1").hasQuotes(false)
+                    EnumCase("Blue", "2").hasQuotes(false)
+                }
             }
         }
 
@@ -32,14 +34,15 @@ type Colors =
 
     [<Fact>]
     let ``Produces an enum with value Expr``() =
-        AnonymousModule() {
-            Enum("Colors") {
-                EnumCase("Red", "0").hasQuotes(false)
-                EnumCase("Green", ConstantExpr("1").hasQuotes(false))
-                EnumCase("Blue", "2").hasQuotes(false)
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", "0").hasQuotes(false)
+                    EnumCase("Green", ConstantExpr("1").hasQuotes(false))
+                    EnumCase("Blue", "2").hasQuotes(false)
+                }
             }
         }
-
         |> produces
             """
 
@@ -51,11 +54,13 @@ type Colors =
 
     [<Fact>]
     let ``Produces an enum with SingleTextNode``() =
-        AnonymousModule() {
-            Enum("Colors") {
-                EnumCase("Red", "0").hasQuotes(false)
-                EnumCase("Green", "1").hasQuotes(false)
-                EnumCase("Blue", "2").hasQuotes(false)
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", "0").hasQuotes(false)
+                    EnumCase("Green", "1").hasQuotes(false)
+                    EnumCase("Blue", "2").hasQuotes(false)
+                }
             }
         }
         |> produces
@@ -70,21 +75,23 @@ type Colors =
 
     [<Fact>]
     let ``Produces an enum case using EnumCaseNode``() =
-        AnonymousModule() {
-            Enum("Colors") {
-                EnumCase("Red", "0").hasQuotes(false)
-                EnumCase("Green", "1").hasQuotes(false)
-                EnumCase("Blue", "2").hasQuotes(false)
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", "0").hasQuotes(false)
+                    EnumCase("Green", "1").hasQuotes(false)
+                    EnumCase("Blue", "2").hasQuotes(false)
 
-                EnumCaseNode(
-                    None,
-                    None,
-                    None,
-                    SingleTextNode("Black", Range.Zero),
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("3", Range.Zero))),
-                    Range.Zero
-                )
+                    EnumCaseNode(
+                        None,
+                        None,
+                        None,
+                        SingleTextNode("Black", Range.Zero),
+                        SingleTextNode("=", Range.Zero),
+                        Expr.Constant(Constant.FromText(SingleTextNode("3", Range.Zero))),
+                        Range.Zero
+                    )
+                }
             }
         }
         |> produces
@@ -111,12 +118,14 @@ type Colors =
                 Range.Zero
             )
 
-        AnonymousModule() {
-            Enum("Colors") {
-                EnumCase("Red", "0").hasQuotes(false)
-                EnumCase("Green", "1").hasQuotes(false)
-                EnumCase("Blue", "2").hasQuotes(false)
-                EscapeHatch(enumCaseNode)
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", "0").hasQuotes(false)
+                    EnumCase("Green", "1").hasQuotes(false)
+                    EnumCase("Blue", "2").hasQuotes(false)
+                    EscapeHatch(enumCaseNode)
+                }
             }
         }
         |> produces
@@ -134,12 +143,14 @@ type Colors =
     let ``Produces an enum case for a list``() =
         let colors = [ "Red"; "Green"; "Blue"; "Black" ]
 
-        AnonymousModule() {
-            Enum("Colors") {
-                for i = 0 to colors.Length - 1 do
-                    EnumCase(colors.[i], $"{i}").hasQuotes(false)
-            }
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    for i = 0 to colors.Length - 1 do
+                        EnumCase(colors.[i], $"{i}").hasQuotes(false)
+                }
 
+            }
         }
         |> produces
             """
@@ -156,13 +167,15 @@ type Colors =
     let ``Produces an enum with attribute``() =
         let colors = [ "Red"; "Green"; "Blue"; "Black" ]
 
-        AnonymousModule() {
-            (Enum("Colors") {
-                for i = 0 to colors.Length - 1 do
-                    EnumCase(colors.[i], $"{i}").hasQuotes(false)
-            })
-                .attribute("FlagsAttribute")
+        Oak() {
+            AnonymousModule() {
+                (Enum("Colors") {
+                    for i = 0 to colors.Length - 1 do
+                        EnumCase(colors.[i], $"{i}").hasQuotes(false)
+                })
+                    .attribute("FlagsAttribute")
 
+            }
         }
         |> produces
             """
@@ -178,14 +191,16 @@ type Colors =
 
     [<Fact>]
     let ``Produces an enum case with attributes``() =
-        AnonymousModule() {
-            (Enum("Colors") {
-                EnumCase("Red", "0").attributes([ "Obsolete"; "MyAttribute" ]).hasQuotes(false)
+        Oak() {
+            AnonymousModule() {
+                (Enum("Colors") {
+                    EnumCase("Red", "0").attributes([ "Obsolete"; "MyAttribute" ]).hasQuotes(false)
 
-                EnumCase("Green", "1").hasQuotes(false)
-                EnumCase("Blue", "2").hasQuotes(false)
-            })
-                .attribute("FlagsAttribute")
+                    EnumCase("Green", "1").hasQuotes(false)
+                    EnumCase("Blue", "2").hasQuotes(false)
+                })
+                    .attribute("FlagsAttribute")
+            }
         }
         |> produces
             """

@@ -17,7 +17,7 @@ module Record =
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces a record with fields with backticks`` (value: string) (expected: string) =
-        AnonymousModule() { Record("Person ") { Field(value, LongIdent("int")) } }
+        Oak() { AnonymousModule() { Record("Person ") { Field(value, LongIdent("int")) } } }
         |> produces
             $$"""
 
@@ -27,12 +27,14 @@ type Person = { {{expected}}: int }
 
     [<Fact>]
     let ``Produces a record with an attribute``() =
-        AnonymousModule() {
-            (Record("Colors") {
-                for colour in [ "Red"; "Green"; "Blue" ] do
-                    Field(colour, LongIdent("int"))
-            })
-                .attribute("Serializable")
+        Oak() {
+            AnonymousModule() {
+                (Record("Colors") {
+                    for colour in [ "Red"; "Green"; "Blue" ] do
+                        Field(colour, LongIdent("int"))
+                })
+                    .attribute("Serializable")
+            }
         }
         |> produces
             """
@@ -44,12 +46,14 @@ type Colors = { Red: int; Green: int; Blue: int }
 
     [<Fact>]
     let ``Produces a record field with an attribute``() =
-        AnonymousModule() {
-            Record("Colors") {
-                Field("Red", LongIdent("int")).attribute("Obsolete")
+        Oak() {
+            AnonymousModule() {
+                Record("Colors") {
+                    Field("Red", LongIdent("int")).attribute("Obsolete")
 
-                Field("Green", LongIdent("int"))
-                Field("Blue", LongIdent("int"))
+                    Field("Green", LongIdent("int"))
+                    Field("Blue", LongIdent("int"))
+                }
             }
         }
         |> produces
@@ -65,11 +69,13 @@ type Colors =
 
     [<Fact>]
     let ``Produces a generic record``() =
-        AnonymousModule() {
-            GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", LongIdent("string"))
-                Field("Blue", LongIdent("'other"))
-                Field("Yellow", LongIdent("int"))
+        Oak() {
+            AnonymousModule() {
+                GenericRecord("Colors", [ "'other" ]) {
+                    Field("Green", LongIdent("string"))
+                    Field("Blue", LongIdent("'other"))
+                    Field("Yellow", LongIdent("int"))
+                }
             }
         }
 
@@ -85,13 +91,15 @@ type Colors<'other> =
 
     [<Fact>]
     let ``Produces a struct generic record``() =
-        AnonymousModule() {
-            (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", LongIdent("string"))
-                Field("Blue", LongIdent("'other"))
-                Field("Yellow", LongIdent("int"))
-            })
-                .attribute("Struct")
+        Oak() {
+            AnonymousModule() {
+                (GenericRecord("Colors", [ "'other" ]) {
+                    Field("Green", LongIdent("string"))
+                    Field("Blue", LongIdent("'other"))
+                    Field("Yellow", LongIdent("int"))
+                })
+                    .attribute("Struct")
+            }
         }
 
         |> produces
@@ -106,17 +114,19 @@ type Colors<'other> =
 
     [<Fact>]
     let ``Produces an obsolete struct generic record``() =
-        AnonymousModule() {
-            (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", LongIdent("string"))
-                Field("Blue", LongIdent("'other"))
-                Field("Yellow", LongIdent("int"))
-            })
-                .attributes() {
-                Attribute "Struct"
-                Attribute "Obsolete"
-            }
+        Oak() {
+            AnonymousModule() {
+                (GenericRecord("Colors", [ "'other" ]) {
+                    Field("Green", LongIdent("string"))
+                    Field("Blue", LongIdent("'other"))
+                    Field("Yellow", LongIdent("int"))
+                })
+                    .attributes() {
+                    Attribute "Struct"
+                    Attribute "Obsolete"
+                }
 
+            }
         }
 
         |> produces

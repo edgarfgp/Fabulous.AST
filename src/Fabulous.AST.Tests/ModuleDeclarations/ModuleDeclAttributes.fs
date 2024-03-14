@@ -11,10 +11,12 @@ module ModuleDeclAttributes =
 
     [<Fact>]
     let ``Produces a do expr``() =
-        AnonymousModule() {
-            ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"").hasQuotes(false))
-                .attributes() {
-                Attribute "MyCustomModuleAttribute"
+        Oak() {
+            AnonymousModule() {
+                ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"").hasQuotes(false))
+                    .attributes() {
+                    Attribute "MyCustomModuleAttribute"
+                }
             }
         }
         |> produces
@@ -25,11 +27,13 @@ do printfn "Executing..."
 
     [<Fact>]
     let ``Produces a ModuleDeclAttributes``() =
-        AnonymousModule() {
-            ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"").hasQuotes(false))
-                .attributes() {
-                Attribute "MyCustomModuleAttribute"
-                Attribute "MyCustomModuleAttribute2"
+        Oak() {
+            AnonymousModule() {
+                ModuleDeclAttribute(ConstantExpr("do printfn \"Executing...\"").hasQuotes(false))
+                    .attributes() {
+                    Attribute "MyCustomModuleAttribute"
+                    Attribute "MyCustomModuleAttribute2"
+                }
             }
         }
         |> produces

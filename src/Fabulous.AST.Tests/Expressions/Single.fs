@@ -10,13 +10,15 @@ open type Ast
 module Single =
     [<Fact>]
     let ``let value with a Single expression``() =
-        AnonymousModule() {
-            Value(
-                "x",
-                SingleExpr("a", ConstantExpr(Constant("b").hasQuotes(false)))
-                    .addSpace(true)
-                    .supportsStroustrup(false)
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    SingleExpr("a", ConstantExpr(Constant("b").hasQuotes(false)))
+                        .addSpace(true)
+                        .supportsStroustrup(false)
+                )
+            }
         }
         |> produces
             """

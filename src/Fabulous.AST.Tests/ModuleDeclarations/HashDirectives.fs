@@ -10,16 +10,18 @@ open type Ast
 module HashDirectives =
     [<Fact>]
     let ``Produces an AnonymousModule with NoWarn directive``() =
-        AnonymousModule() {
-            NoWarn("0044")
-            Open("System")
+        Oak() {
+            AnonymousModule() {
+                NoWarn("0044")
+                Open("System")
 
-            (Record("HEX") {
-                Field("R", LongIdent("int"))
-                Field("G", LongIdent("int"))
-                Field("B", LongIdent("int"))
-            })
-                .attribute(Attribute "Obsolete")
+                (Record("HEX") {
+                    Field("R", LongIdent("int"))
+                    Field("G", LongIdent("int"))
+                    Field("B", LongIdent("int"))
+                })
+                    .attribute(Attribute "Obsolete")
+            }
         }
         |> produces
             """
@@ -32,16 +34,18 @@ type HEX = { R: int; G: int; B: int }
 
     [<Fact>]
     let ``Produces an AnonymousModule with multiple NoWarn directive``() =
-        AnonymousModule() {
-            NoWarn([ "0044"; "0045" ])
-            Open("System")
+        Oak() {
+            AnonymousModule() {
+                NoWarn([ "0044"; "0045" ])
+                Open("System")
 
-            (Record("HEX") {
-                Field("R", LongIdent("int"))
-                Field("G", LongIdent("int"))
-                Field("B", LongIdent("int"))
-            })
-                .attribute("Obsolete")
+                (Record("HEX") {
+                    Field("R", LongIdent("int"))
+                    Field("G", LongIdent("int"))
+                    Field("B", LongIdent("int"))
+                })
+                    .attribute("Obsolete")
+            }
         }
         |> produces
             """
@@ -54,17 +58,19 @@ type HEX = { R: int; G: int; B: int }
 
     [<Fact>]
     let ``Produces an AnonymousModule with multiple line NoWarn directive``() =
-        AnonymousModule() {
-            NoWarn("0044")
-            NoWarn("0045")
-            Open("System")
+        Oak() {
+            AnonymousModule() {
+                NoWarn("0044")
+                NoWarn("0045")
+                Open("System")
 
-            (Record("HEX") {
-                Field("R", LongIdent("int"))
-                Field("G", LongIdent("int"))
-                Field("B", LongIdent("int"))
-            })
-                .attribute("Obsolete")
+                (Record("HEX") {
+                    Field("R", LongIdent("int"))
+                    Field("G", LongIdent("int"))
+                    Field("B", LongIdent("int"))
+                })
+                    .attribute("Obsolete")
+            }
         }
         |> produces
             """
@@ -78,17 +84,20 @@ type HEX = { R: int; G: int; B: int }
 
     [<Fact>]
     let ``Produces an Namespace with NoWarn directive``() =
-        Namespace("MyApp") {
-            NoWarn("0044")
-            Open("System")
+        Oak() {
+            ModuleOrNamespace("MyApp") {
+                NoWarn("0044")
+                Open("System")
 
-            (Record("HEX") {
-                Field("R", LongIdent("int"))
-                Field("G", LongIdent("int"))
-                Field("B", LongIdent("int"))
-            })
-                .attribute(Attribute "Obsolete")
+                (Record("HEX") {
+                    Field("R", LongIdent("int"))
+                    Field("G", LongIdent("int"))
+                    Field("B", LongIdent("int"))
+                })
+                    .attribute(Attribute "Obsolete")
+            }
         }
+
         |> produces
             """
 namespace MyApp
@@ -102,12 +111,14 @@ type HEX = { R: int; G: int; B: int }
 
     [<Fact>]
     let ``Produces an Namespace with Conditional directive``() =
-        AnonymousModule() {
-            HashDirective("if", "!DEBUG")
-            Value("str", ConstantExpr(("Not debugging!")))
-            HashDirective("else")
-            Value("str", ConstantExpr("Debugging!"))
-            HashDirective("endif")
+        Oak() {
+            AnonymousModule() {
+                HashDirective("if", "!DEBUG")
+                Value("str", ConstantExpr(("Not debugging!")))
+                HashDirective("else")
+                Value("str", ConstantExpr("Debugging!"))
+                HashDirective("endif")
+            }
         }
         |> produces
             """

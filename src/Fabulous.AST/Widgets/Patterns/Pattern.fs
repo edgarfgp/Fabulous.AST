@@ -7,35 +7,33 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Pattern =
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<Pattern> "Value"
 
     let WidgetKey =
         Widgets.register "Parameters" (fun widget ->
-            let value = Widgets.getNodeFromWidget<Pattern> widget Value
+            let value = Widgets.getScalarValue widget Value
             value)
 
 [<AutoOpen>]
 module PatternBuilders =
     type Ast with
 
-        static member private BasePattern(value: WidgetBuilder<Pattern>) =
+        static member private BasePattern(value: Pattern) =
             WidgetBuilder<Pattern>(
                 Pattern.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Pattern.Value.WithValue(value.Compile()) |], Array.empty)
+                AttributesBundle(StackList.one(Pattern.Value.WithValue(value)), Array.empty, Array.empty)
             )
 
         static member UnitPat() =
             Ast.BasePattern(
-                Ast.EscapeHatch(
-                    Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
-                )
+                Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
             )
 
         static member NullPat() =
-            Ast.BasePattern(Ast.EscapeHatch(Pattern.Null(SingleTextNode.``null``)))
+            Ast.BasePattern(Pattern.Null(SingleTextNode.``null``))
 
         static member WildPat() =
-            Ast.BasePattern(Ast.EscapeHatch(Pattern.Wild(SingleTextNode.underscore)))
+            Ast.BasePattern(Pattern.Wild(SingleTextNode.underscore))
 
 [<Extension>]
 type ParametersYieldExtensions =

@@ -12,7 +12,7 @@ open type Ast
 module Literal =
     [<Fact>]
     let ``Produces a Literal constant``() =
-        AnonymousModule() { Value("x", "12").hasQuotes(false).attribute("Literal") }
+        Oak() { AnonymousModule() { Value("x", "12").hasQuotes(false).attribute("Literal") } }
         |> produces
             """
 [<Literal>]
@@ -28,9 +28,11 @@ let x = 12
               "Tulip", "tulip.png"
               "Sunflower", "sunflower.png" ]
 
-        AnonymousModule() {
-            for name, value in images do
-                Value(name, ConstantExpr($"{value}")).attribute("Literal")
+        Oak() {
+            AnonymousModule() {
+                for name, value in images do
+                    Value(name, ConstantExpr($"{value}")).attribute("Literal")
+            }
         }
         |> produces
             """
@@ -50,11 +52,13 @@ let Sunflower = "sunflower.png"
 
     [<Fact>]
     let ``Produces a Literal constant with xml docs``() =
-        AnonymousModule() {
-            Value("x", "12")
-                .hasQuotes(false)
-                .attribute("Literal")
-                .xmlDocs([ "This is a comment" ])
+        Oak() {
+            AnonymousModule() {
+                Value("x", "12")
+                    .hasQuotes(false)
+                    .attribute("Literal")
+                    .xmlDocs([ "This is a comment" ])
+            }
         }
         |> produces
             """
@@ -66,7 +70,7 @@ let x = 12
 
     [<Fact>]
     let ``Produces Literal constant with an access control ``() =
-        AnonymousModule() { Value("x", "12").hasQuotes(false).attribute("Literal").toInternal() }
+        Oak() { AnonymousModule() { Value("x", "12").hasQuotes(false).attribute("Literal").toInternal() } }
         |> produces
             """
 
@@ -77,40 +81,42 @@ let internal x = 12
 
     [<Fact>]
     let ``Produces Literal constant with escape hatch``() =
-        AnonymousModule() {
-            BindingNode(
-                None,
-                Some(
-                    MultipleAttributeListNode(
-                        [ AttributeListNode(
-                              SingleTextNode("[<", Range.Zero),
-                              [ SyntaxOak.AttributeNode(
-                                    IdentListNode(
-                                        [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.Zero)) ],
+        Oak() {
+            AnonymousModule() {
+                BindingNode(
+                    None,
+                    Some(
+                        MultipleAttributeListNode(
+                            [ AttributeListNode(
+                                  SingleTextNode("[<", Range.Zero),
+                                  [ SyntaxOak.AttributeNode(
+                                        IdentListNode(
+                                            [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.Zero)) ],
+                                            Range.Zero
+                                        ),
+                                        None,
+                                        None,
                                         Range.Zero
-                                    ),
-                                    None,
-                                    None,
-                                    Range.Zero
-                                ) ],
-                              SingleTextNode(">]", Range.Zero),
-                              Range.Zero
-                          ) ],
-                        Range.Zero
-                    )
-                ),
-                MultipleTextsNode([ SingleTextNode.Create("let") ], Range.Zero),
-                false,
-                None,
-                None,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                None,
-                List.Empty,
-                None,
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                Range.Zero
-            )
+                                    ) ],
+                                  SingleTextNode(">]", Range.Zero),
+                                  Range.Zero
+                              ) ],
+                            Range.Zero
+                        )
+                    ),
+                    MultipleTextsNode([ SingleTextNode.Create("let") ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                    Range.Zero
+                )
+            }
         }
         |> produces
             """

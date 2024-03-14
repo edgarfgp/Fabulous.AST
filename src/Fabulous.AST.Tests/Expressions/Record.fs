@@ -18,7 +18,7 @@ module RecordExpr =
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces an AnonRecordExpr with fields with backticks`` (value: string) (expected: string) =
-        AnonymousModule() { AnonRecordExpr() { RecordFieldExpr(value, ConstantExpr("1").hasQuotes(false)) } }
+        Oak() { AnonymousModule() { AnonRecordExpr() { RecordFieldExpr(value, ConstantExpr("1").hasQuotes(false)) } } }
         |> produces
             $$"""
 
@@ -33,7 +33,7 @@ module RecordExpr =
     [<InlineData("net6.0", "``net6.0``")>]
     [<InlineData(" net6.0 ", "``net6.0``")>]
     let ``Produces an RecordExpr with fields with backticks`` (value: string) (expected: string) =
-        AnonymousModule() { RecordExpr() { RecordFieldExpr(value, ConstantExpr("1").hasQuotes(false)) } }
+        Oak() { AnonymousModule() { RecordExpr() { RecordFieldExpr(value, ConstantExpr("1").hasQuotes(false)) } } }
         |> produces
             $$"""
 
@@ -43,7 +43,7 @@ module RecordExpr =
 
     [<Fact>]
     let ``RecordExpr expression``() =
-        AnonymousModule() { RecordExpr() { RecordFieldExpr("A", ConstantExpr("1").hasQuotes(false)) } }
+        Oak() { AnonymousModule() { RecordExpr() { RecordFieldExpr("A", ConstantExpr("1").hasQuotes(false)) } } }
         |> produces
             """
 { A = 1 }
@@ -51,8 +51,12 @@ module RecordExpr =
 
     [<Fact>]
     let ``RecordExpr expression with copy info``() =
-        AnonymousModule() {
-            RecordExpr(ConstantExpr("A").hasQuotes(false)) { RecordFieldExpr("B", ConstantExpr("1").hasQuotes(false)) }
+        Oak() {
+            AnonymousModule() {
+                RecordExpr(ConstantExpr("A").hasQuotes(false)) {
+                    RecordFieldExpr("B", ConstantExpr("1").hasQuotes(false))
+                }
+            }
         }
         |> produces
             """
@@ -61,7 +65,7 @@ module RecordExpr =
 
     [<Fact>]
     let ``AnonRecordExpr expression``() =
-        AnonymousModule() { AnonRecordExpr() { RecordFieldExpr("A", ConstantExpr("1").hasQuotes(false)) } }
+        Oak() { AnonymousModule() { AnonRecordExpr() { RecordFieldExpr("A", ConstantExpr("1").hasQuotes(false)) } } }
         |> produces
             """
 {| A = 1 |}
@@ -69,9 +73,11 @@ module RecordExpr =
 
     [<Fact>]
     let ``AnonRecordExpr expression with copy info``() =
-        AnonymousModule() {
-            AnonRecordExpr(ConstantExpr("A").hasQuotes(false)) {
-                RecordFieldExpr("B", ConstantExpr("1").hasQuotes(false))
+        Oak() {
+            AnonymousModule() {
+                AnonRecordExpr(ConstantExpr("A").hasQuotes(false)) {
+                    RecordFieldExpr("B", ConstantExpr("1").hasQuotes(false))
+                }
             }
         }
         |> produces

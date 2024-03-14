@@ -11,15 +11,17 @@ module StructTuple =
 
     [<Fact>]
     let ``let value with a StructTuple expression``() =
-        AnonymousModule() {
-            Value(
-                "x",
-                StructTupleExpr() {
-                    ConstantExpr("1").hasQuotes(false)
-                    ConstantExpr("2").hasQuotes(false)
-                    ConstantExpr("3").hasQuotes(false)
-                }
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    StructTupleExpr() {
+                        ConstantExpr("1").hasQuotes(false)
+                        ConstantExpr("2").hasQuotes(false)
+                        ConstantExpr("3").hasQuotes(false)
+                    }
+                )
+            }
         }
         |> produces
             """
@@ -29,17 +31,19 @@ let x = struct (1, 2, 3)
 
     [<Fact>]
     let ``let value with a StructTuple expression with parenthesis``() =
-        AnonymousModule() {
-            Value(
-                "x",
-                ParenExpr(
-                    StructTupleExpr() {
-                        ConstantExpr("1").hasQuotes(false)
-                        ConstantExpr("2").hasQuotes(false)
-                        ConstantExpr("3").hasQuotes(false)
-                    }
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ParenExpr(
+                        StructTupleExpr() {
+                            ConstantExpr("1").hasQuotes(false)
+                            ConstantExpr("2").hasQuotes(false)
+                            ConstantExpr("3").hasQuotes(false)
+                        }
+                    )
                 )
-            )
+            }
         }
         |> produces
             """

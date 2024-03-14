@@ -31,27 +31,29 @@ module Types =
 *)
     [<Fact>]
     let ``Value with return primitive types``() =
-        AnonymousModule() {
-            Value("a", "false").hasQuotes(false).returnType(Boolean())
-            Value("b", "0uy").hasQuotes(false).returnType(Byte())
-            Value("c", "1y").hasQuotes(false).returnType(SByte())
-            Value("d", "1s").hasQuotes(false).returnType(Int16())
-            Value("e", "1us").hasQuotes(false).returnType(UInt16())
-            Value("f", "1").hasQuotes(false).returnType(Int32())
-            Value("g", "1u").hasQuotes(false).returnType(UInt32())
-            Value("h", "1L").hasQuotes(false).returnType(Int64())
-            Value("i", "1UL").hasQuotes(false).returnType(UInt64())
-            Value("j", "nativeint 1").hasQuotes(false).returnType(IntPtr())
-            Value("k", "unativeint 1").hasQuotes(false).returnType(UIntPtr())
-            Value("l", "1.0m").hasQuotes(false).returnType(Decimal())
-            Value("m", "1.0").hasQuotes(false).returnType(Double())
-            Value("n", "1.0f").hasQuotes(false).returnType(Single())
-            Value("o", "'c'").hasQuotes(false).returnType(Char())
-            Value("p", "str").returnType(String())
-            Value("q", "()").hasQuotes(false).returnType(Unit())
-            Value("r", "1.").hasQuotes(false).returnType(Float())
-            Value("s", "1.f").hasQuotes(false).returnType(Float32())
-            Value("t", "obj").hasQuotes(false).returnType(Obj())
+        Oak() {
+            AnonymousModule() {
+                Value("a", "false").hasQuotes(false).returnType(Boolean())
+                Value("b", "0uy").hasQuotes(false).returnType(Byte())
+                Value("c", "1y").hasQuotes(false).returnType(SByte())
+                Value("d", "1s").hasQuotes(false).returnType(Int16())
+                Value("e", "1us").hasQuotes(false).returnType(UInt16())
+                Value("f", "1").hasQuotes(false).returnType(Int32())
+                Value("g", "1u").hasQuotes(false).returnType(UInt32())
+                Value("h", "1L").hasQuotes(false).returnType(Int64())
+                Value("i", "1UL").hasQuotes(false).returnType(UInt64())
+                Value("j", "nativeint 1").hasQuotes(false).returnType(IntPtr())
+                Value("k", "unativeint 1").hasQuotes(false).returnType(UIntPtr())
+                Value("l", "1.0m").hasQuotes(false).returnType(Decimal())
+                Value("m", "1.0").hasQuotes(false).returnType(Double())
+                Value("n", "1.0f").hasQuotes(false).returnType(Single())
+                Value("o", "'c'").hasQuotes(false).returnType(Char())
+                Value("p", "str").returnType(String())
+                Value("q", "()").hasQuotes(false).returnType(Unit())
+                Value("r", "1.").hasQuotes(false).returnType(Float())
+                Value("s", "1.f").hasQuotes(false).returnType(Float32())
+                Value("t", "obj").hasQuotes(false).returnType(Obj())
+            }
         }
         |> produces
             """

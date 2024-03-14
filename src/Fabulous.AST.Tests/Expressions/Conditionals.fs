@@ -31,7 +31,7 @@ module IfThen =
                 ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.Zero)
             )
 
-        AnonymousModule() { IfThenExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr)) }
+        Oak() { AnonymousModule() { IfThenExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr)) } }
         |> produces
             """
 
@@ -47,41 +47,43 @@ if x = 12 then
                 ConstantExpr(ConstantUnit())
             )
 
-        AnonymousModule() {
-            Value("res", ifThenExpr)
+        Oak() {
+            AnonymousModule() {
+                Value("res", ifThenExpr)
 
-            Value(
-                "res2",
-                IfThenElseExpr(
-                    InfixAppExpr(
-                        ConstantExpr(Constant("x").hasQuotes(false)),
-                        "=",
-                        ConstantExpr(Constant("12").hasQuotes(false))
-                    ),
-                    ConstantExpr(ConstantUnit()),
-                    ConstantExpr(ConstantUnit())
-                )
-            )
-
-            Value(
-                "res3",
-                IfThenElifExpr(ConstantExpr(ConstantUnit())) {
-                    IfThenExpr(
-                        InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
-                        ConstantExpr(ConstantUnit())
-                    )
-
-                    ElIfThenExpr(
+                Value(
+                    "res2",
+                    IfThenElseExpr(
                         InfixAppExpr(
                             ConstantExpr(Constant("x").hasQuotes(false)),
                             "=",
-                            ConstantExpr("11").hasQuotes(false)
+                            ConstantExpr(Constant("12").hasQuotes(false))
                         ),
+                        ConstantExpr(ConstantUnit()),
                         ConstantExpr(ConstantUnit())
                     )
-                }
-            )
+                )
 
+                Value(
+                    "res3",
+                    IfThenElifExpr(ConstantExpr(ConstantUnit())) {
+                        IfThenExpr(
+                            InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
+                            ConstantExpr(ConstantUnit())
+                        )
+
+                        ElIfThenExpr(
+                            InfixAppExpr(
+                                ConstantExpr(Constant("x").hasQuotes(false)),
+                                "=",
+                                ConstantExpr("11").hasQuotes(false)
+                            ),
+                            ConstantExpr(ConstantUnit())
+                        )
+                    }
+                )
+
+            }
         }
         |> produces
             """
@@ -100,9 +102,11 @@ let res3 =
 
     [<Fact>]
     let ``Produces if-then expression  with expr widgets``() =
-        AnonymousModule() {
-            IfThenExpr(InfixAppExpr("x", "=", "12").hasQuotes(false), ConstantExpr(ConstantUnit()))
-            ElIfThenExpr(InfixAppExpr("x", "=", "12").hasQuotes(false), ConstantExpr(ConstantUnit()))
+        Oak() {
+            AnonymousModule() {
+                IfThenExpr(InfixAppExpr("x", "=", "12").hasQuotes(false), ConstantExpr(ConstantUnit()))
+                ElIfThenExpr(InfixAppExpr("x", "=", "12").hasQuotes(false), ConstantExpr(ConstantUnit()))
+            }
         }
         |> produces
             """
@@ -136,7 +140,7 @@ elif x = 12 then
                 ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.Zero)
             )
 
-        AnonymousModule() { ElIfThenExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr)) }
+        Oak() { AnonymousModule() { ElIfThenExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr)) } }
         |> produces
             """
 
@@ -146,11 +150,13 @@ elif x = 12 then
 
     [<Fact>]
     let ``Produces elif-then expression with expr widget``() =
-        AnonymousModule() {
-            ElIfThenExpr(
-                InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
-                ConstantExpr(ConstantUnit())
-            )
+        Oak() {
+            AnonymousModule() {
+                ElIfThenExpr(
+                    InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
+                    ConstantExpr(ConstantUnit())
+                )
+            }
         }
         |> produces
             """
@@ -161,15 +167,17 @@ elif x = 12 then
 
     [<Fact>]
     let ``Produces elseif-then expression with expr widget``() =
-        AnonymousModule() {
-            ElseIfThenExpr(
-                InfixAppExpr(
-                    ConstantExpr(Constant("x").hasQuotes(false)),
-                    "=",
-                    ConstantExpr(Constant("12").hasQuotes(false))
-                ),
-                ConstantExpr(ConstantUnit())
-            )
+        Oak() {
+            AnonymousModule() {
+                ElseIfThenExpr(
+                    InfixAppExpr(
+                        ConstantExpr(Constant("x").hasQuotes(false)),
+                        "=",
+                        ConstantExpr(Constant("12").hasQuotes(false))
+                    ),
+                    ConstantExpr(ConstantUnit())
+                )
+            }
         }
         |> produces
             """
@@ -181,17 +189,23 @@ else if x = 12 then
 module IfThenElif =
     [<Fact>]
     let ``Produces If Then Elif Then expression with widgets``() =
-        AnonymousModule() {
-            IfThenElifExpr() {
-                IfThenExpr(
-                    InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
-                    ConstantExpr(ConstantUnit())
-                )
+        Oak() {
+            AnonymousModule() {
+                IfThenElifExpr() {
+                    IfThenExpr(
+                        InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
+                        ConstantExpr(ConstantUnit())
+                    )
 
-                ElIfThenExpr(
-                    InfixAppExpr(ConstantExpr(Constant("x").hasQuotes(false)), "=", ConstantExpr("11").hasQuotes(false)),
-                    ConstantExpr(ConstantUnit())
-                )
+                    ElIfThenExpr(
+                        InfixAppExpr(
+                            ConstantExpr(Constant("x").hasQuotes(false)),
+                            "=",
+                            ConstantExpr("11").hasQuotes(false)
+                        ),
+                        ConstantExpr(ConstantUnit())
+                    )
+                }
             }
         }
         |> produces
@@ -204,17 +218,19 @@ elif x = 11 then
 
     [<Fact>]
     let ``Produces If Then Elif Then Else expression with widgets``() =
-        AnonymousModule() {
-            IfThenElifExpr(ConstantExpr(ConstantUnit())) {
-                IfThenExpr(
-                    InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
-                    ConstantExpr(ConstantUnit())
-                )
+        Oak() {
+            AnonymousModule() {
+                IfThenElifExpr(ConstantExpr(ConstantUnit())) {
+                    IfThenExpr(
+                        InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("12").hasQuotes(false)),
+                        ConstantExpr(ConstantUnit())
+                    )
 
-                ElIfThenExpr(
-                    InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("11").hasQuotes(false)),
-                    ConstantExpr(ConstantUnit())
-                )
+                    ElIfThenExpr(
+                        InfixAppExpr(ConstantExpr("x").hasQuotes(false), "=", ConstantExpr("11").hasQuotes(false)),
+                        ConstantExpr(ConstantUnit())
+                    )
+                }
             }
         }
         |> produces
@@ -264,7 +280,7 @@ else ()
                 )
             )
 
-        AnonymousModule() { IfThenElseExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr), EscapeHatch(elseExpr)) }
+        Oak() { AnonymousModule() { IfThenElseExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr), EscapeHatch(elseExpr)) } }
         |> produces
             """
 
@@ -274,16 +290,18 @@ if x = 12 then () else ()
     [<Fact>]
     let ``Produces if-then-else expression with widgets``() =
 
-        AnonymousModule() {
-            IfThenElseExpr(
-                InfixAppExpr(
-                    ConstantExpr(Constant("x").hasQuotes(false)),
-                    "=",
-                    ConstantExpr(Constant("12").hasQuotes(false))
-                ),
-                ConstantExpr(ConstantUnit()),
-                ConstantExpr(ConstantUnit())
-            )
+        Oak() {
+            AnonymousModule() {
+                IfThenElseExpr(
+                    InfixAppExpr(
+                        ConstantExpr(Constant("x").hasQuotes(false)),
+                        "=",
+                        ConstantExpr(Constant("12").hasQuotes(false))
+                    ),
+                    ConstantExpr(ConstantUnit()),
+                    ConstantExpr(ConstantUnit())
+                )
+            }
         }
         |> produces
             """

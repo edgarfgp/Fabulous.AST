@@ -9,10 +9,12 @@ open type Ast
 module Interface =
     [<Fact>]
     let ``Produces an interface abstract method``() =
-        AnonymousModule() {
-            Interface("INumericFSharp") { AbstractCurriedMethod("Add", [ Int32(); Int32() ], Int32()) }
+        Oak() {
+            AnonymousModule() {
+                Interface("INumericFSharp") { AbstractCurriedMethod("Add", [ Int32(); Int32() ], Int32()) }
 
-            Interface("INumericDotNet") { AbstractTupledMethod("Add", [ Int32(); Int32() ], Int32()) }
+                Interface("INumericDotNet") { AbstractTupledMethod("Add", [ Int32(); Int32() ], Int32()) }
+            }
         }
         |> produces
             """
@@ -28,14 +30,16 @@ module GenericInterface =
 
     [<Fact>]
     let ``Produces a generic interface with TypeParams``() =
-        AnonymousModule() {
-            Interface("MyInterface", [ "'other"; "'another" ]) {
-                let parameters = [ Int32(); Int32(); String() ]
-                AbstractCurriedMethod("Add", parameters, Int32())
-                AbstractProperty("Pi", Float())
-                AbstractGetSet("Area", Float())
-            }
+        Oak() {
+            AnonymousModule() {
+                Interface("MyInterface", [ "'other"; "'another" ]) {
+                    let parameters = [ Int32(); Int32(); String() ]
+                    AbstractCurriedMethod("Add", parameters, Int32())
+                    AbstractProperty("Pi", Float())
+                    AbstractGetSet("Area", Float())
+                }
 
+            }
         }
         |> produces
             """

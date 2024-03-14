@@ -20,7 +20,7 @@ module Union =
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
-        AnonymousModule() { Union("Colors ") { UnionCase(value) } }
+        Oak() { AnonymousModule() { Union("Colors ") { UnionCase(value) } } }
         |> produces
             $$"""
 
@@ -30,12 +30,14 @@ type Colors = | {{expected}}
 
     [<Fact>]
     let ``Produces an union``() =
-        AnonymousModule() {
-            Union("Colors") {
-                UnionCase("Red")
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
+        Oak() {
+            AnonymousModule() {
+                Union("Colors") {
+                    UnionCase("Red")
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                }
             }
         }
 
@@ -52,25 +54,26 @@ type Colors =
 
     [<Fact>]
     let ``Produces an union with interface member``() =
-        AnonymousModule() {
+        Oak() {
+            AnonymousModule() {
 
-            Interface("IMyInterface") {
-                let parameters = [ Unit() ]
-                AbstractCurriedMethod("GetValue", parameters, String())
+                Interface("IMyInterface") {
+                    let parameters = [ Unit() ]
+                    AbstractCurriedMethod("GetValue", parameters, String())
+                }
+
+                (Union("Colors") {
+                    UnionCase("Red")
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                })
+                    .members() {
+                    InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr("")) }
+                }
+
             }
-
-            (Union("Colors") {
-                UnionCase("Red")
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-            })
-                .members() {
-                InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr("")) }
-            }
-
         }
-
         |> produces
             """
 type IMyInterface =
@@ -89,19 +92,20 @@ type Colors =
 
     [<Fact>]
     let ``Produces an union with fields``() =
-        AnonymousModule() {
-            Union("Colors") {
-                UnionParamsCase("Red") {
-                    Field("a", String())
-                    Field("b", "int")
-                }
+        Oak() {
+            AnonymousModule() {
+                Union("Colors") {
+                    UnionParamsCase("Red") {
+                        Field("a", String())
+                        Field("b", "int")
+                    }
 
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                }
             }
         }
-
         |> produces
             """
 
@@ -115,12 +119,14 @@ type Colors =
 
     [<Fact>]
     let ``Produces an union with SingleTextNode``() =
-        AnonymousModule() {
-            Union("Colors") {
-                UnionCase("Red")
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
+        Oak() {
+            AnonymousModule() {
+                Union("Colors") {
+                    UnionCase("Red")
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                }
             }
         }
         |> produces
@@ -136,13 +142,15 @@ type Colors =
 
     [<Fact>]
     let ``Produces an union using Widget and escape hatch``() =
-        AnonymousModule() {
-            Union("Colors") {
-                UnionCase("Red")
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-                EscapeHatch(UnionCaseNode(None, None, None, SingleTextNode("Black", Range.Zero), [], Range.Zero))
+        Oak() {
+            AnonymousModule() {
+                Union("Colors") {
+                    UnionCase("Red")
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                    EscapeHatch(UnionCaseNode(None, None, None, SingleTextNode("Black", Range.Zero), [], Range.Zero))
+                }
             }
         }
         |> produces
@@ -159,7 +167,7 @@ type Colors =
 
     [<Fact>]
     let ``Produces an union with attribute``() =
-        AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attribute(Attribute "Test") }
+        Oak() { AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attribute(Attribute "Test") } }
         |> produces
             """
 
@@ -169,14 +177,16 @@ type Colors = | Red
 
     [<Fact>]
     let ``Produces an union case with attributes``() =
-        AnonymousModule() {
-            (Union("Colors") {
-                UnionCase("Red").attributes() {
-                    Attribute("Obsolete")
-                    Attribute("Test")
-                }
-            })
-                .attribute(Attribute "Test")
+        Oak() {
+            AnonymousModule() {
+                (Union("Colors") {
+                    UnionCase("Red").attributes() {
+                        Attribute("Obsolete")
+                        Attribute("Test")
+                    }
+                })
+                    .attribute(Attribute "Test")
+            }
         }
         |> produces
             """
@@ -189,19 +199,20 @@ module GenericUnion =
 
     [<Fact>]
     let ``Produces an union with TypeParams``() =
-        AnonymousModule() {
-            GenericUnion("Colors", [ "'other" ]) {
-                UnionParamsCase("Red") {
-                    Field("a", String())
-                    Field("b", LongIdent("'other"))
-                }
+        Oak() {
+            AnonymousModule() {
+                GenericUnion("Colors", [ "'other" ]) {
+                    UnionParamsCase("Red") {
+                        Field("a", String())
+                        Field("b", LongIdent("'other"))
+                    }
 
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                }
             }
         }
-
         |> produces
             """
 
@@ -215,21 +226,23 @@ type Colors<'other> =
 
     [<Fact>]
     let ``Produces an union with TypeParams and interface member``() =
-        AnonymousModule() {
-            Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
+        Oak() {
+            AnonymousModule() {
+                Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
-            (GenericUnion("Colors", [ "'other" ]) {
-                UnionParamsCase("Red") {
-                    Field("a", String())
-                    Field("b", LongIdent("'other"))
+                (GenericUnion("Colors", [ "'other" ]) {
+                    UnionParamsCase("Red") {
+                        Field("a", String())
+                        Field("b", LongIdent("'other"))
+                    }
+
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                })
+                    .members() {
+                    InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr("")) }
                 }
-
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-            })
-                .members() {
-                InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr("")) }
             }
         }
 
@@ -251,19 +264,21 @@ type Colors<'other> =
 
     [<Fact>]
     let ``Produces an struct union with TypeParams``() =
-        AnonymousModule() {
-            (GenericUnion("Colors", [ "'other" ]) {
-                UnionParamsCase("Red") {
-                    Field("a", String())
-                    Field("b", LongIdent("'other"))
-                }
+        Oak() {
+            AnonymousModule() {
+                (GenericUnion("Colors", [ "'other" ]) {
+                    UnionParamsCase("Red") {
+                        Field("a", String())
+                        Field("b", LongIdent("'other"))
+                    }
 
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-            })
-                .attribute(Attribute "Struct")
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                })
+                    .attribute(Attribute "Struct")
 
+            }
         }
 
         |> produces

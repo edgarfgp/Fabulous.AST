@@ -12,54 +12,31 @@ open type Ast
 module Namespace =
     [<Fact>]
     let ``Produces a namespace with binding``() =
-        (Namespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) })
+        Oak() { ModuleOrNamespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) } }
         |> produces
             """
-namespace Fabulous.AST
+module Fabulous.AST
 
 let x = 3
 """
 
     [<Fact>]
     let ``Produces a rec namespace with binding``() =
-        (Namespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) }).toRecursive()
+        Oak() {
+            (ModuleOrNamespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) })
+                .toRecursive()
+        }
         |> produces
             """
-namespace rec Fabulous.AST
+module rec Fabulous.AST
 
 let x = 3
 """
 
     [<Fact>]
     let ``Produces a namespace using the EscapeHatch widget``() =
-        Namespace("Fabulous.AST") {
-            BindingNode(
-                None,
-                None,
-                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                false,
-                None,
-                None,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                None,
-                List.Empty,
-                None,
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                Range.Zero
-            )
-        }
-        |> produces
-            """
-namespace Fabulous.AST
-
-let x = 12
-"""
-
-    [<Fact>]
-    let ``Produces a namespace with nested module``() =
-        Namespace("Fabulous") {
-            NestedModule("AST") {
+        Oak() {
+            ModuleOrNamespace("Fabulous.AST") {
                 BindingNode(
                     None,
                     None,
@@ -75,6 +52,38 @@ let x = 12
                     Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
                     Range.Zero
                 )
+            }
+        }
+        |> produces
+            """
+module Fabulous.AST
+
+let x = 12
+"""
+
+    [<Fact>]
+    let ``Produces a namespace with nested module``() =
+        Oak() {
+            ModuleOrNamespace("Fabulous") {
+                NestedModule("AST") {
+                    BindingNode(
+                        None,
+                        None,
+                        MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                        false,
+                        None,
+                        None,
+                        Choice1Of2(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
+                        ),
+                        None,
+                        List.Empty,
+                        None,
+                        SingleTextNode("=", Range.Zero),
+                        Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                        Range.Zero
+                    )
+                }
             }
         }
         |> produces
@@ -117,9 +126,11 @@ module AST =
                         let record = TypeDefn.Record(fields)
                         ModuleDecl.TypeDefn(record))
 
-        Namespace("Json") {
-            for recordType in recordTypes do
-                EscapeHatch(recordType)
+        Oak() {
+            ModuleOrNamespace("Json") {
+                for recordType in recordTypes do
+                    EscapeHatch(recordType)
+            }
         }
         |> produces
             """

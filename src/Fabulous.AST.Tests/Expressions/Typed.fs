@@ -10,8 +10,10 @@ open type Ast
 module Typed =
     [<Fact>]
     let ``let value with a typed expression``() =
-        AnonymousModule() {
-            Value("x", TypedExpr(ConstantExpr(Constant("2").hasQuotes(false)), ":", LongIdent("string")))
+        Oak() {
+            AnonymousModule() {
+                Value("x", TypedExpr(ConstantExpr(Constant("2").hasQuotes(false)), ":", LongIdent("string")))
+            }
         }
         |> produces
             """

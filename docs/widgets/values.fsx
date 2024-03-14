@@ -54,47 +54,49 @@ open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
 
-AnonymousModule() {
-    Value("value", "12")
+Oak() {
+    AnonymousModule() {
+        Value("value", "12")
 
-    Value("value1", "12").hasQuotes (false)
+        Value("value1", "12").hasQuotes (false)
 
-    Value(
-        "value3",
-        IfThenElseExpr(
-            InfixAppExpr(ConstantExpr("0").hasQuotes (false), "=", ConstantExpr(Constant("12").hasQuotes (false))),
-            ConstantExpr(ConstantUnit()),
-            ConstantExpr(ConstantUnit())
+        Value(
+            "value3",
+            IfThenElseExpr(
+                InfixAppExpr(ConstantExpr("0").hasQuotes (false), "=", ConstantExpr(Constant("12").hasQuotes (false))),
+                ConstantExpr(ConstantUnit()),
+                ConstantExpr(ConstantUnit())
+            )
         )
-    )
 
-    Value(
-        NamedPat("value4"),
-        IfThenElseExpr(
-            InfixAppExpr(ConstantExpr("0").hasQuotes (false), "=", ConstantExpr(Constant("12").hasQuotes (false))),
-            ConstantExpr(ConstantUnit()),
-            ConstantExpr(ConstantUnit())
+        Value(
+            NamedPat("value4"),
+            IfThenElseExpr(
+                InfixAppExpr(ConstantExpr("0").hasQuotes (false), "=", ConstantExpr(Constant("12").hasQuotes (false))),
+                ConstantExpr(ConstantUnit()),
+                ConstantExpr(ConstantUnit())
+            )
         )
-    )
 
-    Value(NamedPat("value5"), "12")
+        Value(NamedPat("value5"), "12")
 
-    Value(NamedPat("value6"), "12").hasQuotes (false)
+        Value(NamedPat("value6"), "12").hasQuotes (false)
 
-    Value("value7", "12").hasQuotes(false).typeParameters ([ "'a" ])
+        Value("value7", "12").hasQuotes(false).typeParameters ([ "'a" ])
 
-    Value("value8", ConstantExpr("12")).typeParameters ([ "'a" ])
+        Value("value8", ConstantExpr("12")).typeParameters ([ "'a" ])
 
-    Value(NamedPat("value9"), ConstantExpr("12")).typeParameters ([ "'a" ])
+        Value(NamedPat("value9"), ConstantExpr("12")).typeParameters ([ "'a" ])
 
-    Value("value10", "12").returnType(Int32()).hasQuotes (false)
+        Value("value10", "12").returnType(Int32()).hasQuotes (false)
 
-    Value("value11", "12").returnType(Int32()).toPrivate().hasQuotes (false)
+        Value("value11", "12").returnType(Int32()).toPrivate().hasQuotes (false)
 
-    Value("value12", "12").attribute ("Literal")
+        Value("value12", "12").attribute ("Literal")
 
-    Value("value13", "12").returnType(Int32()).toMutable().hasQuotes (false)
+        Value("value13", "12").returnType(Int32()).toMutable().hasQuotes (false)
 
+    }
 }
 |> Gen.mkOak
 |> CodeFormatter.FormatOakAsync
