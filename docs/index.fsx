@@ -55,7 +55,7 @@ CodeFormatter.FormatOakAsync(implementationSyntaxTree)
 
 // produces the following code:
 (*** include-output ***)
-
+let x = 12
 (**
 
 ## Using Fabulous.AST
@@ -68,15 +68,15 @@ Now let's take a look at same example using Fabulous.AST:
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-let source = AnonymousModule() { Value("x", "12") }
+let source = Oak() { AnonymousModule() { Value("y", Unquoted "12") } }
 
 let oak = Gen.mkOak source
 CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously |> printfn "%s"
 
 // produces the following code:
 (*** include-output ***)
-
-(** 
+let y = 12
+(**
 
 ### Escape Hatch
 
@@ -105,9 +105,11 @@ let topLevelBinding: ModuleDecl =
     |> ModuleDecl.TopLevelBinding
 
 let sourceWithEscapeHatch =
-    AnonymousModule() {
-        Value("a", "11")
-        EscapeHatch(topLevelBinding)
+    Oak() {
+        AnonymousModule() {
+            Value("a", Unquoted "11")
+            EscapeHatch(topLevelBinding)
+        }
     }
 
 Gen.mkOak sourceWithEscapeHatch
