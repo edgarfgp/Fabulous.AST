@@ -56,14 +56,14 @@ open type Fabulous.AST.Ast
 
 Oak() {
     AnonymousModule() {
-        Value("value", "12")
+        Value("value", Quoted "12")
 
-        Value("value1", "12").hasQuotes (false)
+        Value("value1", Unquoted "12")
 
         Value(
             "value3",
             IfThenElseExpr(
-                InfixAppExpr(ConstantExpr("0").hasQuotes (false), "=", ConstantExpr(Constant("12").hasQuotes (false))),
+                InfixAppExpr(ConstantExpr(Unquoted "0"), "=", ConstantExpr(Constant(Unquoted "12"))),
                 ConstantExpr(ConstantUnit()),
                 ConstantExpr(ConstantUnit())
             )
@@ -72,29 +72,29 @@ Oak() {
         Value(
             NamedPat("value4"),
             IfThenElseExpr(
-                InfixAppExpr(ConstantExpr("0").hasQuotes (false), "=", ConstantExpr(Constant("12").hasQuotes (false))),
+                InfixAppExpr(ConstantExpr(Unquoted "0"), "=", ConstantExpr(Constant(Unquoted "12"))),
                 ConstantExpr(ConstantUnit()),
                 ConstantExpr(ConstantUnit())
             )
         )
 
-        Value(NamedPat("value5"), "12")
+        Value(NamedPat("value5"), Quoted "12")
 
-        Value(NamedPat("value6"), "12").hasQuotes (false)
+        Value(NamedPat("value6"), Unquoted "12")
 
-        Value("value7", "12").hasQuotes(false).typeParameters ([ "'a" ])
+        Value("value7", Quoted "12").typeParams ([ "'a" ])
 
-        Value("value8", ConstantExpr("12")).typeParameters ([ "'a" ])
+        Value("value8", ConstantExpr(Quoted "12")).typeParams ([ "'a" ])
 
-        Value(NamedPat("value9"), ConstantExpr("12")).typeParameters ([ "'a" ])
+        Value(NamedPat("value9"), ConstantExpr(Quoted "12")).typeParams ([ "'a" ])
 
-        Value("value10", "12").returnType(Int32()).hasQuotes (false)
+        Value("value10", Unquoted "12").returnType (Int32())
 
-        Value("value11", "12").returnType(Int32()).toPrivate().hasQuotes (false)
+        Value("value11", Unquoted "12").returnType(Int32()).toPrivate ()
 
-        Value("value12", "12").attribute ("Literal")
+        Value("value12", Quoted "12").attribute ("Literal")
 
-        Value("value13", "12").returnType(Int32()).toMutable().hasQuotes (false)
+        Value("value13", Unquoted "12").returnType(Int32()).toMutable ()
 
     }
 }

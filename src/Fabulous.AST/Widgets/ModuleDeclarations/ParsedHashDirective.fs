@@ -33,13 +33,14 @@ module HashDirectiveBuilders =
             )
 
         static member NoWarn(value: string) =
-            Ast.BaseHashDirective("nowarn", [  Quoted value ])
+            Ast.BaseHashDirective("nowarn", [ Quoted value ])
 
         static member NoWarn(args: string list) =
             let args = args |> List.map(Quoted)
             Ast.BaseHashDirective("nowarn", args)
 
-        static member HashDirective(ident: string, value: string) = Ast.BaseHashDirective(ident, [ Unquoted value ])
+        static member HashDirective(ident: string, value: string) =
+            Ast.BaseHashDirective(ident, [ Unquoted value ])
 
         static member HashDirective(ident: string) = Ast.BaseHashDirective(ident, [])
 
