@@ -15,12 +15,12 @@ module BindingNode =
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
-    let Return = Attributes.defineWidget "Return"
+    let Return = Attributes.defineScalar<StringOrWidget<Type>> "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Parameters = Attributes.defineWidget "Parameters"
 
 [<Extension>]
-type ValueModifiers =
+type TopLevelBindingModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
@@ -60,11 +60,11 @@ type ValueModifiers =
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) =
-        this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
+        this.AddScalar(BindingNode.Return.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType)))
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
-        ValueModifiers.returnType(this, Ast.LongIdent(returnType))
+        this.AddScalar(BindingNode.Return.WithValue(StringOrWidget.StringExpr(Unquoted returnType)))
 
     [<Extension>]
     static member inline toMutable(this: WidgetBuilder<BindingNode>) =

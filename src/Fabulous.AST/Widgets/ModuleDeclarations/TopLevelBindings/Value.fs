@@ -70,12 +70,25 @@ module BindingValue =
                 Widgets.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget<Type> widget BindingNode.Return
+            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
 
             let returnType =
                 match returnType with
-                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
+                | ValueSome value ->
+                    match value with
+                    | StringOrWidget.StringExpr value ->
+                        let returnType =
+                            Type.LongIdent(
+                                IdentListNode(
+                                    [ IdentifierOrDot.Ident(SingleTextNode.Create(value.Normalize())) ],
+                                    Range.Zero
+                                )
+                            )
+
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
+                    | StringOrWidget.WidgetExpr returnType ->
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
 
             let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
 

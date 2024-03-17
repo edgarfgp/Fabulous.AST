@@ -18,7 +18,7 @@ module Val =
 
     let Identifier = Attributes.defineScalar<string> "Identifier"
 
-    let ReturnType = Attributes.defineWidget "Identifier"
+    let ReturnType = Attributes.defineScalar<StringOrWidget<Type>> "Identifier"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -67,7 +67,14 @@ module Val =
             let identifier = Widgets.getScalarValue widget Identifier
             let identifier = SingleTextNode.Create(identifier)
 
-            let returnType = Widgets.getNodeFromWidget<Type> widget ReturnType
+            let returnType = Widgets.getScalarValue widget ReturnType
+
+            let returnType =
+                match returnType with
+                | StringOrWidget.StringExpr value ->
+                    let value = StringParsing.normalizeIdentifierBackticks value
+                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
+                | StringOrWidget.WidgetExpr widget -> widget
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -115,21 +122,31 @@ module Val =
 [<AutoOpen>]
 module ValBuilders =
     type Ast with
-
-        static member inline BaseVal(identifier: string, returnType: WidgetBuilder<Type>) =
+        static member Val(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<ValNode>(
                 Val.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Val.Identifier.WithValue(identifier)),
-                    [| Val.ReturnType.WithValue(returnType.Compile()) |],
+                    StackList.two(
+                        Val.Identifier.WithValue(identifier),
+                        Val.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
+                    ),
+                    Array.empty,
                     Array.empty
                 )
             )
 
-        static member Val(identifier: string, returnType: WidgetBuilder<Type>) = Ast.BaseVal(identifier, returnType)
-
         static member Val(identifier: string, returnType: string) =
-            Ast.BaseVal(identifier, Ast.LongIdent(returnType))
+            WidgetBuilder<ValNode>(
+                Val.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        Val.Identifier.WithValue(identifier),
+                        Val.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
 
 [<Extension>]
 type ValNodeModifiers =

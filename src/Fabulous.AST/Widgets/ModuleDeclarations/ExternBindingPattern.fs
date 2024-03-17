@@ -6,22 +6,33 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module ExternBindingPattern =
-    let Pattern = Attributes.defineWidget "DoExpression"
+    let PatternVal = Attributes.defineScalar<StringOrWidget<Pattern>> "DoExpression"
+
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
-    let Type = Attributes.defineWidget "Type"
+    let TypeValue = Attributes.defineScalar<StringOrWidget<Type>> "Type"
 
     let WidgetKey =
         Widgets.register "ExternBindingPattern" (fun widget ->
-            let pat = Widgets.tryGetNodeFromWidget<Pattern> widget Pattern
+            let pat = Widgets.tryGetScalarValue widget PatternVal
 
             let attributes =
                 Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
 
-            let ``type`` = Widgets.tryGetNodeFromWidget widget Type
+            let tp = Widgets.tryGetScalarValue widget TypeValue
 
-            let ``type`` =
-                match ``type`` with
-                | ValueSome value -> Some(value)
+            let tp =
+                match tp with
+                | ValueSome tp ->
+                    match tp with
+                    | StringOrWidget.StringExpr value ->
+                        let value = StringParsing.normalizeIdentifierBackticks value
+
+                        Some(
+                            Type.LongIdent(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
+                            )
+                        )
+                    | StringOrWidget.WidgetExpr widget -> Some widget
                 | ValueNone -> None
 
             let multipleAttributes =
@@ -42,34 +53,41 @@ module ExternBindingPattern =
 
             let pat =
                 match pat with
-                | ValueSome value -> Some(value)
+                | ValueSome value ->
+                    match value with
+                    | StringOrWidget.StringExpr value ->
+                        Some(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value.Normalize()), Range.Zero)))
+                    | StringOrWidget.WidgetExpr pattern -> Some pattern
                 | ValueNone -> None
 
-            ExternBindingPatternNode(multipleAttributes, ``type``, pat, Range.Zero))
+            ExternBindingPatternNode(multipleAttributes, tp, pat, Range.Zero))
 
 [<AutoOpen>]
 module ExternBindingPatternNodeBuilders =
     type Ast with
 
-        static member ExternBindingPat(``type``: string, pat: WidgetBuilder<Pattern>) =
+        static member ExternBindingPat(value: string, pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<ExternBindingPatternNode>(
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-
-                    [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
-                       ExternBindingPattern.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
+                    StackList.two(
+                        ExternBindingPattern.PatternVal.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pat)),
+                        ExternBindingPattern.TypeValue.WithValue(StringOrWidget.StringExpr(Unquoted value))
+                    ),
+                    Array.empty,
                     Array.empty
                 )
             )
 
-        static member ExternBindingPat(``type``: WidgetBuilder<Type>, pat: WidgetBuilder<Pattern>) =
+        static member ExternBindingPat(value: WidgetBuilder<Type>, pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<ExternBindingPatternNode>(
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    [| ExternBindingPattern.Pattern.WithValue(pat.Compile())
-                       ExternBindingPattern.Type.WithValue(``type``.Compile()) |],
+                    StackList.two(
+                        ExternBindingPattern.PatternVal.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pat)),
+                        ExternBindingPattern.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
+                    ),
+                    Array.empty,
                     Array.empty
                 )
             )
