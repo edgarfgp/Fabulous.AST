@@ -93,13 +93,17 @@ let x, y, z = 1, 2, 3
 
     [<Fact>]
     let ``Simple Let binding with return type``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").returnType(Int32()) } }
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").returnType(Int32())
+                Value("z", TripleQuoted("12"))
+            }
+        }
         |> produces
-            """
-
+            "
 let x: int = 12
-
-"""
+let z = \"\"\"12\"\"\"
+"
 
     [<Fact>]
     let ``Simple Let binding with return widget type``() =
