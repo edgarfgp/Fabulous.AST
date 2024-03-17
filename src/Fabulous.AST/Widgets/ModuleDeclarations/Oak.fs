@@ -5,7 +5,7 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
-module AnonymousModule =
+module Oak =
     let Decls = Attributes.defineWidgetCollection "Decls"
     let ParsedHashDirectives = Attributes.defineWidgetCollection "ParsedHashDirectives"
 
@@ -27,13 +27,13 @@ module AnonymousModule =
 module AnonymousModuleBuilders =
     type Ast with
         static member Oak() =
-            CollectionBuilder<Oak, ModuleOrNamespaceNode>(AnonymousModule.WidgetKey, AnonymousModule.Decls)
+            CollectionBuilder<Oak, ModuleOrNamespaceNode>(Oak.WidgetKey, Oak.Decls)
 
 [<Extension>]
 type AnonymousModuleModifiers =
     [<Extension>]
     static member inline hashDirectives(this: WidgetBuilder<Oak>) =
-        AttributeCollectionBuilder<Oak, ParsedHashDirectiveNode>(this, AnonymousModule.ParsedHashDirectives)
+        AttributeCollectionBuilder<Oak, ParsedHashDirectiveNode>(this, Oak.ParsedHashDirectives)
 
 [<Extension>]
 type AnonymousModuleExtensions =

@@ -14,16 +14,11 @@ module App =
         Widgets.register "Call" (fun widget ->
             let expr = Widgets.getScalarValue widget Name
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
-
             let expr =
                 match expr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -45,7 +40,7 @@ module AppBuilders =
                 )
             )
 
-        static member AppExpr(name: string) =
+        static member AppExpr(name: StringVariant) =
             CollectionBuilder<Expr, Expr>(
                 App.WidgetKey,
                 App.Items,

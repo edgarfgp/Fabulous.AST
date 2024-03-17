@@ -68,7 +68,7 @@ type Meh =
     let ``Produces a genetic interface with multiple abstract members types``() =
         Oak() {
             AnonymousModule() {
-                Interface("Meh", [ "'other"; "'another" ]) {
+                Interface("Meh") {
                     AbstractGet("Area", Float())
                     AbstractGet("Area1", "float")
 
@@ -96,6 +96,7 @@ type Meh =
                     AbstractCurriedMethod("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
 
                 }
+                |> _.typeParams([ "'other"; "'another" ])
             }
         }
         |> produces

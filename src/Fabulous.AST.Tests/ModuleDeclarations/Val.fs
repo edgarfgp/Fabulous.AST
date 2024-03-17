@@ -86,7 +86,7 @@ val public z: string
 
     [<Fact>]
     let ``Produces a Val with type parameters``() =
-        Oak() { AnonymousModule() { Val("x", String()).typeParameters([ "a"; "b" ]) } }
+        Oak() { AnonymousModule() { Val("x", String()).typeParams([ "a"; "b" ]) } }
 
         |> produces
             """

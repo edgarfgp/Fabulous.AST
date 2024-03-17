@@ -9,21 +9,16 @@ open type Fabulous.AST.Ast
 module BindingProperty =
     let WidgetKey =
         Widgets.register "PropertyMember" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.NameString
+            let name = Widgets.getScalarValue widget BindingNode.Name
+
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
             let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
-
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget BindingNode.HasQuotes
-                |> ValueOption.defaultValue true
 
             let bodyExpr =
                 match bodyExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr value -> value
 
@@ -107,6 +102,13 @@ module BindingProperty =
                   else
                       SingleTextNode.``member`` ]
 
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    let name = SingleTextNode.Create(name.Normalize())
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero))
+                | StringOrWidget.WidgetExpr pattern -> Choice2Of2(pattern)
+
             BindingNode(
                 xmlDocs,
                 multipleAttributes,
@@ -114,7 +116,7 @@ module BindingProperty =
                 false,
                 inlineNode,
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+                name,
                 typeParams,
                 [],
                 returnType,
@@ -131,7 +133,7 @@ module BindingPropertyBuilders =
                 BindingProperty.WidgetKey,
                 AttributesBundle(
                     StackList.two(
-                        BindingNode.NameString.WithValue(name),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
                     ),
                     Array.empty,
@@ -139,12 +141,12 @@ module BindingPropertyBuilders =
                 )
             )
 
-        static member Property(name: string, body: string) =
+        static member Property(name: string, body: StringVariant) =
             WidgetBuilder<BindingNode>(
                 BindingProperty.WidgetKey,
                 AttributesBundle(
                     StackList.two(
-                        BindingNode.NameString.WithValue(name),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
                     ),
                     Array.empty,

@@ -14,16 +14,11 @@ module Match =
         Widgets.register "Match" (fun widget ->
             let expr = Widgets.getScalarValue widget MatchExpr
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
-
             let expr =
                 match expr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -49,7 +44,7 @@ module MatchBuilders =
                 )
             )
 
-        static member MatchExpr(matchExpr: string) =
+        static member MatchExpr(matchExpr: StringVariant) =
             CollectionBuilder<Expr, MatchClauseNode>(
                 Match.WidgetKey,
                 Match.MatchClauses,

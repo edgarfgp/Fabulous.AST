@@ -12,23 +12,37 @@ open type Ast
 module Namespace =
     [<Fact>]
     let ``Produces a namespace with binding``() =
-        Oak() { ModuleOrNamespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) } }
+        Oak() { Namespace("Fabulous.AST") { Value("x", Unquoted "3") } }
         |> produces
             """
-module Fabulous.AST
+namespace Fabulous.AST
+
+let x = 3
+"""
+
+    [<Fact>]
+    let ``Produces a multiple namespaces``() =
+        Oak() {
+            Namespace("Fabulous.AST") { Value("x", Unquoted "3") }
+
+            Namespace("Fabulous.DSL") { Value("x", Unquoted "3") }
+        }
+        |> produces
+            """
+namespace Fabulous.AST
+
+let x = 3
+namespace Fabulous.DSL
 
 let x = 3
 """
 
     [<Fact>]
     let ``Produces a rec namespace with binding``() =
-        Oak() {
-            (ModuleOrNamespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) })
-                .toRecursive()
-        }
+        Oak() { (Namespace("Fabulous.AST") { Value("x", Unquoted "3") }).toRecursive() }
         |> produces
             """
-module rec Fabulous.AST
+namespace rec Fabulous.AST
 
 let x = 3
 """
@@ -36,7 +50,7 @@ let x = 3
     [<Fact>]
     let ``Produces a namespace using the EscapeHatch widget``() =
         Oak() {
-            ModuleOrNamespace("Fabulous.AST") {
+            Namespace("Fabulous.AST") {
                 BindingNode(
                     None,
                     None,
@@ -56,7 +70,7 @@ let x = 3
         }
         |> produces
             """
-module Fabulous.AST
+namespace Fabulous.AST
 
 let x = 12
 """
@@ -64,7 +78,7 @@ let x = 12
     [<Fact>]
     let ``Produces a namespace with nested module``() =
         Oak() {
-            ModuleOrNamespace("Fabulous") {
+            Namespace("Fabulous") {
                 NestedModule("AST") {
                     BindingNode(
                         None,
@@ -127,7 +141,7 @@ module AST =
                         ModuleDecl.TypeDefn(record))
 
         Oak() {
-            ModuleOrNamespace("Json") {
+            Namespace("Json") {
                 for recordType in recordTypes do
                     EscapeHatch(recordType)
             }

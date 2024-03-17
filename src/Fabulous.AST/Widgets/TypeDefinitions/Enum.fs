@@ -18,7 +18,10 @@ module Enum =
 
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
 
             let enumCaseNodes =
                 Widgets.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode

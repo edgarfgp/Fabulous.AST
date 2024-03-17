@@ -14,7 +14,7 @@ module Single =
             AnonymousModule() {
                 Value(
                     "x",
-                    SingleExpr("a", ConstantExpr(Constant("b").hasQuotes(false)))
+                    SingleExpr("a", ConstantExpr(Constant(Unquoted "b")))
                         .addSpace(true)
                         .supportsStroustrup(false)
                 )

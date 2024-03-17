@@ -19,16 +19,11 @@ module Single =
         Widgets.register "Single" (fun widget ->
             let expr = Widgets.getScalarValue widget Value
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
-
             let expr =
                 match expr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -54,7 +49,7 @@ module SingleBuilders =
                 )
             )
 
-        static member SingleExpr(leading: string, value: string) =
+        static member SingleExpr(leading: string, value: StringVariant) =
             WidgetBuilder<Expr>(
                 Single.WidgetKey,
                 AttributesBundle(

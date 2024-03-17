@@ -16,9 +16,9 @@ module ArrayOrList =
                 Value(
                     "x",
                     ArrayExpr() {
-                        ConstantExpr("1").hasQuotes(false)
-                        ConstantExpr("2").hasQuotes(false)
-                        ConstantExpr("3").hasQuotes(false)
+                        ConstantExpr(Unquoted "1")
+                        ConstantExpr(Unquoted "2")
+                        ConstantExpr(Unquoted "3")
                     }
                 )
             }
@@ -36,9 +36,9 @@ let x = [| 1; 2; 3 |]
                 Value(
                     "x",
                     ListExpr() {
-                        ConstantExpr("1").hasQuotes(false)
-                        ConstantExpr("2").hasQuotes(false)
-                        ConstantExpr("3").hasQuotes(false)
+                        ConstantExpr(Unquoted "1")
+                        ConstantExpr(Unquoted "2")
+                        ConstantExpr(Unquoted "3")
                     }
                 )
             }

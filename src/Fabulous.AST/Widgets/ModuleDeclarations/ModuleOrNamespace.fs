@@ -8,61 +8,41 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-module ModuleOrNamespace =
-    let Name = Attributes.defineScalar<string> "IdentList"
+(*
 
+Top-level module
+
+module A or A.B
+let x = 0
+
+// Nested module
+module X =
+    let x = 0
+
+// Namespace
+namespace A.B
+
+*)
+
+module ModuleOrNamespace =
     let Decls = Attributes.defineWidgetCollection "Decls"
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
-    let IsAnonymousModule = Attributes.defineScalar<bool> "IsAnonymous"
+    let ModuleOrNamespace =
+        Attributes.defineScalar<ModuleOrNamespaceDecl> "ModuleOrNamespaceDecl"
 
     let WidgetKey =
         Widgets.register "Namespace" (fun widget ->
             let decls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
-
-            let isAnonymous =
-                Widgets.tryGetScalarValue widget IsAnonymousModule
-                |> ValueOption.defaultValue false
-
-            let name = Widgets.tryGetScalarValue widget Name
-
-            let textNode =
-                match name with
-                | ValueNone -> None
-                | ValueSome name ->
-                    match StringParsing.normalizeModuleOrNamespaceName(name) with
-                    | ModuleOrNamespaceDecl.Anonymous -> None
-                    | ModuleOrNamespaceDecl.Module _ -> Some SingleTextNode.``module``
-                    | ModuleOrNamespaceDecl.Namespace _ -> Some SingleTextNode.``namespace``
-
-            let isNameSpace =
-                match name with
-                | ValueNone -> false
-                | ValueSome name ->
-                    match StringParsing.normalizeModuleOrNamespaceName(name) with
-                    | ModuleOrNamespaceDecl.Anonymous -> false
-                    | ModuleOrNamespaceDecl.Module _ -> false
-                    | ModuleOrNamespaceDecl.Namespace _ -> true
+            let moduleOrNamespaceDecl = Widgets.getScalarValue widget ModuleOrNamespace
 
             let name =
-                match name with
-                | ValueNone -> None
-                | ValueSome s ->
-                    match StringParsing.normalizeModuleOrNamespaceName(s) with
-                    | ModuleOrNamespaceDecl.Module name ->
-                        Some(
-                            IdentListNode(
-                                name
-                                |> Array.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
-                                |> List.ofArray
-                                |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.Create("."))),
-                                Range.Zero
-                            )
-                        )
-                    | ModuleOrNamespaceDecl.Namespace name ->
-                        Some(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))
-                    | ModuleOrNamespaceDecl.Anonymous -> None
+                match moduleOrNamespaceDecl with
+                | ModuleOrNamespaceDecl.AnonymousModule -> None
+                | ModuleOrNamespaceDecl.TopLevelModule name
+                | ModuleOrNamespaceDecl.Namespace name ->
+                    Some(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))
 
             let isRecursive =
                 Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
@@ -79,36 +59,72 @@ module ModuleOrNamespace =
                 | Unknown -> None
 
             let header =
-                if isAnonymous then
-                    None
-                else
+                match moduleOrNamespaceDecl with
+                | ModuleOrNamespaceDecl.TopLevelModule _ ->
                     Some(
                         ModuleOrNamespaceHeaderNode(
                             None,
                             None,
                             MultipleTextsNode(
-                                [ match textNode with
-                                  | Some textNode -> textNode
-                                  | _ -> () ],
+                                [ match moduleOrNamespaceDecl with
+                                  | ModuleOrNamespaceDecl.AnonymousModule -> ()
+                                  | ModuleOrNamespaceDecl.TopLevelModule _ -> SingleTextNode.``module``
+                                  | ModuleOrNamespaceDecl.Namespace _ -> SingleTextNode.``namespace`` ],
                                 Range.Zero
                             ),
-                            (if isNameSpace then None else accessControl),
+                            accessControl,
                             isRecursive,
                             name,
                             Range.Zero
                         )
                     )
+                | ModuleOrNamespaceDecl.Namespace _ ->
+                    Some(
+                        ModuleOrNamespaceHeaderNode(
+                            None,
+                            None,
+                            MultipleTextsNode(
+                                [ match moduleOrNamespaceDecl with
+                                  | ModuleOrNamespaceDecl.AnonymousModule -> ()
+                                  | ModuleOrNamespaceDecl.TopLevelModule _ -> SingleTextNode.``module``
+                                  | ModuleOrNamespaceDecl.Namespace _ -> SingleTextNode.``namespace`` ],
+                                Range.Zero
+                            ),
+                            None,
+                            isRecursive,
+                            name,
+                            Range.Zero
+                        )
+                    )
+                | ModuleOrNamespaceDecl.AnonymousModule -> None
 
             ModuleOrNamespaceNode(header, decls, Range.Zero))
 
 [<AutoOpen>]
 module ModuleOrNamespaceBuilders =
     type Ast with
-        static member ModuleOrNamespace(name: string) =
+        static member Namespace(name: string) =
             CollectionBuilder<ModuleOrNamespaceNode, ModuleDecl>(
                 ModuleOrNamespace.WidgetKey,
                 ModuleOrNamespace.Decls,
-                AttributesBundle(StackList.one(ModuleOrNamespace.Name.WithValue(name)), Array.empty, Array.empty)
+                AttributesBundle(
+                    StackList.one(ModuleOrNamespace.ModuleOrNamespace.WithValue(ModuleOrNamespaceDecl.Namespace(name))),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
+        static member TopLevelModule(name: string) =
+            CollectionBuilder<ModuleOrNamespaceNode, ModuleDecl>(
+                ModuleOrNamespace.WidgetKey,
+                ModuleOrNamespace.Decls,
+                AttributesBundle(
+                    StackList.one(
+                        ModuleOrNamespace.ModuleOrNamespace.WithValue(ModuleOrNamespaceDecl.TopLevelModule(name))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
             )
 
         static member AnonymousModule() =
@@ -116,7 +132,7 @@ module ModuleOrNamespaceBuilders =
                 ModuleOrNamespace.WidgetKey,
                 ModuleOrNamespace.Decls,
                 AttributesBundle(
-                    StackList.one(ModuleOrNamespace.IsAnonymousModule.WithValue(true)),
+                    StackList.one(ModuleOrNamespace.ModuleOrNamespace.WithValue(ModuleOrNamespaceDecl.AnonymousModule)),
                     Array.empty,
                     Array.empty
                 )

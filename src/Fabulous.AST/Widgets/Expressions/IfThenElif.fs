@@ -20,9 +20,6 @@ module IfThenElif =
 
             let elseExpr = Widgets.tryGetScalarValue widget ElseExpr
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
-
             let elseExpr =
                 match elseExpr with
                 | ValueNone -> None
@@ -33,7 +30,7 @@ module IfThenElif =
                             SingleTextNode.``else``,
                             Expr.Constant(
                                 Constant.FromText(
-                                    SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
+                                    SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value))
                                 )
                             )
                         )
@@ -56,7 +53,7 @@ module IfThenElifBuilders =
                 )
             )
 
-        static member inline IfThenElifExpr(elseExpr: string) =
+        static member inline IfThenElifExpr(elseExpr: StringVariant) =
             CollectionBuilder<Expr, Expr>(
                 IfThenElif.WidgetKey,
                 IfThenElif.Branches,

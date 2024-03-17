@@ -13,10 +13,7 @@ module QuoteExpr =
     let ``let value with a QuoteExpr pattern``() =
         Oak() {
             AnonymousModule() {
-                Value(
-                    QuoteExprPat(ConstantExpr(Constant("345").hasQuotes(false))),
-                    ConstantExpr(Constant("12").hasQuotes(false))
-                )
+                Value(QuoteExprPat(ConstantExpr(Constant(Unquoted "345"))), ConstantExpr(Constant(Unquoted "12")))
             }
         }
         |> produces

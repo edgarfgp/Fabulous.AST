@@ -13,8 +13,8 @@ module IsInstPat =
     let ``let value with a IsInstPat pattern``() =
         Oak() {
             AnonymousModule() {
-                MatchExpr(ConstantExpr(Constant("12").hasQuotes(false))) {
-                    MatchClauseExpr(IsInstPat(String()), ConstantExpr(Constant("12").hasQuotes(false)))
+                MatchExpr(ConstantExpr(Constant(Unquoted "12"))) {
+                    MatchClauseExpr(IsInstPat(String()), ConstantExpr(Constant(Unquoted "12")))
                 }
             }
         }
@@ -28,8 +28,8 @@ match 12 with
     let ``let value with a custom IsInstPat pattern``() =
         Oak() {
             AnonymousModule() {
-                MatchExpr(ConstantExpr(Constant("12").hasQuotes(false))) {
-                    MatchClauseExpr(IsInstPat("<:", "string"), ConstantExpr(Constant("12").hasQuotes(false)))
+                MatchExpr(ConstantExpr(Constant(Unquoted "12"))) {
+                    MatchClauseExpr(IsInstPat("<:", "string"), ConstantExpr(Constant(Unquoted "12")))
                 }
             }
         }

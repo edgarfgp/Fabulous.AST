@@ -13,7 +13,7 @@ module NestedModule =
 
     [<Fact>]
     let ``Produces a NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } } }
+        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } } }
 
         |> produces
             """
@@ -59,7 +59,7 @@ module A =
 
     [<Fact>]
     let ``Produces a recursive NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } |> _.toRecursive() } }
+        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } |> _.toRecursive() } }
 
         |> produces
             """
@@ -71,7 +71,7 @@ module rec A =
 
     [<Fact>]
     let ``Produces a private NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } |> _.toPrivate() } }
+        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } |> _.toPrivate() } }
         |> produces
             """
 
@@ -82,7 +82,7 @@ module private A =
 
     [<Fact>]
     let ``Produces a internal NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", "12").hasQuotes(false) } |> _.toInternal() } }
+        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } |> _.toInternal() } }
         |> produces
             """
 
@@ -94,7 +94,7 @@ module internal A =
     [<Fact>]
     let ``Produces a module with nested module``() =
         Oak() {
-            ModuleOrNamespace("Fabulous.AST") {
+            Namespace("Fabulous.AST") {
                 NestedModule("Foo") {
                     BindingNode(
                         None,
@@ -119,7 +119,7 @@ module internal A =
 
         |> produces
             """
-module Fabulous.AST
+namespace Fabulous.AST
 
 module Foo =
     let x = 12
@@ -128,7 +128,7 @@ module Foo =
     [<Fact>]
     let ``Produces a module with multiple nested module``() =
         Oak() {
-            ModuleOrNamespace("Fabulous.AST") {
+            Namespace("Fabulous.AST") {
                 NestedModule("Foo") {
                     BindingNode(
                         None,
@@ -149,13 +149,13 @@ module Foo =
                     )
                 }
 
-                NestedModule("Bar") { Value("x", "12").hasQuotes(false) }
+                NestedModule("Bar") { Value("x", Unquoted "12") }
             }
         }
 
         |> produces
             """
-module Fabulous.AST
+namespace Fabulous.AST
 
 module Foo =
     let x = 12

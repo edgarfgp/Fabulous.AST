@@ -13,15 +13,10 @@ module AttributeNode =
 
     let Target = Attributes.defineScalar<string> "Target"
 
-    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
-
     let WidgetKey =
         Widgets.register "AttributeNode" (fun widget ->
             let expr = Widgets.tryGetScalarValue widget Value
             let target = Widgets.tryGetScalarValue widget Target
-
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget HasQuotes |> ValueOption.defaultValue true
 
             let expr =
                 match expr with
@@ -30,9 +25,7 @@ module AttributeNode =
                     match expr with
                     | StringOrWidget.StringExpr value ->
                         Expr.Constant(
-                            Constant.FromText(
-                                SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                            )
+                            Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                         )
                         |> Some
                     | StringOrWidget.WidgetExpr value -> Some value
@@ -97,9 +90,3 @@ module AttributeNodeBuilders =
                     Array.empty
                 )
             )
-
-[<Extension>]
-type AttributeModifiers =
-    [<Extension>]
-    static member inline hasQuotes(this: WidgetBuilder<AttributeNode>, value: bool) =
-        this.AddScalar(AttributeNode.HasQuotes.WithValue(value))

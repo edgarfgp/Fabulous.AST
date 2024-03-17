@@ -11,7 +11,7 @@ module Constant =
 
     [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantString``() =
-        Oak() { AnonymousModule() { Value("x", ConstantExpr("a")) } }
+        Oak() { AnonymousModule() { Value("x", ConstantExpr(Quoted "a")) } }
         |> produces
             """
 
@@ -22,7 +22,7 @@ let x = "a"
     let ``let value with a ConstantExpr expression with ConstantMeasure``() =
         Oak() {
             AnonymousModule() {
-                Value("x", ConstantExpr(ConstantMeasure(Constant("1.0").hasQuotes(false), MeasureSingle("cm"))))
+                Value("x", ConstantExpr(ConstantMeasure(Constant(Unquoted "1.0"), MeasureSingle("cm"))))
             }
         }
         |> produces
@@ -48,7 +48,7 @@ let x = ()
                     "x",
                     ConstantExpr(
                         ConstantMeasure(
-                            Constant("55.0f").hasQuotes(false),
+                            Constant(Unquoted "55.0f"),
                             MeasureOperator("*", MeasureSingle("miles"), MeasureSingle("hour"))
                         )
                     )
@@ -69,7 +69,7 @@ let x = 55.0f<miles * hour>
                     "x",
                     ConstantExpr(
                         ConstantMeasure(
-                            Constant("55.0f").hasQuotes(false),
+                            Constant(Unquoted "55.0f"),
                             MeasureDivide("/", MeasureSingle("miles"), MeasureSingle("hour"))
                         )
                     )
@@ -89,11 +89,11 @@ let x = 55.0f<miles / hour>
                 Value(
                     "x",
                     InfixAppExpr(
-                        ConstantExpr(Constant("55.0f").hasQuotes(false)),
+                        ConstantExpr(Constant(Unquoted "55.0f")),
                         "/",
                         ConstantExpr(
                             ConstantMeasure(
-                                Constant("1000.0").hasQuotes(false),
+                                Constant(Unquoted "1000.0"),
                                 MeasureDivide("/", MeasureSingle("g"), MeasureSingle("kg"))
                             )
                         )
@@ -115,7 +115,7 @@ let x = 55.0f / 1000.0<g / kg>
                     "x",
                     ConstantExpr(
                         ConstantMeasure(
-                            Constant("55.0f").hasQuotes(false),
+                            Constant(Unquoted "55.0f"),
                             MeasurePower("*", MeasureSingle("miles"), Integer("hour"))
                         )
                     )

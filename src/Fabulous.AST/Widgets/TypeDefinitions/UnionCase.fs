@@ -18,6 +18,7 @@ module UnionCase =
         Widgets.register "UnionCase" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Name
+                |> Unquoted
                 |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 

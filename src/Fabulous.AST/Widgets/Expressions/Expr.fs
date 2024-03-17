@@ -7,19 +7,15 @@ open Fantomas.Core.SyntaxOak
 
 module Expr =
     let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
-    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
 
     let WidgetKey =
         Widgets.register "Expr" (fun widget ->
             let value = Widgets.getScalarValue widget Value
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget HasQuotes |> ValueOption.defaultValue true
-
             let value =
                 match value with
                 | StringOrWidget.StringExpr value ->
-                    Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes)))
+                    Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                 | StringOrWidget.WidgetExpr constant -> constant
 
             Expr.Constant(value))
@@ -40,7 +36,7 @@ module ExprBuilders =
                 )
             )
 
-        static member ConstantExpr(value: string) =
+        static member ConstantExpr(value: StringVariant) =
             WidgetBuilder<Expr>(
                 Expr.WidgetKey,
                 AttributesBundle(
@@ -52,12 +48,6 @@ module ExprBuilders =
 
         static member NullExpr() =
             WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
-
-[<Extension>]
-type ExprModifiers =
-    [<Extension>]
-    static member inline hasQuotes(this: WidgetBuilder<Expr>, value: bool) =
-        this.AddScalar(Expr.HasQuotes.WithValue(value))
 
 [<Extension>]
 type ExprYieldExtensions =

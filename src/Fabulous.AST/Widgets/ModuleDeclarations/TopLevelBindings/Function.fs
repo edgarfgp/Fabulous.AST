@@ -9,22 +9,22 @@ open type Fabulous.AST.Ast
 module BindingFunction =
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.NameString
+            let name = Widgets.getScalarValue widget BindingNode.Name
+
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
+                | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
+
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
-
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget BindingNode.HasQuotes
-                |> ValueOption.defaultValue true
-
             let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
 
             let bodyExpr =
                 match bodyExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr value -> value
 
@@ -107,7 +107,7 @@ module BindingFunction =
                 false,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create name) ], Range.Zero)),
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
                 typeParams,
                 parameters,
                 returnType,
@@ -129,10 +129,13 @@ module BindingFunctionBuilders =
             let scalars =
                 match typeParams with
                 | ValueNone ->
-                    StackList.two(BindingNode.BodyExpr.WithValue(bodyExpr), BindingNode.NameString.WithValue(name))
+                    StackList.two(
+                        BindingNode.BodyExpr.WithValue(bodyExpr),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted name))
+                    )
                 | ValueSome typeParams ->
                     StackList.three(
-                        BindingNode.NameString.WithValue(name),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted name)),
                         BindingNode.BodyExpr.WithValue(bodyExpr),
                         BindingNode.TypeParams.WithValue(typeParams)
                     )
@@ -142,7 +145,7 @@ module BindingFunctionBuilders =
                 AttributesBundle(scalars, [| BindingNode.Parameters.WithValue(parameters.Compile()) |], Array.empty)
             )
 
-        static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: string) =
+        static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: StringVariant) =
             Ast.BaseFunction(name, ValueNone, StringOrWidget.StringExpr(value), parameters)
 
         static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =

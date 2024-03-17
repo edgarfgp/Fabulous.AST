@@ -11,7 +11,7 @@ open type Ast
 module AnonymousModule =
     [<Fact>]
     let ``Produces a simple hello world console app``() =
-        Oak() { AnonymousModule() { AppExpr("printfn") { ConstantExpr("hello, world") } |> _.hasQuotes(false) } }
+        Oak() { AnonymousModule() { AppExpr(Unquoted "printfn") { ConstantExpr(Quoted("hello, world")) } } }
         |> produces
             """
 
@@ -23,13 +23,13 @@ printfn "hello, world"
     let ``Produces Hello world with a let binding``() =
         Oak() {
             AnonymousModule() {
-                Value("x", "hello, world")
+                Value("x", Quoted "hello, world")
 
-                AppExpr("printfn") {
-                    ConstantExpr("%s")
-                    ConstantExpr("x").hasQuotes(false)
+                AppExpr(Unquoted "printfn") {
+                    ConstantExpr(Quoted "%s")
+                    ConstantExpr(Unquoted "x")
                 }
-                |> _.hasQuotes(false)
+
             }
         }
 
@@ -46,11 +46,10 @@ printfn "%s" x
         Oak() {
             AnonymousModule() {
                 for i = 0 to 2 do
-                    AppExpr("printfn") {
-                        ConstantExpr("%s")
-                        ConstantExpr($"{i}").hasQuotes(false)
+                    AppExpr(Unquoted "printfn") {
+                        ConstantExpr(Quoted "%s")
+                        ConstantExpr(Unquoted $"{i}")
                     }
-                    |> _.hasQuotes(false)
             }
         }
 

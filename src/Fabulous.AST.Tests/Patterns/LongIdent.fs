@@ -18,7 +18,7 @@ module LongIdent =
                         NamedPat("B")
                         NamedPat("A")
                     },
-                    ConstantExpr(Constant("12").hasQuotes(false))
+                    ConstantExpr(Constant(Unquoted "12"))
                 )
             }
         }
@@ -36,7 +36,7 @@ let x B A = 12
                         NamedPat("B")
                         NamedPat("A")
                     },
-                    ConstantExpr(Constant("12").hasQuotes(false))
+                    ConstantExpr(Constant(Unquoted "12"))
                 )
             }
         }

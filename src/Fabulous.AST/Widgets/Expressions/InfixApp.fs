@@ -13,16 +13,11 @@ module InfixApp =
         Widgets.register "Condition" (fun widget ->
             let lhs = Widgets.getScalarValue widget LeftHandSide
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
-
             let lhs =
                 match lhs with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -33,9 +28,7 @@ module InfixApp =
                 match rhs with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -59,7 +52,7 @@ module InfixAppBuilders =
                 )
             )
 
-        static member inline InfixAppExpr(lhs: string, operator: string, rhs: string) =
+        static member inline InfixAppExpr(lhs: StringVariant, operator: string, rhs: StringVariant) =
             WidgetBuilder<Expr>(
                 InfixApp.WidgetKey,
                 AttributesBundle(

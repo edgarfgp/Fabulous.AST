@@ -22,7 +22,10 @@ module Union =
 
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
 
             let unionCaseNode =
                 Widgets.getNodesFromWidgetCollection<UnionCaseNode> widget UnionCaseNode

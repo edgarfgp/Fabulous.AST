@@ -11,6 +11,7 @@ module Named =
         Widgets.register "Named" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Value
+                |> Unquoted
                 |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 

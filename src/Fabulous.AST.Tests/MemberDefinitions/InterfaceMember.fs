@@ -21,7 +21,7 @@ module InterfaceMembers =
                 })
                     .members() {
                     InterfaceMember("IMyInterface") {
-                        Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2").hasQuotes(false))
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Unquoted "x.MyField2"))
                     }
                 }
             }
@@ -58,7 +58,7 @@ type Colors<'other> =
                 })
                     .members() {
                     InterfaceMember("IMyInterface") {
-                        Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2").hasQuotes(false))
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Unquoted "x.MyField2"))
                     }
                 }
             }
@@ -84,7 +84,7 @@ type MyRecord =
             AnonymousModule() {
                 Interface("Meh") { AbstractProperty("Name", String()) }
 
-                Class("Person") { InterfaceMember("Meh") { Property("this.Name", ConstantExpr("23")) } }
+                Class("Person") { InterfaceMember("Meh") { Property("this.Name", ConstantExpr(Quoted "23")) } }
             }
         }
         |> produces

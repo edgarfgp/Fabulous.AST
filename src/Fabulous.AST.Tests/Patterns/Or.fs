@@ -12,9 +12,7 @@ module Or =
     [<Fact>]
     let ``let value with a Or pattern``() =
         Oak() {
-            AnonymousModule() {
-                Value(OrPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Constant("12").hasQuotes(false)))
-            }
+            AnonymousModule() { Value(OrPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Constant(Unquoted "12"))) }
         }
         |> produces
             """
@@ -25,9 +23,7 @@ let A | B = 12
     [<Fact>]
     let ``let value with a Or custom middle pattern``() =
         Oak() {
-            AnonymousModule() {
-                Value(OrPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(Constant("12").hasQuotes(false)))
-            }
+            AnonymousModule() { Value(OrPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(Constant(Unquoted "12"))) }
         }
         |> produces
             """

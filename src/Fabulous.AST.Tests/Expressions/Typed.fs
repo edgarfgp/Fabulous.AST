@@ -11,9 +11,7 @@ module Typed =
     [<Fact>]
     let ``let value with a typed expression``() =
         Oak() {
-            AnonymousModule() {
-                Value("x", TypedExpr(ConstantExpr(Constant("2").hasQuotes(false)), ":", LongIdent("string")))
-            }
+            AnonymousModule() { Value("x", TypedExpr(ConstantExpr(Constant(Unquoted "2")), ":", LongIdent("string"))) }
         }
         |> produces
             """

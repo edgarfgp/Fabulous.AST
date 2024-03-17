@@ -17,16 +17,11 @@ module IfThenElse =
             let thenExpr = Widgets.getScalarValue widget ThenExpr
             let elseExpr = Widgets.getScalarValue widget ElseExpr
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
-
             let ifExpr =
                 match ifExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -34,9 +29,7 @@ module IfThenElse =
                 match thenExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -44,9 +37,7 @@ module IfThenElse =
                 match elseExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -82,7 +73,7 @@ module IfThenElseBuilders =
                 )
             )
 
-        static member inline IfThenElseExpr(ifExpr: string, thenExpr: string, elseExpr: string) =
+        static member inline IfThenElseExpr(ifExpr: StringVariant, thenExpr: StringVariant, elseExpr: StringVariant) =
             WidgetBuilder<Expr>(
                 IfThenElse.WidgetKey,
                 AttributesBundle(

@@ -14,35 +14,35 @@ module MethodMembers =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
 
-                    Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("this.C", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                         .toInlined()
 
-                    Method("B", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("B", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                         .toStatic()
 
-                    Method("D", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("D", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                         .toInlined()
                         .toStatic()
 
-                    Method("this.E", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("this.E", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                     |> _.returnType(String())
 
-                    Method("this.F", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
-                        .toInlined()
-                    |> _.returnType(String())
-
-                    Method("G", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
-                        .toStatic()
-                    |> _.returnType(String())
-
-                    Method("H", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
-                        .toStatic()
+                    Method("this.F", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                         .toInlined()
                     |> _.returnType(String())
 
-                    Method("this.I", ParametersPat(true) { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("G", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
+                        .toStatic()
+                    |> _.returnType(String())
+
+                    Method("H", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
+                        .toStatic()
+                        .toInlined()
+                    |> _.returnType(String())
+
+                    Method("this.I", ParametersPat(true) { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
 
                     Method(
                         "this.J",
@@ -50,7 +50,7 @@ module MethodMembers =
                             ParameterPat("p", String())
                             ParameterPat("p2", String())
                         },
-                        ConstantExpr("")
+                        ConstantExpr(Quoted "")
                     )
 
                     Method(
@@ -59,7 +59,7 @@ module MethodMembers =
                             ParameterPat("p", String())
                             ParameterPat("p2", String())
                         },
-                        ConstantExpr("")
+                        ConstantExpr(Quoted "")
                     )
 
                     Method(
@@ -67,9 +67,9 @@ module MethodMembers =
                         UnitPat(),
                         IfThenElseExpr(
                             InfixAppExpr(
-                                ConstantExpr(Constant("x").hasQuotes(false)),
+                                ConstantExpr(Constant(Unquoted "x")),
                                 "=",
-                                ConstantExpr(Constant("12").hasQuotes(false))
+                                ConstantExpr(Constant(Unquoted "12"))
                             ),
                             ConstantExpr(ConstantUnit()),
                             ConstantExpr(ConstantUnit())
@@ -104,13 +104,15 @@ type Colors =
     let ``Produces a record with TypeParams and method member``() =
         Oak() {
             AnonymousModule() {
+                let foo = async { return 1 }
+
                 (GenericRecord("Colors", [ "'other" ]) {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
                     .members() {
-                    Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                 }
             }
         }
@@ -136,7 +138,7 @@ type Colors<'other> =
                     Field("Yellow", LongIdent("int"))
                 })
                     .members() {
-                    Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                         .toStatic()
                 }
             }
@@ -159,7 +161,7 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                 }
             }
         }
@@ -178,7 +180,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(""))
+                    Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                         .toStatic()
                 }
             }
@@ -197,7 +199,7 @@ type Colors =
     let ``Produces a classes with a method member``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false)) }
+                Class("Person", Constructor()) { Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23")) }
             }
         }
         |> produces
@@ -214,7 +216,7 @@ type Person () =
                     Method(
                         "this.Name",
                         ParametersPat() { ParameterPat("params", String()) },
-                        ConstantExpr("23").hasQuotes(false)
+                        ConstantExpr(Unquoted "23")
                     )
                 }
             }
@@ -236,7 +238,7 @@ type Person () =
                             ParameterPat("name", String())
                             ParameterPat("age", Int32())
                         },
-                        ConstantExpr("23").hasQuotes(false)
+                        ConstantExpr(Unquoted "23")
                     )
                 }
             }
@@ -258,7 +260,7 @@ type Person () =
                             ParameterPat("name", String())
                             ParameterPat("age", Int32())
                         },
-                        ConstantExpr("23").hasQuotes(false)
+                        ConstantExpr(Unquoted "23")
                     )
                 }
             }
@@ -274,7 +276,7 @@ type Person () =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false))
+                    Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23"))
                         .attribute("Obsolete")
                 }
             }
@@ -291,7 +293,7 @@ type Person () =
     let ``Produces an inline method member``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false)).toInlined() }
+                Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23")).toInlined() }
             }
         }
         |> produces
@@ -305,8 +307,8 @@ type Person () =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Method("this.Name", UnitPat(), ConstantExpr("23").hasQuotes(false))
-                        .typeParameters([ "'other" ])
+                    Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23"))
+                        .typeParams([ "'other" ])
                 }
             }
         }
@@ -321,7 +323,7 @@ type Person () =
         Oak() {
             AnonymousModule() {
                 (Union("Person") { UnionCase("Name") }).members() {
-                    Method("this.Name", UnitPat(), ConstantExpr("name"))
+                    Method("this.Name", UnitPat(), ConstantExpr(Quoted "name"))
                 }
             }
         }
@@ -349,7 +351,7 @@ type Person =
                     UnionCase("Yellow")
                 })
                     .members() {
-                    Method("this.Name", UnitPat(), ConstantExpr("name"))
+                    Method("this.Name", UnitPat(), ConstantExpr(Quoted "name"))
                 }
 
             }

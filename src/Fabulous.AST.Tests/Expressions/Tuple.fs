@@ -16,9 +16,9 @@ module Tuple =
                 Value(
                     "x",
                     TupleExpr() {
-                        ConstantExpr("1").hasQuotes(false)
-                        ConstantExpr("2").hasQuotes(false)
-                        ConstantExpr("3").hasQuotes(false)
+                        ConstantExpr(Unquoted "1")
+                        ConstantExpr(Unquoted "2")
+                        ConstantExpr(Unquoted "3")
                     }
                 )
             }
@@ -37,9 +37,9 @@ let x = 1, 2, 3
                     "x",
                     ParenExpr(
                         TupleExpr() {
-                            ConstantExpr("1").hasQuotes(false)
-                            ConstantExpr("2").hasQuotes(false)
-                            ConstantExpr("3").hasQuotes(false)
+                            ConstantExpr(Unquoted "1")
+                            ConstantExpr(Unquoted "2")
+                            ConstantExpr(Unquoted "3")
                         }
                     )
                 )

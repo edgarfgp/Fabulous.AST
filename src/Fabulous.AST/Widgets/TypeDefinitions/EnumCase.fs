@@ -15,25 +15,20 @@ module EnumCase =
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
-    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
-
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierQuotes
+
             let value = Widgets.getScalarValue widget Value
             let lines = Widgets.tryGetScalarValue widget XmlDocs
-
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget HasQuotes |> ValueOption.defaultValue true
 
             let value =
                 match value with
                 | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
-                    )
+                    Expr.Constant(Constant.FromText(SingleTextNode.Create(value.Normalize())))
                 | StringOrWidget.WidgetExpr value -> value
 
             let xmlDocs =
@@ -95,7 +90,7 @@ module EnumCaseBuilders =
                 AttributesBundle(
                     StackList.two(
                         EnumCase.Name.WithValue(name),
-                        EnumCase.Value.WithValue(StringOrWidget.StringExpr(value))
+                        EnumCase.Value.WithValue(StringOrWidget.StringExpr(Unquoted(value)))
                     ),
                     Array.empty,
                     Array.empty
@@ -107,10 +102,6 @@ type EnumCaseModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: string list) =
         this.AddScalar(EnumCase.XmlDocs.WithValue(xmlDocs))
-
-    [<Extension>]
-    static member inline hasQuotes(this: WidgetBuilder<EnumCaseNode>, value: bool) =
-        this.AddScalar(EnumCase.HasQuotes.WithValue(value))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<EnumCaseNode>) =

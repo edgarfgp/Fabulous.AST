@@ -18,7 +18,7 @@ module NamePatPairsPat =
                         NamePatPairPat("A", NamedPat("B"))
                         NamePatPairPat("B", NamedPat("A"))
                     },
-                    ConstantExpr(Constant("12").hasQuotes(false))
+                    ConstantExpr(Constant(Unquoted "12"))
                 )
             }
         }
@@ -37,7 +37,7 @@ let x (A = B; B = A) = 12
                         NamePatPairPat("A", NamedPat("B"))
                         NamePatPairPat("B", NamedPat("A"))
                     },
-                    ConstantExpr(Constant("12").hasQuotes(false))
+                    ConstantExpr(Constant(Unquoted "12"))
                 )
             }
         }

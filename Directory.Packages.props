@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Fantomas.Core" Version="[6.3.0-alpha-003]" />
+    <PackageVersion Include="Fantomas.Core" Version="[6.3.0]" />
     <PackageVersion Include="FSharp.Core" Version="8.0.100" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />

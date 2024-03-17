@@ -117,7 +117,7 @@ let x (i: int, j: string, k: bool) = ()
         Oak() {
             AnonymousModule() {
                 (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr("Use bar instead"))))
+                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "Use bar instead"))))
             }
         }
         |> produces
@@ -186,11 +186,11 @@ let inline x i = ()
     let ``Produces a function with parameters and access controls``() =
         Oak() {
             AnonymousModule() {
-                (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))).toPublic()
+                Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())).toPublic()
 
-                (Function("y", NamedPat("i"), ConstantExpr(ConstantUnit()))).toPrivate()
+                Function("y", NamedPat("i"), ConstantExpr(ConstantUnit())).toPrivate()
 
-                (Function("z", NamedPat("i"), ConstantExpr(ConstantUnit()))).toInternal()
+                Function("z", NamedPat("i"), ConstantExpr(ConstantUnit())).toInternal()
             }
         }
         |> produces

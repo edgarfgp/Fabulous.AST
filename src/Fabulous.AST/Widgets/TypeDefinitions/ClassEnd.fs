@@ -9,15 +9,16 @@ open Microsoft.FSharp.Collections
 
 module ClassEnd =
     let Name = Attributes.defineScalar<string> "Name"
-    let Members = Attributes.defineWidgetCollection "Members"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
-    let SimplePats = Attributes.defineWidget "SimplePats"
-    let HasConstructor = Attributes.defineScalar<bool> "HasConstructor"
+    let Constructor = Attributes.defineWidget "Constructor"
 
     let WidgetKey =
         Widgets.register "ClassEnd" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
 
             let attributes =
                 Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
@@ -41,41 +42,11 @@ module ClassEnd =
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let implicitConstructor =
-                Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
-
-            let hasConstructor = Widgets.getScalarValue widget HasConstructor
+                Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget Constructor
 
             let implicitConstructor =
                 match implicitConstructor with
-                | ValueNone when not hasConstructor -> None
-                | ValueNone when hasConstructor ->
-                    let implicitConstructorNode =
-                        ImplicitConstructorNode(
-                            None,
-                            None,
-                            None,
-                            SingleTextNode.leftParenthesis,
-                            [],
-                            SingleTextNode.rightParenthesis,
-                            None,
-                            Range.Zero
-                        )
-
-                    Some implicitConstructorNode
-                | ValueNone ->
-                    let implicitConstructorNode =
-                        ImplicitConstructorNode(
-                            None,
-                            None,
-                            None,
-                            SingleTextNode.leftParenthesis,
-                            [],
-                            SingleTextNode.rightParenthesis,
-                            None,
-                            Range.Zero
-                        )
-
-                    Some implicitConstructorNode
+                | ValueNone -> None
                 | ValueSome implicitConstructor -> Some implicitConstructor
 
             let typeParams =
@@ -86,7 +57,6 @@ module ClassEnd =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              // FIXME - Update
                               TyparDeclNode(None, SingleTextNode.Create(v), [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
@@ -118,61 +88,31 @@ module ClassEnd =
 module ClassEndBuilders =
     type Ast with
 
-        static member private BaseClassEnd
-            (
-                name: string,
-                parameters: string list voption,
-                constructor: WidgetBuilder<ImplicitConstructorNode> voption,
-                hasConstructor: bool
-            ) =
-            let scalars =
-                match parameters with
-                | ValueNone ->
-                    StackList.two(ClassEnd.Name.WithValue(name), ClassEnd.HasConstructor.WithValue(hasConstructor))
-                | ValueSome typeParams ->
-                    StackList.three(
-                        ClassEnd.Name.WithValue(name),
-                        ClassEnd.TypeParams.WithValue(typeParams),
-                        ClassEnd.HasConstructor.WithValue(hasConstructor)
-                    )
+        static member ClassEnd(name: string) =
+            WidgetBuilder<TypeDefnExplicitNode>(
+                ClassEnd.WidgetKey,
+                AttributesBundle(StackList.one(ClassEnd.Name.WithValue(name)), Array.empty, Array.empty)
+            )
 
+        static member ClassEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             WidgetBuilder<TypeDefnExplicitNode>(
                 ClassEnd.WidgetKey,
                 AttributesBundle(
-                    scalars,
-
-                    [| match constructor with
-                       | ValueSome constructor -> ClassEnd.SimplePats.WithValue(constructor.Compile())
-                       | ValueNone -> () |],
+                    StackList.one(ClassEnd.Name.WithValue(name)),
+                    [| ClassEnd.Constructor.WithValue(constructor.Compile()) |],
                     Array.empty
                 )
             )
-
-        static member ClassEnd(node: string) =
-            Ast.BaseClassEnd(node, ValueNone, ValueNone, false)
-
-        static member ClassEnd(node: string, hasConstructor: bool) =
-            Ast.BaseClassEnd(node, ValueNone, ValueNone, hasConstructor)
-
-        static member ClassEnd(node: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
-            Ast.BaseClassEnd(node, ValueNone, ValueSome constructor, false)
-
-        static member ClassEnd(name: string, parameters: string list) =
-            Ast.BaseClassEnd(name, ValueSome parameters, ValueNone, false)
-
-        static member ClassEnd(name: string, parameters: string list, hasConstructor: bool) =
-            Ast.BaseClassEnd(name, ValueSome parameters, ValueNone, hasConstructor)
-
-        static member ClassEnd
-            (name: string, parameters: string list, constructor: WidgetBuilder<ImplicitConstructorNode>)
-            =
-            Ast.BaseClassEnd(name, ValueSome parameters, ValueSome constructor, false)
 
 [<Extension>]
 type ClassEndModifiers =
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>) =
         AttributeCollectionBuilder<TypeDefnExplicitNode, AttributeNode>(this, ClassEnd.MultipleAttributes)
+
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: string list) =
+        this.AddScalar(ClassEnd.TypeParams.WithValue(typeParams))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>, attributes: string list) =

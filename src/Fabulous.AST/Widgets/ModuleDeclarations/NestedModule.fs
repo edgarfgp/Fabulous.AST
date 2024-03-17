@@ -20,7 +20,10 @@ module NestedModule =
             let name = Widgets.getScalarValue widget Name
 
             let name =
-                name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
+                name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
+                |> SingleTextNode.Create
 
             let moduleDecls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
 

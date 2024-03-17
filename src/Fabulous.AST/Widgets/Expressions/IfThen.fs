@@ -16,16 +16,11 @@ module IfThen =
             let ifNode = Widgets.getScalarValue widget IfNode
             let ifExpr = Widgets.getScalarValue widget IfExpr
 
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget Expr.HasQuotes |> ValueOption.defaultValue true
-
             let ifExpr =
                 match ifExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -35,9 +30,7 @@ module IfThen =
                 match thenExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
@@ -61,7 +54,7 @@ module IfThenBuilders =
                 )
             )
 
-        static member inline IfThenExpr(ifExpr: string, thenExpr: string) =
+        static member inline IfThenExpr(ifExpr: StringVariant, thenExpr: StringVariant) =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
@@ -89,7 +82,7 @@ module IfThenBuilders =
                 )
             )
 
-        static member inline ElIfThenExpr(elIfExpr: string, thenExpr: string) =
+        static member inline ElIfThenExpr(elIfExpr: StringVariant, thenExpr: StringVariant) =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
@@ -121,7 +114,7 @@ module IfThenBuilders =
                 )
             )
 
-        static member inline ElseIfThenExpr(elseIfExpr: string, thenExpr: string) =
+        static member inline ElseIfThenExpr(elseIfExpr: StringVariant, thenExpr: StringVariant) =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(

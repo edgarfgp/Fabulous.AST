@@ -7,8 +7,7 @@ open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
 module BindingNode =
-    let NameWidget = Attributes.defineWidget "Name"
-    let NameString = Attributes.defineScalar<string> "FunctionName"
+    let Name = Attributes.defineScalar<StringOrWidget<Pattern>> "Name"
     let BodyExpr = Attributes.defineScalar<StringOrWidget<Expr>> "BindingBodyExpr"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
@@ -19,17 +18,12 @@ module BindingNode =
     let Return = Attributes.defineWidget "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Parameters = Attributes.defineWidget "Parameters"
-    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
 
 [<Extension>]
 type ValueModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
-
-    [<Extension>]
-    static member inline hasQuotes(this: WidgetBuilder<BindingNode>, value: bool) =
-        this.AddScalar(BindingNode.HasQuotes.WithValue(value))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<BindingNode>) =
@@ -85,7 +79,7 @@ type ValueModifiers =
         this.AddScalar(BindingNode.IsStatic.WithValue(true))
 
     [<Extension>]
-    static member inline typeParameters(this: WidgetBuilder<BindingNode>, typeParams: string list) =
+    static member inline typeParams(this: WidgetBuilder<BindingNode>, typeParams: string list) =
         this.AddScalar(BindingNode.TypeParams.WithValue(typeParams))
 
 [<Extension>]

@@ -177,7 +177,7 @@ type ValNodeModifiers =
         this.AddScalar(Val.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
-    static member inline typeParameters(this: WidgetBuilder<ValNode>, typeParams: string list) =
+    static member inline typeParams(this: WidgetBuilder<ValNode>, typeParams: string list) =
         this.AddScalar(Val.TypeParams.WithValue(typeParams))
 
 [<Extension>]

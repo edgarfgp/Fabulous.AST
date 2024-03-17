@@ -9,22 +9,25 @@ open type Fabulous.AST.Ast
 module BindingMethodNode =
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.NameString
+            let name = Widgets.getScalarValue widget BindingNode.Name
+
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    match name with
+                    | Quoted name -> SingleTextNode.Create name
+                    | Unquoted name -> SingleTextNode.Create name
+                    | TripleQuoted name -> SingleTextNode.Create name
+                | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
+
             let parameters = Widgets.getNodeFromWidget<Pattern> widget BindingNode.Parameters
-
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget BindingNode.HasQuotes
-                |> ValueOption.defaultValue true
-
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
 
             let bodyExpr =
                 match bodyExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr value -> value
 
@@ -117,7 +120,7 @@ module BindingMethodNode =
                 false,
                 inlineNode,
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
                 typeParams,
                 [ parameters ],
                 returnType,
@@ -130,12 +133,12 @@ module BindingMethodNode =
 module BindingMethodBuilders =
     type Ast with
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: string) =
+        static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: StringVariant) =
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
                     StackList.two(
-                        BindingNode.NameString.WithValue(name),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
                     ),
                     [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
@@ -148,7 +151,7 @@ module BindingMethodBuilders =
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
                     StackList.two(
-                        BindingNode.NameString.WithValue(name),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
                         BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
                     ),
                     [| BindingNode.Parameters.WithValue(parameters.Compile()) |],

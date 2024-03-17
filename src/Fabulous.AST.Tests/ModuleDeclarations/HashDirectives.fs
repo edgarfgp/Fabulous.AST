@@ -85,7 +85,7 @@ type HEX = { R: int; G: int; B: int }
     [<Fact>]
     let ``Produces an Namespace with NoWarn directive``() =
         Oak() {
-            ModuleOrNamespace("MyApp") {
+            Namespace("MyApp") {
                 NoWarn("0044")
                 Open("System")
 
@@ -114,9 +114,9 @@ type HEX = { R: int; G: int; B: int }
         Oak() {
             AnonymousModule() {
                 HashDirective("if", "!DEBUG")
-                Value("str", ConstantExpr(("Not debugging!")))
+                Value("str", ConstantExpr(Quoted "Not debugging!"))
                 HashDirective("else")
-                Value("str", ConstantExpr("Debugging!"))
+                Value("str", ConstantExpr(Quoted "Debugging!"))
                 HashDirective("endif")
             }
         }

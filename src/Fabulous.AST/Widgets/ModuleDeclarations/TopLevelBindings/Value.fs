@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -10,13 +9,19 @@ open type Fabulous.AST.Ast
 module BindingValue =
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
-            let name = Widgets.getNodeFromWidget<Pattern> widget BindingNode.NameWidget
+            let name = Widgets.getScalarValue widget BindingNode.Name
+
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    let name =
+                        name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
+
+                    Pattern.Named(PatNamedNode(None, name, Range.Zero))
+                | StringOrWidget.WidgetExpr pattern -> pattern
+
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
             let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
-
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget BindingNode.HasQuotes
-                |> ValueOption.defaultValue true
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -98,9 +103,7 @@ module BindingValue =
                 match bodyExpr with
                 | StringOrWidget.StringExpr value ->
                     Expr.Constant(
-                        Constant.FromText(
-                            SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes))
-                        )
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
                     )
                 | StringOrWidget.WidgetExpr value -> value
 
@@ -123,24 +126,24 @@ module BindingValue =
 [<AutoOpen>]
 module BindingValueBuilders =
     type Ast with
-        static member private BaseValue(name: WidgetBuilder<Pattern>, bodyExpr: StringOrWidget<Expr>) =
+        static member private BaseValue(name: StringOrWidget<Pattern>, bodyExpr: StringOrWidget<Expr>) =
             WidgetBuilder<BindingNode>(
                 BindingValue.WidgetKey,
                 AttributesBundle(
-                    StackList.one(BindingNode.BodyExpr.WithValue(bodyExpr)),
-                    [| BindingNode.NameWidget.WithValue(name.Compile()) |],
+                    StackList.two(BindingNode.Name.WithValue(name), BindingNode.BodyExpr.WithValue(bodyExpr)),
+                    Array.empty,
                     Array.empty
                 )
             )
 
         static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(name, StringOrWidget.WidgetExpr(Gen.mkOak(value)))
+            Ast.BaseValue(StringOrWidget.WidgetExpr(Gen.mkOak name), StringOrWidget.WidgetExpr(Gen.mkOak(value)))
 
         static member Value(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(NamedPat(name), StringOrWidget.WidgetExpr(Gen.mkOak(value)))
+            Ast.BaseValue(StringOrWidget.StringExpr(Unquoted(name)), StringOrWidget.WidgetExpr(Gen.mkOak(value)))
 
-        static member Value(name: WidgetBuilder<Pattern>, value: string) =
-            Ast.BaseValue(name, StringOrWidget.StringExpr value)
+        static member Value(name: WidgetBuilder<Pattern>, value: StringVariant) =
+            Ast.BaseValue(StringOrWidget.WidgetExpr(Gen.mkOak name), StringOrWidget.StringExpr value)
 
-        static member Value(name: string, value: string) =
-            Ast.BaseValue(NamedPat(name), StringOrWidget.StringExpr value)
+        static member Value(name: string, value: StringVariant) =
+            Ast.BaseValue(StringOrWidget.StringExpr(Unquoted(name)), StringOrWidget.StringExpr value)

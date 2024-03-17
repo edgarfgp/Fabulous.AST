@@ -14,21 +14,23 @@ module PropertyMember =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", "string") }).members() {
-                    Property("this.A", ConstantExpr(""))
+                    Property("this.A", ConstantExpr(Quoted ""))
 
-                    Property("this.C", ConstantExpr("")).toInlined()
+                    Property("this.C", ConstantExpr(Quoted "")).toInlined()
 
-                    Property("B", ConstantExpr("")).toStatic()
+                    Property("B", ConstantExpr(Quoted "")).toStatic()
 
-                    Property("D", ConstantExpr("")).toStatic().toInlined()
+                    Property("D", ConstantExpr(Quoted "")).toStatic().toInlined()
 
-                    Property("this.E", ConstantExpr("")) |> _.returnType(String())
+                    Property("this.E", ConstantExpr(Quoted "")) |> _.returnType(String())
 
-                    Property("this.F", ConstantExpr("")).toInlined() |> _.returnType(String())
+                    Property("this.F", ConstantExpr(Quoted "")).toInlined()
+                    |> _.returnType(String())
 
-                    Property("G", ConstantExpr("")).toStatic() |> _.returnType(String())
+                    Property("G", ConstantExpr(Quoted "")).toStatic() |> _.returnType(String())
 
-                    Property("H", ConstantExpr("")).toStatic().toInlined() |> _.returnType(String())
+                    Property("H", ConstantExpr(Quoted "")).toStatic().toInlined()
+                    |> _.returnType(String())
                 }
             }
         }
@@ -55,21 +57,23 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Property("this.A", ConstantExpr(""))
+                    Property("this.A", ConstantExpr(Quoted ""))
 
-                    Property("this.C", ConstantExpr("")).toInlined()
+                    Property("this.C", ConstantExpr(Quoted "")).toInlined()
 
-                    Property("(|B|_|)", ConstantExpr("")).toStatic()
+                    Property("(|B|_|)", ConstantExpr(Quoted "")).toStatic()
 
-                    Property("D", ConstantExpr("")).toStatic().toInlined()
+                    Property("D", ConstantExpr(Quoted "")).toStatic().toInlined()
 
-                    Property("this.E", ConstantExpr("")) |> _.returnType(String())
+                    Property("this.E", ConstantExpr(Quoted "")) |> _.returnType(String())
 
-                    Property("this.F", ConstantExpr("")).toInlined() |> _.returnType(String())
+                    Property("this.F", ConstantExpr(Quoted "")).toInlined()
+                    |> _.returnType(String())
 
-                    Property("G", ConstantExpr("")).toStatic() |> _.returnType(String())
+                    Property("G", ConstantExpr(Quoted "")).toStatic() |> _.returnType(String())
 
-                    Property("H", ConstantExpr("")).toStatic().toInlined() |> _.returnType(String())
+                    Property("H", ConstantExpr(Quoted "")).toStatic().toInlined()
+                    |> _.returnType(String())
                 }
             }
         }
@@ -95,7 +99,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Property("this.A", ConstantExpr(""))
+                    Property("this.A", ConstantExpr(Quoted ""))
                 }
             }
         }
@@ -115,7 +119,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Property("A", ConstantExpr("")).toStatic()
+                    Property("A", ConstantExpr(Quoted "")).toStatic()
                 }
             }
         }
@@ -139,7 +143,7 @@ type Colors =
                     Field("Yellow", LongIdent("int"))
                 })
                     .members() {
-                    Property("this.A", ConstantExpr(""))
+                    Property("this.A", ConstantExpr(Quoted ""))
                 }
             }
         }
@@ -166,7 +170,7 @@ type Colors<'other> =
                     Field("Yellow", LongIdent("int"))
                 })
                     .members() {
-                    Property("A", ConstantExpr("")).toStatic()
+                    Property("A", ConstantExpr(Quoted "")).toStatic()
                 }
             }
         }
@@ -189,9 +193,9 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Property("this.Name1", ConstantExpr("name"))
+                    Property("this.Name1", ConstantExpr(Quoted "name"))
 
-                    Property("Name2", ConstantExpr("name")).toStatic()
+                    Property("Name2", ConstantExpr(Quoted "name")).toStatic()
                 }
             }
         }
@@ -207,11 +211,12 @@ type Person () =
     let ``Produces a generic class with a static and not static member property ``() =
         Oak() {
             AnonymousModule() {
-                Class("Person", [ "'other" ]) {
-                    Property("this.Name1", ConstantExpr("name"))
+                Class("Person") {
+                    Property("this.Name1", ConstantExpr(Quoted "name"))
 
-                    Property("Name2", ConstantExpr("name")).toStatic()
+                    Property("Name2", ConstantExpr(Quoted "name")).toStatic()
                 }
+                |> _.typeParams([ "'other" ])
             }
         }
         |> produces
@@ -226,7 +231,10 @@ type Person <'other>() =
     let ``Produces a class with a member property with xml comments``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr("name")).xmlDocs([ "This is a comment" ]) }
+                Class("Person") {
+                    Property("this.Name", ConstantExpr(Quoted "name"))
+                        .xmlDocs([ "This is a comment" ])
+                }
             }
         }
         |> produces
@@ -249,7 +257,7 @@ type Person () =
             AnonymousModule() {
                 Class("Person") {
                     for name, acc in data do
-                        let widget = Property($"this.{name}", ConstantExpr("name"))
+                        let widget = Property($"this.{name}", ConstantExpr(Quoted "name"))
 
                         match acc with
                         | AccessControl.Public -> widget.toPublic()
@@ -273,10 +281,7 @@ type Person () =
     let ``Produces a class with a member property and return type``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Property("this.Name", ConstantExpr("23").hasQuotes(false))
-                    |> _.returnType("int")
-                }
+                Class("Person") { Property("this.Name", ConstantExpr(Unquoted "23")) |> _.returnType("int") }
 
             }
         }
@@ -288,7 +293,9 @@ type Person () =
 
     [<Fact>]
     let ``Produces a class with a member property inlined``() =
-        Oak() { AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr("name")).toInlined() } } }
+        Oak() {
+            AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr(Quoted "name")).toInlined() } }
+        }
         |> produces
             """
 type Person () =
@@ -300,7 +307,7 @@ type Person () =
     let ``Produces a class with property member with attributes``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr("23").hasQuotes(false)).attribute("Obsolete") }
+                Class("Person") { Property("this.Name", ConstantExpr(Unquoted "23")).attribute("Obsolete") }
 
             }
         }
@@ -316,7 +323,7 @@ type Person () =
         Oak() {
             AnonymousModule() {
                 (Record("Person") { Field("Name", LongIdent("string")) }).members() {
-                    Property("this.Name", ConstantExpr("name"))
+                    Property("this.Name", ConstantExpr(Quoted "name"))
                 }
 
             }
@@ -336,7 +343,7 @@ type Person =
             AnonymousModule() {
                 (GenericRecord("Person", [ "'other" ]) { Field("Name", LongIdent("'other")) })
                     .members() {
-                    Property("this.Name", ConstantExpr("name"))
+                    Property("this.Name", ConstantExpr(Quoted "name"))
                 }
 
             }
@@ -354,7 +361,7 @@ type Person<'other> =
     let ``Produces a union with a member property ``() =
         Oak() {
             AnonymousModule() {
-                (Union("Person") { UnionCase("Name") }).members() { Property("this.Name", ConstantExpr("name")) }
+                (Union("Person") { UnionCase("Name") }).members() { Property("this.Name", ConstantExpr(Quoted "name")) }
 
             }
         }
@@ -371,7 +378,9 @@ type Person =
     let ``Produces a union with a static member property ``() =
         Oak() {
             AnonymousModule() {
-                (Union("Person") { UnionCase("Name") }).members() { Property("Name", ConstantExpr("name")).toStatic() }
+                (Union("Person") { UnionCase("Name") }).members() {
+                    Property("Name", ConstantExpr(Quoted "name")).toStatic()
+                }
 
             }
         }
@@ -399,7 +408,7 @@ type Person =
                     UnionCase("Yellow")
                 })
                     .members() {
-                    Property("this.Name", ConstantExpr("name"))
+                    Property("this.Name", ConstantExpr(Quoted "name"))
                 }
 
             }
@@ -431,7 +440,7 @@ type Colors<'other> =
                     UnionCase("Yellow")
                 })
                     .members() {
-                    Property("Name", ConstantExpr("name")).toStatic()
+                    Property("Name", ConstantExpr(Quoted "name")).toStatic()
                 }
 
             }

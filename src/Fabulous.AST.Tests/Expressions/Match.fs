@@ -15,11 +15,11 @@ module Match =
             AnonymousModule() {
                 MatchExpr(
                     ListExpr() {
-                        ConstantExpr(Constant("1").hasQuotes(false))
-                        ConstantExpr(Constant("2").hasQuotes(false))
+                        ConstantExpr(Constant(Unquoted "1"))
+                        ConstantExpr(Constant(Unquoted "2"))
                     }
                 ) {
-                    MatchClauseExpr(NamedPat("a"), ConstantExpr(Constant("3").hasQuotes(false)))
+                    MatchClauseExpr(NamedPat("a"), ConstantExpr(Constant(Unquoted "3")))
                 }
             }
         }

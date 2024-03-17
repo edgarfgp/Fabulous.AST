@@ -32,12 +32,13 @@ module GenericInterface =
     let ``Produces a generic interface with TypeParams``() =
         Oak() {
             AnonymousModule() {
-                Interface("MyInterface", [ "'other"; "'another" ]) {
+                Interface("MyInterface") {
                     let parameters = [ Int32(); Int32(); String() ]
                     AbstractCurriedMethod("Add", parameters, Int32())
                     AbstractProperty("Pi", Float())
                     AbstractGetSet("Area", Float())
                 }
+                |> _.typeParams([ "'other"; "'another" ])
 
             }
         }

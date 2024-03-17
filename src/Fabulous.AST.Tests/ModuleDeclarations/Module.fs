@@ -11,8 +11,8 @@ open type Ast
 
 module Module =
     [<Fact>]
-    let ``Produces a module with binding``() =
-        Oak() { ModuleOrNamespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) } }
+    let ``Produces a top level module``() =
+        Oak() { TopLevelModule("Fabulous.AST") { Value("x", Unquoted "3") } }
         |> produces
             """
 module Fabulous.AST
@@ -21,11 +21,8 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a recursive module``() =
-        Oak() {
-            ModuleOrNamespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) }
-            |> _.toRecursive()
-        }
+    let ``Produces a recursive top level module``() =
+        Oak() { TopLevelModule("Fabulous.AST") { Value("x", Unquoted "3") } |> _.toRecursive() }
         |> produces
             """
 module rec Fabulous.AST
@@ -34,8 +31,8 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a module with unit``() =
-        Oak() { ModuleOrNamespace("Fabulous.AST") { ConstantExpr(ConstantUnit()) } }
+    let ``Produces a top level module with unit``() =
+        Oak() { TopLevelModule("Fabulous.AST") { ConstantExpr(ConstantUnit()) } }
         |> produces
             """
 module Fabulous.AST
@@ -44,8 +41,8 @@ module Fabulous.AST
 """
 
     [<Fact>]
-    let ``Produces a module with IdentListNode``() =
-        Oak() { ModuleOrNamespace("Fabulous.AST") { Value("x", "3").hasQuotes(false) } }
+    let ``Produces a top level module with IdentListNode``() =
+        Oak() { TopLevelModule("Fabulous.AST") { Value("x", Unquoted "3") } }
         |> produces
             """
 module Fabulous.AST
@@ -54,9 +51,9 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a module with IdentListNode and BindingNode``() =
+    let ``Produces a top level module with IdentListNode and BindingNode``() =
         Oak() {
-            ModuleOrNamespace("Fabulous.AST") {
+            TopLevelModule("Fabulous.AST") {
                 BindingNode(
                     None,
                     None,

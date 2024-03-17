@@ -8,18 +8,14 @@ open Fantomas.FCS.Text
 module Constant =
     let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
     let Measure = Attributes.defineWidget "Measure"
-    let HasQuotes = Attributes.defineScalar<bool> "HasQuotes"
 
     let WidgetKey =
         Widgets.register "ConstantFromText" (fun widget ->
-            let hasQuotes =
-                Widgets.tryGetScalarValue widget HasQuotes |> ValueOption.defaultValue true
-
             let value = Widgets.getScalarValue widget Value
 
             match value with
             | StringOrWidget.StringExpr value ->
-                Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value, hasQuotes)))
+                Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
             | StringOrWidget.WidgetExpr value ->
                 let measure = Widgets.getNodeFromWidget<Measure> widget Measure
 
@@ -39,7 +35,7 @@ module Constant =
 [<AutoOpen>]
 module ConstantBuilders =
     type Ast with
-        static member Constant(value: string) =
+        static member Constant(value: StringVariant) =
             WidgetBuilder<Constant>(
                 Constant.WidgetKey,
                 AttributesBundle(
@@ -64,9 +60,3 @@ module ConstantBuilders =
                 Constant.WidgetUnitKey,
                 AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )
-
-[<Extension>]
-type ConstantModifiers =
-    [<Extension>]
-    static member inline hasQuotes(this: WidgetBuilder<Constant>, value: bool) =
-        this.AddScalar(Constant.HasQuotes.WithValue(value))
