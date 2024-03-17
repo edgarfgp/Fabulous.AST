@@ -10,7 +10,7 @@ module TypeDefnAbbrevNode =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let PowerType = Attributes.defineWidget "PowerType"
+    let PowerType = Attributes.defineScalar<StringOrWidget<Type>> "PowerType"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -60,7 +60,16 @@ module TypeDefnAbbrevNode =
     let WidgetAbbrevKey =
         Widgets.register "TypeDefnAbbrevNode" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let powerType = Widgets.getNodeFromWidget widget PowerType
+            let powerType = Widgets.getScalarValue widget PowerType
+
+            let powerType =
+                match powerType with
+                | StringOrWidget.StringExpr value ->
+                    Type.LongIdent(
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value.Normalize())) ], Range.Zero)
+                    )
+                | StringOrWidget.WidgetExpr value -> value
+
             let lines = Widgets.tryGetScalarValue widget XmlDocsAbbrev
 
             let xmlDocs =
@@ -118,14 +127,27 @@ module TypeDefnAbbrevNodeBuilders =
             WidgetBuilder<TypeDefnAbbrevNode>(
                 TypeDefnAbbrevNode.WidgetAbbrevKey,
                 AttributesBundle(
-                    StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)),
-                    [| TypeDefnAbbrevNode.PowerType.WithValue(powerType.Compile()) |],
+                    StackList.two(
+                        TypeDefnAbbrevNode.Name.WithValue(name),
+                        TypeDefnAbbrevNode.PowerType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak powerType))
+                    ),
+                    Array.empty,
                     Array.empty
                 )
             )
 
         static member inline Measure(name: string, powerType: string) =
-            Ast.Measure(name, Ast.LongIdent(powerType))
+            WidgetBuilder<TypeDefnAbbrevNode>(
+                TypeDefnAbbrevNode.WidgetAbbrevKey,
+                AttributesBundle(
+                    StackList.two(
+                        TypeDefnAbbrevNode.Name.WithValue(name),
+                        TypeDefnAbbrevNode.PowerType.WithValue(StringOrWidget.StringExpr(Unquoted powerType))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
 
 [<Extension>]
 type TypeNameNodeModifiers =
