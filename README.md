@@ -49,6 +49,7 @@ Now let's take a look at same example using Fabulous.AST:
 
 ```fsharp
 open Fantomas.Core
+open Fabulous.AST
 open type Fabulous.AST.Ast
 
 AnonymousModule() { 
