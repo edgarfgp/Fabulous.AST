@@ -31,27 +31,29 @@ module Types =
 *)
     [<Fact>]
     let ``Value with return primitive types``() =
-        AnonymousModule() {
-            Value("a", "false", false).returnType(Boolean())
-            Value("b", "0uy", false).returnType(Byte())
-            Value("c", "1y", false).returnType(SByte())
-            Value("d", "1s", false).returnType(Int16())
-            Value("e", "1us", false).returnType(UInt16())
-            Value("f", "1", false).returnType(Int32())
-            Value("g", "1u", false).returnType(UInt32())
-            Value("h", "1L", false).returnType(Int64())
-            Value("i", "1UL", false).returnType(UInt64())
-            Value("j", "nativeint 1", false).returnType(IntPtr())
-            Value("k", "unativeint 1", false).returnType(UIntPtr())
-            Value("l", "1.0m", false).returnType(Decimal())
-            Value("m", "1.0", false).returnType(Double())
-            Value("n", "1.0f", false).returnType(Single())
-            Value("o", "'c'", false).returnType(Char())
-            Value("p", "str").returnType(String())
-            Value("q", "()", false).returnType(Unit())
-            Value("r", "1.", false).returnType(Float())
-            Value("s", "1.f", false).returnType(Float32())
-            Value("t", "obj", false).returnType(Obj())
+        Oak() {
+            AnonymousModule() {
+                Value("a", Unquoted "false").returnType(Boolean())
+                Value("b", Unquoted "0uy").returnType(Byte())
+                Value("c", Unquoted "1y").returnType(SByte())
+                Value("d", Unquoted "1s").returnType(Int16())
+                Value("e", Unquoted "1us").returnType(UInt16())
+                Value("f", Unquoted "1").returnType(Int32())
+                Value("g", Unquoted "1u").returnType(UInt32())
+                Value("h", Unquoted "1L").returnType(Int64())
+                Value("i", Unquoted "1UL").returnType(UInt64())
+                Value("j", Unquoted "nativeint 1").returnType(IntPtr())
+                Value("k", Unquoted "unativeint 1").returnType(UIntPtr())
+                Value("l", Unquoted "1.0m").returnType(Decimal())
+                Value("m", Unquoted "1.0").returnType(Double())
+                Value("n", Unquoted "1.0f").returnType(Single())
+                Value("o", Unquoted "'c'").returnType(Char())
+                Value("p", Quoted "str").returnType(String())
+                Value("q", Unquoted "()").returnType(Unit())
+                Value("r", Unquoted "1.").returnType(Float())
+                Value("s", Unquoted "1.f").returnType(Float32())
+                Value("t", Unquoted "obj").returnType(Obj())
+            }
         }
         |> produces
             """

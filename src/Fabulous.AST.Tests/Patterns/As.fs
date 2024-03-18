@@ -11,7 +11,9 @@ module As =
 
     [<Fact>]
     let ``let value with a As pattern``() =
-        AnonymousModule() { Value(AsPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Constant("12", false))) }
+        Oak() {
+            AnonymousModule() { Value(AsPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Constant(Unquoted "12"))) }
+        }
         |> produces
             """
 
@@ -20,7 +22,9 @@ let A as B = 12
 
     [<Fact>]
     let ``let value with a As custom middle pattern``() =
-        AnonymousModule() { Value(AsPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(Constant("12", false))) }
+        Oak() {
+            AnonymousModule() { Value(AsPat(NamedPat("A"), "^", NamedPat("B")), ConstantExpr(Constant(Unquoted "12"))) }
+        }
         |> produces
             """
 

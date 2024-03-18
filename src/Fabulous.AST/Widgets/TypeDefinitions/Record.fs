@@ -23,7 +23,11 @@ module Record =
 
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
+
             let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
             let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
@@ -114,7 +118,7 @@ module RecordBuilders =
             CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
-                AttributesBundle(scalars, ValueNone, ValueNone)
+                AttributesBundle(scalars, Array.empty, Array.empty)
             )
 
         static member Record(name: string) = Ast.BaseRecord(name, ValueNone)

@@ -9,17 +9,35 @@ open type Fabulous.AST.Ast
 module BindingMethodNode =
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.NameString
-            let parameters = Widgets.getNodeFromWidget<Pattern> widget BindingNode.Parameters
+            let name = Widgets.getScalarValue widget BindingNode.Name
 
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    match name with
+                    | Quoted name -> SingleTextNode.Create name
+                    | Unquoted name -> SingleTextNode.Create name
+                    | TripleQuoted name -> SingleTextNode.Create name
+                | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
+
+            let parameters = Widgets.getNodeFromWidget<Pattern> widget BindingNode.Parameters
+            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
+
+            let bodyExpr =
+                match bodyExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                    )
+                | StringOrWidget.WidgetExpr value -> value
+
             let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
 
             let isStatic =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget<Type> widget BindingNode.Return
+            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -43,8 +61,20 @@ module BindingMethodNode =
 
             let returnType =
                 match returnType with
-                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
+                | ValueSome value ->
+                    match value with
+                    | StringOrWidget.StringExpr value ->
+                        let value = StringParsing.normalizeIdentifierBackticks value
+
+                        let returnType =
+                            Type.LongIdent(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
+                            )
+
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
+                    | StringOrWidget.WidgetExpr returnType ->
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
 
             let attributes =
                 Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
@@ -102,7 +132,7 @@ module BindingMethodNode =
                 false,
                 inlineNode,
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
                 typeParams,
                 [ parameters ],
                 returnType,
@@ -114,14 +144,29 @@ module BindingMethodNode =
 [<AutoOpen>]
 module BindingMethodBuilders =
     type Ast with
+
+        static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: StringVariant) =
+            WidgetBuilder<BindingNode>(
+                BindingMethodNode.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
+                    ),
+                    [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    Array.empty
+                )
+            )
+
         static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
-                    StackList.one(BindingNode.NameString.WithValue(name)),
-                    ValueSome
-                        [| BindingNode.Parameters.WithValue(parameters.Compile())
-                           BindingNode.BodyExpr.WithValue(body.Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
+                    ),
+                    [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    Array.empty
                 )
             )

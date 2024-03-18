@@ -8,12 +8,19 @@ module IsInst =
 
     let Token = Attributes.defineScalar<SingleTextNode> "Token"
 
-    let InstType = Attributes.defineWidget "InstType"
+    let InstType = Attributes.defineScalar<StringOrWidget<Type>> "InstType"
 
     let WidgetKey =
         Widgets.register "IsInst" (fun widget ->
             let token = Widgets.getScalarValue widget Token
-            let instType = Widgets.getNodeFromWidget widget InstType
+            let instType = Widgets.getScalarValue widget InstType
+
+            let instType =
+                match instType with
+                | StringOrWidget.StringExpr value ->
+                    let value = StringParsing.normalizeIdentifierBackticks value
+                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
+                | StringOrWidget.WidgetExpr widget -> widget
 
             Pattern.IsInst(PatIsInstNode(token, instType, Range.Zero)))
 
@@ -25,9 +32,12 @@ module IsInstPatBuilders =
             WidgetBuilder<Pattern>(
                 IsInst.WidgetKey,
                 AttributesBundle(
-                    StackList.one(IsInst.Token.WithValue(SingleTextNode.isInstance)),
-                    ValueSome [| IsInst.InstType.WithValue(value.Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        IsInst.InstType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
+                        IsInst.Token.WithValue(SingleTextNode.isInstance)
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -35,9 +45,12 @@ module IsInstPatBuilders =
             WidgetBuilder<Pattern>(
                 IsInst.WidgetKey,
                 AttributesBundle(
-                    StackList.one(IsInst.Token.WithValue(SingleTextNode.isInstance)),
-                    ValueSome [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        IsInst.InstType.WithValue(StringOrWidget.StringExpr(Unquoted value)),
+                        IsInst.Token.WithValue(SingleTextNode.isInstance)
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -45,8 +58,11 @@ module IsInstPatBuilders =
             WidgetBuilder<Pattern>(
                 IsInst.WidgetKey,
                 AttributesBundle(
-                    StackList.one(IsInst.Token.WithValue(SingleTextNode.Create(token))),
-                    ValueSome [| IsInst.InstType.WithValue(Ast.LongIdent(value).Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        IsInst.Token.WithValue(SingleTextNode.Create(token)),
+                        IsInst.InstType.WithValue(StringOrWidget.StringExpr(Unquoted value))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )

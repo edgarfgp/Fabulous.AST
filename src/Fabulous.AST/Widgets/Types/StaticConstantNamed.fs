@@ -27,10 +27,9 @@ module TypeStaticConstantNamedBuilders =
                 TypeStaticConstantNamed.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeStaticConstantNamed.Identifier.WithValue(identifier.Compile())
-                           TypeStaticConstantNamed.Value.WithValue(value.Compile()) |],
-                    ValueNone
+                    [| TypeStaticConstantNamed.Identifier.WithValue(identifier.Compile())
+                       TypeStaticConstantNamed.Value.WithValue(value.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -39,9 +38,8 @@ module TypeStaticConstantNamedBuilders =
                 TypeStaticConstantNamed.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeStaticConstantNamed.Identifier.WithValue(Ast.LongIdent(identifier).Compile())
-                           TypeStaticConstantNamed.Value.WithValue(Ast.LongIdent(value).Compile()) |],
-                    ValueNone
+                    [| TypeStaticConstantNamed.Identifier.WithValue(Ast.LongIdent(identifier).Compile())
+                       TypeStaticConstantNamed.Value.WithValue(Ast.LongIdent(value).Compile()) |],
+                    Array.empty
                 )
             )

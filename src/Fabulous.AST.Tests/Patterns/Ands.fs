@@ -11,14 +11,16 @@ module Ands =
 
     [<Fact>]
     let ``let value with a Ands pattern``() =
-        AnonymousModule() {
-            Value(
-                AndsPat() {
-                    NamedPat("A")
-                    NamedPat("B")
-                },
-                ConstantExpr(Constant("12", false))
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    AndsPat() {
+                        NamedPat("A")
+                        NamedPat("B")
+                    },
+                    ConstantExpr(Constant(Unquoted "12"))
+                )
+            }
         }
         |> produces
             """

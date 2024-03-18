@@ -14,31 +14,29 @@ index: 2
 ## Constructors
 | Constructors                                      | Description |
 |---------------------------------------------------|-------------|
-| Value(name: string, value: string, ?hasQuotes: bool) | Creates a value binding with name and value, and optionally specifies if the value should be quoted. |
+| Value(name: string, value: string) | Creates a value binding with name and value, and optionally specifies if the value should be quoted. |
 | Value(name: string, value: WidgetBuilder<Expr>) | Creates a value binding with name and value expression. |
 | Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) | Creates a value binding with name pattern and value expression. |
-| Value(name: WidgetBuilder<Pattern>, value: string, ?hasQuotes: bool) | Creates a value binding with name pattern and value expression, and optionally specifies if the value should be quoted. |
-| Value(name: string, typeParams: string list, value: WidgetBuilder<Expr>) | Creates a value binding with name, type parameters and value expression. |
-| Value(name: string, typeParams: string list, value: string, ?hasQuotes: bool) | Creates a value binding with name, type parameters and value, and optionally specifies if the value should be quoted. |
-| Value(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) | Creates a value binding with name pattern, type parameters and value expression. |
+| Value(name: WidgetBuilder<Pattern>, value: string) | Creates a value binding with name pattern and value expression, and optionally specifies if the value should be quoted. |
 
 ## Properties
 | Properties            | Description |
 |-----------------------|-------------|
-| xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) | Adds XML documentation to the value binding. |
-| attributes(this: WidgetBuilder<BindingNode>) | Adds attributes of the value binding. |
-| attributes(this: WidgetBuilder<BindingNode>, attributes: string list) | Adds attributes to the value binding. |
-| attribute(this: WidgetBuilder<BindingNode>, attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the value binding. |
-| attribute(this: WidgetBuilder<BindingNode>, attribute: string) | Adds an attribute to the value binding. |
-| toPrivate(this: WidgetBuilder<BindingNode>) | Makes the value binding private. |
-| toInternal(this: WidgetBuilder<BindingNode>) | Makes the value binding internal. |
-| toPublic(this: WidgetBuilder<BindingNode>) | Makes the value binding public. |
-| returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) | Sets the return type of the value binding. |
-| returnType(this: WidgetBuilder<BindingNode>, returnType: string) | Sets the return type of the value binding. |
-| toMutable(this: WidgetBuilder<BindingNode>) | Makes the value binding mutable. |
-| toInlined(this: WidgetBuilder<BindingNode>) | Makes the value binding inlined. |
-| toStatic(this: WidgetBuilder<BindingNode>) | Makes the value binding static. |
-| typeParameters(this: WidgetBuilder<BindingNode>, typeParams: string list) | Adds type parameters to the value binding. |
+| xmlDocs(, xmlDocs: string list) | Adds XML documentation to the value binding. |
+| attributes() | Adds attributes of the value binding. |
+| attributes(attributes: string list) | Adds attributes to the value binding. |
+| attribute(attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the value binding. |
+| attribute(attribute: string) | Adds an attribute to the value binding. |
+| toPrivate() | Makes the value binding private. |
+| toInternal() | Makes the value binding internal. |
+| toPublic() | Makes the value binding public. |
+| returnType(returnType: WidgetBuilder<Type>) | Sets the return type of the value binding. |
+| returnType(returnType: string) | Sets the return type of the value binding. |
+| toMutable() | Makes the value binding mutable. |
+| toInlined() | Makes the value binding inlined. |
+| toStatic() | Makes the value binding static. |
+| hasQuotes() | Specifies if the value should be quoted. |
+| typeParameters(typeParams: string list) | Adds type parameters to the value binding. |
 *)
 
 (**
@@ -56,47 +54,49 @@ open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
 
-AnonymousModule() {
-    Value("value", "12")
+Oak() {
+    AnonymousModule() {
+        Value("value", Quoted "12")
 
-    Value("value1", "12", hasQuotes = false)
+        Value("value1", Unquoted "12")
 
-    Value(
-        "value3",
-        IfThenElseExpr(
-            InfixAppExpr(ConstantExpr("0", false), "=", ConstantExpr(Constant("12", false))),
-            ConstantExpr(ConstantUnit()),
-            ConstantExpr(ConstantUnit())
+        Value(
+            "value3",
+            IfThenElseExpr(
+                InfixAppExpr(ConstantExpr(Unquoted "0"), "=", ConstantExpr(Constant(Unquoted "12"))),
+                ConstantExpr(ConstantUnit()),
+                ConstantExpr(ConstantUnit())
+            )
         )
-    )
 
-    Value(
-        NamedPat("value4"),
-        IfThenElseExpr(
-            InfixAppExpr(ConstantExpr("0", false), "=", ConstantExpr(Constant("12", false))),
-            ConstantExpr(ConstantUnit()),
-            ConstantExpr(ConstantUnit())
+        Value(
+            NamedPat("value4"),
+            IfThenElseExpr(
+                InfixAppExpr(ConstantExpr(Unquoted "0"), "=", ConstantExpr(Constant(Unquoted "12"))),
+                ConstantExpr(ConstantUnit()),
+                ConstantExpr(ConstantUnit())
+            )
         )
-    )
 
-    Value(NamedPat("value5"), "12")
+        Value(NamedPat("value5"), Quoted "12")
 
-    Value(NamedPat("value6"), "12", false)
+        Value(NamedPat("value6"), Unquoted "12")
 
-    Value("value7", [ "'a" ], "12")
+        Value("value7", Quoted "12").typeParams ([ "'a" ])
 
-    Value("value8", [ "'a" ], ConstantExpr("12"))
+        Value("value8", ConstantExpr(Quoted "12")).typeParams ([ "'a" ])
 
-    Value(NamedPat("value9"), [ "'a" ], ConstantExpr("12"))
+        Value(NamedPat("value9"), ConstantExpr(Quoted "12")).typeParams ([ "'a" ])
 
-    Value("value10", "12", false).returnType (Int32())
+        Value("value10", Unquoted "12").returnType (Int32())
 
-    Value("value11", "12", false).returnType(Int32()).toPrivate ()
+        Value("value11", Unquoted "12").returnType(Int32()).toPrivate ()
 
-    Value("value12", "12").attribute ("Literal")
+        Value("value12", Quoted "12").attribute ("Literal")
 
-    Value("value13", "12", false).returnType(Int32()).toMutable ()
+        Value("value13", Unquoted "12").returnType(Int32()).toMutable ()
 
+    }
 }
 |> Gen.mkOak
 |> CodeFormatter.FormatOakAsync

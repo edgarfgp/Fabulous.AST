@@ -9,20 +9,23 @@ open Microsoft.FSharp.Collections
 
 module Class =
     let Name = Attributes.defineScalar<string> "Name"
-    let SimplePats = Attributes.defineWidget "SimplePats"
+    let ImplicitConstructor = Attributes.defineWidget "SimplePats"
     let Members = Attributes.defineWidgetCollection "Members"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
-
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+
     let IsClass = Attributes.defineScalar<bool> "IsClass"
 
     let WidgetKey =
-        Widgets.register "TypeDefnRegularNode" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+        Widgets.register "Class" (fun widget ->
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
 
-            let implicitConstructor =
-                Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget SimplePats
+            let constructor =
+                Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget ImplicitConstructor
 
             let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
@@ -76,24 +79,19 @@ module Class =
                 | None -> []
                 | Some members -> members
 
-            let implicitConstructor =
-                match implicitConstructor with
+            let constructor =
+                match constructor with
                 | ValueNone when not isClass -> None
                 | ValueNone ->
-                    let implicitConstructorNode =
-                        ImplicitConstructorNode(
-                            None,
-                            None,
-                            None,
-                            SingleTextNode.leftParenthesis,
-                            [],
-                            SingleTextNode.rightParenthesis,
-                            None,
-                            Range.Zero
-                        )
+                    let unitNode =
+                        UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)
 
-                    Some implicitConstructorNode
-                | ValueSome implicitConstructor -> Some implicitConstructor
+                    let constructor =
+                        ImplicitConstructorNode(None, None, None, Pattern.Unit(unitNode), None, Range.Zero)
+
+                    Some constructor
+
+                | ValueSome constructor -> Some constructor
 
             TypeDefnRegularNode(
                 TypeNameNode(
@@ -104,7 +102,7 @@ module Class =
                     IdentListNode([], Range.Zero),
                     typeParams,
                     [],
-                    implicitConstructor,
+                    constructor,
                     Some(SingleTextNode.equals),
                     None,
                     Range.Zero
@@ -116,61 +114,44 @@ module Class =
 [<AutoOpen>]
 module ClassBuilders =
     type Ast with
-        static member BaseClass
-            (
-                name: string,
-                typeParams: string list voption,
-                constructor: WidgetBuilder<ImplicitConstructorNode> voption,
-                isClass: bool
-            ) =
-            let scalars =
-                match typeParams with
-                | ValueNone -> StackList.two(Class.Name.WithValue(name), Class.IsClass.WithValue(isClass))
-                | ValueSome typeParams ->
-                    StackList.three(
-                        Class.Name.WithValue(name),
-                        Class.TypeParams.WithValue(typeParams),
-                        Class.IsClass.WithValue(isClass)
-                    )
-
+        static member BaseClass(name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption) =
             CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
                 Class.WidgetKey,
                 Class.Members,
                 AttributesBundle(
-                    scalars,
-                    ValueSome
-                        [| match constructor with
-                           | ValueSome constructor -> Class.SimplePats.WithValue(constructor.Compile())
-                           | ValueNone -> () |],
-                    ValueNone
+                    StackList.two(Class.Name.WithValue(name), Class.IsClass.WithValue(true)),
+                    [| match constructor with
+                       | ValueSome constructor -> Class.ImplicitConstructor.WithValue(constructor.Compile())
+                       | ValueNone -> () |],
+                    Array.empty
                 )
             )
 
-        static member Class(name: string) =
-            Ast.BaseClass(name, ValueNone, ValueNone, true)
+        static member Class(name: string) = Ast.BaseClass(name, ValueNone)
 
         static member Class(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
-            Ast.BaseClass(name, ValueNone, ValueSome constructor, true)
-
-        static member Class(name: string, typeParams: string list) =
-            Ast.BaseClass(name, ValueSome typeParams, ValueNone, true)
-
-        static member Class
-            (name: string, typeParams: string list, constructor: WidgetBuilder<ImplicitConstructorNode>)
-            =
-            Ast.BaseClass(name, ValueSome typeParams, ValueSome constructor, true)
+            Ast.BaseClass(name, ValueSome constructor)
 
         static member Interface(name: string) =
-            Ast.BaseClass(name, ValueNone, ValueNone, false)
-
-        static member Interface(name: string, typeParams: string list) =
-            Ast.BaseClass(name, ValueSome typeParams, ValueNone, false)
+            CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
+                Class.WidgetKey,
+                Class.Members,
+                AttributesBundle(
+                    StackList.two(Class.Name.WithValue(name), Class.IsClass.WithValue(false)),
+                    Array.empty,
+                    Array.empty
+                )
+            )
 
 [<Extension>]
 type ClassModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string list) =
         this.AddScalar(Class.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: string list) =
+        this.AddScalar(Class.TypeParams.WithValue(typeParams))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>) =

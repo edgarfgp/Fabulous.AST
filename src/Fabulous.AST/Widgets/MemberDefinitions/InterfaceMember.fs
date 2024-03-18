@@ -7,13 +7,13 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module InterfaceMember =
-    let Type = Attributes.defineWidget "Type"
+    let TypeValue = Attributes.defineScalar<StringOrWidget<Type>> "Type"
 
     let Members = Attributes.defineWidgetCollection "Members"
 
     let WidgetKey =
         Widgets.register "InterfaceMember" (fun widget ->
-            let ``type`` = Widgets.getNodeFromWidget widget Type
+            let tp = Widgets.getScalarValue widget TypeValue
             let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
             let members =
@@ -21,9 +21,16 @@ module InterfaceMember =
                 | Some members -> members
                 | None -> []
 
+            let tp =
+                match tp with
+                | StringOrWidget.StringExpr value ->
+                    let value = StringParsing.normalizeIdentifierBackticks value
+                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
+                | StringOrWidget.WidgetExpr widget -> widget
+
             MemberDefnInterfaceNode(
                 SingleTextNode.``interface``,
-                ``type``,
+                tp,
                 Some(SingleTextNode.``with``),
                 members,
                 Range.Zero
@@ -38,14 +45,22 @@ module InterfaceMemberBuilders =
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| InterfaceMember.Type.WithValue(value.Compile()) |],
-                    ValueNone
+                    StackList.one(InterfaceMember.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
         static member InterfaceMember(value: string) =
-            Ast.InterfaceMember(Ast.LongIdent(value))
+            CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
+                InterfaceMember.WidgetKey,
+                InterfaceMember.Members,
+                AttributesBundle(
+                    StackList.one(InterfaceMember.TypeValue.WithValue(StringOrWidget.StringExpr(Unquoted value))),
+                    Array.empty,
+                    Array.empty
+                )
+            )
 
 [<Extension>]
 type InterfaceMemberYieldExtensions =

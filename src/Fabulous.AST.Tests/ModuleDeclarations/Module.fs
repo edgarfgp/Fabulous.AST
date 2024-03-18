@@ -11,8 +11,8 @@ open type Ast
 
 module Module =
     [<Fact>]
-    let ``Produces a module with binding``() =
-        Module("Fabulous.AST") { Value("x", "3", false) }
+    let ``Produces a top level module``() =
+        Oak() { TopLevelModule("Fabulous.AST") { Value("x", Unquoted "3") } }
         |> produces
             """
 module Fabulous.AST
@@ -21,9 +21,8 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a recursive module``() =
-        Module("Fabulous.AST") { Value("x", "3", false) }
-        |> _.toRecursive()
+    let ``Produces a recursive top level module``() =
+        Oak() { TopLevelModule("Fabulous.AST") { Value("x", Unquoted "3") } |> _.toRecursive() }
         |> produces
             """
 module rec Fabulous.AST
@@ -32,8 +31,8 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a module with unit``() =
-        Module("Fabulous.AST") { ConstantExpr(ConstantUnit()) }
+    let ``Produces a top level module with unit``() =
+        Oak() { TopLevelModule("Fabulous.AST") { ConstantExpr(ConstantUnit()) } }
         |> produces
             """
 module Fabulous.AST
@@ -42,8 +41,8 @@ module Fabulous.AST
 """
 
     [<Fact>]
-    let ``Produces a module with IdentListNode``() =
-        Module("Fabulous.AST") { Value("x", "3", false) }
+    let ``Produces a top level module with IdentListNode``() =
+        Oak() { TopLevelModule("Fabulous.AST") { Value("x", Unquoted "3") } }
         |> produces
             """
 module Fabulous.AST
@@ -52,23 +51,25 @@ let x = 3
 """
 
     [<Fact>]
-    let ``Produces a module with IdentListNode and BindingNode``() =
-        Module("Fabulous.AST") {
-            BindingNode(
-                None,
-                None,
-                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                false,
-                None,
-                None,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                None,
-                List.Empty,
-                None,
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                Range.Zero
-            )
+    let ``Produces a top level module with IdentListNode and BindingNode``() =
+        Oak() {
+            TopLevelModule("Fabulous.AST") {
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                    Range.Zero
+                )
+            }
         }
         |> produces
             """

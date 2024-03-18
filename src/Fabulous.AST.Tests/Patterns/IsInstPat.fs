@@ -11,9 +11,11 @@ module IsInstPat =
 
     [<Fact>]
     let ``let value with a IsInstPat pattern``() =
-        AnonymousModule() {
-            MatchExpr(ConstantExpr(Constant("12", false))) {
-                MatchClauseExpr(IsInstPat(String()), ConstantExpr(Constant("12", false)))
+        Oak() {
+            AnonymousModule() {
+                MatchExpr(ConstantExpr(Constant(Unquoted "12"))) {
+                    MatchClauseExpr(IsInstPat(String()), ConstantExpr(Constant(Unquoted "12")))
+                }
             }
         }
         |> produces
@@ -24,9 +26,11 @@ match 12 with
 
     [<Fact>]
     let ``let value with a custom IsInstPat pattern``() =
-        AnonymousModule() {
-            MatchExpr(ConstantExpr(Constant("12", false))) {
-                MatchClauseExpr(IsInstPat("<:", "string"), ConstantExpr(Constant("12", false)))
+        Oak() {
+            AnonymousModule() {
+                MatchExpr(ConstantExpr(Constant(Unquoted "12"))) {
+                    MatchClauseExpr(IsInstPat("<:", "string"), ConstantExpr(Constant(Unquoted "12")))
+                }
             }
         }
         |> produces

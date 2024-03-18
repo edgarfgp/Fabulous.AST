@@ -20,7 +20,7 @@ module Value =
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
-        AnonymousModule() { Value(value, "12", false) }
+        Oak() { AnonymousModule() { Value(value, Unquoted "12") } }
         |> produces
             $$"""
 
@@ -29,7 +29,7 @@ let {{expected}} = 12
 
     [<Fact>]
     let ``Simple Let binding``() =
-        AnonymousModule() { Value("x", "12", false) }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12") } }
         |> produces
             """
 
@@ -42,15 +42,17 @@ let x = 12
 
         let subcommands = [| "ControlFlow"; "Core"; "Expressions"; "LetBindings" |]
 
-        Namespace("Gdmt.Launcher") {
-            NestedModule("Subcommands") {
-                Value(
-                    "GdmtSubcommands",
-                    ArrayExpr() {
-                        for subcommand in subcommands do
-                            ConstantExpr(subcommand)
-                    }
-                )
+        Oak() {
+            Namespace("Gdmt.Launcher") {
+                NestedModule("Subcommands") {
+                    Value(
+                        "GdmtSubcommands",
+                        ArrayExpr() {
+                            for subcommand in subcommands do
+                                ConstantExpr(Quoted subcommand)
+                        }
+                    )
+                }
             }
         }
 
@@ -66,19 +68,21 @@ module Subcommands =
 
     [<Fact>]
     let ``Simple value with tuple pattern``() =
-        AnonymousModule() {
-            Value(
-                TuplePat() {
-                    NamedPat("x")
-                    NamedPat("y")
-                    NamedPat("z")
-                },
-                TupleExpr() {
-                    ConstantExpr("1", false)
-                    ConstantExpr("2", false)
-                    ConstantExpr("3", false)
-                }
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    TuplePat() {
+                        NamedPat("x")
+                        NamedPat("y")
+                        NamedPat("z")
+                    },
+                    TupleExpr() {
+                        ConstantExpr(Unquoted "1")
+                        ConstantExpr(Unquoted "2")
+                        ConstantExpr(Unquoted "3")
+                    }
+                )
+            }
         }
         |> produces
             """
@@ -89,28 +93,34 @@ let x, y, z = 1, 2, 3
 
     [<Fact>]
     let ``Simple Let binding with return type``() =
-        AnonymousModule() { Value("x", "12", false).returnType(Int32()) }
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").returnType(Int32())
+                Value("z", TripleQuoted("12"))
+            }
+        }
         |> produces
-            """
-
+            "
 let x: int = 12
-
-"""
+let z = \"\"\"12\"\"\"
+"
 
     [<Fact>]
     let ``Simple Let binding with return widget type``() =
-        AnonymousModule() {
-            Value("x", "12", false).returnType("int")
-            Value("y", "12", false).returnType(LongIdent("int"))
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").returnType("int")
+                Value("y", Unquoted "12").returnType(LongIdent("int"))
 
-            Value("z", "12", false)
-                .returnType(Funs(LongIdent("string")) { LongIdent("int") })
+                Value("z", Unquoted "12")
+                    .returnType(Funs(LongIdent("string")) { LongIdent("int") })
 
-            Value("a", "12", false).returnType(Funs("string") { LongIdent("int") })
+                Value("a", Unquoted "12").returnType(Funs("string") { LongIdent("int") })
 
-            Value("b", "12", false).returnType("string -> int")
+                Value("b", Unquoted "12").returnType("string -> int")
 
-            Value("c", "12", false).returnType(HashConstraint(LongIdent("int")))
+                Value("c", Unquoted "12").returnType(HashConstraint(LongIdent("int")))
+            }
         }
         |> produces
             """
@@ -126,7 +136,7 @@ let c: #int = 12
 
     [<Fact>]
     let ``Simple Let binding with an expression``() =
-        AnonymousModule() { Value("x", ConstantExpr("12", false)) }
+        Oak() { AnonymousModule() { Value("x", ConstantExpr(Unquoted "12")) } }
         |> produces
             """
 
@@ -136,9 +146,11 @@ let x = 12
 
     [<Fact>]
     let ``Simple Let binding with type params Postfix``() =
-        AnonymousModule() {
-            Value("x", [ "'T" ], "12", false)
-            Value("x", [ "'a"; "'b"; "'c" ], "12", false)
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").typeParams([ "'T" ])
+                Value("x", Unquoted "12").typeParams([ "'a"; "'b"; "'c" ])
+            }
         }
         |> produces
             """
@@ -150,9 +162,11 @@ let x<'a, 'b, 'c> = 12
 
     [<Fact>]
     let ``Simple Let binding with type params Prefix``() =
-        AnonymousModule() {
-            Value("x", [ "'T" ], "12", false)
-            Value("x", [ "'a"; "'b"; "'c" ], "12", false)
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").typeParams([ "'T" ])
+                Value("x", Unquoted "12").typeParams([ "'a"; "'b"; "'c" ])
+            }
         }
         |> produces
             """
@@ -162,10 +176,12 @@ let x<'a, 'b, 'c> = 12
 
     [<Fact>]
     let ``Simple Let binding with type params SinglePrefix``() =
-        AnonymousModule() {
-            Value("x", [ "'T" ], ConstantExpr("12", false))
+        Oak() {
+            AnonymousModule() {
+                Value("x", ConstantExpr(Unquoted "12")).typeParams([ "'T" ])
 
-            Value("x", [ "'T" ], "12", false)
+                Value("x", Unquoted "12").typeParams([ "'T" ])
+            }
         }
         |> produces
             """
@@ -175,7 +191,7 @@ let x<'T> = 12
 
     [<Fact>]
     let ``Simple Let private binding``() =
-        AnonymousModule() { Value("x", "12", false).toPrivate() }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12").toPrivate() } }
         |> produces
             """
 
@@ -185,7 +201,7 @@ let private x = 12
 
     [<Fact>]
     let ``Simple Let internal binding``() =
-        AnonymousModule() { Value("x", "12", false).toInternal() }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12").toInternal() } }
         |> produces
             """
 
@@ -195,7 +211,7 @@ let internal x = 12
 
     [<Fact>]
     let ``Simple Let binding with a single xml doc``() =
-        AnonymousModule() { Value("x", "12", false).xmlDocs([ "This is a comment" ]) }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12").xmlDocs([ "This is a comment" ]) } }
         |> produces
             """
 
@@ -206,14 +222,17 @@ let x = 12
 
     [<Fact>]
     let ``Simple Let binding with multiline xml doc``() =
-        AnonymousModule() {
-            Value("x", "12", false)
-                .xmlDocs(
-                    [ "This is a fist comment"
-                      "This is a second comment"
-                      "This is a third comment" ]
-                )
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12")
 
+                    .xmlDocs(
+                        [ "This is a fist comment"
+                          "This is a second comment"
+                          "This is a third comment" ]
+                    )
+
+            }
         }
         |> produces
             """
@@ -227,9 +246,11 @@ let x = 12
 
     [<Fact>]
     let ``Simple Let binding with multiline with a single attribute``() =
-        AnonymousModule() {
-            Value("x", "12", false).attribute("Obsolete")
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").attribute("Obsolete")
 
+            }
         }
         |> produces
             """
@@ -240,16 +261,18 @@ let x = 12
 
     [<Fact>]
     let ``Simple Let binding with multiline with a multiple attributes``() =
-        AnonymousModule() {
-            Value("x", "12", false).attributes() {
-                Attribute("EditorBrowsable")
-                Attribute("Obsolete")
-            }
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").attributes() {
+                    Attribute("EditorBrowsable")
+                    Attribute("Obsolete")
+                }
 
+            }
         }
         |> produces
             """
-            
+
 [<EditorBrowsable; Obsolete>]
 let x = 12
 
@@ -257,92 +280,96 @@ let x = 12
 
     [<Fact>]
     let ``Simple Let binding with escape hatch``() =
-        AnonymousModule() {
-            BindingNode(
-                None,
-                None,
-                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                false,
-                None,
-                None,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                None,
-                List.Empty,
-                None,
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                Range.Zero
-            )
+        Oak() {
+            AnonymousModule() {
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                    Range.Zero
+                )
+            }
         }
         |> produces
             """
-        
+
 let x = 12
 
 """
 
     [<Fact>]
     let ``Produces a top level let binding from BindingNode(using Widgets)``() =
-        AnonymousModule() {
-            BindingNode(
-                None,
-                None,
-                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                false,
-                None,
-                None,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                None,
-                List.Empty,
-                None,
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                Range.Zero
-            )
+        Oak() {
+            AnonymousModule() {
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                    Range.Zero
+                )
+            }
         }
         |> produces
             """
-        
+
 let x = 12
 
 """
 
     [<Fact>]
     let ``Produces a top level mutable let binding``() =
-        AnonymousModule() { Value("x", "12", false).toMutable() }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12").toMutable() } }
         |> produces
             """
-        
+
 let mutable x = 12
 
 """
 
     [<Fact>]
     let ``Produces a top level mutable let binding with return type``() =
-        AnonymousModule() { Value("x", "12", false).returnType(Int32()).toMutable() }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12").returnType(Int32()).toMutable() } }
         |> produces
             """
-        
+
 let mutable x: int = 12
 
 """
 
     [<Fact>]
     let ``Produces a top level mutable let binding with an expression``() =
-        AnonymousModule() { Value("x", ConstantExpr("12", false)).toMutable() }
+        Oak() { AnonymousModule() { Value("x", ConstantExpr(Unquoted "12")).toMutable() } }
         |> produces
             """
-        
+
 let mutable x = 12
 
 """
 
     [<Fact>]
     let ``Produces a top level inlined let binding with type params and an expression``() =
-        AnonymousModule() { Value("x", [ "'a" ], ConstantExpr("12", false)).toInlined() }
+        Oak() { AnonymousModule() { Value("x", ConstantExpr(Unquoted "12")).toInlined().typeParams([ "'a" ]) } }
         |> produces
             """
-        
+
 let inline x<'a> = 12
 
 """

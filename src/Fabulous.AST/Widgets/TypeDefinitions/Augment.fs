@@ -13,7 +13,11 @@ module Augmentation =
 
     let WidgetKey =
         Widgets.register "Augmentation" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
+
             let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 
             let members =
@@ -47,7 +51,7 @@ module AugmentBuilders =
             CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>(
                 Augmentation.WidgetKey,
                 Augmentation.Members,
-                AttributesBundle(StackList.one(Augmentation.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Augmentation.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]

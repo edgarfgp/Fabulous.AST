@@ -20,7 +20,7 @@ module TypeHashConstraintBuilders =
                 TypeHashConstraint.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| TypeHashConstraint.TypeWidget.WithValue(value.Compile()) |],
-                    ValueNone
+                    [| TypeHashConstraint.TypeWidget.WithValue(value.Compile()) |],
+                    Array.empty
                 )
             )

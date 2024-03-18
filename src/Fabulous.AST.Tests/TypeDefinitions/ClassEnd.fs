@@ -9,7 +9,7 @@ open type Ast
 module ClassEnd =
     [<Fact>]
     let ``Produces a class end``() =
-        AnonymousModule() { ClassEnd("MyClass") }
+        Oak() { AnonymousModule() { ClassEnd("MyClass") } }
         |> produces
             """
 type MyClass = class end
@@ -17,7 +17,7 @@ type MyClass = class end
 
     [<Fact>]
     let ``Produces a class end with constructor``() =
-        AnonymousModule() { ClassEnd("MyClass", true) }
+        Oak() { AnonymousModule() { ClassEnd("MyClass", Constructor()) } }
         |> produces
             """
 type MyClass () = class end
@@ -25,12 +25,14 @@ type MyClass () = class end
 
     [<Fact>]
     let ``Produces a class end with constructor and attributes``() =
-        AnonymousModule() {
-            ClassEnd("MyClass", true).attributes() {
-                Attribute("Sealed")
-                Attribute("AbstractClass")
-            }
+        Oak() {
+            AnonymousModule() {
+                ClassEnd("MyClass", Constructor()).attributes() {
+                    Attribute("Sealed")
+                    Attribute("AbstractClass")
+                }
 
+            }
         }
         |> produces
             """
@@ -40,13 +42,15 @@ type MyClass () = class end
 
     [<Fact>]
     let ``Produces a class end with constructor params``() =
-        AnonymousModule() {
-            ClassEnd("MyClass", Constructor() { SimplePat("name", String(), false) })
-                .attributes() {
-                Attribute("Sealed")
-                Attribute("AbstractClass")
-            }
+        Oak() {
+            AnonymousModule() {
+                ClassEnd("MyClass", Constructor(ParametersPat() { ParameterPat("name", String()) }))
+                    .attributes() {
+                    Attribute("Sealed")
+                    Attribute("AbstractClass")
+                }
 
+            }
         }
         |> produces
             """
@@ -56,23 +60,25 @@ type MyClass (name: string) = class end
 
     [<Fact>]
     let ``Produces a class end with constructor params and type args``() =
-        AnonymousModule() {
-            ClassEnd("MyClass", [ "'a" ], Constructor() { SimplePat("name", String(), false) })
-                .attributes() {
-                Attribute("Sealed")
-                Attribute("AbstractClass")
+        Oak() {
+            AnonymousModule() {
+                ClassEnd("MyClass", Constructor(ParametersPat() { ParameterPat("name", String()) }))
+                    .attributes() {
+                    Attribute("Sealed")
+                    Attribute("AbstractClass")
+                }
+                |> _.typeParams([ "'a" ])
             }
-
         }
         |> produces
             """
 [<Sealed; AbstractClass>]
-type MyClass <'a>(name: string) = class end
+type MyClass <'a> (name: string) = class end
             """
 
     [<Fact>]
     let ``Produces a class end with type params``() =
-        AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ]) }
+        Oak() { AnonymousModule() { ClassEnd("MyClass") |> _.typeParams([ "'a"; "'b" ]) } }
         |> produces
             """
 type MyClass <'a, 'b> = class end
@@ -80,7 +86,7 @@ type MyClass <'a, 'b> = class end
 
     [<Fact>]
     let ``Produces a class end with constructor and  type params``() =
-        AnonymousModule() { ClassEnd("MyClass", [ "'a"; "'b" ], true) }
+        Oak() { AnonymousModule() { ClassEnd("MyClass", Constructor()).typeParams([ "'a"; "'b" ]) } }
         |> produces
             """
 type MyClass <'a, 'b>() = class end

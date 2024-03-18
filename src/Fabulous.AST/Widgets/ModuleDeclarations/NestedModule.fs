@@ -20,7 +20,10 @@ module NestedModule =
             let name = Widgets.getScalarValue widget Name
 
             let name =
-                name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
+                name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
+                |> SingleTextNode.Create
 
             let moduleDecls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
 
@@ -57,7 +60,7 @@ module NestedModuleBuilders =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(
                 NestedModule.WidgetKey,
                 NestedModule.Decls,
-                AttributesBundle(StackList.one(NestedModule.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(NestedModule.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]

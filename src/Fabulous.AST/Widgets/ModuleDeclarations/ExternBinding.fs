@@ -10,7 +10,8 @@ module ExternBinding =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let AttributesOfType = Attributes.defineWidget "MultipleAttributes"
-    let Type = Attributes.defineWidget "Type"
+    let TypeVal = Attributes.defineScalar<StringOrWidget<Type>> "Type"
+
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let Parameters = Attributes.defineWidgetCollection "Parameters"
@@ -53,7 +54,15 @@ module ExternBinding =
                 | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
-            let ``type`` = Widgets.getNodeFromWidget widget Type
+            let tp = Widgets.getScalarValue widget TypeVal
+
+            let tp =
+                match tp with
+                | StringOrWidget.StringExpr value ->
+                    Type.LongIdent(
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value.Normalize())) ], Range.Zero)
+                    )
+                | StringOrWidget.WidgetExpr widget -> widget
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -81,7 +90,7 @@ module ExternBinding =
                 multipleAttributes,
                 SingleTextNode.``extern``,
                 multipleAttributesOfType,
-                ``type``,
+                tp,
                 accessControl,
                 IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                 SingleTextNode.leftParenthesis,
@@ -98,9 +107,12 @@ module ExternBindingNodeBuilders =
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ExternBinding.Identifier.WithValue(name)),
-                    ValueSome [| ExternBinding.Type.WithValue(Ast.LongIdent(``type``).Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        ExternBinding.Identifier.WithValue(name),
+                        ExternBinding.TypeVal.WithValue(StringOrWidget.StringExpr(Unquoted ``type``))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -108,9 +120,12 @@ module ExternBindingNodeBuilders =
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ExternBinding.Identifier.WithValue(name)),
-                    ValueSome [| ExternBinding.Type.WithValue(``type``.Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        ExternBinding.Identifier.WithValue(name),
+                        ExternBinding.TypeVal.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(``type``)))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )
 

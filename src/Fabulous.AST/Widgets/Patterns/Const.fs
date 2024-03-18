@@ -18,7 +18,7 @@ module ConstBuilders =
         static member ConstantPat(value: Constant) =
             WidgetBuilder<Pattern>(
                 Const.WidgetKey,
-                AttributesBundle(StackList.one(Const.Value.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Const.Value.WithValue(value)), Array.empty, Array.empty)
             )
 
         static member ConstantPat(value: string) =

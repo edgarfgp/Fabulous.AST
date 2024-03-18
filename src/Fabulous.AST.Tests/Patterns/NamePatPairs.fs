@@ -11,14 +11,16 @@ module NamePatPairsPat =
 
     [<Fact>]
     let ``let value with a NamePatPairs pattern``() =
-        AnonymousModule() {
-            Value(
-                NamePatPairsPat("x") {
-                    NamePatPairPat("A", NamedPat("B"))
-                    NamePatPairPat("B", NamedPat("A"))
-                },
-                ConstantExpr(Constant("12", false))
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    NamePatPairsPat("x") {
+                        NamePatPairPat("A", NamedPat("B"))
+                        NamePatPairPat("B", NamedPat("A"))
+                    },
+                    ConstantExpr(Constant(Unquoted "12"))
+                )
+            }
         }
         |> produces
             """
@@ -28,14 +30,16 @@ let x (A = B; B = A) = 12
 
     [<Fact>]
     let ``let value with a NamePatPairs pattern with type params``() =
-        AnonymousModule() {
-            Value(
-                NamePatPairsPat("x", [ "'a"; "'b" ]) {
-                    NamePatPairPat("A", NamedPat("B"))
-                    NamePatPairPat("B", NamedPat("A"))
-                },
-                ConstantExpr(Constant("12", false))
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    NamePatPairsPat("x", [ "'a"; "'b" ]) {
+                        NamePatPairPat("A", NamedPat("B"))
+                        NamePatPairPat("B", NamedPat("A"))
+                    },
+                    ConstantExpr(Constant(Unquoted "12"))
+                )
+            }
         }
         |> produces
             """

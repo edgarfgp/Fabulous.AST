@@ -11,14 +11,16 @@ module TuplePat =
 
     [<Fact>]
     let ``let value with a Tuple pattern``() =
-        AnonymousModule() {
-            Value(
-                TuplePat() {
-                    NamedPat("a")
-                    NamedPat("b")
-                },
-                ConstantExpr(Constant("12", false))
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    TuplePat() {
+                        NamedPat("a")
+                        NamedPat("b")
+                    },
+                    ConstantExpr(Constant(Unquoted "12"))
+                )
+            }
         }
         |> produces
             """

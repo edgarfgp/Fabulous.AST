@@ -12,33 +12,35 @@ module UnitsOfMeasure =
 
     [<Fact>]
     let ``Produces type Unit of measure``() =
-        AnonymousModule() {
-            Measure("cm").xmlDocs([ "Cm, centimeters." ])
+        Oak() {
+            AnonymousModule() {
+                Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-            Measure("ml", MeasurePowerInteger("cm", "3")).xmlDocs([ "Ml, milliliters." ])
+                Measure("ml", MeasurePowerInteger("cm", "3")).xmlDocs([ "Ml, milliliters." ])
 
-            Measure("g").xmlDocs([ "Mass, grams." ])
-            Measure("kg").xmlDocs([ "Mass, kilograms." ])
-            Measure("lb").xmlDocs([ "Weight, pounds." ])
-            Measure("m").xmlDocs([ "Distance, meters." ])
-            Measure("cm").xmlDocs([ "Distance, cm" ])
-            Measure("inch").xmlDocs([ "Distance, inches." ])
-            Measure("ft").xmlDocs([ "Distance, feet" ])
-            Measure("s").xmlDocs([ "Time, seconds." ])
+                Measure("g").xmlDocs([ "Mass, grams." ])
+                Measure("kg").xmlDocs([ "Mass, kilograms." ])
+                Measure("lb").xmlDocs([ "Weight, pounds." ])
+                Measure("m").xmlDocs([ "Distance, meters." ])
+                Measure("cm").xmlDocs([ "Distance, cm" ])
+                Measure("inch").xmlDocs([ "Distance, inches." ])
+                Measure("ft").xmlDocs([ "Distance, feet" ])
+                Measure("s").xmlDocs([ "Time, seconds." ])
 
-            Measure("N", Tuple("kg", "m", MeasurePowerInteger([ "s" ], "2")))
-                .xmlDocs([ "Force, Newtons." ])
+                Measure("N", Tuple("kg", "m", MeasurePowerInteger([ "s" ], "2")))
+                    .xmlDocs([ "Force, Newtons." ])
 
-            Measure("bar").xmlDocs([ "Pressure, bar." ])
+                Measure("bar").xmlDocs([ "Pressure, bar." ])
 
-            Measure("Pa", Tuple(LongIdent "N", MeasurePowerInteger([ "m" ], "2")))
-                .xmlDocs([ "Pressure, Pascals" ])
+                Measure("Pa", Tuple(LongIdent "N", MeasurePowerInteger([ "m" ], "2")))
+                    .xmlDocs([ "Pressure, Pascals" ])
 
-            Measure("ml").xmlDocs([ "Volume, milliliters." ])
+                Measure("ml").xmlDocs([ "Volume, milliliters." ])
 
-            Measure("L").xmlDocs([ "Volume, liters." ])
+                Measure("L").xmlDocs([ "Volume, liters." ])
 
-            Measure("Ml", "cm^3")
+                Measure("Ml", "cm^3")
+            }
         }
 
         |> produces

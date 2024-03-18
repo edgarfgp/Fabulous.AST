@@ -19,7 +19,7 @@ module TypeStaticConstantBuilders =
                 TypeStaticConstant.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome [| TypeStaticConstant.TypeWidget.WithValue(value.Compile()) |],
-                    ValueNone
+                    [| TypeStaticConstant.TypeWidget.WithValue(value.Compile()) |],
+                    Array.empty
                 )
             )

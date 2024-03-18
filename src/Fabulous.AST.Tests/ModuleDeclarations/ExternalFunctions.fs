@@ -11,7 +11,7 @@ module ExternalFunctions =
 
     [<Fact>]
     let ``Produces an ExternBindingNodeNoParams``() =
-        AnonymousModule() { ExternBinding("HelloWorld", "void") }
+        Oak() { AnonymousModule() { ExternBinding("HelloWorld", "void") } }
         |> produces
             """
 extern void HelloWorld()
@@ -19,9 +19,11 @@ extern void HelloWorld()
 
     [<Fact>]
     let ``Produces an ExternBindingNode with parameter``() =
-        AnonymousModule() {
-            ExternBinding("HelloWorld", "void")
-                .parameter(ExternBindingPat("string", ConstantPat("x")))
+        Oak() {
+            AnonymousModule() {
+                ExternBinding("HelloWorld", "void")
+                    .parameter(ExternBindingPat("string", ConstantPat("x")))
+            }
         }
         |> produces
             """
@@ -30,10 +32,12 @@ extern void HelloWorld(string x)
 
     [<Fact>]
     let ``Produces an ExternBindingNode with parameters``() =
-        AnonymousModule() {
-            ExternBinding("HelloWorld", "void").parameters() {
-                ExternBindingPat("string", ConstantPat("x"))
-                ExternBindingPat(Int32(), ConstantPat("y"))
+        Oak() {
+            AnonymousModule() {
+                ExternBinding("HelloWorld", "void").parameters() {
+                    ExternBindingPat("string", ConstantPat("x"))
+                    ExternBindingPat(Int32(), ConstantPat("y"))
+                }
             }
         }
         |> produces

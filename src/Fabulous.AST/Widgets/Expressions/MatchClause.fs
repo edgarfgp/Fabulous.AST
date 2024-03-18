@@ -33,29 +33,30 @@ module MatchClause =
 module MatchClauseBuilders =
     type Ast with
 
-        static member inline MatchClauseExpr
+        static member MatchClauseExpr
             (pattern: WidgetBuilder<Pattern>, whenExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>)
             =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| MatchClause.PatternNamed.WithValue(pattern.Compile())
-                           MatchClause.WhenExpr.WithValue(whenExpr.Compile())
-                           MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
-                    ValueNone
+
+                    [| MatchClause.PatternNamed.WithValue(pattern.Compile())
+                       MatchClause.WhenExpr.WithValue(whenExpr.Compile())
+                       MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    Array.empty
                 )
             )
 
-        static member inline MatchClauseExpr(pattern: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>) =
+        static member MatchClauseExpr(pattern: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| MatchClause.PatternNamed.WithValue(pattern.Compile())
-                           MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
-                    ValueNone
+
+                    [| MatchClause.PatternNamed.WithValue(pattern.Compile())
+                       MatchClause.BodyExpr.WithValue(bodyExpr.Compile()) |],
+
+                    Array.empty
                 )
             )

@@ -27,7 +27,7 @@ module TypedBuilders =
                 Typed.WidgetKey,
                 AttributesBundle(
                     StackList.one(Typed.Text.WithValue(operator)),
-                    ValueSome [| Typed.Value.WithValue(value.Compile()); Typed.Typed.WithValue(t.Compile()) |],
-                    ValueNone
+                    [| Typed.Value.WithValue(value.Compile()); Typed.Typed.WithValue(t.Compile()) |],
+                    Array.empty
                 )
             )

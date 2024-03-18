@@ -9,10 +9,12 @@ open type Ast
 module Augmentation =
     [<Fact>]
     let ``Produces an Augment``() =
-        AnonymousModule() {
-            Augmentation("DateTime") {
-                Property("this.Print", ConstantExpr(ConstantUnit()))
-                Method("this.Print", UnitPat(), ConstantExpr(ConstantUnit()))
+        Oak() {
+            AnonymousModule() {
+                Augmentation("DateTime") {
+                    Property("this.Print", ConstantExpr(ConstantUnit()))
+                    Method("this.Print", UnitPat(), ConstantExpr(ConstantUnit()))
+                }
             }
         }
         |> produces

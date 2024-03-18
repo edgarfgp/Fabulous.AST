@@ -17,5 +17,5 @@ module TypeVarBuilders =
         static member Var(value: string) =
             WidgetBuilder<Type>(
                 TypeVar.WidgetKey,
-                AttributesBundle(StackList.one(TypeVar.Identifier.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(TypeVar.Identifier.WithValue(value)), Array.empty, Array.empty)
             )

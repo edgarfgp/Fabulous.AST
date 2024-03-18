@@ -10,13 +10,20 @@ module Abbrev =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let AliasType = Attributes.defineWidget "AliasType"
+    let AliasType = Attributes.defineScalar<StringOrWidget<Type>> "AliasType"
 
     let WidgetKey =
         Widgets.register "Alias" (fun widget ->
             let name = Widgets.getScalarValue widget Name
 
-            let aliasType = Widgets.getNodeFromWidget widget AliasType
+            let aliasType = Widgets.getScalarValue widget AliasType
+
+            let aliasType =
+                match aliasType with
+                | StringOrWidget.StringExpr value ->
+                    let value = StringParsing.normalizeIdentifierBackticks value
+                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
+                | StringOrWidget.WidgetExpr value -> value
 
             TypeDefnAbbrevNode(
                 TypeNameNode(
@@ -45,13 +52,27 @@ module AbbrevBuilders =
             WidgetBuilder<TypeDefnAbbrevNode>(
                 Abbrev.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Abbrev.Name.WithValue(name)),
-                    ValueSome [| Abbrev.AliasType.WithValue(alias.Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        Abbrev.Name.WithValue(name),
+                        Abbrev.AliasType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak alias))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
-        static member Abbrev(name: string, alias: string) = Ast.Abbrev(name, Ast.LongIdent(alias))
+        static member Abbrev(name: string, alias: string) =
+            WidgetBuilder<TypeDefnAbbrevNode>(
+                Abbrev.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        Abbrev.Name.WithValue(name),
+                        Abbrev.AliasType.WithValue(StringOrWidget.StringExpr(Unquoted alias))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
 
 [<Extension>]
 type AbbrevYieldExtensions =

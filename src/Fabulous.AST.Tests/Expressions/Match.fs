@@ -11,14 +11,16 @@ module Match =
 
     [<Fact>]
     let ``let value with a Match expression``() =
-        AnonymousModule() {
-            MatchExpr(
-                ListExpr() {
-                    ConstantExpr(Constant("1", false))
-                    ConstantExpr(Constant("2", false))
+        Oak() {
+            AnonymousModule() {
+                MatchExpr(
+                    ListExpr() {
+                        ConstantExpr(Constant(Unquoted "1"))
+                        ConstantExpr(Constant(Unquoted "2"))
+                    }
+                ) {
+                    MatchClauseExpr(NamedPat("a"), ConstantExpr(Constant(Unquoted "3")))
                 }
-            ) {
-                MatchClauseExpr(NamedPat("a"), ConstantExpr(Constant("3", false)))
             }
         }
         |> produces

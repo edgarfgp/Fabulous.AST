@@ -18,7 +18,10 @@ module Enum =
 
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierBackticks
 
             let enumCaseNodes =
                 Widgets.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
@@ -78,7 +81,7 @@ module EnumBuilders =
             CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>(
                 Enum.WidgetKey,
                 Enum.EnumCaseNode,
-                AttributesBundle(StackList.one(Enum.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Enum.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]

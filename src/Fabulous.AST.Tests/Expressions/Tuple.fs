@@ -11,15 +11,17 @@ module Tuple =
 
     [<Fact>]
     let ``let value with a Tuple expression``() =
-        AnonymousModule() {
-            Value(
-                "x",
-                TupleExpr() {
-                    ConstantExpr("1", false)
-                    ConstantExpr("2", false)
-                    ConstantExpr("3", false)
-                }
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    TupleExpr() {
+                        ConstantExpr(Unquoted "1")
+                        ConstantExpr(Unquoted "2")
+                        ConstantExpr(Unquoted "3")
+                    }
+                )
+            }
         }
         |> produces
             """
@@ -29,17 +31,19 @@ let x = 1, 2, 3
 
     [<Fact>]
     let ``let value with a Tuple expression with parenthesis``() =
-        AnonymousModule() {
-            Value(
-                "x",
-                ParenExpr(
-                    TupleExpr() {
-                        ConstantExpr("1", false)
-                        ConstantExpr("2", false)
-                        ConstantExpr("3", false)
-                    }
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ParenExpr(
+                        TupleExpr() {
+                            ConstantExpr(Unquoted "1")
+                            ConstantExpr(Unquoted "2")
+                            ConstantExpr(Unquoted "3")
+                        }
+                    )
                 )
-            )
+            }
         }
         |> produces
             """

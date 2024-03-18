@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -12,21 +13,20 @@ module Field =
 
     let FieldType = Attributes.defineWidget "FieldType"
 
+    let Mutable = Attributes.defineScalar<bool> "Mutable"
+
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
-            let name = Widgets.tryGetScalarValue widget Name
+            let name = Widgets.getScalarValue widget Name
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let name =
-                match name with
-                | ValueSome name ->
-                    name
-                    |> StringParsing.normalizeIdentifierBackticks
-                    |> SingleTextNode.Create
-                    |> Some
-                | ValueNone -> None
+                Unquoted(name)
+                |> StringParsing.normalizeIdentifierBackticks
+                |> SingleTextNode.Create
+                |> Some
 
             let fieldType = Widgets.getNodeFromWidget widget FieldType
 
@@ -56,7 +56,16 @@ module Field =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            FieldNode(xmlDocs, multipleAttributes, None, false, None, name, fieldType, Range.Zero))
+            let mutableKeyword =
+                Widgets.tryGetScalarValue widget Mutable |> ValueOption.defaultValue false
+
+            let mutableKeyword =
+                if mutableKeyword then
+                    Some(SingleTextNode.``mutable``)
+                else
+                    None
+
+            FieldNode(xmlDocs, multipleAttributes, None, mutableKeyword, None, name, fieldType, Range.Zero))
 
 [<AutoOpen>]
 module FieldBuilders =
@@ -67,28 +76,24 @@ module FieldBuilders =
                 Field.WidgetKey,
                 AttributesBundle(
                     StackList.one(Field.Name.WithValue(name)),
-                    ValueSome [| Field.FieldType.WithValue(filedType.Compile()) |],
-                    ValueNone
+                    [| Field.FieldType.WithValue(filedType.Compile()) |],
+                    Array.empty
                 )
             )
 
-        static member Field(filedType: WidgetBuilder<Type>) =
-            WidgetBuilder<FieldNode>(
-                Field.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Field.FieldType.WithValue(filedType.Compile()) |],
-                    ValueNone
-                )
-            )
+        // static member Field(filedType: WidgetBuilder<Type>) =
+        //     WidgetBuilder<FieldNode>(
+        //         Field.WidgetKey,
+        //         AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(filedType.Compile()) |], Array.empty)
+        //     )
 
         static member Field(name: string, filedType: string) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
                 AttributesBundle(
                     StackList.one(Field.Name.WithValue(name)),
-                    ValueSome [| Field.FieldType.WithValue(Ast.LongIdent(filedType).Compile()) |],
-                    ValueNone
+                    [| Field.FieldType.WithValue(Ast.LongIdent(filedType).Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -97,6 +102,10 @@ type FieldModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<FieldNode>, comments: string list) =
         this.AddScalar(Field.XmlDocs.WithValue(comments))
+
+    [<Extension>]
+    static member toMutable(this: WidgetBuilder<FieldNode>) =
+        this.AddScalar(Field.Mutable.WithValue(true))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<FieldNode>) =

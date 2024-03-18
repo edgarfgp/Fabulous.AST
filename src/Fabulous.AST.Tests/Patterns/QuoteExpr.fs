@@ -11,8 +11,10 @@ module QuoteExpr =
 
     [<Fact>]
     let ``let value with a QuoteExpr pattern``() =
-        AnonymousModule() {
-            Value(QuoteExprPat(ConstantExpr(Constant("345", false))), ConstantExpr(Constant("12", false)))
+        Oak() {
+            AnonymousModule() {
+                Value(QuoteExprPat(ConstantExpr(Constant(Unquoted "345"))), ConstantExpr(Constant(Unquoted "12")))
+            }
         }
         |> produces
             """

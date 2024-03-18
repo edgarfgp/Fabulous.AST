@@ -18,5 +18,5 @@ module OptionalValBuilders =
         static member private OptionalValPat(value: string) =
             WidgetBuilder<Pattern>(
                 OptionalVal.WidgetKey,
-                AttributesBundle(StackList.one(OptionalVal.Value.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(OptionalVal.Value.WithValue(value)), Array.empty, Array.empty)
             )

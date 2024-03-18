@@ -10,16 +10,20 @@ open type Ast
 module InterfaceMembers =
     [<Fact>]
     let ``Produces a record with TypeParams and interface member``() =
-        AnonymousModule() {
-            Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
+        Oak() {
+            AnonymousModule() {
+                Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
-            (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", LongIdent("string"))
-                Field("Blue", LongIdent("'other"))
-                Field("Yellow", LongIdent("int"))
-            })
-                .members() {
-                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2", false)) }
+                (GenericRecord("Colors", [ "'other" ]) {
+                    Field("Green", LongIdent("string"))
+                    Field("Blue", LongIdent("'other"))
+                    Field("Yellow", LongIdent("int"))
+                })
+                    .members() {
+                    InterfaceMember("IMyInterface") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Unquoted "x.MyField2"))
+                    }
+                }
             }
         }
 
@@ -40,19 +44,23 @@ type Colors<'other> =
 
     [<Fact>]
     let ``Produces a record with interface member``() =
+        Oak() {
 
-        AnonymousModule() {
-            Interface("IMyInterface") {
-                let parameters = [ Unit() ]
-                AbstractCurriedMethod("GetValue", parameters, String())
-            }
+            AnonymousModule() {
+                Interface("IMyInterface") {
+                    let parameters = [ Unit() ]
+                    AbstractCurriedMethod("GetValue", parameters, String())
+                }
 
-            (Record("MyRecord") {
-                Field("MyField1", LongIdent("int"))
-                Field("MyField2", LongIdent("string"))
-            })
-                .members() {
-                InterfaceMember("IMyInterface") { Method("x.GetValue", UnitPat(), ConstantExpr("x.MyField2", false)) }
+                (Record("MyRecord") {
+                    Field("MyField1", LongIdent("int"))
+                    Field("MyField2", LongIdent("string"))
+                })
+                    .members() {
+                    InterfaceMember("IMyInterface") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Unquoted "x.MyField2"))
+                    }
+                }
             }
         }
         |> produces
@@ -71,10 +79,13 @@ type MyRecord =
 
     [<Fact>]
     let ``Produces a class with a interface member``() =
-        AnonymousModule() {
-            Interface("Meh") { AbstractProperty("Name", String()) }
+        Oak() {
 
-            Class("Person") { InterfaceMember("Meh") { Property("this.Name", ConstantExpr("23")) } }
+            AnonymousModule() {
+                Interface("Meh") { AbstractProperty("Name", String()) }
+
+                Class("Person") { InterfaceMember("Meh") { Property("this.Name", ConstantExpr(Quoted "23")) } }
+            }
         }
         |> produces
             """

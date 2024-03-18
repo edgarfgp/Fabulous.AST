@@ -6,9 +6,8 @@ open Fantomas.Core.SyntaxOak
 
 module IfThenElif =
     let Branches = Attributes.defineWidgetCollection "ElifExpr"
-    let Branch = Attributes.defineWidget "ElifExpr"
 
-    let ElseExpr = Attributes.defineWidget "ElseExpr"
+    let ElseExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ElseExpr"
 
     let WidgetKey =
         Widgets.register "IfThenElif" (fun widget ->
@@ -19,12 +18,23 @@ module IfThenElif =
                     | :? ExprIfThenNode as node -> Some node
                     | _ -> None)
 
-            let elseExpr = Widgets.tryGetNodeFromWidget<Expr> widget ElseExpr
+            let elseExpr = Widgets.tryGetScalarValue widget ElseExpr
 
             let elseExpr =
                 match elseExpr with
-                | ValueSome elseExpr -> Some(SingleTextNode.``else``, elseExpr)
                 | ValueNone -> None
+                | ValueSome stringOrWidget ->
+                    match stringOrWidget with
+                    | StringOrWidget.StringExpr value ->
+                        Some(
+                            SingleTextNode.``else``,
+                            Expr.Constant(
+                                Constant.FromText(
+                                    SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value))
+                                )
+                            )
+                        )
+                    | StringOrWidget.WidgetExpr expr -> Some(SingleTextNode.``else``, expr)
 
             Expr.IfThenElif(ExprIfThenElifNode(branches, elseExpr, Range.Zero)))
 
@@ -37,20 +47,20 @@ module IfThenElifBuilders =
                 IfThenElif.WidgetKey,
                 IfThenElif.Branches,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| IfThenElif.ElseExpr.WithValue(elseExpr.Compile()) |],
-                    ValueNone
+                    StackList.one(IfThenElif.ElseExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseExpr))),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
-        static member inline IfThenElifExpr(elseExpr: string) =
+        static member inline IfThenElifExpr(elseExpr: StringVariant) =
             CollectionBuilder<Expr, Expr>(
                 IfThenElif.WidgetKey,
                 IfThenElif.Branches,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| IfThenElif.ElseExpr.WithValue(Ast.ConstantExpr(elseExpr, false).Compile()) |],
-                    ValueNone
+                    StackList.one(IfThenElif.ElseExpr.WithValue(StringOrWidget.StringExpr(elseExpr))),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -58,5 +68,5 @@ module IfThenElifBuilders =
             CollectionBuilder<Expr, Expr>(
                 IfThenElif.WidgetKey,
                 IfThenElif.Branches,
-                AttributesBundle(StackList.empty(), ValueNone, ValueNone)
+                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )

@@ -7,21 +7,20 @@ open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
 module BindingNode =
-    let NameWidget = Attributes.defineWidget "Name"
-    let NameString = Attributes.defineScalar<string> "FunctionName"
-    let BodyExpr = Attributes.defineWidget "Value"
+    let Name = Attributes.defineScalar<StringOrWidget<Pattern>> "Name"
+    let BodyExpr = Attributes.defineScalar<StringOrWidget<Expr>> "BindingBodyExpr"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
-    let Return = Attributes.defineWidget "Return"
+    let Return = Attributes.defineScalar<StringOrWidget<Type>> "Return"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Parameters = Attributes.defineWidget "Parameters"
 
 [<Extension>]
-type ValueModifiers =
+type TopLevelBindingModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
@@ -61,11 +60,11 @@ type ValueModifiers =
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) =
-        this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
+        this.AddScalar(BindingNode.Return.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType)))
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
-        ValueModifiers.returnType(this, Ast.LongIdent(returnType))
+        this.AddScalar(BindingNode.Return.WithValue(StringOrWidget.StringExpr(Unquoted returnType)))
 
     [<Extension>]
     static member inline toMutable(this: WidgetBuilder<BindingNode>) =
@@ -80,7 +79,7 @@ type ValueModifiers =
         this.AddScalar(BindingNode.IsStatic.WithValue(true))
 
     [<Extension>]
-    static member inline typeParameters(this: WidgetBuilder<BindingNode>, typeParams: string list) =
+    static member inline typeParams(this: WidgetBuilder<BindingNode>, typeParams: string list) =
         this.AddScalar(BindingNode.TypeParams.WithValue(typeParams))
 
 [<Extension>]

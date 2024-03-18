@@ -11,15 +11,17 @@ module ArrayOrList =
 
     [<Fact>]
     let ``let value with a Array expression``() =
-        AnonymousModule() {
-            Value(
-                "x",
-                ArrayExpr() {
-                    ConstantExpr("1", false)
-                    ConstantExpr("2", false)
-                    ConstantExpr("3", false)
-                }
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ArrayExpr() {
+                        ConstantExpr(Unquoted "1")
+                        ConstantExpr(Unquoted "2")
+                        ConstantExpr(Unquoted "3")
+                    }
+                )
+            }
         }
         |> produces
             """
@@ -29,18 +31,20 @@ let x = [| 1; 2; 3 |]
 
     [<Fact>]
     let ``let value with a List expression``() =
-        AnonymousModule() {
-            Value(
-                "x",
-                ListExpr() {
-                    ConstantExpr("1", false)
-                    ConstantExpr("2", false)
-                    ConstantExpr("3", false)
-                }
-            )
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ListExpr() {
+                        ConstantExpr(Unquoted "1")
+                        ConstantExpr(Unquoted "2")
+                        ConstantExpr(Unquoted "3")
+                    }
+                )
+            }
         }
         |> produces
             """
-    
+
 let x = [ 1; 2; 3 ]
 """

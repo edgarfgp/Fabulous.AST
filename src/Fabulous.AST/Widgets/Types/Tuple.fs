@@ -35,10 +35,10 @@ module TypeTupleBuilders =
                 TypeTuple.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeTuple.Path.WithValue(first.Compile())
-                           TypeTuple.Exponent.WithValue(exponent.Compile()) |],
-                    ValueNone
+
+                    [| TypeTuple.Path.WithValue(first.Compile())
+                       TypeTuple.Exponent.WithValue(exponent.Compile()) |],
+                    Array.empty
                 )
             )
 

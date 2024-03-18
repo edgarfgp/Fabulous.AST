@@ -27,11 +27,11 @@ module LongIdentTypeBuilders =
         static member LongIdent(value: string) =
             WidgetBuilder<Type>(
                 TypeLongIdent.WidgetKey,
-                AttributesBundle(StackList.one(TypeLongIdent.Value.WithValue([ value ])), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(TypeLongIdent.Value.WithValue([ value ])), Array.empty, Array.empty)
             )
 
         static member LongIdent(value: string list) =
             WidgetBuilder<Type>(
                 TypeLongIdent.WidgetKey,
-                AttributesBundle(StackList.one(TypeLongIdent.Value.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(TypeLongIdent.Value.WithValue(value)), Array.empty, Array.empty)
             )

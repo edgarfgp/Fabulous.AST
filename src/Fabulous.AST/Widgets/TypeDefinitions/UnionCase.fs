@@ -18,6 +18,7 @@ module UnionCase =
         Widgets.register "UnionCase" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Name
+                |> Unquoted
                 |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
@@ -64,14 +65,14 @@ module UnionCaseBuilders =
         static member UnionCase(name: string) =
             WidgetBuilder<UnionCaseNode>(
                 UnionCase.WidgetKey,
-                AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
         static member UnionParamsCase(name: string) =
             CollectionBuilder<UnionCaseNode, FieldNode>(
                 UnionCase.WidgetKey,
                 UnionCase.Fields,
-                AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
 [<Extension>]

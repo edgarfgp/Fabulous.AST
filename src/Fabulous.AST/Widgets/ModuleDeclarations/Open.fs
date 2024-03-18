@@ -6,41 +6,32 @@ open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
-type OpenNode(identListNode: IdentListNode) =
-    inherit OpenModuleOrNamespaceNode(identListNode, Range.Zero)
-
 module Open =
-    let IdentList = Attributes.defineWidget "IdentList"
+    let Name = Attributes.defineScalar<string> "IdentListNode"
 
     let WidgetKey =
         Widgets.register "Open" (fun widget ->
-            let identList = Widgets.getNodeFromWidget<IdentListNode> widget IdentList
-            OpenNode identList)
+            let name = Widgets.getScalarValue widget Name
+
+            OpenModuleOrNamespaceNode(
+                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero),
+                Range.Zero
+            ))
 
 [<AutoOpen>]
 module OpenBuilders =
     type Ast with
-
-        static member Open(identList: WidgetBuilder<#IdentListNode>) =
-            WidgetBuilder<OpenNode>(
-                Open.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    ValueSome [| Open.IdentList.WithValue(identList.Compile()) |],
-                    ValueNone
-                )
-            )
-
-        static member Open(node: IdentListNode) = Ast.Open(Ast.EscapeHatch(node))
-
         static member Open(name: string) =
-            Ast.Open(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero))
+            WidgetBuilder<OpenModuleOrNamespaceNode>(
+                Open.WidgetKey,
+                AttributesBundle(StackList.one(Open.Name.WithValue(name)), Array.empty, Array.empty)
+            )
 
 [<Extension>]
 type OpenYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenNode>)
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenModuleOrNamespaceNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         let openList = OpenListNode([ Open.ModuleOrNamespace node ])

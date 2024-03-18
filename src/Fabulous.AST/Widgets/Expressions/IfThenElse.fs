@@ -7,15 +7,39 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module IfThenElse =
-    let IfExpr = Attributes.defineWidget "IfExpr"
-    let ThenExpr = Attributes.defineWidget "ThenExpr"
-    let ElseExpr = Attributes.defineWidget "ElseExpr"
+    let IfExpr = Attributes.defineScalar<StringOrWidget<Expr>> "IfExpr"
+    let ThenExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ThenExpr"
+    let ElseExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ElseExpr"
 
     let WidgetKey =
         Widgets.register "IfThenElse" (fun widget ->
-            let ifExpr = Widgets.getNodeFromWidget<Expr> widget IfExpr
-            let thenExpr = Widgets.getNodeFromWidget<Expr> widget ThenExpr
-            let elseExpr = Widgets.getNodeFromWidget<Expr> widget ElseExpr
+            let ifExpr = Widgets.getScalarValue widget IfExpr
+            let thenExpr = Widgets.getScalarValue widget ThenExpr
+            let elseExpr = Widgets.getScalarValue widget ElseExpr
+
+            let ifExpr =
+                match ifExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                    )
+                | StringOrWidget.WidgetExpr expr -> expr
+
+            let thenExpr =
+                match thenExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                    )
+                | StringOrWidget.WidgetExpr expr -> expr
+
+            let elseExpr =
+                match elseExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                    )
+                | StringOrWidget.WidgetExpr expr -> expr
 
             Expr.IfThenElse(
                 ExprIfThenElseNode(
@@ -39,24 +63,26 @@ module IfThenElseBuilders =
             WidgetBuilder<Expr>(
                 IfThenElse.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome
-                        [| IfThenElse.IfExpr.WithValue(ifExpr.Compile())
-                           IfThenElse.ThenExpr.WithValue(thenExpr.Compile())
-                           IfThenElse.ElseExpr.WithValue(elseExpr.Compile()) |],
-                    ValueNone
+                    StackList.three(
+                        IfThenElse.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak ifExpr)),
+                        IfThenElse.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr)),
+                        IfThenElse.ElseExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseExpr))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
-        static member inline IfThenElseExpr(ifExpr: string, thenExpr: string, elseExpr: string) =
+        static member inline IfThenElseExpr(ifExpr: StringVariant, thenExpr: StringVariant, elseExpr: StringVariant) =
             WidgetBuilder<Expr>(
                 IfThenElse.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome
-                        [| IfThenElse.IfExpr.WithValue(Ast.ConstantExpr(ifExpr, false).Compile())
-                           IfThenElse.ThenExpr.WithValue(Ast.ConstantExpr(thenExpr, false).Compile())
-                           IfThenElse.ElseExpr.WithValue(Ast.ConstantExpr(elseExpr, false).Compile()) |],
-                    ValueNone
+                    StackList.three(
+                        IfThenElse.IfExpr.WithValue(StringOrWidget.StringExpr(ifExpr)),
+                        IfThenElse.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr)),
+                        IfThenElse.ElseExpr.WithValue(StringOrWidget.StringExpr(elseExpr))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )

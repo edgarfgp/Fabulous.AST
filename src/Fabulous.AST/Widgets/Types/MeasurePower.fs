@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -23,10 +24,10 @@ module TypeMeasurePowerBuilders =
                 TypeMeasurePower.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeMeasurePower.TypeWidget.WithValue(value.Compile())
-                           TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
-                    ValueNone
+
+                    [| TypeMeasurePower.TypeWidget.WithValue(value.Compile())
+                       TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -35,10 +36,9 @@ module TypeMeasurePowerBuilders =
                 TypeMeasurePower.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeMeasurePower.TypeWidget.WithValue(Ast.LongIdent(value).Compile())
-                           TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
-                    ValueNone
+                    [| TypeMeasurePower.TypeWidget.WithValue(Ast.LongIdent(value).Compile())
+                       TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -47,10 +47,9 @@ module TypeMeasurePowerBuilders =
                 TypeMeasurePower.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeMeasurePower.TypeWidget.WithValue(Ast.LongIdent(value).Compile())
-                           TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
-                    ValueNone
+                    [| TypeMeasurePower.TypeWidget.WithValue(Ast.LongIdent(value).Compile())
+                       TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
+                    Array.empty
                 )
             )
 

@@ -43,8 +43,8 @@ module TypeAnonRecordBuilders =
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
                     StackList.two(TypeAnonRecord.Fields.WithValue(fields), TypeAnonRecord.IsStructNode.WithValue(false)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -56,8 +56,8 @@ module TypeAnonRecordBuilders =
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
                     StackList.two(TypeAnonRecord.Fields.WithValue(fields), TypeAnonRecord.IsStructNode.WithValue(false)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -66,8 +66,8 @@ module TypeAnonRecordBuilders =
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
                     StackList.two(TypeAnonRecord.Fields.WithValue(fields), TypeAnonRecord.IsStructNode.WithValue(true)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -79,7 +79,7 @@ module TypeAnonRecordBuilders =
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
                     StackList.two(TypeAnonRecord.Fields.WithValue(fields), TypeAnonRecord.IsStructNode.WithValue(true)),
-                    ValueNone,
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )

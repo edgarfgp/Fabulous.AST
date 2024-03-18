@@ -31,8 +31,8 @@ module Widgets =
 
     let tryGetScalarValue (widget: Widget) (def: SimpleScalarAttributeDefinition<'data>) =
         match widget.ScalarAttributes with
-        | ValueNone -> ValueNone
-        | ValueSome scalarAttrs ->
+        | [||] -> ValueNone
+        | scalarAttrs ->
             match Array.tryFind (fun (attr: ScalarAttribute) -> attr.Key = def.Key) scalarAttrs with
             | None -> ValueNone
             | Some attr -> ValueSome(unbox<'data> attr.Value)
@@ -44,8 +44,8 @@ module Widgets =
 
     let tryGetWidgetValue (widget: Widget) (def: WidgetAttributeDefinition) =
         match widget.WidgetAttributes with
-        | ValueNone -> ValueNone
-        | ValueSome widgetAttrs ->
+        | [||] -> ValueNone
+        | widgetAttrs ->
             match Array.tryFind (fun (attr: WidgetAttribute) -> attr.Key = def.Key) widgetAttrs with
             | None -> ValueNone
             | Some attr -> ValueSome attr.Value
@@ -62,8 +62,8 @@ module Widgets =
 
     let tryGetWidgetCollectionValue (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match widget.WidgetCollectionAttributes with
-        | ValueNone -> ValueNone
-        | ValueSome widgetCollectionAttrs ->
+        | [||] -> ValueNone
+        | widgetCollectionAttrs ->
             match Array.tryFind (fun (attr: WidgetCollectionAttribute) -> attr.Key = def.Key) widgetCollectionAttrs with
             | None -> ValueNone
             | Some attr -> ValueSome attr.Value

@@ -11,7 +11,7 @@ module Lazy =
 
     [<Fact>]
     let ``let value with a lazy expression``() =
-        AnonymousModule() { Value("x", "lazy 12", false) }
+        Oak() { AnonymousModule() { Value("x", Unquoted "lazy 12") } }
         |> produces
             """
 
@@ -20,7 +20,7 @@ let x = lazy 12
 
     [<Fact>]
     let ``let value with a lazy expression widgets``() =
-        AnonymousModule() { Value("x", LazyExpr(ConstantExpr(Constant("12", false)))) }
+        Oak() { AnonymousModule() { Value("x", LazyExpr(ConstantExpr(Constant(Unquoted "12")))) } }
         |> produces
             """
 
@@ -29,7 +29,7 @@ let x = lazy 12
 
     [<Fact>]
     let ``let value with a lazy expression in parenthesis``() =
-        AnonymousModule() { Value("x", LazyExpr(ParenExpr(ConstantExpr(Constant("12", false))))) }
+        Oak() { AnonymousModule() { Value("x", LazyExpr(ParenExpr(ConstantExpr(Constant(Unquoted "12"))))) } }
         |> produces
             """
 

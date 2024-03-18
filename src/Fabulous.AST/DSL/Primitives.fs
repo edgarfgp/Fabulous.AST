@@ -110,6 +110,6 @@ and [<Struct>] WidgetCollectionAttribute =
 /// Represents a virtual UI element such as a Label, a Button, etc.
 and [<Struct>] Widget =
     { Key: WidgetKey
-      ScalarAttributes: ScalarAttribute[] voption
-      WidgetAttributes: WidgetAttribute[] voption
-      WidgetCollectionAttributes: WidgetCollectionAttribute[] voption }
+      ScalarAttributes: ScalarAttribute array
+      WidgetAttributes: WidgetAttribute[]
+      WidgetCollectionAttributes: WidgetCollectionAttribute array }

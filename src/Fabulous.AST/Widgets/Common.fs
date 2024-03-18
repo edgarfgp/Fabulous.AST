@@ -10,6 +10,28 @@ type AccessControl =
     | Internal
     | Unknown
 
+type StringVariant =
+    | Quoted of string
+    | Unquoted of string
+    | TripleQuoted of string
+
+    member this.Normalize() =
+        match this with
+        | Quoted s -> s
+        | Unquoted s -> s
+        | TripleQuoted s -> s
+
+[<RequireQualifiedAccess>]
+type StringOrWidget<'T> =
+    | StringExpr of StringVariant
+    | WidgetExpr of 'T
+
+[<RequireQualifiedAccess>]
+type ModuleOrNamespaceDecl =
+    | TopLevelModule of string
+    | Namespace of string
+    | AnonymousModule
+
 [<AutoOpen>]
 module CommonExtensions =
     type MultipleTextsNode with
@@ -137,9 +159,52 @@ module List =
 [<RequireQualifiedAccess>]
 module StringParsing =
     /// Adds double backticks to the identifier if necessary.
-    let normalizeIdentifierBackticks(identifier: string) =
-        if System.String.IsNullOrEmpty identifier then
-            failwith "This is not a valid identifier"
-        else
-            let trimmed = identifier.Trim()
-            Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks trimmed
+    let normalizeIdentifierBackticks(variant: StringVariant) =
+        match variant with
+        | Quoted identifier ->
+            if System.String.IsNullOrEmpty identifier then
+                failwith "This is not a valid identifier"
+            else
+                let trimmed = identifier.Trim()
+                Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks trimmed
+        | Unquoted identifier ->
+            if System.String.IsNullOrEmpty identifier then
+                failwith "This is not a valid identifier"
+            else
+                let trimmed = identifier.Trim()
+                Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks trimmed
+        | TripleQuoted identifier ->
+            if System.String.IsNullOrEmpty identifier then
+                failwith "This is not a valid identifier"
+            else
+                let trimmed = identifier.Trim()
+                Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks trimmed
+
+    /// Adds quotes to the identifier if necessary.
+    let normalizeIdentifierQuotes(variant: StringVariant) =
+        match variant with
+        | Quoted identifier ->
+            if identifier = null then
+                failwith "This is not a valid identifier"
+            else
+                $"\"{identifier}\""
+        | Unquoted identifier ->
+            if identifier = null then
+                failwith "This is not a valid identifier"
+            else
+                identifier
+        | TripleQuoted identifier ->
+            if identifier = null then
+                failwith "This is not a valid identifier"
+            else
+                $"\"\"\"{identifier}\"\"\""
+
+    let normalizeModuleOrNamespaceName(variant: StringVariant) =
+        match variant with
+        | Quoted identifier ->
+            if System.String.IsNullOrEmpty identifier then
+                None
+            else
+                variant |> normalizeIdentifierBackticks |> Some
+        | Unquoted s -> Some s
+        | TripleQuoted s -> Some s

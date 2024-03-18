@@ -11,23 +11,27 @@ module PropertyMember =
     [<Fact>]
     let ``Produces PropertiesMembers``() =
 
-        AnonymousModule() {
-            (Record("Colors") { Field("X", "string") }).members() {
-                Property("this.A", ConstantExpr(""))
+        Oak() {
+            AnonymousModule() {
+                (Record("Colors") { Field("X", "string") }).members() {
+                    Property("this.A", ConstantExpr(Quoted ""))
 
-                Property("this.C", ConstantExpr("")).toInlined()
+                    Property("this.C", ConstantExpr(Quoted "")).toInlined()
 
-                Property("B", ConstantExpr("")).toStatic()
+                    Property("B", ConstantExpr(Quoted "")).toStatic()
 
-                Property("D", ConstantExpr("")).toStatic().toInlined()
+                    Property("D", ConstantExpr(Quoted "")).toStatic().toInlined()
 
-                Property("this.E", ConstantExpr("")) |> _.returnType(String())
+                    Property("this.E", ConstantExpr(Quoted "")) |> _.returnType(String())
 
-                Property("this.F", ConstantExpr("")).toInlined() |> _.returnType(String())
+                    Property("this.F", ConstantExpr(Quoted "")).toInlined()
+                    |> _.returnType(String())
 
-                Property("G", ConstantExpr("")).toStatic() |> _.returnType(String())
+                    Property("G", ConstantExpr(Quoted "")).toStatic() |> _.returnType(String())
 
-                Property("H", ConstantExpr("")).toStatic().toInlined() |> _.returnType(String())
+                    Property("H", ConstantExpr(Quoted "")).toStatic().toInlined()
+                    |> _.returnType(String())
+                }
             }
         }
         |> produces
@@ -50,23 +54,27 @@ type Colors =
     [<Fact>]
     let ``Produces Properties with Patterns``() =
 
-        AnonymousModule() {
-            (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                Property("this.A", ConstantExpr(""))
+        Oak() {
+            AnonymousModule() {
+                (Record("Colors") { Field("X", LongIdent("string")) }).members() {
+                    Property("this.A", ConstantExpr(Quoted ""))
 
-                Property("this.C", ConstantExpr("")).toInlined()
+                    Property("this.C", ConstantExpr(Quoted "")).toInlined()
 
-                Property("(|B|_|)", ConstantExpr("")).toStatic()
+                    Property("(|B|_|)", ConstantExpr(Quoted "")).toStatic()
 
-                Property("D", ConstantExpr("")).toStatic().toInlined()
+                    Property("D", ConstantExpr(Quoted "")).toStatic().toInlined()
 
-                Property("this.E", ConstantExpr("")) |> _.returnType(String())
+                    Property("this.E", ConstantExpr(Quoted "")) |> _.returnType(String())
 
-                Property("this.F", ConstantExpr("")).toInlined() |> _.returnType(String())
+                    Property("this.F", ConstantExpr(Quoted "")).toInlined()
+                    |> _.returnType(String())
 
-                Property("G", ConstantExpr("")).toStatic() |> _.returnType(String())
+                    Property("G", ConstantExpr(Quoted "")).toStatic() |> _.returnType(String())
 
-                Property("H", ConstantExpr("")).toStatic().toInlined() |> _.returnType(String())
+                    Property("H", ConstantExpr(Quoted "")).toStatic().toInlined()
+                    |> _.returnType(String())
+                }
             }
         }
         |> produces
@@ -88,8 +96,12 @@ type Colors =
 
     [<Fact>]
     let ``Produces a record with property member``() =
-        AnonymousModule() {
-            (Record("Colors") { Field("X", LongIdent("string")) }).members() { Property("this.A", ConstantExpr("")) }
+        Oak() {
+            AnonymousModule() {
+                (Record("Colors") { Field("X", LongIdent("string")) }).members() {
+                    Property("this.A", ConstantExpr(Quoted ""))
+                }
+            }
         }
         |> produces
             """
@@ -104,9 +116,11 @@ type Colors =
     [<Fact>]
     let ``Produces a record with static property member``() =
 
-        AnonymousModule() {
-            (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                Property("A", ConstantExpr("")).toStatic()
+        Oak() {
+            AnonymousModule() {
+                (Record("Colors") { Field("X", LongIdent("string")) }).members() {
+                    Property("A", ConstantExpr(Quoted "")).toStatic()
+                }
             }
         }
         |> produces
@@ -121,14 +135,16 @@ type Colors =
 
     [<Fact>]
     let ``Produces a record with TypeParams and property member``() =
-        AnonymousModule() {
-            (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", LongIdent("string"))
-                Field("Blue", LongIdent("'other"))
-                Field("Yellow", LongIdent("int"))
-            })
-                .members() {
-                Property("this.A", ConstantExpr(""))
+        Oak() {
+            AnonymousModule() {
+                (GenericRecord("Colors", [ "'other" ]) {
+                    Field("Green", LongIdent("string"))
+                    Field("Blue", LongIdent("'other"))
+                    Field("Yellow", LongIdent("int"))
+                })
+                    .members() {
+                    Property("this.A", ConstantExpr(Quoted ""))
+                }
             }
         }
 
@@ -146,14 +162,16 @@ type Colors<'other> =
 
     [<Fact>]
     let ``Produces a record with TypeParams and static property member``() =
-        AnonymousModule() {
-            (GenericRecord("Colors", [ "'other" ]) {
-                Field("Green", LongIdent("string"))
-                Field("Blue", LongIdent("'other"))
-                Field("Yellow", LongIdent("int"))
-            })
-                .members() {
-                Property("A", ConstantExpr("")).toStatic()
+        Oak() {
+            AnonymousModule() {
+                (GenericRecord("Colors", [ "'other" ]) {
+                    Field("Green", LongIdent("string"))
+                    Field("Blue", LongIdent("'other"))
+                    Field("Yellow", LongIdent("int"))
+                })
+                    .members() {
+                    Property("A", ConstantExpr(Quoted "")).toStatic()
+                }
             }
         }
 
@@ -172,11 +190,13 @@ type Colors<'other> =
     [<Fact>]
     let ``Produces a class with a static and not static member property ``() =
 
-        AnonymousModule() {
-            Class("Person") {
-                Property("this.Name1", ConstantExpr("name"))
+        Oak() {
+            AnonymousModule() {
+                Class("Person") {
+                    Property("this.Name1", ConstantExpr(Quoted "name"))
 
-                Property("Name2", ConstantExpr("name")).toStatic()
+                    Property("Name2", ConstantExpr(Quoted "name")).toStatic()
+                }
             }
         }
         |> produces
@@ -189,11 +209,14 @@ type Person () =
 
     [<Fact>]
     let ``Produces a generic class with a static and not static member property ``() =
-        AnonymousModule() {
-            Class("Person", [ "'other" ]) {
-                Property("this.Name1", ConstantExpr("name"))
+        Oak() {
+            AnonymousModule() {
+                Class("Person") {
+                    Property("this.Name1", ConstantExpr(Quoted "name"))
 
-                Property("Name2", ConstantExpr("name")).toStatic()
+                    Property("Name2", ConstantExpr(Quoted "name")).toStatic()
+                }
+                |> _.typeParams([ "'other" ])
             }
         }
         |> produces
@@ -206,8 +229,13 @@ type Person <'other>() =
 
     [<Fact>]
     let ``Produces a class with a member property with xml comments``() =
-        AnonymousModule() {
-            Class("Person") { Property("this.Name", ConstantExpr("name")).xmlDocs([ "This is a comment" ]) }
+        Oak() {
+            AnonymousModule() {
+                Class("Person") {
+                    Property("this.Name", ConstantExpr(Quoted "name"))
+                        .xmlDocs([ "This is a comment" ])
+                }
+            }
         }
         |> produces
             """
@@ -225,16 +253,18 @@ type Person () =
               "Address", AccessControl.Internal
               "PostalCode", AccessControl.Unknown ]
 
-        AnonymousModule() {
-            Class("Person") {
-                for name, acc in data do
-                    let widget = Property($"this.{name}", ConstantExpr("name"))
+        Oak() {
+            AnonymousModule() {
+                Class("Person") {
+                    for name, acc in data do
+                        let widget = Property($"this.{name}", ConstantExpr(Quoted "name"))
 
-                    match acc with
-                    | AccessControl.Public -> widget.toPublic()
-                    | AccessControl.Private -> widget.toPrivate()
-                    | AccessControl.Internal -> widget.toInternal()
-                    | AccessControl.Unknown -> widget
+                        match acc with
+                        | AccessControl.Public -> widget.toPublic()
+                        | AccessControl.Private -> widget.toPrivate()
+                        | AccessControl.Internal -> widget.toInternal()
+                        | AccessControl.Unknown -> widget
+                }
             }
         }
         |> produces
@@ -244,14 +274,16 @@ type Person () =
     member private this.Age = "name"
     member internal this.Address = "name"
     member this.PostalCode = "name"
-    
+
 """
 
     [<Fact>]
     let ``Produces a class with a member property and return type``() =
-        AnonymousModule() {
-            Class("Person") { Property("this.Name", ConstantExpr("23", false)) |> _.returnType("int") }
+        Oak() {
+            AnonymousModule() {
+                Class("Person") { Property("this.Name", ConstantExpr(Unquoted "23")) |> _.returnType("int") }
 
+            }
         }
         |> produces
             """
@@ -261,7 +293,9 @@ type Person () =
 
     [<Fact>]
     let ``Produces a class with a member property inlined``() =
-        AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr("name")).toInlined() } }
+        Oak() {
+            AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr(Quoted "name")).toInlined() } }
+        }
         |> produces
             """
 type Person () =
@@ -271,9 +305,11 @@ type Person () =
 
     [<Fact>]
     let ``Produces a class with property member with attributes``() =
-        AnonymousModule() {
-            Class("Person") { Property("this.Name", ConstantExpr("23", false)).attribute("Obsolete") }
+        Oak() {
+            AnonymousModule() {
+                Class("Person") { Property("this.Name", ConstantExpr(Unquoted "23")).attribute("Obsolete") }
 
+            }
         }
         |> produces
             """
@@ -284,11 +320,13 @@ type Person () =
 
     [<Fact>]
     let ``Produces a record with a member property ``() =
-        AnonymousModule() {
-            (Record("Person") { Field("Name", LongIdent("string")) }).members() {
-                Property("this.Name", ConstantExpr("name"))
-            }
+        Oak() {
+            AnonymousModule() {
+                (Record("Person") { Field("Name", LongIdent("string")) }).members() {
+                    Property("this.Name", ConstantExpr(Quoted "name"))
+                }
 
+            }
         }
         |> produces
             """
@@ -301,12 +339,14 @@ type Person =
 
     [<Fact>]
     let ``Produces a generic record with a member property ``() =
-        AnonymousModule() {
-            (GenericRecord("Person", [ "'other" ]) { Field("Name", LongIdent("'other")) })
-                .members() {
-                Property("this.Name", ConstantExpr("name"))
-            }
+        Oak() {
+            AnonymousModule() {
+                (GenericRecord("Person", [ "'other" ]) { Field("Name", LongIdent("'other")) })
+                    .members() {
+                    Property("this.Name", ConstantExpr(Quoted "name"))
+                }
 
+            }
         }
         |> produces
             """
@@ -319,9 +359,11 @@ type Person<'other> =
 
     [<Fact>]
     let ``Produces a union with a member property ``() =
-        AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() { Property("this.Name", ConstantExpr("name")) }
+        Oak() {
+            AnonymousModule() {
+                (Union("Person") { UnionCase("Name") }).members() { Property("this.Name", ConstantExpr(Quoted "name")) }
 
+            }
         }
         |> produces
             """
@@ -334,9 +376,13 @@ type Person =
 
     [<Fact>]
     let ``Produces a union with a static member property ``() =
-        AnonymousModule() {
-            (Union("Person") { UnionCase("Name") }).members() { Property("Name", ConstantExpr("name")).toStatic() }
+        Oak() {
+            AnonymousModule() {
+                (Union("Person") { UnionCase("Name") }).members() {
+                    Property("Name", ConstantExpr(Quoted "name")).toStatic()
+                }
 
+            }
         }
         |> produces
             """
@@ -349,21 +395,23 @@ type Person =
 
     [<Fact>]
     let ``Produces a generic union with a member property ``() =
-        AnonymousModule() {
-            (GenericUnion("Colors", [ "'other" ]) {
-                UnionParamsCase("Red") {
-                    Field("a", LongIdent("string"))
-                    Field("b", LongIdent "'other")
+        Oak() {
+            AnonymousModule() {
+                (GenericUnion("Colors", [ "'other" ]) {
+                    UnionParamsCase("Red") {
+                        Field("a", LongIdent("string"))
+                        Field("b", LongIdent "'other")
+                    }
+
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                })
+                    .members() {
+                    Property("this.Name", ConstantExpr(Quoted "name"))
                 }
 
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-            })
-                .members() {
-                Property("this.Name", ConstantExpr("name"))
             }
-
         }
         |> produces
             """
@@ -379,21 +427,23 @@ type Colors<'other> =
 
     [<Fact>]
     let ``Produces a generic union with a static member property ``() =
-        AnonymousModule() {
-            (GenericUnion("Colors", [ "'other" ]) {
-                UnionParamsCase("Red") {
-                    Field("a", LongIdent("string"))
-                    Field("b", LongIdent "'other")
+        Oak() {
+            AnonymousModule() {
+                (GenericUnion("Colors", [ "'other" ]) {
+                    UnionParamsCase("Red") {
+                        Field("a", LongIdent("string"))
+                        Field("b", LongIdent "'other")
+                    }
+
+                    UnionCase("Green")
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                })
+                    .members() {
+                    Property("Name", ConstantExpr(Quoted "name")).toStatic()
                 }
 
-                UnionCase("Green")
-                UnionCase("Blue")
-                UnionCase("Yellow")
-            })
-                .members() {
-                Property("Name", ConstantExpr("name")).toStatic()
             }
-
         }
         |> produces
             """

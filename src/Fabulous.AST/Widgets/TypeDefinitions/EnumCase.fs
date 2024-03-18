@@ -9,7 +9,7 @@ module EnumCase =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
 
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
@@ -17,9 +17,19 @@ module EnumCase =
 
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
-            let value = Widgets.getNodeFromWidget<Expr> widget Value
+            let name =
+                Widgets.getScalarValue widget Name
+                |> Unquoted
+                |> StringParsing.normalizeIdentifierQuotes
+
+            let value = Widgets.getScalarValue widget Value
             let lines = Widgets.tryGetScalarValue widget XmlDocs
+
+            let value =
+                match value with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(Constant.FromText(SingleTextNode.Create(value.Normalize())))
+                | StringOrWidget.WidgetExpr value -> value
 
             let xmlDocs =
                 match lines with
@@ -65,14 +75,27 @@ module EnumCaseBuilders =
             WidgetBuilder<EnumCaseNode>(
                 EnumCase.WidgetKey,
                 AttributesBundle(
-                    StackList.one(EnumCase.Name.WithValue(name)),
-                    ValueSome [| EnumCase.Value.WithValue(value.Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        EnumCase.Name.WithValue(name),
+                        EnumCase.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
         static member EnumCase(name: string, value: string) =
-            Ast.EnumCase(name, Ast.ConstantExpr(value, false))
+            WidgetBuilder<EnumCaseNode>(
+                EnumCase.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        EnumCase.Name.WithValue(name),
+                        EnumCase.Value.WithValue(StringOrWidget.StringExpr(Unquoted(value)))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
 
 [<Extension>]
 type EnumCaseModifiers =

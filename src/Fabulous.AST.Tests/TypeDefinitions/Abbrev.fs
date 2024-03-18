@@ -13,7 +13,7 @@ module Abbrev =
 
     [<Fact>]
     let ``Produces type Abbrev``() =
-        AnonymousModule() { Abbrev("MyInt", Int32()) }
+        Oak() { AnonymousModule() { Abbrev("MyInt", Int32()) } }
 
         |> produces
             """
@@ -44,9 +44,11 @@ type MyInt = int
                 Range.Zero
             )
 
-        AnonymousModule() {
-            Abbrev("MyInt", Int32())
-            EscapeHatch(alias)
+        Oak() {
+            AnonymousModule() {
+                Abbrev("MyInt", Int32())
+                EscapeHatch(alias)
+            }
         }
 
         |> produces
@@ -59,29 +61,31 @@ type MyFloat = float
 
     [<Fact>]
     let ``Produces type Abbrev with TypeDefnAbbrevNode``() =
-        AnonymousModule() {
-            Abbrev("MyInt", Int32())
+        Oak() {
+            AnonymousModule() {
+                Abbrev("MyInt", Int32())
 
-            Abbrev("MyString", "string")
+                Abbrev("MyString", "string")
 
-            TypeDefnAbbrevNode(
-                TypeNameNode(
-                    None,
-                    None,
-                    SingleTextNode("type", Range.Zero),
-                    Some(SingleTextNode("MyFloat", Range.Zero)),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
-                    None,
+                TypeDefnAbbrevNode(
+                    TypeNameNode(
+                        None,
+                        None,
+                        SingleTextNode("type", Range.Zero),
+                        Some(SingleTextNode("MyFloat", Range.Zero)),
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                        None,
+                        [],
+                        None,
+                        None,
+                        None,
+                        Range.Zero
+                    ),
+                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)),
                     [],
-                    None,
-                    None,
-                    None,
                     Range.Zero
-                ),
-                Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)),
-                [],
-                Range.Zero
-            )
+                )
+            }
         }
 
         |> produces

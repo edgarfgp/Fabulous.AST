@@ -9,15 +9,41 @@ open type Fabulous.AST.Ast
 module BindingProperty =
     let WidgetKey =
         Widgets.register "PropertyMember" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.NameString
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let name = Widgets.getScalarValue widget BindingNode.Name
+
+            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
             let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
+
+            let bodyExpr =
+                match bodyExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                    )
+                | StringOrWidget.WidgetExpr value -> value
 
             let isStatic =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget<Type> widget BindingNode.Return
+            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
+
+            let returnType =
+                match returnType with
+                | ValueNone -> None
+                | ValueSome value ->
+                    match value with
+                    | StringOrWidget.StringExpr value ->
+                        let value = StringParsing.normalizeIdentifierBackticks value
+
+                        let returnType =
+                            Type.LongIdent(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
+                            )
+
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
+                    | StringOrWidget.WidgetExpr returnType ->
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -37,11 +63,6 @@ module BindingProperty =
                 | ValueSome values ->
                     let xmlDocNode = XmlDocNode.Create(values)
                     Some xmlDocNode
-                | ValueNone -> None
-
-            let returnType =
-                match returnType with
-                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
 
             let attributes =
@@ -93,6 +114,13 @@ module BindingProperty =
                   else
                       SingleTextNode.``member`` ]
 
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    let name = SingleTextNode.Create(name.Normalize())
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero))
+                | StringOrWidget.WidgetExpr pattern -> Choice2Of2(pattern)
+
             BindingNode(
                 xmlDocs,
                 multipleAttributes,
@@ -100,7 +128,7 @@ module BindingProperty =
                 false,
                 inlineNode,
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode(name, Range.Zero)) ], Range.Zero)),
+                name,
                 typeParams,
                 [],
                 returnType,
@@ -116,8 +144,24 @@ module BindingPropertyBuilders =
             WidgetBuilder<BindingNode>(
                 BindingProperty.WidgetKey,
                 AttributesBundle(
-                    StackList.one(BindingNode.NameString.WithValue(name)),
-                    ValueSome [| BindingNode.BodyExpr.WithValue(body.Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
+        static member Property(name: string, body: StringVariant) =
+            WidgetBuilder<BindingNode>(
+                BindingProperty.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )

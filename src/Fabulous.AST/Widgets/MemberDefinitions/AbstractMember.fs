@@ -13,7 +13,8 @@ type MethodParamsType =
 module AbstractMember =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let Identifier = Attributes.defineScalar<string> "Identifier"
-    let ReturnType = Attributes.defineWidget "Type"
+    let ReturnType = Attributes.defineScalar<StringOrWidget<Type>> "Type"
+
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
     let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
@@ -21,7 +22,7 @@ module AbstractMember =
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
             let identifier = Widgets.getScalarValue widget Identifier
-            let returnType = Widgets.getNodeFromWidget widget ReturnType
+            let returnType = Widgets.getScalarValue widget ReturnType
             let parameters = Widgets.tryGetScalarValue widget Parameters
             let hasGetterSetter = Widgets.tryGetScalarValue widget HasGetterSetter
 
@@ -52,6 +53,13 @@ module AbstractMember =
                     let xmlDocNode = XmlDocNode.Create(values)
                     Some xmlDocNode
                 | ValueNone -> None
+
+            let returnType =
+                match returnType with
+                | StringOrWidget.StringExpr value ->
+                    let value = StringParsing.normalizeIdentifierBackticks value
+                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
+                | StringOrWidget.WidgetExpr widget -> widget
 
             let typeFun =
                 match parameters with
@@ -129,12 +137,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(false, false)
+                        AbstractMember.HasGetterSetter.WithValue(false, false),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -142,12 +151,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(false, false)
+                        AbstractMember.HasGetterSetter.WithValue(false, false),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -155,12 +165,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(true, false)
+                        AbstractMember.HasGetterSetter.WithValue(true, false),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -168,12 +179,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(true, false)
+                        AbstractMember.HasGetterSetter.WithValue(true, false),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -181,12 +193,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(false, true)
+                        AbstractMember.HasGetterSetter.WithValue(false, true),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -194,12 +207,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(false, true)
+                        AbstractMember.HasGetterSetter.WithValue(false, true),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -207,12 +221,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(true, true)
+                        AbstractMember.HasGetterSetter.WithValue(true, true),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -220,12 +235,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.HasGetterSetter.WithValue(true, true)
+                        AbstractMember.HasGetterSetter.WithValue(true, true),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -235,12 +251,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
+                        AbstractMember.Parameters.WithValue(UnNamed(parameters, true)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -250,12 +267,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(UnNamed(parameters, true))
+                        AbstractMember.Parameters.WithValue(UnNamed(parameters, true)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -264,12 +282,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(Named(parameters, true))
+                        AbstractMember.Parameters.WithValue(Named(parameters, true)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -282,12 +301,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(Named(parameters, true))
+                        AbstractMember.Parameters.WithValue(Named(parameters, true)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -297,12 +317,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
+                        AbstractMember.Parameters.WithValue(UnNamed(parameters, false)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -312,12 +333,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(UnNamed(parameters, false))
+                        AbstractMember.Parameters.WithValue(UnNamed(parameters, false)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -326,12 +348,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(Named(parameters, false))
+                        AbstractMember.Parameters.WithValue(Named(parameters, false)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(returnType.Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 
@@ -344,12 +367,13 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AbstractMember.Identifier.WithValue(identifier),
-                        AbstractMember.Parameters.WithValue(Named(parameters, false))
+                        AbstractMember.Parameters.WithValue(Named(parameters, false)),
+                        AbstractMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
                     ),
-                    ValueSome [| AbstractMember.ReturnType.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    ValueNone
+                    Array.empty,
+                    Array.empty
                 )
             )
 

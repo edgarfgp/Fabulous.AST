@@ -5,16 +5,24 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module RecordField =
-    let RecordExpr = Attributes.defineWidget "RecordExpr"
+    let RecordExpr = Attributes.defineScalar<StringOrWidget<Expr>> "RecordExpr"
 
     let Name = Attributes.defineScalar<string> "Name"
 
     let WidgetKey =
         Widgets.register "RecordField" (fun widget ->
-            let expr = Widgets.getNodeFromWidget<Expr> widget RecordExpr
+            let expr = Widgets.getScalarValue widget RecordExpr
+
+            let expr =
+                match expr with
+                | StringOrWidget.StringExpr expr ->
+                    let expr = StringParsing.normalizeIdentifierBackticks expr
+                    Expr.Constant(Constant.FromText(SingleTextNode.Create(expr)))
+                | StringOrWidget.WidgetExpr expr -> expr
 
             let name =
                 Widgets.getScalarValue widget Name
+                |> Unquoted
                 |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
@@ -33,8 +41,24 @@ module RecordFieldBuilders =
             WidgetBuilder<RecordFieldNode>(
                 RecordField.WidgetKey,
                 AttributesBundle(
-                    StackList.one(RecordField.Name.WithValue(name)),
-                    ValueSome [| RecordField.RecordExpr.WithValue(expr.Compile()) |],
-                    ValueNone
+                    StackList.two(
+                        RecordField.Name.WithValue(name),
+                        RecordField.RecordExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
+        static member inline RecordFieldExpr(name: string, expr: string) =
+            WidgetBuilder<RecordFieldNode>(
+                RecordField.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        RecordField.Name.WithValue(name),
+                        RecordField.RecordExpr.WithValue(StringOrWidget.StringExpr(Unquoted expr))
+                    ),
+                    Array.empty,
+                    Array.empty
                 )
             )

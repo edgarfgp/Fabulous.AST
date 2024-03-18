@@ -1,31 +1,32 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Constant =
-    let ValueString = Attributes.defineScalar<string> "Value"
-    let Value = Attributes.defineWidget "Value"
+    let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
     let Measure = Attributes.defineWidget "Measure"
 
-    let WidgetFromTextKey =
+    let WidgetKey =
         Widgets.register "ConstantFromText" (fun widget ->
-            let value = Widgets.getScalarValue widget ValueString
-            Constant.FromText(SingleTextNode.Create(value)))
+            let value = Widgets.getScalarValue widget Value
 
-    let WidgetMeasureKey =
-        Widgets.register "ConstantMeasure" (fun widget ->
-            let value = Widgets.getNodeFromWidget<Constant> widget Value
-            let measure = Widgets.getNodeFromWidget<Measure> widget Measure
+            match value with
+            | StringOrWidget.StringExpr value ->
+                Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+            | StringOrWidget.WidgetExpr value ->
+                let measure = Widgets.getNodeFromWidget<Measure> widget Measure
 
-            Constant.Measure(
-                ConstantMeasureNode(
-                    value,
-                    UnitOfMeasureNode(SingleTextNode.lessThan, measure, SingleTextNode.greaterThan, Range.Zero),
-                    Range.Zero
-                )
-            ))
+                Constant.Measure(
+                    ConstantMeasureNode(
+                        value,
+                        UnitOfMeasureNode(SingleTextNode.lessThan, measure, SingleTextNode.greaterThan, Range.Zero),
+                        Range.Zero
+                    )
+
+                ))
 
     let WidgetUnitKey =
         Widgets.register "ConstantUnit" (fun _ ->
@@ -34,38 +35,28 @@ module Constant =
 [<AutoOpen>]
 module ConstantBuilders =
     type Ast with
-        static member Constant(value: string, ?hasQuotes: bool) =
-            match hasQuotes with
-            | None
-            | Some true ->
-                WidgetBuilder<Constant>(
-                    Constant.WidgetFromTextKey,
-                    AttributesBundle(
-                        StackList.one(Constant.ValueString.WithValue($"\"{value}\"")),
-                        ValueNone,
-                        ValueNone
-                    )
+        static member Constant(value: StringVariant) =
+            WidgetBuilder<Constant>(
+                Constant.WidgetKey,
+                AttributesBundle(
+                    StackList.one(Constant.Value.WithValue(StringOrWidget.StringExpr value)),
+                    Array.empty,
+                    Array.empty
                 )
-            | _ ->
-                WidgetBuilder<Constant>(
-                    Constant.WidgetFromTextKey,
-                    AttributesBundle(StackList.one(Constant.ValueString.WithValue(value)), ValueNone, ValueNone)
-                )
+            )
 
         static member ConstantMeasure(constant: WidgetBuilder<Constant>, measure: WidgetBuilder<Measure>) =
             WidgetBuilder<Constant>(
-                Constant.WidgetMeasureKey,
+                Constant.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    ValueSome
-                        [| Constant.Value.WithValue(constant.Compile())
-                           Constant.Measure.WithValue(measure.Compile()) |],
-                    ValueNone
+                    StackList.one(Constant.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(constant)))),
+                    [| Constant.Measure.WithValue(measure.Compile()) |],
+                    Array.empty
                 )
             )
 
         static member ConstantUnit() =
             WidgetBuilder<Constant>(
                 Constant.WidgetUnitKey,
-                AttributesBundle(StackList.empty(), ValueSome [||], ValueNone)
+                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )

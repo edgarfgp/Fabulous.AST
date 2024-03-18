@@ -5,8 +5,7 @@ open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fabulous.AST.WidgetCollectionAttributeDefinitions
 
-type AttributesBundle =
-    (struct (StackList<ScalarAttribute> * WidgetAttribute[] voption * WidgetCollectionAttribute[] voption))
+type AttributesBundle = (struct (StackList<ScalarAttribute> * WidgetAttribute array * WidgetCollectionAttribute array))
 
 [<Struct; NoComparison; NoEquality>]
 type WidgetBuilder<'marker> =
@@ -20,15 +19,15 @@ type WidgetBuilder<'marker> =
 
         new(key: WidgetKey, scalar: ScalarAttribute) =
             { Key = key
-              Attributes = AttributesBundle(StackList.one scalar, ValueNone, ValueNone) }
+              Attributes = AttributesBundle(StackList.one scalar, Array.empty, Array.empty) }
 
         new(key: WidgetKey, scalarA: ScalarAttribute, scalarB: ScalarAttribute) =
             { Key = key
-              Attributes = AttributesBundle(StackList.two(scalarA, scalarB), ValueNone, ValueNone) }
+              Attributes = AttributesBundle(StackList.two(scalarA, scalarB), Array.empty, Array.empty) }
 
         new(key: WidgetKey, scalar1: ScalarAttribute, scalar2: ScalarAttribute, scalar3: ScalarAttribute) =
             { Key = key
-              Attributes = AttributesBundle(StackList.three(scalar1, scalar2, scalar3), ValueNone, ValueNone) }
+              Attributes = AttributesBundle(StackList.three(scalar1, scalar2, scalar3), Array.empty, Array.empty) }
 
         member x.Compile() : Widget =
             let struct (scalarAttributes, widgetAttributes, widgetCollectionAttributes) =
@@ -37,13 +36,12 @@ type WidgetBuilder<'marker> =
             { Key = x.Key
               ScalarAttributes =
                 match StackList.length &scalarAttributes with
-                | 0us -> ValueNone
-                | _ -> ValueSome(Array.sortInPlace (fun a -> a.Key) (StackList.toArray &scalarAttributes))
+                | 0us -> Array.empty
+                | _ -> Array.sortInPlace (fun a -> a.Key) (StackList.toArray &scalarAttributes)
 
-              WidgetAttributes = ValueOption.map (Array.sortInPlace(fun a -> a.Key)) widgetAttributes
+              WidgetAttributes = Array.sortInPlace (fun a -> a.Key) widgetAttributes
 
-              WidgetCollectionAttributes =
-                widgetCollectionAttributes |> ValueOption.map(Array.sortInPlace(fun a -> a.Key)) }
+              WidgetCollectionAttributes = widgetCollectionAttributes |> Array.sortInPlace(fun a -> a.Key) }
 
         [<EditorBrowsable(EditorBrowsableState.Never)>]
         member inline x.AddScalar(attr: ScalarAttribute) =
@@ -91,14 +89,14 @@ type WidgetBuilder<'marker> =
 
             let res =
                 match attribs with
-                | ValueNone -> [| attr |]
-                | ValueSome attribs ->
+                | [||] -> [| attr |]
+                | attribs ->
                     let attribs2 = Array.zeroCreate(attribs.Length + 1)
                     Array.blit attribs 0 attribs2 0 attribs.Length
                     attribs2.[attribs.Length] <- attr
                     attribs2
 
-            WidgetBuilder<'marker>(x.Key, struct (scalarAttributes, ValueSome res, widgetCollectionAttributes))
+            WidgetBuilder<'marker>(x.Key, struct (scalarAttributes, res, widgetCollectionAttributes))
 
         [<EditorBrowsable(EditorBrowsableState.Never)>]
         member x.AddWidgetCollection(attr: WidgetCollectionAttribute) =
@@ -109,14 +107,14 @@ type WidgetBuilder<'marker> =
 
             let res =
                 match attribs with
-                | ValueNone -> [| attr |]
-                | ValueSome attribs ->
+                | [||] -> [| attr |]
+                | attribs ->
                     let attribs2 = Array.zeroCreate(attribs.Length + 1)
                     Array.blit attribs 0 attribs2 0 attribs.Length
                     attribs2.[attribs.Length] <- attr
                     attribs2
 
-            WidgetBuilder<'marker>(x.Key, struct (scalarAttributes, widgetAttributes, ValueSome res))
+            WidgetBuilder<'marker>(x.Key, struct (scalarAttributes, widgetAttributes, res))
     end
 
 [<Struct>]
@@ -137,12 +135,12 @@ type CollectionBuilder<'marker, 'itemMarker> =
 
         new(key: WidgetKey, attr: WidgetCollectionAttributeDefinition) =
             { Key = key
-              Attributes = AttributesBundle(StackList.empty(), ValueNone, ValueNone)
+              Attributes = AttributesBundle(StackList.empty(), Array.empty, Array.empty)
               Attr = attr }
 
         new(key: WidgetKey, attr: WidgetCollectionAttributeDefinition, scalar: ScalarAttribute) =
             { Key = key
-              Attributes = AttributesBundle(StackList.one scalar, ValueNone, ValueNone)
+              Attributes = AttributesBundle(StackList.one scalar, Array.empty, Array.empty)
               Attr = attr }
 
         new
@@ -153,7 +151,7 @@ type CollectionBuilder<'marker, 'itemMarker> =
                 scalarB: ScalarAttribute
             ) =
             { Key = key
-              Attributes = AttributesBundle(StackList.two(scalarA, scalarB), ValueNone, ValueNone)
+              Attributes = AttributesBundle(StackList.two(scalarA, scalarB), Array.empty, Array.empty)
               Attr = attr }
 
         member inline x.Run(c: CollectionContent) =
@@ -168,10 +166,10 @@ type CollectionBuilder<'marker, 'itemMarker> =
 
             let widgetCollections =
                 match widgetCollections with
-                | ValueNone -> [| widgetCollAttr |]
-                | ValueSome widgetCollections -> Array.append [| widgetCollAttr |] widgetCollections
+                | [||] -> [| widgetCollAttr |]
+                | widgetCollections -> Array.append [| widgetCollAttr |] widgetCollections
 
-            WidgetBuilder<'marker>(x.Key, AttributesBundle(scalars, widgets, ValueSome widgetCollections))
+            WidgetBuilder<'marker>(x.Key, AttributesBundle(scalars, widgets, widgetCollections))
 
         member inline _.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
             { Widgets = MutStackArray1.One(widget.Compile()) }

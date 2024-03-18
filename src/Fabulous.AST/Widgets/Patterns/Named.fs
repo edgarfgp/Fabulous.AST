@@ -11,6 +11,7 @@ module Named =
         Widgets.register "Named" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Value
+                |> Unquoted
                 |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
@@ -23,5 +24,5 @@ module NamedBuilders =
         static member NamedPat(value: string) =
             WidgetBuilder<Pattern>(
                 Named.WidgetKey,
-                AttributesBundle(StackList.one(Named.Value.WithValue(value)), ValueNone, ValueNone)
+                AttributesBundle(StackList.one(Named.Value.WithValue(value)), Array.empty, Array.empty)
             )

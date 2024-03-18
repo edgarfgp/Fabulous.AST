@@ -11,7 +11,7 @@ module App =
 
     [<Fact>]
     let ``let value with a App expression``() =
-        AnonymousModule() { Value("x", AppExpr("printfn") { ConstantExpr("a") }) }
+        Oak() { AnonymousModule() { Value("x", AppExpr(Unquoted "printfn") { ConstantExpr(Quoted "a") }) } }
         |> produces
             """
 

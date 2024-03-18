@@ -11,7 +11,7 @@ module AttributesNodes =
 
     [<Fact>]
     let ``Simple AttributeNode``() =
-        AnonymousModule() { Value("x", "12", false).attribute("Obsolete") }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12").attribute("Obsolete") } }
         |> produces
             """
 [<Obsolete>]
@@ -20,9 +20,11 @@ let x = 12
 
     [<Fact>]
     let ``Simple AttributeNode with expr``() =
-        AnonymousModule() {
-            Value("x", "12", false)
-                .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))))
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12")
+                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "This is obsolete"))))
+            }
         }
         |> produces
             """
@@ -32,8 +34,12 @@ let x = 12
 
     [<Fact>]
     let ``Multiple attributes``() =
-        AnonymousModule() {
-            Value("x", "12", false).attributes() { Attribute("Obsolete", ParenExpr(ConstantExpr("This is obsolete"))) }
+        Oak() {
+            AnonymousModule() {
+                Value("x", Unquoted "12").attributes() {
+                    Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "This is obsolete")))
+                }
+            }
         }
         |> produces
             """
@@ -43,7 +49,7 @@ let x = 12
 
     [<Fact>]
     let ``Simple AttributeNode type name and target``() =
-        AnonymousModule() { Value("x", "12", false).attribute(Attribute("Struct", "return")) }
+        Oak() { AnonymousModule() { Value("x", Unquoted "12").attribute(Attribute("Struct", "return")) } }
         |> produces
             """
 [<return: Struct>]

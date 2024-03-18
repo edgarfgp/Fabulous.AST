@@ -24,8 +24,8 @@ module NamePatPairBuilders =
                 NamePatPair.WidgetKey,
                 AttributesBundle(
                     StackList.one(NamePatPair.Ident.WithValue(ident)),
-                    ValueSome [| NamePatPair.Pat.WithValue(pat.Compile()) |],
-                    ValueNone
+                    [| NamePatPair.Pat.WithValue(pat.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -34,7 +34,7 @@ module NamePatPairBuilders =
                 NamePatPair.WidgetKey,
                 AttributesBundle(
                     StackList.one(NamePatPair.Ident.WithValue(ident)),
-                    ValueSome [| NamePatPair.Pat.WithValue(Ast.NamedPat(pat).Compile()) |],
-                    ValueNone
+                    [| NamePatPair.Pat.WithValue(Ast.NamedPat(pat).Compile()) |],
+                    Array.empty
                 )
             )

@@ -22,7 +22,7 @@ module TypeArrayBuilders =
                 TypeArray.WidgetKey,
                 AttributesBundle(
                     StackList.one(TypeArray.Rank.WithValue(rank)),
-                    ValueSome [| TypeArray.T.WithValue(value.Compile()) |],
-                    ValueNone
+                    [| TypeArray.T.WithValue(value.Compile()) |],
+                    Array.empty
                 )
             )

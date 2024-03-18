@@ -48,10 +48,9 @@ module TypeAppPrefixBuilders =
                 TypeAppPrefix.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    ValueSome
-                        [| TypeAppPrefix.Identifier.WithValue(t.Compile())
-                           TypeAppPrefix.Arguments.WithValue(arguments.Compile()) |],
-                    ValueNone
+                    [| TypeAppPrefix.Identifier.WithValue(t.Compile())
+                       TypeAppPrefix.Arguments.WithValue(arguments.Compile()) |],
+                    Array.empty
                 )
             )
 
@@ -60,9 +59,8 @@ module TypeAppPrefixBuilders =
                 TypeAppPrefix.WidgetKey,
                 AttributesBundle(
                     StackList.one(TypeAppPrefix.PostIdentifier.WithValue(postIdentifier)),
-                    ValueSome
-                        [| TypeAppPrefix.Identifier.WithValue(t.Compile())
-                           TypeAppPrefix.Arguments.WithValue(arguments.Compile()) |],
-                    ValueNone
+                    [| TypeAppPrefix.Identifier.WithValue(t.Compile())
+                       TypeAppPrefix.Arguments.WithValue(arguments.Compile()) |],
+                    Array.empty
                 )
             )

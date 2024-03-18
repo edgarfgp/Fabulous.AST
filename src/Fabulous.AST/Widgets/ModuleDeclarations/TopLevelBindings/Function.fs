@@ -9,9 +9,24 @@ open type Fabulous.AST.Ast
 module BindingFunction =
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.NameString
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let name = Widgets.getScalarValue widget BindingNode.Name
+
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
+                | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
+
+            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
             let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
+
+            let bodyExpr =
+                match bodyExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                    )
+                | StringOrWidget.WidgetExpr value -> value
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -56,12 +71,24 @@ module BindingFunction =
                 Widgets.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget<Type> widget BindingNode.Return
+            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
 
             let returnType =
                 match returnType with
-                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
+                | ValueSome value ->
+                    match value with
+                    | StringOrWidget.StringExpr value ->
+                        let value = StringParsing.normalizeIdentifierBackticks value
+
+                        let returnType =
+                            Type.LongIdent(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
+                            )
+
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
+                    | StringOrWidget.WidgetExpr returnType ->
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
 
             let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
 
@@ -92,7 +119,7 @@ module BindingFunction =
                 false,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create name) ], Range.Zero)),
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
                 typeParams,
                 parameters,
                 returnType,
@@ -108,29 +135,34 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 typeParams: string list voption,
-                value: WidgetBuilder<Expr>,
+                bodyExpr: StringOrWidget<Expr>,
                 parameters: WidgetBuilder<Pattern>
             ) =
             let scalars =
                 match typeParams with
-                | ValueNone -> StackList.one(BindingNode.NameString.WithValue(name))
+                | ValueNone ->
+                    StackList.two(
+                        BindingNode.BodyExpr.WithValue(bodyExpr),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted name))
+                    )
                 | ValueSome typeParams ->
-                    StackList.two(BindingNode.NameString.WithValue(name), BindingNode.TypeParams.WithValue(typeParams))
+                    StackList.three(
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted name)),
+                        BindingNode.BodyExpr.WithValue(bodyExpr),
+                        BindingNode.TypeParams.WithValue(typeParams)
+                    )
 
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
-                AttributesBundle(
-                    scalars,
-                    ValueSome
-                        [| BindingNode.BodyExpr.WithValue(value.Compile())
-                           BindingNode.Parameters.WithValue(parameters.Compile()) |],
-                    ValueNone
-                )
+                AttributesBundle(scalars, [| BindingNode.Parameters.WithValue(parameters.Compile()) |], Array.empty)
             )
 
+        static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: StringVariant) =
+            Ast.BaseFunction(name, ValueNone, StringOrWidget.StringExpr(value), parameters)
+
         static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseFunction(name, ValueNone, value, parameters)
+            Ast.BaseFunction(name, ValueNone, StringOrWidget.WidgetExpr(Gen.mkOak value), parameters)
 
         static member Function
             (name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseFunction(name, ValueSome typeParams, value, parameters)
+            Ast.BaseFunction(name, ValueSome typeParams, StringOrWidget.WidgetExpr(Gen.mkOak value), parameters)

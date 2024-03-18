@@ -9,8 +9,18 @@ open type Fabulous.AST.Ast
 module BindingValue =
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
-            let name = Widgets.getNodeFromWidget<Pattern> widget BindingNode.NameWidget
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let name = Widgets.getScalarValue widget BindingNode.Name
+
+            let name =
+                match name with
+                | StringOrWidget.StringExpr name ->
+                    let name =
+                        name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
+
+                    Pattern.Named(PatNamedNode(None, name, Range.Zero))
+                | StringOrWidget.WidgetExpr pattern -> pattern
+
+            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
             let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
 
             let accessControl =
@@ -60,12 +70,25 @@ module BindingValue =
                 Widgets.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget<Type> widget BindingNode.Return
+            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
 
             let returnType =
                 match returnType with
-                | ValueSome returnType -> Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
                 | ValueNone -> None
+                | ValueSome value ->
+                    match value with
+                    | StringOrWidget.StringExpr value ->
+                        let returnType =
+                            Type.LongIdent(
+                                IdentListNode(
+                                    [ IdentifierOrDot.Ident(SingleTextNode.Create(value.Normalize())) ],
+                                    Range.Zero
+                                )
+                            )
+
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
+                    | StringOrWidget.WidgetExpr returnType ->
+                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
 
             let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
 
@@ -89,6 +112,14 @@ module BindingValue =
                 | ValueSome parameters -> [ parameters ]
                 | ValueNone -> []
 
+            let bodyExpr =
+                match bodyExpr with
+                | StringOrWidget.StringExpr value ->
+                    Expr.Constant(
+                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                    )
+                | StringOrWidget.WidgetExpr value -> value
+
             BindingNode(
                 xmlDocs,
                 multipleAttributes,
@@ -108,48 +139,24 @@ module BindingValue =
 [<AutoOpen>]
 module BindingValueBuilders =
     type Ast with
-        static member private BaseValue
-            (name: WidgetBuilder<Pattern>, typeParams: string list voption, value: WidgetBuilder<Expr>)
-            =
-            let scalars =
-                match typeParams with
-                | ValueNone -> StackList.empty()
-                | ValueSome typeParams -> StackList.one(BindingNode.TypeParams.WithValue(typeParams))
-
+        static member private BaseValue(name: StringOrWidget<Pattern>, bodyExpr: StringOrWidget<Expr>) =
             WidgetBuilder<BindingNode>(
                 BindingValue.WidgetKey,
                 AttributesBundle(
-                    scalars,
-                    ValueSome
-                        [| BindingNode.NameWidget.WithValue(name.Compile())
-                           BindingNode.BodyExpr.WithValue(value.Compile()) |],
-                    ValueNone
+                    StackList.two(BindingNode.Name.WithValue(name), BindingNode.BodyExpr.WithValue(bodyExpr)),
+                    Array.empty,
+                    Array.empty
                 )
             )
 
         static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(name, ValueNone, value)
+            Ast.BaseValue(StringOrWidget.WidgetExpr(Gen.mkOak name), StringOrWidget.WidgetExpr(Gen.mkOak(value)))
 
         static member Value(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(NamedPat(name), ValueNone, value)
+            Ast.BaseValue(StringOrWidget.StringExpr(Unquoted(name)), StringOrWidget.WidgetExpr(Gen.mkOak(value)))
 
-        static member Value(name: WidgetBuilder<Pattern>, value: string, ?hasQuotes: bool) =
-            match hasQuotes with
-            | Some false -> Ast.BaseValue(name, ValueNone, Ast.ConstantExpr(value, false))
-            | _ -> Ast.BaseValue(name, ValueNone, Ast.ConstantExpr(value, true))
+        static member Value(name: WidgetBuilder<Pattern>, value: StringVariant) =
+            Ast.BaseValue(StringOrWidget.WidgetExpr(Gen.mkOak name), StringOrWidget.StringExpr value)
 
-        static member Value(name: WidgetBuilder<Pattern>, typeParams: string list, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(name, ValueSome typeParams, value)
-
-        static member Value(name: string, typeParams: string list, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(NamedPat(name), ValueSome typeParams, value)
-
-        static member Value(name: string, value: string, ?hasQuotes: bool) =
-            match hasQuotes with
-            | Some false -> Ast.BaseValue(NamedPat(name), ValueNone, Ast.ConstantExpr(value, false))
-            | _ -> Ast.BaseValue(NamedPat(name), ValueNone, Ast.ConstantExpr(value, true))
-
-        static member Value(name: string, typeParams: string list, value: string, ?hasQuotes: bool) =
-            match hasQuotes with
-            | Some false -> Ast.BaseValue(NamedPat(name), ValueSome typeParams, Ast.ConstantExpr(value, false))
-            | _ -> Ast.BaseValue(NamedPat(name), ValueSome typeParams, Ast.ConstantExpr(value, true))
+        static member Value(name: string, value: StringVariant) =
+            Ast.BaseValue(StringOrWidget.StringExpr(Unquoted(name)), StringOrWidget.StringExpr value)
