@@ -52,8 +52,10 @@ open Fantomas.Core
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-AnonymousModule() { 
-    Value("x", "12", false)
+Oak() { 
+    AnonymousModule() { 
+        Value("y", Unquoted "12") 
+    }
 }
 |> Gen.mkOak
 |> CodeFormatter.FormatOakAsync

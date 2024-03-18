@@ -68,11 +68,11 @@ Now let's take a look at same example using Fabulous.AST:
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-let source = Oak() { AnonymousModule() { Value("y", Unquoted "12") } }
-
-let oak = Gen.mkOak source
-CodeFormatter.FormatOakAsync(oak) |> Async.RunSynchronously |> printfn "%s"
-
+Oak() { AnonymousModule() { Value("y", Unquoted "12") } }
+|> Gen.mkOak
+|> CodeFormatter.FormatOakAsync
+|> Async.RunSynchronously
+|> printfn "%s"
 // produces the following code:
 (*** include-output ***)
 let y = 12
