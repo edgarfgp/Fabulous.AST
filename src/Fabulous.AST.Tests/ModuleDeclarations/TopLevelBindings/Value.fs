@@ -373,3 +373,21 @@ let mutable x = 12
 let inline x<'a> = 12
 
 """
+
+    [<Fact>]
+    let ``Produces let binding with AppLongIdentAndSingleParenArg expression``() =
+        Oak() {
+            AnonymousModule() {
+                Value("res", AppLongIdentAndSingleParenArg([ "conn"; "Open" ], ConstantExpr(ConstantUnit())))
+                Value("res2", AppLongIdentAndSingleParenArg([ "conn"; "Open" ], "()"))
+                Value("res3", AppLongIdentAndSingleParenArg("conn.Open", "()"))
+            }
+        }
+        |> produces
+            """
+
+let res = conn.Open()
+let res2 = conn.Open ()
+let res3 = conn.Open ()
+
+"""
