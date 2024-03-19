@@ -2,7 +2,7 @@
 ---
 title: Functions
 category: widgets
-index: 2
+index: 3
 ---
 *)
 

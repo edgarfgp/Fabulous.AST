@@ -10,7 +10,7 @@ open type Ast
 module Match =
 
     [<Fact>]
-    let ``let value with a Match expression``() =
+    let ``Match expression``() =
         Oak() {
             AnonymousModule() {
                 MatchExpr(
@@ -23,6 +23,16 @@ module Match =
                 }
             }
         }
+        |> produces
+            """
+
+match [ 1; 2 ] with
+| a -> 3
+"""
+
+    [<Fact>]
+    let ``Match expression 2``() =
+        Oak() { AnonymousModule() { MatchExpr(Unquoted "[ 1; 2 ]") { MatchClauseExpr(Unquoted("a"), Unquoted "3") } } }
         |> produces
             """
 
