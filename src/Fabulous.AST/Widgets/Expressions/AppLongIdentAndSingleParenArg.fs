@@ -43,7 +43,7 @@ module AppLongIdentAndSingleParenArg =
 module AppLongIdentAndSingleParenArgBuilders =
     type Ast with
 
-        static member AppLongIdentAndSingleParenArg(name: string list, expr: WidgetBuilder<Expr>) =
+        static member AppLongIdentAndSingleParenArgExpr(name: string list, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 AppLongIdentAndSingleParenArg.WidgetKey,
                 AttributesBundle(
@@ -56,7 +56,7 @@ module AppLongIdentAndSingleParenArgBuilders =
                 )
             )
 
-        static member AppLongIdentAndSingleParenArg(name: string, expr: WidgetBuilder<Expr>) =
+        static member AppLongIdentAndSingleParenArgExpr(name: string, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 AppLongIdentAndSingleParenArg.WidgetKey,
                 AttributesBundle(
@@ -69,7 +69,7 @@ module AppLongIdentAndSingleParenArgBuilders =
                 )
             )
 
-        static member AppLongIdentAndSingleParenArg(name: string list, expr: string) =
+        static member AppLongIdentAndSingleParenArgExpr(name: string list, expr: string) =
             WidgetBuilder<Expr>(
                 AppLongIdentAndSingleParenArg.WidgetKey,
                 AttributesBundle(
@@ -82,7 +82,7 @@ module AppLongIdentAndSingleParenArgBuilders =
                 )
             )
 
-        static member AppLongIdentAndSingleParenArg(name: string, expr: string) =
+        static member AppLongIdentAndSingleParenArgExpr(name: string, expr: string) =
             WidgetBuilder<Expr>(
                 AppLongIdentAndSingleParenArg.WidgetKey,
                 AttributesBundle(

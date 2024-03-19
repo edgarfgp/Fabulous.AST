@@ -378,9 +378,9 @@ let inline x<'a> = 12
     let ``Produces let binding with AppLongIdentAndSingleParenArg expression``() =
         Oak() {
             AnonymousModule() {
-                Value("res", AppLongIdentAndSingleParenArg([ "conn"; "Open" ], ConstantExpr(ConstantUnit())))
-                Value("res2", AppLongIdentAndSingleParenArg([ "conn"; "Open" ], "()"))
-                Value("res3", AppLongIdentAndSingleParenArg("conn.Open", "()"))
+                Value("res", AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], ConstantExpr(ConstantUnit())))
+                Value("res2", AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], "()"))
+                Value("res3", AppLongIdentAndSingleParenArgExpr("conn.Open", "()"))
             }
         }
         |> produces
