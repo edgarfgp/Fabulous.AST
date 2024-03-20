@@ -71,11 +71,12 @@ type Colors =
     let ``Produces a generic record``() =
         Oak() {
             AnonymousModule() {
-                GenericRecord("Colors", [ "'other" ]) {
+                Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 }
+                |> _.typeParams([ "'other" ])
             }
         }
 
@@ -93,12 +94,13 @@ type Colors<'other> =
     let ``Produces a struct generic record``() =
         Oak() {
             AnonymousModule() {
-                (GenericRecord("Colors", [ "'other" ]) {
+                (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
                     .attribute("Struct")
+                    .typeParams([ "'other" ])
             }
         }
 
@@ -116,11 +118,12 @@ type Colors<'other> =
     let ``Produces an obsolete struct generic record``() =
         Oak() {
             AnonymousModule() {
-                (GenericRecord("Colors", [ "'other" ]) {
+                (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
+                    .typeParams([ "'other" ])
                     .attributes() {
                     Attribute "Struct"
                     Attribute "Obsolete"

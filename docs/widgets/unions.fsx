@@ -14,15 +14,14 @@ index: 4
 ## Constructors
 | Constructors                                      | Description |
 |---------------------------------------------------|-------------|
-| Union(name: string) | Creates a new union. |
-| GenericUnion(name: string, typeParams: string list) | Creates a new generic union. |
+| Union(name: string) | Creates a new union with the specified name. |
 
 ## Properties
 | Properties            | Description |
 |-----------------------|-------------|
 | members() | Sets the members of the union. |
 | xmlDocs(, xmlDocs: string list) | Adds XML documentation to the union. |
-| typeParameters(typeParams: string list) | Adds type parameters to the union. |
+| typeParams(typeParams: string list) | Adds type parameters to the union. |
 | attributes(attributes: string list) | Adds attributes to the union. |
 | attribute(attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the union. |
 | attribute(attribute: string) | Adds an attribute to the union. |

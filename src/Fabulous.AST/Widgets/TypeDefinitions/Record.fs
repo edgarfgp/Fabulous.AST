@@ -21,6 +21,8 @@ module Record =
 
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name =
@@ -72,7 +74,6 @@ module Record =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              // FIXME - Update
                               TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
                         [],
                         SingleTextNode.greaterThan,
@@ -81,6 +82,17 @@ module Record =
                     |> TyparDecls.PostfixList
                     |> Some
                 | ValueNone -> None
+
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
 
             TypeDefnRecordNode(
                 TypeNameNode(
@@ -96,7 +108,7 @@ module Record =
                     None,
                     Range.Zero
                 ),
-                None,
+                accessControl,
                 SingleTextNode.leftCurlyBrace,
                 fields,
                 SingleTextNode.rightCurlyBrace,
@@ -107,24 +119,12 @@ module Record =
 [<AutoOpen>]
 module RecordBuilders =
     type Ast with
-
-        static member private BaseRecord(name: string, typeParams: string list voption) =
-            let scalars =
-                match typeParams with
-                | ValueNone -> StackList.one(Record.Name.WithValue(name))
-                | ValueSome typeParams ->
-                    StackList.two(Record.Name.WithValue(name), Record.TypeParams.WithValue(typeParams))
-
+        static member Record(name: string) =
             CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
-                AttributesBundle(scalars, Array.empty, Array.empty)
+                AttributesBundle(StackList.one(Record.Name.WithValue(name)), Array.empty, Array.empty)
             )
-
-        static member Record(name: string) = Ast.BaseRecord(name, ValueNone)
-
-        static member GenericRecord(name: string, typeParams: string list) =
-            Ast.BaseRecord(name, ValueSome typeParams)
 
 [<Extension>]
 type RecordModifiers =
@@ -156,6 +156,22 @@ type RecordModifiers =
         AttributeCollectionBuilder<TypeDefnRecordNode, AttributeNode>(this, Record.MultipleAttributes) {
             Ast.Attribute(attribute)
         }
+
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<TypeDefnRecordNode>, value: string list) =
+        this.AddScalar(Record.TypeParams.WithValue(value))
+
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<TypeDefnRecordNode>) =
+        this.AddScalar(Record.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<TypeDefnRecordNode>) =
+        this.AddScalar(Record.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<TypeDefnRecordNode>) =
+        this.AddScalar(Record.Accessibility.WithValue(AccessControl.Internal))
 
 [<Extension>]
 type RecordYieldExtensions =

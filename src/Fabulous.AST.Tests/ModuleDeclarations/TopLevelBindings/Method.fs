@@ -106,11 +106,12 @@ type Colors =
             AnonymousModule() {
                 let foo = async { return 1 }
 
-                (GenericRecord("Colors", [ "'other" ]) {
+                (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     Method("this.A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                 }
@@ -132,11 +133,12 @@ type Colors<'other> =
     let ``Produces a record with TypeParams and static method member``() =
         Oak() {
             AnonymousModule() {
-                (GenericRecord("Colors", [ "'other" ]) {
+                (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     Method("A", ParametersPat() { ParameterPat("p", String()) }, ConstantExpr(Quoted ""))
                         .toStatic()

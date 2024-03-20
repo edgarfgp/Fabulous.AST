@@ -14,11 +14,12 @@ module InterfaceMembers =
             AnonymousModule() {
                 Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
-                (GenericRecord("Colors", [ "'other" ]) {
+                (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     InterfaceMember("IMyInterface") {
                         Method("x.GetValue", UnitPat(), ConstantExpr(Unquoted "x.MyField2"))

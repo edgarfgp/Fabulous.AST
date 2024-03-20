@@ -137,11 +137,12 @@ type Colors =
     let ``Produces a record with TypeParams and property member``() =
         Oak() {
             AnonymousModule() {
-                (GenericRecord("Colors", [ "'other" ]) {
+                (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     Property("this.A", ConstantExpr(Quoted ""))
                 }
@@ -164,11 +165,12 @@ type Colors<'other> =
     let ``Produces a record with TypeParams and static property member``() =
         Oak() {
             AnonymousModule() {
-                (GenericRecord("Colors", [ "'other" ]) {
+                (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     Property("A", ConstantExpr(Quoted "")).toStatic()
                 }
@@ -341,7 +343,8 @@ type Person =
     let ``Produces a generic record with a member property ``() =
         Oak() {
             AnonymousModule() {
-                (GenericRecord("Person", [ "'other" ]) { Field("Name", LongIdent("'other")) })
+                (Record("Person") { Field("Name", LongIdent("'other")) })
+                    .typeParams([ "'other" ])
                     .members() {
                     Property("this.Name", ConstantExpr(Quoted "name"))
                 }
