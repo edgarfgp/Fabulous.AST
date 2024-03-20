@@ -74,7 +74,7 @@ Oak() {
             )
         }
 
-        (GenericUnion("Colors2") {
+        (Union("Colors2") {
             UnionParamsCase("Red") {
                 Field("a", LongIdent("string"))
                 Field("b", LongIdent "'other")
