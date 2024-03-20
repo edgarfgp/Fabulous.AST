@@ -74,7 +74,7 @@ Oak() {
             )
         }
 
-        (GenericUnion("Colors2", [ "'other" ]) {
+        (GenericUnion("Colors2") {
             UnionParamsCase("Red") {
                 Field("a", LongIdent("string"))
                 Field("b", LongIdent "'other")
@@ -84,6 +84,7 @@ Oak() {
             UnionCase("Blue")
             UnionCase("Yellow")
         })
+            .typeParams([ "'other" ])
             .members () {
             Property("Name", ConstantExpr(Quoted "name")).toStatic ()
         }

@@ -340,7 +340,7 @@ type Person =
     let ``Produces a generic union with a method member``() =
         Oak() {
             AnonymousModule() {
-                (GenericUnion("Colors", [ "'other" ]) {
+                (Union("Colors") {
                     UnionParamsCase("Red") {
                         Field("a", LongIdent("string"))
                         Field("b", LongIdent "'other")
@@ -350,6 +350,7 @@ type Person =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     Method("this.Name", UnitPat(), ConstantExpr(Quoted "name"))
                 }

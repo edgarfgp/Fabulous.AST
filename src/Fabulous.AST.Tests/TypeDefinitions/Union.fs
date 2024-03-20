@@ -201,7 +201,7 @@ module GenericUnion =
     let ``Produces an union with TypeParams``() =
         Oak() {
             AnonymousModule() {
-                GenericUnion("Colors", [ "'other" ]) {
+                Union("Colors") {
                     UnionParamsCase("Red") {
                         Field("a", String())
                         Field("b", LongIdent("'other"))
@@ -211,6 +211,7 @@ module GenericUnion =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 }
+                |> _.typeParams([ "'other" ])
             }
         }
         |> produces
@@ -230,7 +231,7 @@ type Colors<'other> =
             AnonymousModule() {
                 Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
-                (GenericUnion("Colors", [ "'other" ]) {
+                (Union("Colors") {
                     UnionParamsCase("Red") {
                         Field("a", String())
                         Field("b", LongIdent("'other"))
@@ -240,6 +241,7 @@ type Colors<'other> =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr(Quoted "")) }
                 }
@@ -266,7 +268,7 @@ type Colors<'other> =
     let ``Produces an struct union with TypeParams``() =
         Oak() {
             AnonymousModule() {
-                (GenericUnion("Colors", [ "'other" ]) {
+                (Union("Colors") {
                     UnionParamsCase("Red") {
                         Field("a", String())
                         Field("b", LongIdent("'other"))
@@ -276,6 +278,7 @@ type Colors<'other> =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
+                    .typeParams([ "'other" ])
                     .attribute(Attribute "Struct")
 
             }

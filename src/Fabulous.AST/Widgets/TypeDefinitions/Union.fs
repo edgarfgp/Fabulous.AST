@@ -118,23 +118,12 @@ module Union =
 [<AutoOpen>]
 module UnionBuilders =
     type Ast with
-        static member private BaseUnion(name: string, typeParams: string list voption) =
-            let scalars =
-                match typeParams with
-                | ValueNone -> StackList.one(Union.Name.WithValue(name))
-                | ValueSome typeParams ->
-                    StackList.two(Union.Name.WithValue(name), Union.TypeParams.WithValue(typeParams))
-
+        static member Union(name: string) =
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                AttributesBundle(scalars, Array.empty, Array.empty)
+                AttributesBundle(StackList.one(Union.Name.WithValue(name)), Array.empty, Array.empty)
             )
-
-        static member Union(name: string) = Ast.BaseUnion(name, ValueNone)
-
-        static member GenericUnion(name: string, typeParams: string list) =
-            Ast.BaseUnion(name, ValueSome typeParams)
 
 [<Extension>]
 type UnionModifiers =
