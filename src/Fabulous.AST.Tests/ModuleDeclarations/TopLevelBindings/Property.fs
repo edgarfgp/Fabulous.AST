@@ -397,7 +397,7 @@ type Person =
     let ``Produces a generic union with a member property ``() =
         Oak() {
             AnonymousModule() {
-                (GenericUnion("Colors", [ "'other" ]) {
+                (Union("Colors") {
                     UnionParamsCase("Red") {
                         Field("a", LongIdent("string"))
                         Field("b", LongIdent "'other")
@@ -407,6 +407,7 @@ type Person =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     Property("this.Name", ConstantExpr(Quoted "name"))
                 }
@@ -429,7 +430,7 @@ type Colors<'other> =
     let ``Produces a generic union with a static member property ``() =
         Oak() {
             AnonymousModule() {
-                (GenericUnion("Colors", [ "'other" ]) {
+                (Union("Colors") {
                     UnionParamsCase("Red") {
                         Field("a", LongIdent("string"))
                         Field("b", LongIdent "'other")
@@ -439,6 +440,7 @@ type Colors<'other> =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
+                    .typeParams([ "'other" ])
                     .members() {
                     Property("Name", ConstantExpr(Quoted "name")).toStatic()
                 }

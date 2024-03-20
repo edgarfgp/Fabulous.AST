@@ -20,6 +20,8 @@ module Union =
 
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name =
@@ -82,9 +84,20 @@ module Union =
                     |> Some
                 | ValueNone -> None
 
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
             TypeDefnUnionNode(
                 TypeNameNode(
-                    None,
+                    xmlDocs,
                     multipleAttributes,
                     SingleTextNode.``type``,
                     None,
@@ -96,7 +109,7 @@ module Union =
                     None,
                     Range.Zero
                 ),
-                None,
+                accessControl,
                 unionCaseNode,
                 members,
                 Range.Zero
@@ -105,29 +118,22 @@ module Union =
 [<AutoOpen>]
 module UnionBuilders =
     type Ast with
-        static member private BaseUnion(name: string, typeParams: string list voption) =
-            let scalars =
-                match typeParams with
-                | ValueNone -> StackList.one(Union.Name.WithValue(name))
-                | ValueSome typeParams ->
-                    StackList.two(Union.Name.WithValue(name), Union.TypeParams.WithValue(typeParams))
-
+        static member Union(name: string) =
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                AttributesBundle(scalars, Array.empty, Array.empty)
+                AttributesBundle(StackList.one(Union.Name.WithValue(name)), Array.empty, Array.empty)
             )
-
-        static member Union(name: string) = Ast.BaseUnion(name, ValueNone)
-
-        static member GenericUnion(name: string, typeParams: string list) =
-            Ast.BaseUnion(name, ValueSome typeParams)
 
 [<Extension>]
 type UnionModifiers =
     [<Extension>]
     static member inline members(this: WidgetBuilder<TypeDefnUnionNode>) =
         AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
+
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<TypeDefnUnionNode>, value: string list) =
+        this.AddScalar(Union.TypeParams.WithValue(value))
 
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: string list) =
@@ -153,6 +159,18 @@ type UnionModifiers =
         AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes) {
             Ast.Attribute(attribute)
         }
+
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<TypeDefnUnionNode>) =
+        this.AddScalar(Union.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<TypeDefnUnionNode>) =
+        this.AddScalar(Union.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<TypeDefnUnionNode>) =
+        this.AddScalar(Union.Accessibility.WithValue(AccessControl.Internal))
 
 [<Extension>]
 type UnionYieldExtensions =
