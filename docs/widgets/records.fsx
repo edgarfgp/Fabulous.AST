@@ -21,13 +21,13 @@ index: 5
 |-----------------------|-------------|
 | members() | Sets the members of the record. |
 | xmlDocs(, xmlDocs: string list) | Adds XML documentation to the record. |
-| typeParams(typeParams: string list) | Adds type parameters to the union. |
-| attributes(attributes: string list) | Adds attributes to the union. |
-| attribute(attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the union. |
-| attribute(attribute: string) | Adds an attribute to the union. |
-| toPrivate() | Makes the value binding private. |
-| toInternal() | Makes the value binding internal. |
-| toPublic() | Makes the value binding public. |
+| typeParams(typeParams: string list) | Adds type parameters to the record. |
+| attributes(attributes: string list) | Adds attributes to the record. |
+| attribute(attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the record. |
+| attribute(attribute: string) | Adds an attribute to the record. |
+| toPrivate() | Makes the record private. |
+| toInternal() | Makes the record internal. |
+| toPublic() | Makes the record public. |
 *)
 
 (**
@@ -55,11 +55,12 @@ Oak() {
             .xmlDocs([ "Normal record" ])
             .members () {
             let parameters =
-                ParametersPat(true) {
-                    ParameterPat("name", "string")
-                    ParameterPat("age", "int")
-                    ParameterPat("address", "string")
-                }
+                ParametersPat(
+                    [ ParameterPat("name", "string")
+                      ParameterPat("age", "int")
+                      ParameterPat("address", "string") ],
+                    true
+                )
 
             Method(
                 "Create",

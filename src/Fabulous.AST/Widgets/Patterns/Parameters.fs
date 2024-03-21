@@ -1,15 +1,16 @@
 namespace Fabulous.AST
 
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Parameters =
-    let Parameters = Attributes.defineWidgetCollection "Parameters"
+    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
     let HasTupledParameters = Attributes.defineScalar<bool> "HasTupledParameters"
 
     let WidgetKey =
         Widgets.register "Parameters" (fun widget ->
-            let parameters = Widgets.getNodesFromWidgetCollection<Pattern> widget Parameters
+            let parameters = Widgets.getScalarValue widget Parameters
             let isTupled = Widgets.getScalarValue widget HasTupledParameters
 
             if isTupled then
@@ -48,11 +49,17 @@ module Parameters =
 module ParametersBuilders =
     type Ast with
 
-        static member inline ParametersPat(isTupled: bool) =
-            CollectionBuilder<Pattern, Pattern>(
+        static member private BaseParametersPat(parameters: WidgetBuilder<Pattern> list, isTupled: bool) =
+            let parameters = parameters |> List.map(Gen.mkOak)
+
+            WidgetBuilder<Pattern>(
                 Parameters.WidgetKey,
-                Parameters.Parameters,
+                Parameters.Parameters.WithValue(parameters),
                 Parameters.HasTupledParameters.WithValue(isTupled)
             )
 
-        static member inline ParametersPat() = Ast.ParametersPat(false)
+        static member ParametersPat(parameters: WidgetBuilder<Pattern> list) =
+            Ast.BaseParametersPat(parameters, false)
+
+        static member ParametersPat(parameters: WidgetBuilder<Pattern> list, isTupled: bool) =
+            Ast.BaseParametersPat(parameters, isTupled)

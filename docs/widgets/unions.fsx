@@ -59,7 +59,7 @@ Oak() {
             .members () {
             Property("CurrentColor", ConstantExpr(Quoted "Red")).toStatic ()
 
-            let parameters = ParametersPat() { ParameterPat("c", "Colors") }
+            let parameters = ParametersPat([ ParameterPat("c", "Colors") ])
 
             Method(
                 "this.GetColor",
