@@ -68,9 +68,7 @@ type Colors =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
-                    .members() {
-                    InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr(Quoted "")) }
-                }
+                    .interfaces([ InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr(Quoted "")) } ])
 
             }
         }
@@ -179,12 +177,7 @@ type Colors = | Red
     let ``Produces an union case with attributes``() =
         Oak() {
             AnonymousModule() {
-                (Union("Colors") {
-                    UnionCase("Red").attributes() {
-                        Attribute("Obsolete")
-                        Attribute("Test")
-                    }
-                })
+                (Union("Colors") { UnionCase("Red").attributes([ Attribute("Obsolete"); Attribute("Test") ]) })
                     .attribute(Attribute "Test")
             }
         }
@@ -242,9 +235,7 @@ type Colors<'other> =
                     UnionCase("Yellow")
                 })
                     .typeParams([ "'other" ])
-                    .members() {
-                    InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr(Quoted "")) }
-                }
+                    .interfaces([ InterfaceMember("IMyInterface") { Property("x.GetValue", ConstantExpr(Quoted "")) } ])
             }
         }
 

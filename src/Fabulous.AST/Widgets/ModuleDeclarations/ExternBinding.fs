@@ -8,13 +8,16 @@ open Fantomas.Core.SyntaxOak
 
 module ExternBinding =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+
     let AttributesOfType = Attributes.defineWidget "MultipleAttributes"
     let TypeVal = Attributes.defineScalar<StringOrWidget<Type>> "Type"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Identifier = Attributes.defineScalar<string> "Identifier"
-    let Parameters = Attributes.defineWidgetCollection "Parameters"
+    let Parameters = Attributes.defineScalar<ExternBindingPatternNode list> "Parameters"
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
@@ -27,12 +30,11 @@ module ExternBinding =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -44,7 +46,7 @@ module ExternBinding =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let attributesOfType =
                 Widgets.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
@@ -77,13 +79,12 @@ module ExternBinding =
 
             let name = Widgets.getScalarValue widget Identifier
 
-            let parameters =
-                Widgets.tryGetNodesFromWidgetCollection<ExternBindingPatternNode> widget Parameters
+            let parameters = Widgets.tryGetScalarValue widget Parameters
 
             let parameters =
                 match parameters with
-                | Some parameters -> parameters
-                | None -> []
+                | ValueSome parameters -> parameters
+                | ValueNone -> []
 
             ExternBindingNode(
                 xmlDocs,
@@ -136,27 +137,31 @@ type ExternBindingNodeModifiers =
         this.AddScalar(ExternBinding.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ExternBindingNode>) =
-        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes)
+    static member inline attributes
+        (this: WidgetBuilder<ExternBindingNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            ExternBinding.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ExternBindingNode>, attributes: string list) =
-        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        ExternBindingNodeModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes) {
-            attribute
-        }
+        ExternBindingNodeModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: string) =
-        AttributeCollectionBuilder<ExternBindingNode, AttributeNode>(this, ExternBinding.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        ExternBindingNodeModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ExternBindingNode>) =
@@ -171,16 +176,21 @@ type ExternBindingNodeModifiers =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
-    static member inline parameter
-        (this: WidgetBuilder<ExternBindingNode>, parameter: WidgetBuilder<ExternBindingPatternNode>)
+    static member inline parameters
+        (this: WidgetBuilder<ExternBindingNode>, values: WidgetBuilder<ExternBindingPatternNode> list)
         =
-        AttributeCollectionBuilder<ExternBindingNode, ExternBindingPatternNode>(this, ExternBinding.Parameters) {
-            parameter
-        }
+        this.AddScalar(
+            ExternBinding.Parameters.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
 
     [<Extension>]
-    static member inline parameters(this: WidgetBuilder<ExternBindingNode>) =
-        AttributeCollectionBuilder<ExternBindingNode, ExternBindingPatternNode>(this, ExternBinding.Parameters)
+    static member inline parameter
+        (this: WidgetBuilder<ExternBindingNode>, value: WidgetBuilder<ExternBindingPatternNode>)
+        =
+        ExternBindingNodeModifiers.parameters(this, [ value ])
 
 [<Extension>]
 type ExternBindingNodeYieldExtensions =
@@ -192,11 +202,3 @@ type ExternBindingNodeYieldExtensions =
         let moduleDecl = ModuleDecl.ExternBinding node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (
-            _: AttributeCollectionBuilder<ExternBindingNode, ExternBindingPatternNode>,
-            x: WidgetBuilder<ExternBindingPatternNode>
-        ) : CollectionContent =
-        { Widgets = MutStackArray1.One(x.Compile()) }

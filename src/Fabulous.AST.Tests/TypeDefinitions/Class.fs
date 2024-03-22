@@ -122,10 +122,8 @@ type Person (name: string) =
 
         Oak() {
             AnonymousModule() {
-                (Class("Person") { Property("this.Name", EscapeHatch(expr)) }).attributes() {
-                    Attribute("Sealed")
-                    Attribute("AbstractClass")
-                }
+                (Class("Person") { Property("this.Name", EscapeHatch(expr)) })
+                    .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
             }
         }
         |> produces

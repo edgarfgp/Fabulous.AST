@@ -36,9 +36,8 @@ let x = 12
     let ``Multiple attributes``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12").attributes() {
-                    Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "This is obsolete")))
-                }
+                Value("x", Unquoted "12")
+                    .attributes([ Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "This is obsolete"))) ])
             }
         }
         |> produces

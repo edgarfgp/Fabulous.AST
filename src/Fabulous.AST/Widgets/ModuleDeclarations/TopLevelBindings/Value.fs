@@ -43,12 +43,11 @@ module BindingValue =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -60,7 +59,7 @@ module BindingValue =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let isMutable =
                 Widgets.tryGetScalarValue widget BindingNode.IsMutable

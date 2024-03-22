@@ -9,7 +9,10 @@ open Microsoft.FSharp.Collections
 
 module ClassEnd =
     let Name = Attributes.defineScalar<string> "Name"
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Constructor = Attributes.defineWidget "Constructor"
 
@@ -20,12 +23,11 @@ module ClassEnd =
                 |> Unquoted
                 |> StringParsing.normalizeIdentifierBackticks
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -37,7 +39,7 @@ module ClassEnd =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
@@ -107,29 +109,35 @@ module ClassEndBuilders =
 [<Extension>]
 type ClassEndModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>) =
-        AttributeCollectionBuilder<TypeDefnExplicitNode, AttributeNode>(this, ClassEnd.MultipleAttributes)
+    static member inline attributes
+        (this: WidgetBuilder<TypeDefnExplicitNode>, values: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            ClassEnd.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
+
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>, attributes: string list) =
+        ClassEndModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: WidgetBuilder<AttributeNode>) =
+        ClassEndModifiers.attributes(this, [ attribute ])
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: string) =
+        ClassEndModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: string list) =
         this.AddScalar(ClassEnd.TypeParams.WithValue(typeParams))
-
-    [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>, attributes: string list) =
-        AttributeCollectionBuilder<TypeDefnExplicitNode, AttributeNode>(this, ClassEnd.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<TypeDefnExplicitNode, AttributeNode>(this, ClassEnd.MultipleAttributes) { attribute }
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: string) =
-        AttributeCollectionBuilder<TypeDefnExplicitNode, AttributeNode>(this, ClassEnd.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
 
 [<Extension>]
 type ClassEndYieldExtensions =

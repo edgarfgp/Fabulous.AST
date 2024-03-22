@@ -14,9 +14,7 @@ module ModuleDeclAttributes =
         Oak() {
             AnonymousModule() {
                 ModuleDeclAttribute(ConstantExpr(Unquoted "do printfn \"Executing...\""))
-                    .attributes() {
-                    Attribute "MyCustomModuleAttribute"
-                }
+                    .attributes([ Attribute "MyCustomModuleAttribute" ])
             }
         }
         |> produces
@@ -30,10 +28,7 @@ do printfn "Executing..."
         Oak() {
             AnonymousModule() {
                 ModuleDeclAttribute(ConstantExpr(Unquoted "do printfn \"Executing...\""))
-                    .attributes() {
-                    Attribute "MyCustomModuleAttribute"
-                    Attribute "MyCustomModuleAttribute2"
-                }
+                    .attributes([ Attribute "MyCustomModuleAttribute"; Attribute "MyCustomModuleAttribute2" ])
             }
         }
         |> produces

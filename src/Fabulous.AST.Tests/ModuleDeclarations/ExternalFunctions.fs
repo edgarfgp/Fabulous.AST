@@ -34,10 +34,11 @@ extern void HelloWorld(string x)
     let ``Produces an ExternBindingNode with parameters``() =
         Oak() {
             AnonymousModule() {
-                ExternBinding("HelloWorld", "void").parameters() {
-                    ExternBindingPat("string", ConstantPat("x"))
-                    ExternBindingPat(Int32(), ConstantPat("y"))
-                }
+                ExternBinding("HelloWorld", "void")
+                    .parameters(
+                        [ ExternBindingPat("string", ConstantPat("x"))
+                          ExternBindingPat(Int32(), ConstantPat("y")) ]
+                    )
             }
         }
         |> produces

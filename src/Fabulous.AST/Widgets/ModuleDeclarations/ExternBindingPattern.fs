@@ -8,15 +8,16 @@ open Fantomas.Core.SyntaxOak
 module ExternBindingPattern =
     let PatternVal = Attributes.defineScalar<StringOrWidget<Pattern>> "DoExpression"
 
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+
     let TypeValue = Attributes.defineScalar<StringOrWidget<Type>> "Type"
 
     let WidgetKey =
         Widgets.register "ExternBindingPattern" (fun widget ->
             let pat = Widgets.tryGetScalarValue widget PatternVal
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let tp = Widgets.tryGetScalarValue widget TypeValue
 
@@ -37,7 +38,7 @@ module ExternBindingPattern =
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -49,7 +50,7 @@ module ExternBindingPattern =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let pat =
                 match pat with
@@ -95,38 +96,30 @@ module ExternBindingPatternNodeBuilders =
 [<Extension>]
 type ExternBindingPatternNodeModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ExternBindingPatternNode>) =
-        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
-            this,
-            ExternBindingPattern.MultipleAttributes
+    static member inline attributes
+        (this: WidgetBuilder<ExternBindingPatternNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            ExternBindingPattern.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
         )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ExternBindingPatternNode>, attributes: string list) =
-        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
+        ExternBindingPatternNodeModifiers.attributes(
             this,
-            ExternBindingPattern.MultipleAttributes
-        ) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<ExternBindingPatternNode>, attribute: WidgetBuilder<AttributeNode>)
         =
-        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
-            this,
-            ExternBindingPattern.MultipleAttributes
-        ) {
-            attribute
-        }
+        ExternBindingPatternNodeModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ExternBindingPatternNode>, attribute: string) =
-        AttributeCollectionBuilder<ExternBindingPatternNode, AttributeNode>(
-            this,
-            ExternBindingPattern.MultipleAttributes
-        ) {
-            Ast.Attribute(attribute)
-        }
+        ExternBindingPatternNodeModifiers.attributes(this, [ Ast.Attribute(attribute) ])

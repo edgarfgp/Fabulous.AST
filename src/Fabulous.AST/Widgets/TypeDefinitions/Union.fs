@@ -12,9 +12,10 @@ module Union =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let Members = Attributes.defineWidgetCollection "Members"
+    let Members = Attributes.defineScalar<MemberDefn list> "Members"
 
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -32,12 +33,12 @@ module Union =
             let unionCaseNode =
                 Widgets.getNodesFromWidgetCollection<UnionCaseNode> widget UnionCaseNode
 
-            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let members = Widgets.tryGetScalarValue widget Members
 
             let members =
                 match members with
-                | Some members -> members
-                | None -> []
+                | ValueSome members -> members
+                | ValueNone -> []
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -48,12 +49,11 @@ module Union =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -65,7 +65,7 @@ module Union =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
@@ -128,8 +128,26 @@ module UnionBuilders =
 [<Extension>]
 type UnionModifiers =
     [<Extension>]
-    static member inline members(this: WidgetBuilder<TypeDefnUnionNode>) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
+    static member inline members(this: WidgetBuilder<TypeDefnUnionNode>, members: WidgetBuilder<BindingNode> list) =
+        this.AddScalar(
+            Union.Members.WithValue(
+                [ for memb in members do
+                      let node = Gen.mkOak memb
+                      MemberDefn.Member(node) ]
+            )
+        )
+
+    [<Extension>]
+    static member inline interfaces
+        (this: WidgetBuilder<TypeDefnUnionNode>, members: WidgetBuilder<MemberDefnInterfaceNode> list)
+        =
+        this.AddScalar(
+            Union.Members.WithValue(
+                [ for memb in members do
+                      let node = Gen.mkOak memb
+                      MemberDefn.Interface(node) ]
+            )
+        )
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnUnionNode>, value: string list) =
@@ -140,25 +158,31 @@ type UnionModifiers =
         this.AddScalar(Union.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes)
+    static member inline attributes
+        (this: WidgetBuilder<TypeDefnUnionNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            Union.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes: string list) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        UnionModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnUnionNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes) { attribute }
+        UnionModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnUnionNode>, attribute: string) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        UnionModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnUnionNode>) =
@@ -191,31 +215,3 @@ type UnionParameterizedCaseYieldExtensions =
         (_: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode>)
         : CollectionContent =
         { Widgets = MutStackArray1.One(x.Compile()) }
-
-    [<Extension>]
-    static member inline Yield
-        (_: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (_: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: BindingNode)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (_: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: MemberDefnInterfaceNode)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>) : CollectionContent =
-        let node = Gen.mkOak x
-        UnionParameterizedCaseYieldExtensions.Yield(this, node)

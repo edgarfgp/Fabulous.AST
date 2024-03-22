@@ -263,10 +263,8 @@ let x = 12
     let ``Simple Let binding with multiline with a multiple attributes``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12").attributes() {
-                    Attribute("EditorBrowsable")
-                    Attribute("Obsolete")
-                }
+                Value("x", Unquoted "12")
+                    .attributes([ Attribute("EditorBrowsable"); Attribute("Obsolete") ])
 
             }
         }
