@@ -156,12 +156,12 @@ type RecordModifiers =
 
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnRecordNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnRecordNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
             Record.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

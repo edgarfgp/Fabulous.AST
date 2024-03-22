@@ -83,12 +83,12 @@ type ImplicitConstructorModifiers =
 
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ImplicitConstructorNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ImplicitConstructorNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
             Constructor.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 
@@ -96,8 +96,8 @@ type ImplicitConstructorModifiers =
     static member inline attributes(this: WidgetBuilder<ImplicitConstructorNode>, attributes: string list) =
         ImplicitConstructorModifiers.attributes(
             this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
+            [ for attr in attributes do
+                  Ast.Attribute(attr) ]
         )
 
     [<Extension>]

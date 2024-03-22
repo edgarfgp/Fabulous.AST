@@ -22,6 +22,7 @@ index: 4
 | members() | Sets the members of the union. |
 | xmlDocs(, xmlDocs: string list) | Adds XML documentation to the union. |
 | typeParams(typeParams: string list) | Adds type parameters to the union. |
+| attributes(attributes: WidgetBuilder<AttributeNode> list) | Adds attributes to the union. |
 | attributes(attributes: string list) | Adds attributes to the union. |
 | attribute(attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the union. |
 | attribute(attribute: string) | Adds an attribute to the union. |
@@ -56,22 +57,22 @@ Oak() {
             .attribute("AutoOpen")
             .xmlDocs([ "This is a union type" ])
             .toPrivate()
-            .members () {
-            Property("CurrentColor", ConstantExpr(Quoted "Red")).toStatic ()
+            .members (
+                [ Property("CurrentColor", ConstantExpr(Quoted "Red")).toStatic ()
 
-            let parameters = ParametersPat([ ParameterPat("c", "Colors") ])
+                  let parameters = ParametersPat([ ParameterPat("c", "Colors") ])
 
-            Method(
-                "this.GetColor",
-                parameters,
-                MatchExpr(Unquoted("c")) {
-                    MatchClauseExpr(Unquoted("Red"), Quoted "Red")
-                    MatchClauseExpr(NamedPat("Green"), Quoted "Green")
-                    MatchClauseExpr(Unquoted("Blue"), Quoted "Blue")
-                    MatchClauseExpr(NamedPat("Yellow"), ConstantExpr(Quoted "Yellow"))
-                }
+                  Method(
+                      "this.GetColor",
+                      parameters,
+                      MatchExpr(Unquoted("c")) {
+                          MatchClauseExpr(Unquoted("Red"), Quoted "Red")
+                          MatchClauseExpr(NamedPat("Green"), Quoted "Green")
+                          MatchClauseExpr(Unquoted("Blue"), Quoted "Blue")
+                          MatchClauseExpr(NamedPat("Yellow"), ConstantExpr(Quoted "Yellow"))
+                      }
+                  ) ]
             )
-        }
 
         (Union("Colors2") {
             UnionParamsCase("Red") {
@@ -84,9 +85,7 @@ Oak() {
             UnionCase("Yellow")
         })
             .typeParams([ "'other" ])
-            .members () {
-            Property("Name", ConstantExpr(Quoted "name")).toStatic ()
-        }
+            .members ([ Property("Name", ConstantExpr(Quoted "name")).toStatic () ])
     }
 }
 |> Gen.mkOak

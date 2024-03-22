@@ -164,11 +164,11 @@ type ValNodeModifiers =
         this.AddScalar(Val.IsInlined.WithValue(true))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ValNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<ValNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
             Val.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

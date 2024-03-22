@@ -102,11 +102,11 @@ type FieldModifiers =
         this.AddScalar(Field.Mutable.WithValue(true))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<FieldNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
             Field.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 
@@ -114,8 +114,8 @@ type FieldModifiers =
     static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: string list) =
         FieldModifiers.attributes(
             this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
+            [ for attr in attributes do
+                  Ast.Attribute(attr) ]
         )
 
     [<Extension>]

@@ -157,12 +157,12 @@ type ClassModifiers =
 
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnRegularNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnRegularNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
             Class.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

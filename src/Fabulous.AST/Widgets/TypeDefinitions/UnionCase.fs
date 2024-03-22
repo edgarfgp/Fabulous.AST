@@ -82,11 +82,11 @@ type UnionCaseModifiers =
         this.AddScalar(UnionCase.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<UnionCaseNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
             UnionCase.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 
@@ -94,8 +94,8 @@ type UnionCaseModifiers =
     static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: string list) =
         UnionCaseModifiers.attributes(
             this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
+            [ for attr in attributes do
+                  Ast.Attribute(attr) ]
         )
 
     [<Extension>]

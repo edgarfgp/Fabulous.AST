@@ -158,11 +158,13 @@ type UnionModifiers =
         this.AddScalar(Union.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes
+        (this: WidgetBuilder<TypeDefnUnionNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
         this.AddScalar(
             Union.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

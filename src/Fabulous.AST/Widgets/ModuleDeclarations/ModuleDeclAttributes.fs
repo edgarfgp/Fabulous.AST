@@ -54,12 +54,12 @@ module ModuleDeclAttributeNodeBuilders =
 type ModuleDeclAttributeModifiers =
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ModuleDeclAttributesNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ModuleDeclAttributesNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
             ModuleDeclAttributes.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

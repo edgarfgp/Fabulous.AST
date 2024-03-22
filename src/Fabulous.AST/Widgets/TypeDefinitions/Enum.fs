@@ -91,11 +91,13 @@ type EnumModifiers =
         this.AddScalar(Enum.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnEnumNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes
+        (this: WidgetBuilder<TypeDefnEnumNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
         this.AddScalar(
             Enum.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

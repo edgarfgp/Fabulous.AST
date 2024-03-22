@@ -29,11 +29,11 @@ type TopLevelBindingModifiers =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<BindingNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
             BindingNode.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

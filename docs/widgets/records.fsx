@@ -22,6 +22,7 @@ index: 5
 | members() | Sets the members of the record. |
 | xmlDocs(, xmlDocs: string list) | Adds XML documentation to the record. |
 | typeParams(typeParams: string list) | Adds type parameters to the record. |
+| attributes(attributes: WidgetBuilder<AttributeNode> list) | Adds attributes to the record. |
 | attributes(attributes: string list) | Adds attributes to the record. |
 | attribute(attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the record. |
 | attribute(attribute: string) | Adds an attribute to the record. |
@@ -53,28 +54,28 @@ Oak() {
             Field("Address", "string")
         })
             .xmlDocs([ "Normal record" ])
-            .members () {
-            let parameters =
-                ParametersPat(
-                    [ ParameterPat("name", "string")
-                      ParameterPat("age", "int")
-                      ParameterPat("address", "string") ],
-                    true
-                )
+            .members (
+                [ let parameters =
+                      ParametersPat(
+                          [ ParameterPat("name", "string")
+                            ParameterPat("age", "int")
+                            ParameterPat("address", "string") ],
+                          true
+                      )
 
-            Method(
-                "Create",
-                parameters,
-                RecordExpr() {
-                    RecordFieldExpr("Name", ConstantExpr(Unquoted "name"))
-                    RecordFieldExpr("Age", ConstantExpr(Unquoted "age"))
-                    RecordFieldExpr("Address", ConstantExpr(Unquoted "address"))
-                }
+                  Method(
+                      "Create",
+                      parameters,
+                      RecordExpr() {
+                          RecordFieldExpr("Name", ConstantExpr(Unquoted "name"))
+                          RecordFieldExpr("Age", ConstantExpr(Unquoted "age"))
+                          RecordFieldExpr("Address", ConstantExpr(Unquoted "address"))
+                      }
+                  )
+                      .toStatic ()
+
+                  Property("this.NameValue", ConstantExpr(Unquoted "this.Name")) ]
             )
-                .toStatic ()
-
-            Property("this.NameValue", ConstantExpr(Unquoted "this.Name"))
-        }
 
         (Record("Person") {
             Field("Name", "string")

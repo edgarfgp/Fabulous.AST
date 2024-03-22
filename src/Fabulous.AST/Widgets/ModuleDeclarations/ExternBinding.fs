@@ -137,11 +137,13 @@ type ExternBindingNodeModifiers =
         this.AddScalar(ExternBinding.XmlDocs.WithValue(comments))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ExternBindingNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes
+        (this: WidgetBuilder<ExternBindingNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
         this.AddScalar(
             ExternBinding.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

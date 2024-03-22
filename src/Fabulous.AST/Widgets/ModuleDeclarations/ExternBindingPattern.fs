@@ -97,12 +97,12 @@ module ExternBindingPatternNodeBuilders =
 type ExternBindingPatternNodeModifiers =
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ExternBindingPatternNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ExternBindingPatternNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
             ExternBindingPattern.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 

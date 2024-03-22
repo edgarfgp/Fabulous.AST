@@ -104,11 +104,11 @@ type EnumCaseModifiers =
         this.AddScalar(EnumCase.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<EnumCaseNode>, values: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
             EnumCase.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
             )
         )
 
@@ -116,8 +116,8 @@ type EnumCaseModifiers =
     static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: string list) =
         EnumCaseModifiers.attributes(
             this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
+            [ for attr in attributes do
+                  Ast.Attribute(attr) ]
         )
 
     [<Extension>]
