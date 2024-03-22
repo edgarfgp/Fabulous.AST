@@ -39,11 +39,7 @@ type Person () =
                 Class(
                     "Person",
                     Constructor(
-                        ParametersPat(true) {
-                            ParameterPat("name")
-                            ParameterPat("lastName")
-                            ParameterPat("age")
-                        }
+                        ParametersPat([ ParameterPat("name"); ParameterPat("lastName"); ParameterPat("age") ], true)
                     )
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
@@ -65,11 +61,12 @@ type Person (name, lastName, age) =
                 Class(
                     "Person",
                     Constructor(
-                        ParametersPat(true) {
-                            ParameterPat("name", String())
-                            ParameterPat("lastName", String())
-                            ParameterPat("?age", Int32())
-                        }
+                        ParametersPat(
+                            [ ParameterPat("name", String())
+                              ParameterPat("lastName", String())
+                              ParameterPat("?age", Int32()) ],
+                            true
+                        )
                     )
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
@@ -88,12 +85,7 @@ type Person (name: string, lastName: string, ?age: int) =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(
-                        ParametersPat(true) {
-                            ParameterPat("name", String())
-                            ParameterPat("age", Int32())
-                        }
-                    )
+                    Constructor(ParametersPat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ], true))
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
                 }
@@ -110,7 +102,7 @@ type Person (name: string, age: int) =
     let ``Produces a class marked as a Struct explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
-                (Class("Person", Constructor(ParametersPat(true) { ParameterPat("name", String()) })) {
+                (Class("Person", Constructor(ParametersPat([ ParameterPat("name", String()) ]))) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
                 })
                     .attribute(Attribute("Struct"))
