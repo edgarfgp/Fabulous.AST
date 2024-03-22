@@ -7,7 +7,7 @@ index: 5
 *)
 
 (**
-# Discriminated Unions
+# Records
 *)
 
 (**
