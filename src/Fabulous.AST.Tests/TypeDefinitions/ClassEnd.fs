@@ -27,10 +27,8 @@ type MyClass () = class end
     let ``Produces a class end with constructor and attributes``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", Constructor()).attributes() {
-                    Attribute("Sealed")
-                    Attribute("AbstractClass")
-                }
+                ClassEnd("MyClass", Constructor())
+                    .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
         }
@@ -45,10 +43,7 @@ type MyClass () = class end
         Oak() {
             AnonymousModule() {
                 ClassEnd("MyClass", Constructor(ParametersPat([ ParameterPat("name", String()) ])))
-                    .attributes() {
-                    Attribute("Sealed")
-                    Attribute("AbstractClass")
-                }
+                    .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
         }
@@ -63,11 +58,8 @@ type MyClass (name: string) = class end
         Oak() {
             AnonymousModule() {
                 ClassEnd("MyClass", Constructor(ParametersPat([ ParameterPat("name", String()) ])))
-                    .attributes() {
-                    Attribute("Sealed")
-                    Attribute("AbstractClass")
-                }
-                |> _.typeParams([ "'a" ])
+                    .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
+                    .typeParams([ "'a" ])
             }
         }
         |> produces

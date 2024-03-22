@@ -9,7 +9,8 @@ module UnionCase =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let Fields = Attributes.defineWidgetCollection "Fields"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
@@ -29,12 +30,11 @@ module UnionCase =
                 | Some fields -> fields
                 | None -> []
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -46,7 +46,7 @@ module UnionCase =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -82,22 +82,26 @@ type UnionCaseModifiers =
         this.AddScalar(UnionCase.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<UnionCaseNode>) =
-        AttributeCollectionBuilder<UnionCaseNode, AttributeNode>(this, UnionCase.MultipleAttributes)
+    static member inline attributes(this: WidgetBuilder<UnionCaseNode>, values: WidgetBuilder<AttributeNode> list) =
+        this.AddScalar(
+            UnionCase.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: string list) =
-        AttributeCollectionBuilder<UnionCaseNode, AttributeNode>(this, UnionCase.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        UnionCaseModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<UnionCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<UnionCaseNode, AttributeNode>(this, UnionCase.MultipleAttributes) { attribute }
+        UnionCaseModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<UnionCaseNode>, attribute: string) =
-        AttributeCollectionBuilder<UnionCaseNode, AttributeNode>(this, UnionCase.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        UnionCaseModifiers.attributes(this, [ Ast.Attribute(attribute) ])

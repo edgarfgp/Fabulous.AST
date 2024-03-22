@@ -11,7 +11,10 @@ module Class =
     let Name = Attributes.defineScalar<string> "Name"
     let ImplicitConstructor = Attributes.defineWidget "SimplePats"
     let Members = Attributes.defineWidgetCollection "Members"
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
@@ -55,12 +58,11 @@ module Class =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -72,7 +74,7 @@ module Class =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let members =
                 match members with
@@ -154,25 +156,31 @@ type ClassModifiers =
         this.AddScalar(Class.TypeParams.WithValue(typeParams))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>) =
-        AttributeCollectionBuilder<TypeDefnRegularNode, AttributeNode>(this, Class.MultipleAttributes)
+    static member inline attributes
+        (this: WidgetBuilder<TypeDefnRegularNode>, values: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            Class.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attributes: string list) =
-        AttributeCollectionBuilder<TypeDefnRegularNode, AttributeNode>(this, Class.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        ClassModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRegularNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<TypeDefnRegularNode, AttributeNode>(this, Class.MultipleAttributes) { attribute }
+        ClassModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRegularNode>, attribute: string) =
-        AttributeCollectionBuilder<TypeDefnRegularNode, AttributeNode>(this, Class.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        ClassModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
 [<Extension>]
 type ClassYieldExtensions =

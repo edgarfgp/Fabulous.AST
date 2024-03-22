@@ -14,7 +14,8 @@ module Union =
 
     let Members = Attributes.defineScalar<MemberDefn list> "Members"
 
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -48,12 +49,11 @@ module Union =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -65,7 +65,7 @@ module Union =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
@@ -158,25 +158,29 @@ type UnionModifiers =
         this.AddScalar(Union.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes)
+    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, values: WidgetBuilder<AttributeNode> list) =
+        this.AddScalar(
+            Union.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes: string list) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        UnionModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnUnionNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes) { attribute }
+        UnionModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnUnionNode>, attribute: string) =
-        AttributeCollectionBuilder<TypeDefnUnionNode, AttributeNode>(this, Union.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        UnionModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnUnionNode>) =

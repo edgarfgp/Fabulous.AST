@@ -8,18 +8,19 @@ open Fantomas.Core.SyntaxOak
 
 module ModuleDeclAttributes =
     let DoExpression = Attributes.defineWidget "DoExpression"
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
             let doExpression = Widgets.getNodeFromWidget<Expr> widget DoExpression
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -31,7 +32,7 @@ module ModuleDeclAttributes =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             ModuleDeclAttributesNode(multipleAttributes, doExpression, Range.Zero))
 
@@ -52,41 +53,33 @@ module ModuleDeclAttributeNodeBuilders =
 [<Extension>]
 type ModuleDeclAttributeModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ModuleDeclAttributesNode>) =
-        AttributeCollectionBuilder<ModuleDeclAttributesNode, AttributeNode>(
-            this,
-            ModuleDeclAttributes.MultipleAttributes
+    static member inline attributes
+        (this: WidgetBuilder<ModuleDeclAttributesNode>, values: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            ModuleDeclAttributes.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
         )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ModuleDeclAttributesNode>, attributes: string list) =
-        AttributeCollectionBuilder<ModuleDeclAttributesNode, AttributeNode>(
+        ModuleDeclAttributeModifiers.attributes(
             this,
-            ModuleDeclAttributes.MultipleAttributes
-        ) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: WidgetBuilder<AttributeNode>)
         =
-        AttributeCollectionBuilder<ModuleDeclAttributesNode, AttributeNode>(
-            this,
-            ModuleDeclAttributes.MultipleAttributes
-        ) {
-            attribute
-        }
+        ModuleDeclAttributeModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: string) =
-        AttributeCollectionBuilder<ModuleDeclAttributesNode, AttributeNode>(
-            this,
-            ModuleDeclAttributes.MultipleAttributes
-        ) {
-            Ast.Attribute(attribute)
-        }
+        ModuleDeclAttributeModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
 [<Extension>]
 type ModuleDeclAttributesYieldExtensions =

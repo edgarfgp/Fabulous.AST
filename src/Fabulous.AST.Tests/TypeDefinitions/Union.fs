@@ -177,12 +177,7 @@ type Colors = | Red
     let ``Produces an union case with attributes``() =
         Oak() {
             AnonymousModule() {
-                (Union("Colors") {
-                    UnionCase("Red").attributes() {
-                        Attribute("Obsolete")
-                        Attribute("Test")
-                    }
-                })
+                (Union("Colors") { UnionCase("Red").attributes([ Attribute("Obsolete"); Attribute("Test") ]) })
                     .attribute(Attribute "Test")
             }
         }

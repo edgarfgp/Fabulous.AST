@@ -15,7 +15,8 @@ module Record =
 
     let Members = Attributes.defineScalar<MemberDefn list> "Members"
 
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -47,12 +48,11 @@ module Record =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -64,7 +64,7 @@ module Record =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
@@ -155,25 +155,31 @@ type RecordModifiers =
         this.AddScalar(Record.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnRecordNode>) =
-        AttributeCollectionBuilder<TypeDefnRecordNode, AttributeNode>(this, Record.MultipleAttributes)
+    static member inline attributes
+        (this: WidgetBuilder<TypeDefnRecordNode>, values: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            Record.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<TypeDefnRecordNode>, attributes: string list) =
-        AttributeCollectionBuilder<TypeDefnRecordNode, AttributeNode>(this, Record.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        RecordModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRecordNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<TypeDefnRecordNode, AttributeNode>(this, Record.MultipleAttributes) { attribute }
+        RecordModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRecordNode>, attribute: string) =
-        AttributeCollectionBuilder<TypeDefnRecordNode, AttributeNode>(this, Record.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        RecordModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRecordNode>, value: string list) =

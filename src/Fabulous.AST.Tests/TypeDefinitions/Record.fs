@@ -124,10 +124,7 @@ type Colors<'other> =
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .attributes() {
-                    Attribute "Struct"
-                    Attribute "Obsolete"
-                }
+                    .attributes([ Attribute "Struct"; Attribute "Obsolete" ])
 
             }
         }

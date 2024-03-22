@@ -76,12 +76,11 @@ module BindingMethodNode =
                     | StringOrWidget.WidgetExpr returnType ->
                         Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget BindingNode.MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -93,7 +92,7 @@ module BindingMethodNode =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let inlineNode =
                 match isInlined with

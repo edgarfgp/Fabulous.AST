@@ -11,7 +11,8 @@ module EnumCase =
 
     let Value = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
 
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -38,12 +39,11 @@ module EnumCase =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -55,7 +55,7 @@ module EnumCase =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             EnumCaseNode(
                 xmlDocs,
@@ -104,22 +104,26 @@ type EnumCaseModifiers =
         this.AddScalar(EnumCase.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<EnumCaseNode>) =
-        AttributeCollectionBuilder<EnumCaseNode, AttributeNode>(this, EnumCase.MultipleAttributes)
+    static member inline attributes(this: WidgetBuilder<EnumCaseNode>, values: WidgetBuilder<AttributeNode> list) =
+        this.AddScalar(
+            EnumCase.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: string list) =
-        AttributeCollectionBuilder<EnumCaseNode, AttributeNode>(this, EnumCase.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        EnumCaseModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<EnumCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<EnumCaseNode, AttributeNode>(this, EnumCase.MultipleAttributes) { attribute }
+        EnumCaseModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<EnumCaseNode>, attribute: string) =
-        AttributeCollectionBuilder<EnumCaseNode, AttributeNode>(this, EnumCase.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        EnumCaseModifiers.attributes(this, [ Ast.Attribute(attribute) ])

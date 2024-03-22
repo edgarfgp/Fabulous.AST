@@ -15,7 +15,8 @@ module Field =
 
     let Mutable = Attributes.defineScalar<bool> "Mutable"
 
-    let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
@@ -30,12 +31,11 @@ module Field =
 
             let fieldType = Widgets.getNodeFromWidget widget FieldType
 
-            let attributes =
-                Widgets.tryGetNodesFromWidgetCollection<AttributeNode> widget MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
-                | Some values ->
+                | ValueSome values ->
                     Some(
                         MultipleAttributeListNode(
                             [ AttributeListNode(
@@ -47,7 +47,7 @@ module Field =
                             Range.Zero
                         )
                     )
-                | None -> None
+                | ValueNone -> None
 
             let xmlDocs =
                 match lines with
@@ -81,12 +81,6 @@ module FieldBuilders =
                 )
             )
 
-        // static member Field(filedType: WidgetBuilder<Type>) =
-        //     WidgetBuilder<FieldNode>(
-        //         Field.WidgetKey,
-        //         AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(filedType.Compile()) |], Array.empty)
-        //     )
-
         static member Field(name: string, filedType: string) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
@@ -108,22 +102,26 @@ type FieldModifiers =
         this.AddScalar(Field.Mutable.WithValue(true))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<FieldNode>) =
-        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes)
+    static member inline attributes(this: WidgetBuilder<FieldNode>, values: WidgetBuilder<AttributeNode> list) =
+        this.AddScalar(
+            Field.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: string list) =
-        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes) {
-            for attribute in attributes do
-                Ast.Attribute(attribute)
-        }
+        FieldModifiers.attributes(
+            this,
+            [ for attribute in attributes do
+                  Ast.Attribute(attribute) ]
+        )
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: WidgetBuilder<AttributeNode>) =
-        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes) { attribute }
+        FieldModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: string) =
-        AttributeCollectionBuilder<FieldNode, AttributeNode>(this, Field.MultipleAttributes) {
-            Ast.Attribute(attribute)
-        }
+        FieldModifiers.attributes(this, [ Ast.Attribute(attribute) ])

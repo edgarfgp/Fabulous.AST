@@ -7,19 +7,20 @@ open Fantomas.Core.SyntaxOak
 
 module Oak =
     let Decls = Attributes.defineWidgetCollection "Decls"
-    let ParsedHashDirectives = Attributes.defineWidgetCollection "ParsedHashDirectives"
+
+    let ParsedHashDirectives =
+        Attributes.defineScalar<ParsedHashDirectiveNode list> "ParsedHashDirectives"
 
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
             let decls = Widgets.getNodesFromWidgetCollection<ModuleOrNamespaceNode> widget Decls
 
-            let hashDirectives =
-                Widgets.tryGetNodesFromWidgetCollection<ParsedHashDirectiveNode> widget ParsedHashDirectives
+            let hashDirectives = Widgets.tryGetScalarValue widget ParsedHashDirectives
 
             let hashDirectives =
                 match hashDirectives with
-                | Some hashDirectives -> hashDirectives
-                | None -> []
+                | ValueSome hashDirectives -> hashDirectives
+                | ValueNone -> []
 
             Oak(hashDirectives, decls, Range.Zero))
 
@@ -32,8 +33,12 @@ module AnonymousModuleBuilders =
 [<Extension>]
 type AnonymousModuleModifiers =
     [<Extension>]
-    static member inline hashDirectives(this: WidgetBuilder<Oak>) =
-        AttributeCollectionBuilder<Oak, ParsedHashDirectiveNode>(this, Oak.ParsedHashDirectives)
+    static member inline hashDirectives(this: WidgetBuilder<Oak>, values: WidgetBuilder<ParsedHashDirectiveNode> list) =
+        this.AddScalar(Oak.ParsedHashDirectives.WithValue([ for value in values -> Gen.mkOak value ]))
+
+    [<Extension>]
+    static member inline hashDirective(this: WidgetBuilder<Oak>, value: WidgetBuilder<ParsedHashDirectiveNode>) =
+        AnonymousModuleModifiers.hashDirectives(this, [ value ])
 
 [<Extension>]
 type AnonymousModuleExtensions =
