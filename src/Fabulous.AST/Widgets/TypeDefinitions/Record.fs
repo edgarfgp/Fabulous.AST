@@ -13,7 +13,7 @@ module Record =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let Members = Attributes.defineWidgetCollection "Members"
+    let Members = Attributes.defineScalar<MemberDefn list> "Members"
 
     let MultipleAttributes = Attributes.defineWidgetCollection "MultipleAttributes"
 
@@ -31,12 +31,12 @@ module Record =
                 |> StringParsing.normalizeIdentifierBackticks
 
             let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
-            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let members = Widgets.tryGetScalarValue widget Members
 
             let members =
                 match members with
-                | Some members -> members
-                | None -> []
+                | ValueSome members -> members
+                | ValueNone -> []
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -129,8 +129,26 @@ module RecordBuilders =
 [<Extension>]
 type RecordModifiers =
     [<Extension>]
-    static member inline members(this: WidgetBuilder<TypeDefnRecordNode>) =
-        AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
+    static member inline members(this: WidgetBuilder<TypeDefnRecordNode>, members: WidgetBuilder<BindingNode> list) =
+        this.AddScalar(
+            Record.Members.WithValue(
+                [ for memb in members do
+                      let node = Gen.mkOak memb
+                      MemberDefn.Member(node) ]
+            )
+        )
+
+    [<Extension>]
+    static member inline interfaces
+        (this: WidgetBuilder<TypeDefnRecordNode>, members: WidgetBuilder<MemberDefnInterfaceNode> list)
+        =
+        this.AddScalar(
+            Record.Members.WithValue(
+                [ for memb in members do
+                      let node = Gen.mkOak memb
+                      MemberDefn.Interface(node) ]
+            )
+        )
 
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: string list) =
@@ -189,44 +207,3 @@ type RecordYieldExtensions =
     static member inline Yield(_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: FieldNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: BindingNode)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        RecordYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: MemberDefnInterfaceNode)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        RecordYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline Yield
-        (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: MemberDefnInterfaceNode)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>) : CollectionContent =
-        let node = Gen.mkOak x
-        RecordYieldExtensions.Yield(this, node)
