@@ -8,7 +8,7 @@ open type Fabulous.AST.Ast
 
 module App =
     let Name = Attributes.defineScalar<StringOrWidget<Expr>> "Name"
-    let Items = Attributes.defineWidgetCollection "Items"
+    let Items = Attributes.defineScalar<Expr list> "Items"
 
     let WidgetKey =
         Widgets.register "Call" (fun widget ->
@@ -22,30 +22,64 @@ module App =
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
-            let items = Widgets.getNodesFromWidgetCollection<Expr> widget Items
+            let items = Widgets.getScalarValue widget Items
             Expr.App(ExprAppNode(expr, items, Range.Zero)))
 
 [<AutoOpen>]
 module AppBuilders =
     type Ast with
 
-        static member AppExpr(name: WidgetBuilder<Expr>) =
-            CollectionBuilder<Expr, Expr>(
+        static member AppExpr(name: WidgetBuilder<Expr>, items: WidgetBuilder<Expr> list) =
+            let items = items |> List.map Gen.mkOak
+
+            WidgetBuilder<Expr>(
                 App.WidgetKey,
-                App.Items,
                 AttributesBundle(
-                    StackList.one(App.Name.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak name))),
+                    StackList.two(
+                        App.Name.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak name)),
+                        App.Items.WithValue(items)
+                    ),
                     Array.empty,
                     Array.empty
                 )
             )
 
-        static member AppExpr(name: StringVariant) =
-            CollectionBuilder<Expr, Expr>(
+        static member AppExpr(name: WidgetBuilder<Expr>, item: WidgetBuilder<Expr>) =
+            WidgetBuilder<Expr>(
                 App.WidgetKey,
-                App.Items,
                 AttributesBundle(
-                    StackList.one(App.Name.WithValue(StringOrWidget.StringExpr(name))),
+                    StackList.two(
+                        App.Name.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak name)),
+                        App.Items.WithValue([ Gen.mkOak item ])
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
+        static member AppExpr(name: string, items: WidgetBuilder<Expr> list) =
+            let items = items |> List.map Gen.mkOak
+
+            WidgetBuilder<Expr>(
+                App.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        App.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        App.Items.WithValue(items)
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
+        static member AppExpr(name: string, item: WidgetBuilder<Expr>) =
+            WidgetBuilder<Expr>(
+                App.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        App.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        App.Items.WithValue([ Gen.mkOak item ])
+                    ),
                     Array.empty,
                     Array.empty
                 )
