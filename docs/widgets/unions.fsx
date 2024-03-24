@@ -59,12 +59,9 @@ Oak() {
             .toPrivate()
             .members (
                 [ Property("CurrentColor", ConstantExpr(Quoted "Red")).toStatic ()
-
-                  let parameters = ParametersPat([ ParameterPat("c", "Colors") ])
-
                   Method(
                       "this.GetColor",
-                      parameters,
+                      ParameterPat("c", "Colors"),
                       MatchExpr(Unquoted("c")) {
                           MatchClauseExpr(Unquoted("Red"), Quoted "Red")
                           MatchClauseExpr(NamedPat("Green"), Quoted "Green")
