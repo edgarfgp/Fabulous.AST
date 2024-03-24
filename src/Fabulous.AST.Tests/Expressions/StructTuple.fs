@@ -15,11 +15,11 @@ module StructTuple =
             AnonymousModule() {
                 Value(
                     "x",
-                    StructTupleExpr() {
-                        ConstantExpr(Unquoted "1")
-                        ConstantExpr(Unquoted "2")
-                        ConstantExpr(Unquoted "3")
-                    }
+                    StructTupleExpr(
+                        [ ConstantExpr(Unquoted "1")
+                          ConstantExpr(Unquoted "2")
+                          ConstantExpr(Unquoted "3") ]
+                    )
                 )
             }
         }
@@ -36,11 +36,11 @@ let x = struct (1, 2, 3)
                 Value(
                     "x",
                     ParenExpr(
-                        StructTupleExpr() {
-                            ConstantExpr(Unquoted "1")
-                            ConstantExpr(Unquoted "2")
-                            ConstantExpr(Unquoted "3")
-                        }
+                        StructTupleExpr(
+                            [ ConstantExpr(Unquoted "1")
+                              ConstantExpr(Unquoted "2")
+                              ConstantExpr(Unquoted "3") ]
+                        )
                     )
                 )
             }

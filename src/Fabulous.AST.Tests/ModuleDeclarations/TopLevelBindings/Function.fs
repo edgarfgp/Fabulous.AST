@@ -55,13 +55,7 @@ let x (i: int) = ()
             AnonymousModule() {
                 Function(
                     "x",
-                    ParenPat(
-                        TuplePat() {
-                            ParameterPat("i")
-                            ParameterPat("j")
-                            ParameterPat("k")
-                        }
-                    ),
+                    ParenPat(TuplePat([ ParameterPat("i"); ParameterPat("j"); ParameterPat("k") ])),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -78,13 +72,7 @@ let x (i, j, k) = ()
             AnonymousModule() {
                 Function(
                     "x",
-                    ParenPat(
-                        TuplePat() {
-                            NamedPat("i")
-                            NamedPat("j")
-                            NamedPat("k")
-                        }
-                    ),
+                    ParenPat(TuplePat([ NamedPat("i"); NamedPat("j"); NamedPat("k") ])),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -100,13 +88,7 @@ let x (i, j, k) = ()
             AnonymousModule() {
                 Function(
                     "x",
-                    ParenPat(
-                        TuplePat() {
-                            ParameterPat("i", Int32())
-                            ParameterPat("j", String())
-                            ParameterPat("k")
-                        }
-                    ),
+                    ParenPat(TuplePat([ ParameterPat("i", Int32()); ParameterPat("j", String()); ParameterPat("k") ])),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -144,11 +126,11 @@ let x i j k = ()
                 Function(
                     "x",
                     ParenPat(
-                        TuplePat() {
-                            ParameterPat(NamedPat("i"), Int32())
-                            ParameterPat(NamedPat("j"), String())
-                            ParameterPat(NamedPat("k"), Boolean())
-                        }
+                        TuplePat(
+                            [ ParameterPat(NamedPat("i"), Int32())
+                              ParameterPat(NamedPat("j"), String())
+                              ParameterPat(NamedPat("k"), Boolean()) ]
+                        )
                     ),
                     ConstantExpr(ConstantUnit())
                 )
@@ -205,12 +187,7 @@ let x i : unit = ()
             AnonymousModule() {
                 (Function(
                     "foo",
-                    ParenPat(
-                        TuplePat() {
-                            ParameterPat("x", "'T")
-                            ParameterPat(NamedPat("i"), "'U")
-                        }
-                    ),
+                    ParenPat(TuplePat([ ParameterPat("x", "'T"); ParameterPat(NamedPat("i"), "'U") ])),
                     ConstantExpr(ConstantUnit())
                 ))
                     .returnType(Unit())

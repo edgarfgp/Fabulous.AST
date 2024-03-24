@@ -47,12 +47,7 @@ module MethodMembers =
 
                           Method(
                               "this.J",
-                              ParenPat(
-                                  TuplePat() {
-                                      ParameterPat("p", String())
-                                      ParameterPat("p2", String())
-                                  }
-                              ),
+                              ParenPat(TuplePat([ ParameterPat("p", String()); ParameterPat("p2", String()) ])),
                               ConstantExpr(Quoted "")
                           )
 
@@ -229,12 +224,7 @@ type Person () =
                 Class("Person") {
                     Method(
                         "this.Name",
-                        ParenPat(
-                            TuplePat() {
-                                ParameterPat("name", String())
-                                ParameterPat("age", Int32())
-                            }
-                        ),
+                        ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])),
                         ConstantExpr(Unquoted "23")
                     )
                 }
@@ -276,12 +266,12 @@ type Person () =
                     Method(
                         "GetPrimitiveReader",
                         ParenPat(
-                            TuplePat() {
-                                ParameterPat("t", LongIdent("System.Type"))
-                                ParameterPat("reader", LongIdent("Microsoft.Data.SqlClient.SqlDataReader"))
-                                ParameterPat("isOpt", Boolean())
-                                ParameterPat("isNullable", Boolean())
-                            }
+                            TuplePat(
+                                [ ParameterPat("t", LongIdent("System.Type"))
+                                  ParameterPat("reader", LongIdent("Microsoft.Data.SqlClient.SqlDataReader"))
+                                  ParameterPat("isOpt", Boolean())
+                                  ParameterPat("isNullable", Boolean()) ]
+                            )
                         ),
                         CompExprBodyExpr() {
                             LetOrUseExpr(

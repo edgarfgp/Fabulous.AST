@@ -1,14 +1,15 @@
 namespace Fabulous.AST
 
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Tuple =
-    let Items = Attributes.defineWidgetCollection "Items"
+    let Items = Attributes.defineScalar<Expr list> "Items"
 
     let WidgetKey =
         Widgets.register "Tuple" (fun widget ->
-            let values = Widgets.getNodesFromWidgetCollection<Expr> widget Items
+            let values = Widgets.getScalarValue widget Items
 
             let value =
                 values
@@ -21,5 +22,10 @@ module Tuple =
 module TupleBuilders =
     type Ast with
 
-        static member TupleExpr() =
-            CollectionBuilder<Expr, Expr>(Tuple.WidgetKey, Tuple.Items)
+        static member TupleExpr(value: WidgetBuilder<Expr> list) =
+            let parameters = value |> List.map Gen.mkOak
+
+            WidgetBuilder<Expr>(
+                Tuple.WidgetKey,
+                AttributesBundle(StackList.one(Tuple.Items.WithValue(parameters)), Array.empty, Array.empty)
+            )

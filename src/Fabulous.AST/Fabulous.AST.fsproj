@@ -69,7 +69,6 @@
         <Compile Include="Widgets\Patterns\NamePatPairs.fs" />
         <Compile Include="Widgets\Patterns\LongIdent.fs" />
         <Compile Include="Widgets\Patterns\Parameter.fs" />
-        <Compile Include="Widgets\Patterns\Parameters.fs" />
         <Compile Include="Widgets\Patterns\NamedParenStarIdent.fs" />
         <Compile Include="Widgets\Patterns\As.fs" />
         <Compile Include="Widgets\Patterns\ListCons.fs" />

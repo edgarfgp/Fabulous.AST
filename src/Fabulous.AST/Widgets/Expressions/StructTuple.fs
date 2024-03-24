@@ -1,14 +1,15 @@
 namespace Fabulous.AST
 
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module StructTuple =
-    let Items = Attributes.defineWidgetCollection "Items"
+    let Items = Attributes.defineScalar<Expr list> "Items"
 
     let WidgetKey =
         Widgets.register "StructTuple" (fun widget ->
-            let values = Widgets.getNodesFromWidgetCollection<Expr> widget Items
+            let values = Widgets.getScalarValue widget Items
 
             let values =
                 values
@@ -28,5 +29,10 @@ module StructTuple =
 module StructTupleBuilders =
     type Ast with
 
-        static member StructTupleExpr() =
-            CollectionBuilder<Expr, Expr>(StructTuple.WidgetKey, StructTuple.Items)
+        static member StructTupleExpr(value: WidgetBuilder<Expr> list) =
+            let parameters = value |> List.map Gen.mkOak
+
+            WidgetBuilder<Expr>(
+                StructTuple.WidgetKey,
+                AttributesBundle(StackList.one(StructTuple.Items.WithValue(parameters)), Array.empty, Array.empty)
+            )

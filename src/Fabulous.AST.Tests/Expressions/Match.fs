@@ -13,12 +13,7 @@ module Match =
     let ``Match expression``() =
         Oak() {
             AnonymousModule() {
-                MatchExpr(
-                    ListExpr() {
-                        ConstantExpr(Constant(Unquoted "1"))
-                        ConstantExpr(Constant(Unquoted "2"))
-                    }
-                ) {
+                MatchExpr(ListExpr([ ConstantExpr(Constant(Unquoted "1")); ConstantExpr(Constant(Unquoted "2")) ])) {
                     MatchClauseExpr(NamedPat("a"), ConstantExpr(Constant(Unquoted "3")))
                 }
             }

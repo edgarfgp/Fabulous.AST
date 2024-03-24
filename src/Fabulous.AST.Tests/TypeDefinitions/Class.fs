@@ -39,13 +39,7 @@ type Person () =
                 Class(
                     "Person",
                     Constructor(
-                        ParenPat(
-                            TuplePat() {
-                                ParameterPat("name")
-                                ParameterPat("lastName")
-                                ParameterPat("age")
-                            }
-                        )
+                        ParenPat(TuplePat([ ParameterPat("name"); ParameterPat("lastName"); ParameterPat("age") ]))
                     )
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
@@ -68,11 +62,11 @@ type Person (name, lastName, age) =
                     "Person",
                     Constructor(
                         ParenPat(
-                            TuplePat() {
-                                ParameterPat("name", String())
-                                ParameterPat("lastName", String())
-                                ParameterPat("?age", Int32())
-                            }
+                            TuplePat(
+                                [ ParameterPat("name", String())
+                                  ParameterPat("lastName", String())
+                                  ParameterPat("?age", Int32()) ]
+                            )
                         )
                     )
                 ) {
@@ -92,14 +86,7 @@ type Person (name: string, lastName: string, ?age: int) =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(
-                        ParenPat(
-                            TuplePat() {
-                                ParameterPat("name", String())
-                                ParameterPat("age", Int32())
-                            }
-                        )
-                    )
+                    Constructor(ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])))
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
                 }

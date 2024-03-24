@@ -1,14 +1,15 @@
 namespace Fabulous.AST
 
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module TuplePat =
-    let Parameters = Attributes.defineWidgetCollection "Parameters"
+    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
 
     let WidgetKey =
         Widgets.register "Tuple" (fun widget ->
-            let values = Widgets.getNodesFromWidgetCollection<Pattern> widget Parameters
+            let values = Widgets.getScalarValue widget Parameters
 
             let values =
                 values
@@ -21,5 +22,10 @@ module TuplePat =
 module TuplePatBuilders =
     type Ast with
 
-        static member TuplePat() =
-            CollectionBuilder<Pattern, Pattern>(TuplePat.WidgetKey, TuplePat.Parameters)
+        static member TuplePat(value: WidgetBuilder<Pattern> list) =
+            let parameters = value |> List.map Gen.mkOak
+
+            WidgetBuilder<Pattern>(
+                TuplePat.WidgetKey,
+                AttributesBundle(StackList.one(TuplePat.Parameters.WithValue(parameters)), Array.empty, Array.empty)
+            )
