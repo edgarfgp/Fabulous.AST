@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre1] - 2024-03-25
+
+### Added
+- Add Union samples by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/74
+- Add record samples by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/75
+- Support AppLongIdentAndSingleParenArg by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/73
+- Add support for multiple bindings in a method by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/78
+
+### Changed
+- Update AttributeCollectionBuilder by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/76
+- Rework hasQuotes by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/71
+
+### Fixed
+- Fix missing open statement in example code by @lamg in https://github.com/edgarfgp/Fabulous.AST/pull/72
+
 ## [0.9.0] - 2024-03-12
 
 ### Fixed
@@ -112,7 +127,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/0.9.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre1...HEAD
+[1.0.0-pre1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre1
 [0.9.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.9.0
 [0.8.2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.2
 [0.8.1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.1
