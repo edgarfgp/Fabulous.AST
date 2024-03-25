@@ -26,17 +26,3 @@ module CompExprBodyBuilders =
                 CompExprBody.Statements,
                 AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )
-
-[<Extension>]
-type CompExprBodyExtensions =
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<Expr, ComputationExpressionStatement>, x: WidgetBuilder<ComputationExpressionStatement>) : CollectionContent =
-        { Widgets = MutStackArray1.One(x.Compile()) }
-
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<Expr, ComputationExpressionStatement>, x: ComputationExpressionStatement)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
-        { Widgets = MutStackArray1.One(widget) }
