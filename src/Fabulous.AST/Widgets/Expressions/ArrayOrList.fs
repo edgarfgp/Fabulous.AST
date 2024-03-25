@@ -1,10 +1,11 @@
 namespace Fabulous.AST
 
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ArrayOrList =
-    let Items = Attributes.defineWidgetCollection "Items"
+    let Items = Attributes.defineScalar<Expr list> "Items"
 
     let OpeningNode = Attributes.defineScalar<SingleTextNode> "OpeningNode"
 
@@ -12,7 +13,7 @@ module ArrayOrList =
 
     let WidgetKey =
         Widgets.register "ArrayOrList" (fun widget ->
-            let values = Widgets.getNodesFromWidgetCollection<Expr> widget Items
+            let values = Widgets.getScalarValue widget Items
             let openNode = Widgets.getScalarValue widget OpeningNode
             let closeNode = Widgets.getScalarValue widget ClosingNode
             Expr.ArrayOrList(ExprArrayOrListNode(openNode, values, closeNode, Range.Zero)))
@@ -21,18 +22,34 @@ module ArrayOrList =
 module ArrayOrListBuilders =
     type Ast with
 
-        static member ListExpr() =
-            CollectionBuilder<Expr, Expr>(
+        static member ListExpr(value: WidgetBuilder<Expr> list) =
+            let parameters = value |> List.map Gen.mkOak
+
+            WidgetBuilder<Expr>(
                 ArrayOrList.WidgetKey,
-                ArrayOrList.Items,
-                ArrayOrList.OpeningNode.WithValue(SingleTextNode.leftBracket),
-                ArrayOrList.ClosingNode.WithValue(SingleTextNode.rightBracket)
+                AttributesBundle(
+                    StackList.three(
+                        ArrayOrList.Items.WithValue(parameters),
+                        ArrayOrList.OpeningNode.WithValue(SingleTextNode.leftBracket),
+                        ArrayOrList.ClosingNode.WithValue(SingleTextNode.rightBracket)
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
             )
 
-        static member ArrayExpr() =
-            CollectionBuilder<Expr, Expr>(
+        static member ArrayExpr(value: WidgetBuilder<Expr> list) =
+            let parameters = value |> List.map Gen.mkOak
+
+            WidgetBuilder<Expr>(
                 ArrayOrList.WidgetKey,
-                ArrayOrList.Items,
-                ArrayOrList.OpeningNode.WithValue(SingleTextNode.leftArray),
-                ArrayOrList.ClosingNode.WithValue(SingleTextNode.rightArray)
+                AttributesBundle(
+                    StackList.three(
+                        ArrayOrList.Items.WithValue(parameters),
+                        ArrayOrList.OpeningNode.WithValue(SingleTextNode.leftArray),
+                        ArrayOrList.ClosingNode.WithValue(SingleTextNode.rightArray)
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
             )

@@ -15,11 +15,11 @@ module Tuple =
             AnonymousModule() {
                 Value(
                     "x",
-                    TupleExpr() {
-                        ConstantExpr(Unquoted "1")
-                        ConstantExpr(Unquoted "2")
-                        ConstantExpr(Unquoted "3")
-                    }
+                    TupleExpr(
+                        [ ConstantExpr(Unquoted "1")
+                          ConstantExpr(Unquoted "2")
+                          ConstantExpr(Unquoted "3") ]
+                    )
                 )
             }
         }
@@ -36,11 +36,11 @@ let x = 1, 2, 3
                 Value(
                     "x",
                     ParenExpr(
-                        TupleExpr() {
-                            ConstantExpr(Unquoted "1")
-                            ConstantExpr(Unquoted "2")
-                            ConstantExpr(Unquoted "3")
-                        }
+                        TupleExpr(
+                            [ ConstantExpr(Unquoted "1")
+                              ConstantExpr(Unquoted "2")
+                              ConstantExpr(Unquoted "3") ]
+                        )
                     )
                 )
             }

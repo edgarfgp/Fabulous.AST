@@ -60,21 +60,16 @@ Oak() {
         Function("x2", ParenPat(NamedPat("i")), ConstantExpr(ConstantUnit()))
         Function("x3", ParenPat(ParameterPat(NamedPat("i"), Int32())), ConstantExpr(ConstantUnit()))
 
-        Function(
-            "x4",
-            ParametersPat([ NamedPat("i"); NamedPat("j"); NamedPat("k") ], true),
-            ConstantExpr(ConstantUnit())
-        )
+        Function("x4", TuplePat([ NamedPat("i"); NamedPat("j"); NamedPat("k") ]), ConstantExpr(ConstantUnit()))
 
-        Function("x5", ParametersPat([ NamedPat("i"); NamedPat("j"); NamedPat("k") ]), ConstantExpr(ConstantUnit()))
+        Function("x5", [ NamedPat("i"); NamedPat("j"); NamedPat("k") ], ConstantExpr(ConstantUnit()))
 
         Function(
             "x6",
-            ParametersPat(
+            TuplePat(
                 [ ParameterPat(NamedPat("i"), Int32())
                   ParameterPat(NamedPat("j"), String())
-                  ParameterPat(NamedPat("k"), Boolean()) ],
-                true
+                  ParameterPat(NamedPat("k"), Boolean()) ]
             ),
             ConstantExpr(ConstantUnit())
         )
@@ -90,7 +85,7 @@ Oak() {
 
         Function(
             "foo",
-            ParametersPat([ ParameterPat("x", "'T"); ParameterPat(NamedPat("i"), "'U") ], true),
+            TuplePat([ ParameterPat("x", "'T"); ParameterPat(NamedPat("i"), "'U") ]),
             ConstantExpr(ConstantUnit())
         )
             .returnType (Unit())

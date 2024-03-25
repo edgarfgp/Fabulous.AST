@@ -47,10 +47,10 @@ let x = 12
                 NestedModule("Subcommands") {
                     Value(
                         "GdmtSubcommands",
-                        ArrayExpr() {
-                            for subcommand in subcommands do
-                                ConstantExpr(Quoted subcommand)
-                        }
+                        ArrayExpr(
+                            [ for subcommand in subcommands do
+                                  ConstantExpr(Quoted subcommand) ]
+                        )
                     )
                 }
             }
@@ -71,16 +71,12 @@ module Subcommands =
         Oak() {
             AnonymousModule() {
                 Value(
-                    TuplePat() {
-                        NamedPat("x")
-                        NamedPat("y")
-                        NamedPat("z")
-                    },
-                    TupleExpr() {
-                        ConstantExpr(Unquoted "1")
-                        ConstantExpr(Unquoted "2")
-                        ConstantExpr(Unquoted "3")
-                    }
+                    TuplePat([ NamedPat("x"); NamedPat("y"); NamedPat("z") ]),
+                    TupleExpr(
+                        [ ConstantExpr(Unquoted "1")
+                          ConstantExpr(Unquoted "2")
+                          ConstantExpr(Unquoted "3") ]
+                    )
                 )
             }
         }

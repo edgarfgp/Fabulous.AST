@@ -13,13 +13,7 @@ module TuplePat =
     let ``let value with a Tuple pattern``() =
         Oak() {
             AnonymousModule() {
-                Value(
-                    TuplePat() {
-                        NamedPat("a")
-                        NamedPat("b")
-                    },
-                    ConstantExpr(Constant(Unquoted "12"))
-                )
+                Value(TuplePat([ NamedPat("a"); NamedPat("b") ]), ConstantExpr(Constant(Unquoted "12")))
             }
         }
         |> produces

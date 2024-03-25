@@ -18,7 +18,7 @@ module BindingFunction =
                 | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
 
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
-            let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
+            let parameters = Widgets.getScalarValue widget BindingNode.Parameters
 
             let bodyExpr =
                 match bodyExpr with
@@ -106,11 +106,6 @@ module BindingFunction =
                     |> Some
                 | ValueNone -> None
 
-            let parameters =
-                match parameters with
-                | ValueSome parameters -> [ parameters ]
-                | ValueNone -> []
-
             BindingNode(
                 xmlDocs,
                 multipleAttributes,
@@ -131,37 +126,31 @@ module BindingFunction =
 module BindingFunctionBuilders =
     type Ast with
         static member private BaseFunction
-            (
-                name: string,
-                typeParams: string list voption,
-                bodyExpr: StringOrWidget<Expr>,
-                parameters: WidgetBuilder<Pattern>
-            ) =
-            let scalars =
-                match typeParams with
-                | ValueNone ->
-                    StackList.two(
-                        BindingNode.BodyExpr.WithValue(bodyExpr),
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted name))
-                    )
-                | ValueSome typeParams ->
-                    StackList.three(
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted name)),
-                        BindingNode.BodyExpr.WithValue(bodyExpr),
-                        BindingNode.TypeParams.WithValue(typeParams)
-                    )
+            (name: string, bodyExpr: StringOrWidget<Expr>, parameters: WidgetBuilder<Pattern> list)
+            =
+            let parameters = parameters |> List.map Gen.mkOak
 
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
-                AttributesBundle(scalars, [| BindingNode.Parameters.WithValue(parameters.Compile()) |], Array.empty)
+                AttributesBundle(
+                    StackList.three(
+                        BindingNode.BodyExpr.WithValue(bodyExpr),
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted name)),
+                        BindingNode.Parameters.WithValue(parameters)
+                    ),
+                    [||],
+                    Array.empty
+                )
             )
 
+        static member Function(name: string, parameters: WidgetBuilder<Pattern> list, value: StringVariant) =
+            Ast.BaseFunction(name, StringOrWidget.StringExpr(value), parameters)
+
         static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: StringVariant) =
-            Ast.BaseFunction(name, ValueNone, StringOrWidget.StringExpr(value), parameters)
+            Ast.BaseFunction(name, StringOrWidget.StringExpr(value), [ parameters ])
 
         static member Function(name: string, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseFunction(name, ValueNone, StringOrWidget.WidgetExpr(Gen.mkOak value), parameters)
+            Ast.BaseFunction(name, StringOrWidget.WidgetExpr(Gen.mkOak value), [ parameters ])
 
-        static member Function
-            (name: string, typeParams: string list, parameters: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseFunction(name, ValueSome typeParams, StringOrWidget.WidgetExpr(Gen.mkOak value), parameters)
+        static member Function(name: string, parameters: WidgetBuilder<Pattern> list, value: WidgetBuilder<Expr>) =
+            Ast.BaseFunction(name, StringOrWidget.WidgetExpr(Gen.mkOak value), parameters)

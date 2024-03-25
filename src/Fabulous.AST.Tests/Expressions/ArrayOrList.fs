@@ -15,11 +15,11 @@ module ArrayOrList =
             AnonymousModule() {
                 Value(
                     "x",
-                    ArrayExpr() {
-                        ConstantExpr(Unquoted "1")
-                        ConstantExpr(Unquoted "2")
-                        ConstantExpr(Unquoted "3")
-                    }
+                    ArrayExpr(
+                        [ ConstantExpr(Unquoted "1")
+                          ConstantExpr(Unquoted "2")
+                          ConstantExpr(Unquoted "3") ]
+                    )
                 )
             }
         }
@@ -35,11 +35,11 @@ let x = [| 1; 2; 3 |]
             AnonymousModule() {
                 Value(
                     "x",
-                    ListExpr() {
-                        ConstantExpr(Unquoted "1")
-                        ConstantExpr(Unquoted "2")
-                        ConstantExpr(Unquoted "3")
-                    }
+                    ListExpr(
+                        [ ConstantExpr(Unquoted "1")
+                          ConstantExpr(Unquoted "2")
+                          ConstantExpr(Unquoted "3") ]
+                    )
                 )
             }
         }

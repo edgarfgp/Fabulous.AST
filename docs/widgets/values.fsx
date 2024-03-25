@@ -2,7 +2,7 @@
 ---
 title: Values
 category: widgets
-index: 2
+index: 4
 ---
 *)
 

@@ -20,7 +20,7 @@ module BindingMethodNode =
                     | TripleQuoted name -> SingleTextNode.Create name
                 | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
 
-            let parameters = Widgets.getNodeFromWidget<Pattern> widget BindingNode.Parameters
+            let parameters = Widgets.getScalarValue widget BindingNode.Parameters
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
 
             let bodyExpr =
@@ -133,7 +133,7 @@ module BindingMethodNode =
                 accessControl,
                 Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
                 typeParams,
-                [ parameters ],
+                parameters,
                 returnType,
                 SingleTextNode.equals,
                 bodyExpr,
@@ -148,11 +148,44 @@ module BindingMethodBuilders =
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body)),
+                        BindingNode.Parameters.WithValue([ Gen.mkOak parameters ])
                     ),
-                    [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    [||],
+                    Array.empty
+                )
+            )
+
+        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, body: StringVariant) =
+            let parameters = parameters |> List.map(Gen.mkOak)
+
+            WidgetBuilder<BindingNode>(
+                BindingMethodNode.WidgetKey,
+                AttributesBundle(
+                    StackList.three(
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body)),
+                        BindingNode.Parameters.WithValue(parameters)
+                    ),
+                    [||],
+                    Array.empty
+                )
+            )
+
+        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, body: WidgetBuilder<Expr>) =
+            let parameters = parameters |> List.map(Gen.mkOak)
+
+            WidgetBuilder<BindingNode>(
+                BindingMethodNode.WidgetKey,
+                AttributesBundle(
+                    StackList.three(
+                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body)),
+                        BindingNode.Parameters.WithValue(parameters)
+                    ),
+                    Array.empty,
                     Array.empty
                 )
             )
@@ -161,11 +194,12 @@ module BindingMethodBuilders =
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
+                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body)),
+                        BindingNode.Parameters.WithValue([ Gen.mkOak parameters ])
                     ),
-                    [| BindingNode.Parameters.WithValue(parameters.Compile()) |],
+                    Array.empty,
                     Array.empty
                 )
             )

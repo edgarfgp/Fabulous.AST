@@ -52,6 +52,20 @@ module InfixAppBuilders =
                 )
             )
 
+        static member inline InfixAppExpr(lhs: WidgetBuilder<Expr>, operator: string, rhs: StringVariant) =
+            WidgetBuilder<Expr>(
+                InfixApp.WidgetKey,
+                AttributesBundle(
+                    StackList.three(
+                        InfixApp.Operator.WithValue(operator),
+                        InfixApp.LeftHandSide.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(lhs))),
+                        InfixApp.RightHandSide.WithValue(StringOrWidget.StringExpr(rhs))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
         static member inline InfixAppExpr(lhs: StringVariant, operator: string, rhs: StringVariant) =
             WidgetBuilder<Expr>(
                 InfixApp.WidgetKey,

@@ -268,8 +268,8 @@ else ()
         |> produces
             """
 
-if x = 12 then () else ()
-"""
+    if x = 12 then () else ()
+    """
 
     [<Fact>]
     let ``Produces if-then-else expression with widgets``() =

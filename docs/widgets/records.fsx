@@ -56,11 +56,10 @@ Oak() {
             .xmlDocs([ "Normal record" ])
             .members (
                 [ let parameters =
-                      ParametersPat(
+                      TuplePat(
                           [ ParameterPat("name", "string")
                             ParameterPat("age", "int")
-                            ParameterPat("address", "string") ],
-                          true
+                            ParameterPat("address", "string") ]
                       )
 
                   Method(

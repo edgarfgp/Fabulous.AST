@@ -72,3 +72,4 @@ module SingleTextNode =
     let measure = SingleTextNode.Create "Measure"
     let ``extern`` = SingleTextNode.Create "extern"
     let hash = SingleTextNode.Create "#"
+    let inKeyword = SingleTextNode.Create "in"

@@ -69,7 +69,6 @@
         <Compile Include="Widgets\Patterns\NamePatPairs.fs" />
         <Compile Include="Widgets\Patterns\LongIdent.fs" />
         <Compile Include="Widgets\Patterns\Parameter.fs" />
-        <Compile Include="Widgets\Patterns\Parameters.fs" />
         <Compile Include="Widgets\Patterns\NamedParenStarIdent.fs" />
         <Compile Include="Widgets\Patterns\As.fs" />
         <Compile Include="Widgets\Patterns\ListCons.fs" />
@@ -79,6 +78,10 @@
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
+        <Compile Include="Widgets\Expressions\TypeApp.fs" />
+        <Compile Include="Widgets\Expressions\OptVar.fs" />
+        <Compile Include="Widgets\Expressions\ComputationExpressionStatement.fs" />
+        <Compile Include="Widgets\Expressions\CompExprBody.fs" />
         <Compile Include="Widgets\Expressions\Quoted.fs" />
         <Compile Include="Widgets\Expressions\Typed.fs" />
         <Compile Include="Widgets\Expressions\New.fs" />

@@ -30,21 +30,23 @@ module LongIdentPattern =
                     |> Some
                 | ValueNone -> None
 
-            let identifier = Widgets.getScalarValue widget Identifiers
+            let identifier = Widgets.tryGetScalarValue widget Identifiers
+
+            let identifier =
+                match identifier with
+                | ValueSome value -> [ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ]
+                | ValueNone -> []
 
             Pattern.LongIdent(
-                PatLongIdentNode(
-                    None,
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero),
-                    typeParams,
-                    items,
-                    Range.Zero
-                )
+                PatLongIdentNode(None, IdentListNode(identifier, Range.Zero), typeParams, items, Range.Zero)
             ))
 
 [<AutoOpen>]
 module LongIdentPatternBuilders =
     type Ast with
+
+        static member LongIdentPat() =
+            CollectionBuilder<Pattern, Pattern>(LongIdentPattern.WidgetKey, LongIdentPattern.Pairs)
 
         static member LongIdentPat(ident: string) =
             CollectionBuilder<Pattern, Pattern>(

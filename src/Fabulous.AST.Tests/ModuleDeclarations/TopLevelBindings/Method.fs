@@ -15,49 +15,46 @@ module MethodMembers =
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
                     .members(
-                        [ Method("this.A", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
+                        [ Method("this.A", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
 
-                          Method("this.C", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
+                          Method("this.C", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
                               .toInlined()
 
-                          Method("B", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
+                          Method("B", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
                               .toStatic()
 
-                          Method("D", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
+                          Method("D", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
                               .toInlined()
                               .toStatic()
 
-                          Method("this.E", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
+                          Method("this.E", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
                           |> _.returnType(String())
 
-                          Method("this.F", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
-                              .toInlined()
-                          |> _.returnType(String())
-
-                          Method("G", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
-                              .toStatic()
-                          |> _.returnType(String())
-
-                          Method("H", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
-                              .toStatic()
+                          Method("this.F", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
                               .toInlined()
                           |> _.returnType(String())
 
-                          Method(
-                              "this.I",
-                              ParametersPat([ ParameterPat("p", String()) ], true),
-                              ConstantExpr(Quoted "")
-                          )
+                          Method("G", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
+                              .toStatic()
+                          |> _.returnType(String())
+
+                          Method("H", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
+                              .toStatic()
+                              .toInlined()
+                          |> _.returnType(String())
+
+                          Method("this.I", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
 
                           Method(
                               "this.J",
-                              ParametersPat([ ParameterPat("p", String()); ParameterPat("p2", String()) ], true),
+                              ParenPat(TuplePat([ ParameterPat("p", String()); ParameterPat("p2", String()) ])),
                               ConstantExpr(Quoted "")
                           )
 
                           Method(
                               "this.K",
-                              ParametersPat([ ParameterPat("p", String()); ParameterPat("p2", String()) ]),
+                              [ ParenPat(ParameterPat("p", String()))
+                                ParenPat(ParameterPat("p2", String())) ],
                               ConstantExpr(Quoted "")
                           )
 
@@ -84,14 +81,14 @@ module MethodMembers =
 type Colors =
     { X: string }
 
-    member this.A (p: string) = ""
-    member inline this.C (p: string) = ""
-    static member B (p: string) = ""
-    static member inline D (p: string) = ""
-    member this.E (p: string) : string = ""
-    member inline this.F (p: string) : string = ""
-    static member G (p: string) : string = ""
-    static member inline H (p: string) : string = ""
+    member this.A(p: string) = ""
+    member inline this.C(p: string) = ""
+    static member B(p: string) = ""
+    static member inline D(p: string) = ""
+    member this.E(p: string) : string = ""
+    member inline this.F(p: string) : string = ""
+    static member G(p: string) : string = ""
+    static member inline H(p: string) : string = ""
     member this.I(p: string) = ""
     member this.J(p: string, p2: string) = ""
     member this.K (p: string) (p2: string) = ""
@@ -103,17 +100,13 @@ type Colors =
     let ``Produces a record with TypeParams and method member``() =
         Oak() {
             AnonymousModule() {
-                let foo = async { return 1 }
-
                 (Record("Colors") {
                     Field("Green", LongIdent("string"))
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .members(
-                        [ Method("this.A", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted "")) ]
-                    )
+                    .members([ Method("this.A", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted "")) ])
             }
         }
         |> produces
@@ -124,7 +117,7 @@ type Colors<'other> =
       Blue: 'other
       Yellow: int }
 
-    member this.A (p: string) = ""
+    member this.A(p: string) = ""
 
 """
 
@@ -139,7 +132,7 @@ type Colors<'other> =
                 })
                     .typeParams([ "'other" ])
                     .members(
-                        [ Method("A", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
+                        [ Method("A", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
                               .toStatic() ]
                     )
             }
@@ -153,7 +146,7 @@ type Colors<'other> =
       Blue: 'other
       Yellow: int }
 
-    static member A (p: string) = ""
+    static member A(p: string) = ""
 
 """
 
@@ -162,9 +155,7 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members(
-                        [ Method("this.A", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted "")) ]
-                    )
+                    .members([ Method("this.A", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted "")) ])
             }
         }
         |> produces
@@ -173,7 +164,7 @@ type Colors<'other> =
 type Colors =
     { X: string }
 
-    member this.A (p: string) = ""
+    member this.A(p: string) = ""
 
 """
 
@@ -183,7 +174,7 @@ type Colors =
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
                     .members(
-                        [ Method("A", ParametersPat([ ParameterPat("p", String()) ]), ConstantExpr(Quoted ""))
+                        [ Method("A", ParenPat(ParameterPat("p", String())), ConstantExpr(Quoted ""))
                               .toStatic() ]
                     )
             }
@@ -194,7 +185,7 @@ type Colors =
 type Colors =
     { X: string }
 
-    static member A (p: string) = ""
+    static member A(p: string) = ""
 
 """
 
@@ -216,18 +207,14 @@ type Person () =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Method(
-                        "this.Name",
-                        ParametersPat([ ParameterPat("params", String()) ]),
-                        ConstantExpr(Unquoted "23")
-                    )
+                    Method("this.Name", ParenPat(ParameterPat("p", String())), ConstantExpr(Unquoted "23"))
                 }
             }
         }
         |> produces
             """
 type Person () =
-    member this.Name (params: string) = 23
+    member this.Name(p: string) = 23
 """
 
     [<Fact>]
@@ -237,7 +224,7 @@ type Person () =
                 Class("Person") {
                     Method(
                         "this.Name",
-                        ParametersPat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ], true),
+                        ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])),
                         ConstantExpr(Unquoted "23")
                     )
                 }
@@ -256,7 +243,10 @@ type Person () =
                 Class("Person") {
                     Method(
                         "this.Name",
-                        ParametersPat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ]),
+                        LongIdentPat() {
+                            ParenPat(ParameterPat("name", String()))
+                            ParenPat(ParameterPat("age", Int32()))
+                        },
                         ConstantExpr(Unquoted "23")
                     )
                 }
@@ -266,6 +256,292 @@ type Person () =
             """
 type Person () =
     member this.Name (name: string) (age: int) = 23
+"""
+
+    [<Fact>]
+    let ``Need to add multiple bindings to method``() =
+        Oak() {
+            AnonymousModule() {
+                Class("Person") {
+                    Method(
+                        "GetPrimitiveReader",
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat("t", LongIdent("System.Type"))
+                                  ParameterPat("reader", LongIdent("Microsoft.Data.SqlClient.SqlDataReader"))
+                                  ParameterPat("isOpt", Boolean())
+                                  ParameterPat("isNullable", Boolean()) ]
+                            )
+                        ),
+                        CompExprBodyExpr() {
+                            LetOrUseExpr(
+                                Function(
+                                    "wrapValue",
+                                    [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
+                                    IfThenElifExpr(ConstantExpr(Unquoted("get ord |> box"))) {
+                                        IfThenExpr(
+                                            ConstantExpr(Unquoted "isOpt"),
+                                            InfixAppExpr(
+                                                ParenExpr(
+                                                    IfThenElseExpr(
+                                                        AppExpr(
+                                                            OptVarExpr("reader.IsDBNull"),
+                                                            ConstantExpr(Unquoted("ord"))
+                                                        ),
+                                                        ConstantExpr(Unquoted "None"),
+                                                        ConstantExpr(Unquoted("get ord |> box"))
+                                                    )
+                                                ),
+                                                "|>",
+                                                Unquoted("box")
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            ConstantExpr(Unquoted "isNullable"),
+                                            ParenExpr(
+                                                IfThenElseExpr(
+                                                    AppExpr(
+                                                        OptVarExpr("reader.IsDBNull"),
+                                                        ConstantExpr(Unquoted("ord"))
+                                                    ),
+                                                    AppLongIdentAndSingleParenArgExpr([ "System"; "Nullable" ], "()"),
+                                                    InfixAppExpr(
+                                                        AppExpr(
+                                                            ParenExpr(ConstantExpr(Unquoted("get ord"))),
+                                                            OptVarExpr("System.Nullable")
+                                                        ),
+                                                        "|>",
+                                                        OptVarExpr("box")
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            )
+
+                            LetOrUseExpr(
+                                Function(
+                                    "wrapRef",
+                                    [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
+                                    IfThenElifExpr(ConstantExpr(Unquoted("get ord |> box"))) {
+                                        IfThenExpr(
+                                            ConstantExpr(Unquoted "isOpt"),
+                                            InfixAppExpr(
+                                                ParenExpr(
+                                                    IfThenElseExpr(
+                                                        AppExpr(
+                                                            OptVarExpr("reader.IsDBNull"),
+                                                            ConstantExpr(Unquoted("ord"))
+                                                        ),
+                                                        ConstantExpr(Unquoted "None"),
+                                                        ConstantExpr(Unquoted("get ord |> Some"))
+                                                    )
+                                                ),
+                                                "|>",
+                                                Unquoted("box")
+                                            )
+                                        )
+                                    }
+                                )
+                            )
+
+                            OtherExpr(
+                                IfThenElifExpr(ConstantExpr(Unquoted "None")) {
+                                    IfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("System.Guid")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetGuid")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", Boolean()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetBoolean")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", Int32()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt32")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", Int64()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt64")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", Int16()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt16")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", Byte()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetByte")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", Double()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDouble")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("System.Single")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetFloat")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", Decimal()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDecimal")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", String()),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetString")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("System.DateTimeOffset")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTimeOffset")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("System.DateOnly")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateOnly")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("System.TimeOnly")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetTimeOnly")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("System.DateTime")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTime")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("byte []")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue<byte []>")))
+                                        )
+                                    )
+
+                                    ElIfThenExpr(
+                                        TypeAppExpr("typedefof", LongIdent("obj")),
+                                        AppLongIdentAndSingleParenArgExpr(
+                                            "Some",
+                                            ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue")))
+                                        )
+                                    )
+                                }
+                            )
+                        }
+                    )
+                        .toStatic()
+                        .toPrivate()
+                }
+            }
+        }
+        |> produces
+            """
+type Person () =
+    static member private GetPrimitiveReader
+        (t: System.Type, reader: Microsoft.Data.SqlClient.SqlDataReader, isOpt: bool, isNullable: bool)
+        =
+        let wrapValue get (ord: int) =
+            if isOpt then
+                (if reader.IsDBNull ord then None else get ord |> box) |> box
+            elif isNullable then
+                (if reader.IsDBNull ord then
+                     System.Nullable ()
+                 else
+                     (get ord) System.Nullable |> box)
+            else
+                get ord |> box
+
+        let wrapRef get (ord: int) =
+            if isOpt then
+                (if reader.IsDBNull ord then None else get ord |> Some) |> box
+            else
+                get ord |> box
+
+        if typedefof<System.Guid> then
+            Some(wrapValue reader.GetGuid)
+        elif typedefof<bool> then
+            Some(wrapValue reader.GetBoolean)
+        elif typedefof<int> then
+            Some(wrapValue reader.GetInt32)
+        elif typedefof<int64> then
+            Some(wrapValue reader.GetInt64)
+        elif typedefof<int16> then
+            Some(wrapValue reader.GetInt16)
+        elif typedefof<byte> then
+            Some(wrapValue reader.GetByte)
+        elif typedefof<double> then
+            Some(wrapValue reader.GetDouble)
+        elif typedefof<System.Single> then
+            Some(wrapValue reader.GetFloat)
+        elif typedefof<decimal> then
+            Some(wrapValue reader.GetDecimal)
+        elif typedefof<string> then
+            Some(wrapRef reader.GetString)
+        elif typedefof<System.DateTimeOffset> then
+            Some(wrapValue reader.GetDateTimeOffset)
+        elif typedefof<System.DateOnly> then
+            Some(wrapValue reader.GetDateOnly)
+        elif typedefof<System.TimeOnly> then
+            Some(wrapValue reader.GetTimeOnly)
+        elif typedefof<System.DateTime> then
+            Some(wrapValue reader.GetDateTime)
+        elif typedefof<byte []> then
+            Some(wrapRef reader.GetFieldValue<byte []>)
+        elif typedefof<obj> then
+            Some(wrapRef reader.GetFieldValue)
+        else
+            None
 """
 
     [<Fact>]

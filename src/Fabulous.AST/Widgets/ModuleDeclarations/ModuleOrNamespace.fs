@@ -8,22 +8,6 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-(*
-
-Top-level module
-
-module A or A.B
-let x = 0
-
-// Nested module
-module X =
-    let x = 0
-
-// Namespace
-namespace A.B
-
-*)
-
 module ModuleOrNamespace =
     let Decls = Attributes.defineWidgetCollection "Decls"
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"

@@ -21,7 +21,6 @@ module BindingValue =
                 | StringOrWidget.WidgetExpr pattern -> pattern
 
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
-            let parameters = Widgets.tryGetNodeFromWidget<Pattern> widget BindingNode.Parameters
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -106,11 +105,6 @@ module BindingValue =
                     |> Some
                 | ValueNone -> None
 
-            let parameters =
-                match parameters with
-                | ValueSome parameters -> [ parameters ]
-                | ValueNone -> []
-
             let bodyExpr =
                 match bodyExpr with
                 | StringOrWidget.StringExpr value ->
@@ -128,7 +122,7 @@ module BindingValue =
                 accessControl,
                 Choice2Of2(name),
                 typeParams,
-                parameters,
+                [],
                 returnType,
                 SingleTextNode.equals,
                 bodyExpr,

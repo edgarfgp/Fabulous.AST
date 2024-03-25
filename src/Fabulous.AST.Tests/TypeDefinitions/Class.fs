@@ -39,7 +39,7 @@ type Person () =
                 Class(
                     "Person",
                     Constructor(
-                        ParametersPat([ ParameterPat("name"); ParameterPat("lastName"); ParameterPat("age") ], true)
+                        ParenPat(TuplePat([ ParameterPat("name"); ParameterPat("lastName"); ParameterPat("age") ]))
                     )
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
@@ -61,11 +61,12 @@ type Person (name, lastName, age) =
                 Class(
                     "Person",
                     Constructor(
-                        ParametersPat(
-                            [ ParameterPat("name", String())
-                              ParameterPat("lastName", String())
-                              ParameterPat("?age", Int32()) ],
-                            true
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat("name", String())
+                                  ParameterPat("lastName", String())
+                                  ParameterPat("?age", Int32()) ]
+                            )
                         )
                     )
                 ) {
@@ -85,7 +86,7 @@ type Person (name: string, lastName: string, ?age: int) =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(ParametersPat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ], true))
+                    Constructor(ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])))
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
                 }
@@ -102,7 +103,7 @@ type Person (name: string, age: int) =
     let ``Produces a class marked as a Struct explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
-                (Class("Person", Constructor(ParametersPat([ ParameterPat("name", String()) ]))) {
+                (Class("Person", Constructor(ParenPat(ParameterPat("name", String())))) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
                 })
                     .attribute(Attribute("Struct"))
