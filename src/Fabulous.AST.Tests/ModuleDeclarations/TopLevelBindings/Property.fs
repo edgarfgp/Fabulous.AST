@@ -394,10 +394,7 @@ type Person =
         Oak() {
             AnonymousModule() {
                 (Union("Colors") {
-                    UnionParamsCase("Red") {
-                        Field("a", LongIdent("string"))
-                        Field("b", LongIdent "'other")
-                    }
+                    UnionCase("Red", [ Field("a", LongIdent("string")); Field("b", LongIdent "'other") ])
 
                     UnionCase("Green")
                     UnionCase("Blue")
@@ -425,10 +422,7 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 (Union("Colors") {
-                    UnionParamsCase("Red") {
-                        Field("a", LongIdent("string"))
-                        Field("b", LongIdent "'other")
-                    }
+                    UnionCase("Red", [ Field("a", LongIdent("string")); Field("b", LongIdent "'other") ])
 
                     UnionCase("Green")
                     UnionCase("Blue")

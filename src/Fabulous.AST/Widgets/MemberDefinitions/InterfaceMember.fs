@@ -9,17 +9,17 @@ open Fantomas.FCS.Text
 module InterfaceMember =
     let TypeValue = Attributes.defineScalar<StringOrWidget<Type>> "Type"
 
-    let Members = Attributes.defineWidgetCollection "Members"
+    let Members = Attributes.defineScalar<MemberDefn list> "Members"
 
     let WidgetKey =
         Widgets.register "InterfaceMember" (fun widget ->
             let tp = Widgets.getScalarValue widget TypeValue
-            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let members = Widgets.tryGetScalarValue widget Members
 
             let members =
                 match members with
-                | Some members -> members
-                | None -> []
+                | ValueSome members -> members
+                | ValueNone -> []
 
             let tp =
                 match tp with
@@ -40,40 +40,28 @@ module InterfaceMember =
 module InterfaceMemberBuilders =
     type Ast with
 
-        static member InterfaceMember(value: WidgetBuilder<Type>) =
-            CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
+        static member InterfaceMember(value: WidgetBuilder<Type>, members: WidgetBuilder<MemberDefn> list) =
+            WidgetBuilder<MemberDefnInterfaceNode>(
                 InterfaceMember.WidgetKey,
-                InterfaceMember.Members,
                 AttributesBundle(
-                    StackList.one(InterfaceMember.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
+                    StackList.two(
+                        InterfaceMember.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
+                        InterfaceMember.Members.WithValue(members |> List.map Gen.mkOak)
+                    ),
                     Array.empty,
                     Array.empty
                 )
             )
 
-        static member InterfaceMember(value: string) =
-            CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
+        static member InterfaceMember(value: string, members: WidgetBuilder<BindingNode> list) =
+            WidgetBuilder<MemberDefnInterfaceNode>(
                 InterfaceMember.WidgetKey,
-                InterfaceMember.Members,
                 AttributesBundle(
-                    StackList.one(InterfaceMember.TypeValue.WithValue(StringOrWidget.StringExpr(Unquoted value))),
+                    StackList.two(
+                        InterfaceMember.TypeValue.WithValue(StringOrWidget.StringExpr(Unquoted value)),
+                        InterfaceMember.Members.WithValue(members |> List.map(fun x -> MemberDefn.Member(Gen.mkOak x)))
+                    ),
                     Array.empty,
                     Array.empty
                 )
             )
-
-[<Extension>]
-type InterfaceMemberYieldExtensions =
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, x: BindingNode)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        InterfaceMemberYieldExtensions.Yield(this, node)

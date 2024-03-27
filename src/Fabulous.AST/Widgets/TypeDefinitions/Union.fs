@@ -143,8 +143,8 @@ type UnionModifiers =
         =
         this.AddScalar(
             Union.Members.WithValue(
-                [ for memb in members do
-                      let node = Gen.mkOak memb
+                [ for m in members do
+                      let node = Gen.mkOak m
                       MemberDefn.Interface(node) ]
             )
         )

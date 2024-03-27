@@ -9,6 +9,8 @@ open Fantomas.FCS.Text
 module Pattern =
     let Value = Attributes.defineScalar<Pattern> "Value"
 
+    let TypeParams = Attributes.defineScalar<string list> "TyparDecls"
+
     let WidgetKey =
         Widgets.register "Parameters" (fun widget ->
             let value = Widgets.getScalarValue widget Value
@@ -36,9 +38,7 @@ module PatternBuilders =
             Ast.BasePattern(Pattern.Wild(SingleTextNode.underscore))
 
 [<Extension>]
-type ParametersYieldExtensions =
+type PatternModifiers =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, Pattern>, x: WidgetBuilder<Pattern>) : CollectionContent =
-        let node = Gen.mkOak x
-        let widget = Ast.EscapeHatch(node).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline typeParams(this: WidgetBuilder<Pattern>, values: string list) =
+        this.AddScalar(Pattern.TypeParams.WithValue(values))

@@ -13,13 +13,7 @@ module LongIdent =
     let ``let value with a LongIdent pattern``() =
         Oak() {
             AnonymousModule() {
-                Value(
-                    LongIdentPat("x") {
-                        NamedPat("B")
-                        NamedPat("A")
-                    },
-                    ConstantExpr(Constant(Unquoted "12"))
-                )
+                Value(LongIdentPat("x", [ NamedPat("B"); NamedPat("A") ]), ConstantExpr(Constant(Unquoted "12")))
             }
         }
         |> produces
@@ -32,10 +26,7 @@ let x B A = 12
         Oak() {
             AnonymousModule() {
                 Value(
-                    LongIdentPat("x", [ "'a"; "'b" ]) {
-                        NamedPat("B")
-                        NamedPat("A")
-                    },
+                    LongIdentPat("x", [ NamedPat("B"); NamedPat("A") ]).typeParams([ "'a"; "'b" ]),
                     ConstantExpr(Constant(Unquoted "12"))
                 )
             }

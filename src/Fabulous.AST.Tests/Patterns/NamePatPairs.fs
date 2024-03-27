@@ -14,10 +14,7 @@ module NamePatPairsPat =
         Oak() {
             AnonymousModule() {
                 Value(
-                    NamePatPairsPat("x") {
-                        NamePatPairPat("A", NamedPat("B"))
-                        NamePatPairPat("B", NamedPat("A"))
-                    },
+                    NamePatPairsPat("x", [ NamePatPairPat("A", NamedPat("B")); NamePatPairPat("B", NamedPat("A")) ]),
                     ConstantExpr(Constant(Unquoted "12"))
                 )
             }
@@ -33,10 +30,8 @@ let x (A = B; B = A) = 12
         Oak() {
             AnonymousModule() {
                 Value(
-                    NamePatPairsPat("x", [ "'a"; "'b" ]) {
-                        NamePatPairPat("A", NamedPat("B"))
-                        NamePatPairPat("B", NamedPat("A"))
-                    },
+                    NamePatPairsPat("x", [ NamePatPairPat("A", NamedPat("B")); NamePatPairPat("B", NamedPat("A")) ])
+                        .typeParams([ "'a"; "'b" ]),
                     ConstantExpr(Constant(Unquoted "12"))
                 )
             }

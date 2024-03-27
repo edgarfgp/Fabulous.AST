@@ -109,9 +109,9 @@ let z = \"\"\"12\"\"\"
                 Value("y", Unquoted "12").returnType(LongIdent("int"))
 
                 Value("z", Unquoted "12")
-                    .returnType(Funs(LongIdent("string")) { LongIdent("int") })
+                    .returnType(Funs(LongIdent("string"), [ LongIdent("int") ]))
 
-                Value("a", Unquoted "12").returnType(Funs("string") { LongIdent("int") })
+                Value("a", Unquoted "12").returnType(Funs("string", [ LongIdent("int") ]))
 
                 Value("b", Unquoted "12").returnType("string -> int")
 
