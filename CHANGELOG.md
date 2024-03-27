@@ -132,7 +132,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre1...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre2...HEAD
+[1.0.0-pre2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre2
 [1.0.0-pre1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre1
 [0.9.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.9.0
 [0.8.2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.8.2
