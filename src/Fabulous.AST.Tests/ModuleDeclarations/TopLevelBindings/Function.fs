@@ -104,11 +104,7 @@ let x (i: int, j: string, k) = ()
             AnonymousModule() {
                 Function(
                     "x",
-                    LongIdentPat() {
-                        ParameterPat("i")
-                        ParameterPat("j")
-                        ParameterPat("k")
-                    },
+                    LongIdentPat([ ParameterPat("i"); ParameterPat("j"); ParameterPat("k") ]),
                     ConstantExpr(ConstantUnit())
                 )
             }

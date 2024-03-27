@@ -243,10 +243,10 @@ type Person () =
                 Class("Person") {
                     Method(
                         "this.Name",
-                        LongIdentPat() {
-                            ParenPat(ParameterPat("name", String()))
-                            ParenPat(ParameterPat("age", Int32()))
-                        },
+                        LongIdentPat(
+                            [ ParenPat(ParameterPat("name", String()))
+                              ParenPat(ParameterPat("age", Int32())) ]
+                        ),
                         ConstantExpr(Unquoted "23")
                     )
                 }
@@ -621,10 +621,7 @@ type Person =
         Oak() {
             AnonymousModule() {
                 (Union("Colors") {
-                    UnionParamsCase("Red") {
-                        Field("a", LongIdent("string"))
-                        Field("b", LongIdent "'other")
-                    }
+                    UnionCase("Red", [ Field("a", LongIdent("string")); Field("b", LongIdent "'other") ])
 
                     UnionCase("Green")
                     UnionCase("Blue")

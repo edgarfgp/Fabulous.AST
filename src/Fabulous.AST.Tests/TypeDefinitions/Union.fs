@@ -95,10 +95,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 Union("Colors") {
-                    UnionParamsCase("Red") {
-                        Field("a", String())
-                        Field("b", "int")
-                    }
+                    UnionCase("Red", [ Field("a", String()); Field("b", "int") ])
 
                     UnionCase("Green")
                     UnionCase("Blue")
@@ -197,10 +194,7 @@ module GenericUnion =
         Oak() {
             AnonymousModule() {
                 Union("Colors") {
-                    UnionParamsCase("Red") {
-                        Field("a", String())
-                        Field("b", LongIdent("'other"))
-                    }
+                    UnionCase("Red", [ Field("a", String()); Field("b", LongIdent("'other")) ])
 
                     UnionCase("Green")
                     UnionCase("Blue")
@@ -227,10 +221,7 @@ type Colors<'other> =
                 Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
                 (Union("Colors") {
-                    UnionParamsCase("Red") {
-                        Field("a", String())
-                        Field("b", LongIdent("'other"))
-                    }
+                    UnionCase("Red", [ Field("a", String()); Field("b", LongIdent("'other")) ])
 
                     UnionCase("Green")
                     UnionCase("Blue")
@@ -264,10 +255,7 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 (Union("Colors") {
-                    UnionParamsCase("Red") {
-                        Field("a", String())
-                        Field("b", LongIdent("'other"))
-                    }
+                    UnionCase("Red", [ Field("a", String()); Field("b", LongIdent("'other")) ])
 
                     UnionCase("Green")
                     UnionCase("Blue")

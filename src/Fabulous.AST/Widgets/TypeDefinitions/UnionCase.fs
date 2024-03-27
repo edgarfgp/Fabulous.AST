@@ -12,7 +12,8 @@ module UnionCase =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let Fields = Attributes.defineWidgetCollection "Fields"
+    let Fields = Attributes.defineScalar<FieldNode list> "Fields"
+
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
     let WidgetKey =
@@ -23,12 +24,12 @@ module UnionCase =
                 |> StringParsing.normalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
-            let fields = Widgets.tryGetNodesFromWidgetCollection<FieldNode> widget Fields
+            let fields = Widgets.tryGetScalarValue widget Fields
 
             let fields =
                 match fields with
-                | Some fields -> fields
-                | None -> []
+                | ValueSome fields -> fields
+                | ValueNone -> []
 
             let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
@@ -68,11 +69,17 @@ module UnionCaseBuilders =
                 AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-        static member UnionParamsCase(name: string) =
-            CollectionBuilder<UnionCaseNode, FieldNode>(
+        static member UnionCase(name: string, parameters: WidgetBuilder<FieldNode> list) =
+            WidgetBuilder<UnionCaseNode>(
                 UnionCase.WidgetKey,
-                UnionCase.Fields,
-                AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), Array.empty, Array.empty)
+                AttributesBundle(
+                    StackList.two(
+                        UnionCase.Name.WithValue(name),
+                        UnionCase.Fields.WithValue(parameters |> List.map Gen.mkOak)
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
             )
 
 [<Extension>]
