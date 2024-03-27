@@ -352,6 +352,8 @@ type Person () =
                                   )
                               )
 
+                              LetOrUseExpr(Use("wrapValue", OptVarExpr("reader.GetGuid")))
+
                               OtherExpr(
                                   IfThenElifExpr(
                                       [ IfThenExpr(
@@ -515,6 +517,8 @@ type Person () =
                 (if reader.IsDBNull ord then None else get ord |> Some) |> box
             else
                 get ord |> box
+
+        use wrapValue = reader.GetGuid
 
         if typedefof<System.Guid> then
             Some(wrapValue reader.GetGuid)

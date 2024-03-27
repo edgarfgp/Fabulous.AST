@@ -7,9 +7,13 @@ open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
 module BindingValue =
+
+    let LeadingKeyword = Attributes.defineScalar<SingleTextNode> "LeadingKeyword"
+
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
             let name = Widgets.getScalarValue widget BindingNode.Name
+            let leadingKeyword = Widgets.getScalarValue widget LeadingKeyword
 
             let name =
                 match name with
@@ -116,7 +120,7 @@ module BindingValue =
             BindingNode(
                 xmlDocs,
                 multipleAttributes,
-                MultipleTextsNode([ SingleTextNode.``let`` ], Range.Zero),
+                MultipleTextsNode([ leadingKeyword ], Range.Zero),
                 isMutable,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
@@ -132,24 +136,74 @@ module BindingValue =
 [<AutoOpen>]
 module BindingValueBuilders =
     type Ast with
-        static member private BaseValue(name: StringOrWidget<Pattern>, bodyExpr: StringOrWidget<Expr>) =
+        static member private BaseValue
+            (name: StringOrWidget<Pattern>, bodyExpr: StringOrWidget<Expr>, leadingKeyword: SingleTextNode)
+            =
             WidgetBuilder<BindingNode>(
                 BindingValue.WidgetKey,
                 AttributesBundle(
-                    StackList.two(BindingNode.Name.WithValue(name), BindingNode.BodyExpr.WithValue(bodyExpr)),
+                    StackList.three(
+                        BindingNode.Name.WithValue(name),
+                        BindingNode.BodyExpr.WithValue(bodyExpr),
+                        BindingValue.LeadingKeyword.WithValue(leadingKeyword)
+                    ),
                     Array.empty,
                     Array.empty
                 )
             )
 
         static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(StringOrWidget.WidgetExpr(Gen.mkOak name), StringOrWidget.WidgetExpr(Gen.mkOak(value)))
+            Ast.BaseValue(
+                StringOrWidget.WidgetExpr(Gen.mkOak name),
+                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
+                SingleTextNode.``let``
+            )
 
         static member Value(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(StringOrWidget.StringExpr(Unquoted(name)), StringOrWidget.WidgetExpr(Gen.mkOak(value)))
+            Ast.BaseValue(
+                StringOrWidget.StringExpr(Unquoted(name)),
+                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
+                SingleTextNode.``let``
+            )
 
         static member Value(name: WidgetBuilder<Pattern>, value: StringVariant) =
-            Ast.BaseValue(StringOrWidget.WidgetExpr(Gen.mkOak name), StringOrWidget.StringExpr value)
+            Ast.BaseValue(
+                StringOrWidget.WidgetExpr(Gen.mkOak name),
+                StringOrWidget.StringExpr value,
+                SingleTextNode.``let``
+            )
 
         static member Value(name: string, value: StringVariant) =
-            Ast.BaseValue(StringOrWidget.StringExpr(Unquoted(name)), StringOrWidget.StringExpr value)
+            Ast.BaseValue(
+                StringOrWidget.StringExpr(Unquoted(name)),
+                StringOrWidget.StringExpr value,
+                SingleTextNode.``let``
+            )
+
+        static member Use(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.BaseValue(
+                StringOrWidget.WidgetExpr(Gen.mkOak name),
+                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
+                SingleTextNode.``use``
+            )
+
+        static member Use(name: string, value: WidgetBuilder<Expr>) =
+            Ast.BaseValue(
+                StringOrWidget.StringExpr(Unquoted(name)),
+                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
+                SingleTextNode.``use``
+            )
+
+        static member Use(name: WidgetBuilder<Pattern>, value: StringVariant) =
+            Ast.BaseValue(
+                StringOrWidget.WidgetExpr(Gen.mkOak name),
+                StringOrWidget.StringExpr value,
+                SingleTextNode.``use``
+            )
+
+        static member Use(name: string, value: StringVariant) =
+            Ast.BaseValue(
+                StringOrWidget.StringExpr(Unquoted(name)),
+                StringOrWidget.StringExpr value,
+                SingleTextNode.``use``
+            )
