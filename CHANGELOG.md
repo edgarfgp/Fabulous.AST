@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre2] - 2024-03-27
+
+### Changed
+- Use `WidgetBuilder` for `Expr` and `Pattern` for simplicity by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/79
+
 ## [1.0.0-pre1] - 2024-03-25
 
 ### Added
