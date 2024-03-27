@@ -8,7 +8,7 @@ open Fantomas.Core.SyntaxOak
 
 module Match =
     let MatchExpr = Attributes.defineScalar<StringOrWidget<Expr>> "MatchExpr"
-    let MatchClauses = Attributes.defineWidgetCollection "MatchClauses"
+    let MatchClauses = Attributes.defineScalar<MatchClauseNode list> "MatchClauses"
 
     let WidgetKey =
         Widgets.register "Match" (fun widget ->
@@ -22,8 +22,7 @@ module Match =
                     )
                 | StringOrWidget.WidgetExpr expr -> expr
 
-            let matchClauses =
-                Widgets.getNodesFromWidgetCollection<MatchClauseNode> widget MatchClauses
+            let matchClauses = Widgets.getScalarValue widget MatchClauses
 
             Expr.Match(
                 ExprMatchNode(SingleTextNode.``match``, expr, SingleTextNode.``with``, matchClauses, Range.Zero)
@@ -33,23 +32,27 @@ module Match =
 module MatchBuilders =
     type Ast with
 
-        static member MatchExpr(value: WidgetBuilder<Expr>) =
-            CollectionBuilder<Expr, MatchClauseNode>(
+        static member MatchExpr(value: WidgetBuilder<Expr>, clauses: WidgetBuilder<MatchClauseNode> list) =
+            WidgetBuilder<Expr>(
                 Match.WidgetKey,
-                Match.MatchClauses,
                 AttributesBundle(
-                    StackList.one(Match.MatchExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value)))),
+                    StackList.two(
+                        Match.MatchExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value))),
+                        Match.MatchClauses.WithValue(clauses |> List.map Gen.mkOak)
+                    ),
                     Array.empty,
                     Array.empty
                 )
             )
 
-        static member MatchExpr(matchExpr: StringVariant) =
-            CollectionBuilder<Expr, MatchClauseNode>(
+        static member MatchExpr(matchExpr: StringVariant, clauses: WidgetBuilder<MatchClauseNode> list) =
+            WidgetBuilder<Expr>(
                 Match.WidgetKey,
-                Match.MatchClauses,
                 AttributesBundle(
-                    StackList.one(Match.MatchExpr.WithValue(StringOrWidget.StringExpr(matchExpr))),
+                    StackList.two(
+                        Match.MatchExpr.WithValue(StringOrWidget.StringExpr(matchExpr)),
+                        Match.MatchClauses.WithValue(clauses |> List.map Gen.mkOak)
+                    ),
                     Array.empty,
                     Array.empty
                 )

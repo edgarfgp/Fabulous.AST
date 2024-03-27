@@ -32,6 +32,27 @@ let x = 1.0<cm>
 """
 
     [<Fact>]
+    let ``let value with a ConstantExpr expression with ConstantMeasure seq``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ConstantExpr(
+                        ConstantMeasure(
+                            Constant(Unquoted "1.0"),
+                            MeasureSeq([ MeasureSingle("cm"); MeasureSingle("/"); MeasureSingle("m") ])
+                        )
+                    )
+                )
+            }
+        }
+        |> produces
+            """
+
+let x = 1.0<cm / m>
+"""
+
+    [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantUnit``() =
         Oak() { AnonymousModule() { Value("x", ConstantExpr(ConstantUnit())) } }
         |> produces

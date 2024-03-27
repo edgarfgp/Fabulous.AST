@@ -62,12 +62,13 @@ Oak() {
                   Method(
                       "this.GetColor",
                       ParameterPat("c", "Colors"),
-                      MatchExpr(Unquoted("c")) {
-                          MatchClauseExpr(Unquoted("Red"), Quoted "Red")
-                          MatchClauseExpr(NamedPat("Green"), Quoted "Green")
-                          MatchClauseExpr(Unquoted("Blue"), Quoted "Blue")
-                          MatchClauseExpr(NamedPat("Yellow"), ConstantExpr(Quoted "Yellow"))
-                      }
+                      MatchExpr(
+                          Unquoted("c"),
+                          [ MatchClauseExpr(Unquoted("Red"), Quoted "Red")
+                            MatchClauseExpr(NamedPat("Green"), Quoted "Green")
+                            MatchClauseExpr(Unquoted("Blue"), Quoted "Blue")
+                            MatchClauseExpr(NamedPat("Yellow"), ConstantExpr(Quoted "Yellow")) ]
+                      )
                   ) ]
             )
 

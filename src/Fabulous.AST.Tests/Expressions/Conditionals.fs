@@ -62,17 +62,18 @@ if x = 12 then
 
                 Value(
                     "res3",
-                    IfThenElifExpr(ConstantExpr(ConstantUnit())) {
-                        IfThenExpr(
-                            InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
-                            ConstantExpr(ConstantUnit())
-                        )
+                    IfThenElifExpr(
+                        [ IfThenExpr(
+                              InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                              ConstantExpr(ConstantUnit())
+                          )
 
-                        ElIfThenExpr(
-                            InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Unquoted "11")),
-                            ConstantExpr(ConstantUnit())
-                        )
-                    }
+                          ElIfThenExpr(
+                              InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Unquoted "11")),
+                              ConstantExpr(ConstantUnit())
+                          ) ],
+                        ConstantExpr(ConstantUnit())
+                    )
                 )
 
             }
@@ -179,17 +180,17 @@ module IfThenElif =
     let ``Produces If Then Elif Then expression with widgets``() =
         Oak() {
             AnonymousModule() {
-                IfThenElifExpr() {
-                    IfThenExpr(
-                        InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
-                        ConstantExpr(ConstantUnit())
-                    )
+                IfThenElifExpr(
+                    [ IfThenExpr(
+                          InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                          ConstantExpr(ConstantUnit())
+                      )
 
-                    ElIfThenExpr(
-                        InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Unquoted "11")),
-                        ConstantExpr(ConstantUnit())
-                    )
-                }
+                      ElIfThenExpr(
+                          InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Unquoted "11")),
+                          ConstantExpr(ConstantUnit())
+                      ) ]
+                )
             }
         }
         |> produces
@@ -204,17 +205,18 @@ elif x = 11 then
     let ``Produces If Then Elif Then Else expression with widgets``() =
         Oak() {
             AnonymousModule() {
-                IfThenElifExpr(ConstantExpr(ConstantUnit())) {
-                    IfThenExpr(
-                        InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
-                        ConstantExpr(ConstantUnit())
-                    )
+                IfThenElifExpr(
+                    [ IfThenExpr(
+                          InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                          ConstantExpr(ConstantUnit())
+                      )
 
-                    ElIfThenExpr(
-                        InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "11")),
-                        ConstantExpr(ConstantUnit())
-                    )
-                }
+                      ElIfThenExpr(
+                          InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "11")),
+                          ConstantExpr(ConstantUnit())
+                      ) ],
+                    ConstantExpr(ConstantUnit())
+                )
             }
         }
         |> produces

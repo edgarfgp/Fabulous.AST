@@ -273,212 +273,220 @@ type Person () =
                                   ParameterPat("isNullable", Boolean()) ]
                             )
                         ),
-                        CompExprBodyExpr() {
-                            LetOrUseExpr(
-                                Function(
-                                    "wrapValue",
-                                    [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
-                                    IfThenElifExpr(ConstantExpr(Unquoted("get ord |> box"))) {
-                                        IfThenExpr(
-                                            ConstantExpr(Unquoted "isOpt"),
-                                            InfixAppExpr(
+                        CompExprBodyExpr(
+                            [ LetOrUseExpr(
+                                  Function(
+                                      "wrapValue",
+                                      [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
+                                      IfThenElifExpr(
+                                          [ IfThenExpr(
+                                                ConstantExpr(Unquoted "isOpt"),
+                                                InfixAppExpr(
+                                                    ParenExpr(
+                                                        IfThenElseExpr(
+                                                            AppExpr(
+                                                                OptVarExpr("reader.IsDBNull"),
+                                                                ConstantExpr(Unquoted("ord"))
+                                                            ),
+                                                            ConstantExpr(Unquoted "None"),
+                                                            ConstantExpr(Unquoted("get ord |> box"))
+                                                        )
+                                                    ),
+                                                    "|>",
+                                                    Unquoted("box")
+                                                )
+                                            )
+
+                                            ElIfThenExpr(
+                                                ConstantExpr(Unquoted "isNullable"),
                                                 ParenExpr(
                                                     IfThenElseExpr(
                                                         AppExpr(
                                                             OptVarExpr("reader.IsDBNull"),
                                                             ConstantExpr(Unquoted("ord"))
                                                         ),
-                                                        ConstantExpr(Unquoted "None"),
-                                                        ConstantExpr(Unquoted("get ord |> box"))
+                                                        AppLongIdentAndSingleParenArgExpr(
+                                                            [ "System"; "Nullable" ],
+                                                            "()"
+                                                        ),
+                                                        InfixAppExpr(
+                                                            AppExpr(
+                                                                ParenExpr(ConstantExpr(Unquoted("get ord"))),
+                                                                OptVarExpr("System.Nullable")
+                                                            ),
+                                                            "|>",
+                                                            OptVarExpr("box")
+                                                        )
                                                     )
-                                                ),
-                                                "|>",
-                                                Unquoted("box")
+                                                )
+                                            ) ],
+                                          ConstantExpr(Unquoted("get ord |> box"))
+                                      )
+                                  )
+                              )
+
+                              LetOrUseExpr(
+                                  Function(
+                                      "wrapRef",
+                                      [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
+                                      IfThenElifExpr(
+                                          [ IfThenExpr(
+                                                ConstantExpr(Unquoted "isOpt"),
+                                                InfixAppExpr(
+                                                    ParenExpr(
+                                                        IfThenElseExpr(
+                                                            AppExpr(
+                                                                OptVarExpr("reader.IsDBNull"),
+                                                                ConstantExpr(Unquoted("ord"))
+                                                            ),
+                                                            ConstantExpr(Unquoted "None"),
+                                                            ConstantExpr(Unquoted("get ord |> Some"))
+                                                        )
+                                                    ),
+                                                    "|>",
+                                                    Unquoted("box")
+                                                )
+                                            ) ],
+                                          ConstantExpr(Unquoted("get ord |> box"))
+                                      )
+                                  )
+                              )
+
+                              OtherExpr(
+                                  IfThenElifExpr(
+                                      [ IfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("System.Guid")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetGuid")))
                                             )
                                         )
 
                                         ElIfThenExpr(
-                                            ConstantExpr(Unquoted "isNullable"),
-                                            ParenExpr(
-                                                IfThenElseExpr(
-                                                    AppExpr(
-                                                        OptVarExpr("reader.IsDBNull"),
-                                                        ConstantExpr(Unquoted("ord"))
-                                                    ),
-                                                    AppLongIdentAndSingleParenArgExpr([ "System"; "Nullable" ], "()"),
-                                                    InfixAppExpr(
-                                                        AppExpr(
-                                                            ParenExpr(ConstantExpr(Unquoted("get ord"))),
-                                                            OptVarExpr("System.Nullable")
-                                                        ),
-                                                        "|>",
-                                                        OptVarExpr("box")
-                                                    )
+                                            TypeAppExpr("typedefof", Boolean()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetBoolean")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", Int32()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt32")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", Int64()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt64")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", Int16()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt16")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", Byte()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetByte")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", Double()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDouble")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("System.Single")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetFloat")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", Decimal()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDecimal")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", String()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetString")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("System.DateTimeOffset")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTimeOffset")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("System.DateOnly")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateOnly")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("System.TimeOnly")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetTimeOnly")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("System.DateTime")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTime")))
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("byte []")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue<byte []>"))
                                                 )
                                             )
                                         )
-                                    }
-                                )
-                            )
 
-                            LetOrUseExpr(
-                                Function(
-                                    "wrapRef",
-                                    [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
-                                    IfThenElifExpr(ConstantExpr(Unquoted("get ord |> box"))) {
-                                        IfThenExpr(
-                                            ConstantExpr(Unquoted "isOpt"),
-                                            InfixAppExpr(
-                                                ParenExpr(
-                                                    IfThenElseExpr(
-                                                        AppExpr(
-                                                            OptVarExpr("reader.IsDBNull"),
-                                                            ConstantExpr(Unquoted("ord"))
-                                                        ),
-                                                        ConstantExpr(Unquoted "None"),
-                                                        ConstantExpr(Unquoted("get ord |> Some"))
-                                                    )
-                                                ),
-                                                "|>",
-                                                Unquoted("box")
+                                        ElIfThenExpr(
+                                            TypeAppExpr("typedefof", LongIdent("obj")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue")))
                                             )
-                                        )
-                                    }
-                                )
-                            )
-
-                            OtherExpr(
-                                IfThenElifExpr(ConstantExpr(Unquoted "None")) {
-                                    IfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("System.Guid")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetGuid")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", Boolean()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetBoolean")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", Int32()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt32")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", Int64()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt64")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", Int16()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt16")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", Byte()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetByte")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", Double()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDouble")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("System.Single")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetFloat")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", Decimal()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDecimal")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", String()),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetString")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("System.DateTimeOffset")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTimeOffset")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("System.DateOnly")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateOnly")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("System.TimeOnly")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetTimeOnly")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("System.DateTime")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTime")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("byte []")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue<byte []>")))
-                                        )
-                                    )
-
-                                    ElIfThenExpr(
-                                        TypeAppExpr("typedefof", LongIdent("obj")),
-                                        AppLongIdentAndSingleParenArgExpr(
-                                            "Some",
-                                            ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue")))
-                                        )
-                                    )
-                                }
-                            )
-                        }
+                                        ) ],
+                                      ConstantExpr(Unquoted "None")
+                                  )
+                              ) ]
+                        )
                     )
                         .toStatic()
                         .toPrivate()

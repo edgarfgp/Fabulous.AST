@@ -15,7 +15,7 @@ module Measure =
 
     let Node = Attributes.defineWidget "Node"
 
-    let Measures = Attributes.defineWidgetCollection "Measures"
+    let Measures = Attributes.defineScalar<Measure list> "Measures"
 
     let Content = Attributes.defineScalar<string list> "Content"
 
@@ -66,7 +66,7 @@ module Measure =
 
     let WidgetSequenceKey =
         Widgets.register "Sequence" (fun widget ->
-            let measures = Widgets.getNodesFromWidgetCollection<Measure> widget Measures
+            let measures = Widgets.getScalarValue widget Measures
             Measure.Seq(MeasureSequenceNode(measures, Range.Zero)))
 
     let WidgetParenthesisKey =
@@ -126,19 +126,16 @@ module MeasureBuilders =
                 AttributesBundle(StackList.one(Measure.Content.WithValue(content)), Array.empty, Array.empty)
             )
 
-        static member MeasureSeq() =
-            CollectionBuilder<Measure, Measure>(Measure.WidgetSequenceKey, Measure.Measures)
+        static member MeasureSeq(value: WidgetBuilder<Measure> list) =
+            let measures = value |> List.map Gen.mkOak
+
+            WidgetBuilder<Measure>(
+                Measure.WidgetSequenceKey,
+                AttributesBundle(StackList.one(Measure.Measures.WithValue(measures)), Array.empty, Array.empty)
+            )
 
         static member MeasureParen(measure: WidgetBuilder<Measure>) =
             WidgetBuilder<Measure>(
                 Measure.WidgetParenthesisKey,
                 AttributesBundle(StackList.empty(), [| Measure.Node.WithValue(measure.Compile()) |], Array.empty)
             )
-
-[<Extension>]
-type MeasureYieldExtensions =
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, Measure>, x: WidgetBuilder<Measure>) : CollectionContent =
-        let node = Gen.mkOak x
-        let widget = Ast.EscapeHatch(node).Compile()
-        { Widgets = MutStackArray1.One(widget) }

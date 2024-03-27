@@ -65,11 +65,11 @@ Oak() {
                   Method(
                       "Create",
                       parameters,
-                      RecordExpr() {
-                          RecordFieldExpr("Name", ConstantExpr(Unquoted "name"))
-                          RecordFieldExpr("Age", ConstantExpr(Unquoted "age"))
-                          RecordFieldExpr("Address", ConstantExpr(Unquoted "address"))
-                      }
+                      RecordExpr(
+                          [ RecordFieldExpr("Name", ConstantExpr(Unquoted "name"))
+                            RecordFieldExpr("Age", ConstantExpr(Unquoted "age"))
+                            RecordFieldExpr("Address", ConstantExpr(Unquoted "address")) ]
+                      )
                   )
                       .toStatic ()
 

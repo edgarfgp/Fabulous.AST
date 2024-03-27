@@ -8,7 +8,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module RecordExpr =
-    let Fields = Attributes.defineWidgetCollection "Fields"
+    let Fields = Attributes.defineScalar<RecordFieldNode list> "Fields"
     let CopyInfo = Attributes.defineWidget "CopyInfo"
 
     let OpenBrace = Attributes.defineScalar<SingleTextNode> "OpenBrace"
@@ -26,7 +26,7 @@ module RecordExpr =
                 | ValueSome copyInfo -> Some copyInfo
                 | ValueNone -> None
 
-            let fields = Widgets.getNodesFromWidgetCollection<RecordFieldNode> widget Fields
+            let fields = Widgets.getScalarValue widget Fields
 
             Expr.Record(ExprRecordNode(openBrace, copyInfo, fields, closeBrace, Range.Zero)))
 
@@ -35,45 +35,53 @@ module RecordExprBuilders =
     type Ast with
 
         static member private BaseRecordExpr
-            (copyInfo: WidgetBuilder<Expr> voption, leftSingleNode: SingleTextNode, rightSingleNode: SingleTextNode) =
+            (
+                copyInfo: WidgetBuilder<Expr> voption,
+                leftSingleNode: SingleTextNode,
+                rightSingleNode: SingleTextNode,
+                fields: WidgetBuilder<RecordFieldNode> list
+            ) =
             let copyInfo =
                 match copyInfo with
                 | ValueSome copyInfo -> [| RecordExpr.CopyInfo.WithValue(copyInfo.Compile()) |]
                 | ValueNone -> Array.empty
 
-            CollectionBuilder<Expr, RecordFieldNode>(
+            WidgetBuilder<Expr>(
                 RecordExpr.WidgetKey,
-                RecordExpr.Fields,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         RecordExpr.OpenBrace.WithValue(leftSingleNode),
-                        RecordExpr.CloseBrace.WithValue(rightSingleNode)
+                        RecordExpr.CloseBrace.WithValue(rightSingleNode),
+                        RecordExpr.Fields.WithValue(fields |> List.map Gen.mkOak)
                     ),
                     copyInfo,
                     Array.empty
                 )
             )
 
-        static member RecordExpr(copyInfo: WidgetBuilder<Expr>) =
-            Ast.BaseRecordExpr(ValueSome copyInfo, SingleTextNode.leftCurlyBrace, SingleTextNode.rightCurlyBrace)
+        static member RecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> list) =
+            Ast.BaseRecordExpr(
+                ValueSome copyInfo,
+                SingleTextNode.leftCurlyBrace,
+                SingleTextNode.rightCurlyBrace,
+                fields
+            )
 
-        static member RecordExpr() =
-            Ast.BaseRecordExpr(ValueNone, SingleTextNode.leftCurlyBrace, SingleTextNode.rightCurlyBrace)
+        static member RecordExpr(fields: WidgetBuilder<RecordFieldNode> list) =
+            Ast.BaseRecordExpr(ValueNone, SingleTextNode.leftCurlyBrace, SingleTextNode.rightCurlyBrace, fields)
 
-        static member AnonRecordExpr(copyInfo: WidgetBuilder<Expr>) =
+        static member AnonRecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> list) =
             Ast.BaseRecordExpr(
                 ValueSome copyInfo,
                 SingleTextNode.leftCurlyBraceWithBar,
-                SingleTextNode.rightCurlyBraceWithBar
+                SingleTextNode.rightCurlyBraceWithBar,
+                fields
             )
 
-        static member AnonRecordExpr() =
-            Ast.BaseRecordExpr(ValueNone, SingleTextNode.leftCurlyBraceWithBar, SingleTextNode.rightCurlyBraceWithBar)
-
-[<Extension>]
-type RecordExprYieldExtensions =
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<Expr, RecordFieldNode>, x: WidgetBuilder<RecordFieldNode>)
-        : CollectionContent =
-        { Widgets = MutStackArray1.One(x.Compile()) }
+        static member AnonRecordExpr(fields: WidgetBuilder<RecordFieldNode> list) =
+            Ast.BaseRecordExpr(
+                ValueNone,
+                SingleTextNode.leftCurlyBraceWithBar,
+                SingleTextNode.rightCurlyBraceWithBar,
+                fields
+            )
