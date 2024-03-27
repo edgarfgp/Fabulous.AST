@@ -13,13 +13,7 @@ module Ands =
     let ``let value with a Ands pattern``() =
         Oak() {
             AnonymousModule() {
-                Value(
-                    AndsPat() {
-                        NamedPat("A")
-                        NamedPat("B")
-                    },
-                    ConstantExpr(Constant(Unquoted "12"))
-                )
+                Value(AndsPat([ NamedPat("A"); NamedPat("B") ]), ConstantExpr(Constant(Unquoted "12")))
             }
         }
         |> produces

@@ -78,3 +78,11 @@ let r: float = 1.
 let s: float32 = 1.f
 let t: obj = obj
 """
+
+    [<Fact>]
+    let ``Value with return non primitive types``() =
+        Oak() { AnonymousModule() { Value("a", Unquoted "false").returnType(StructTuple([ String(); String() ])) } }
+        |> produces
+            """
+let a: struct (string , string) = false
+"""

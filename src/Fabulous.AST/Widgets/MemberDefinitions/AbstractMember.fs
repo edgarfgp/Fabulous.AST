@@ -7,7 +7,7 @@ open Fantomas.FCS.Text
 open Microsoft.FSharp.Collections
 
 type MethodParamsType =
-    | UnNamed of parameters: (WidgetBuilder<Type> list) * isTupled: bool
+    | UnNamed of parameters: WidgetBuilder<Type> list * isTupled: bool
     | Named of types: (string option * WidgetBuilder<Type>) list * isTupled: bool
 
 module AbstractMember =
@@ -77,7 +77,7 @@ module AbstractMember =
                             (Gen.mkOak value, separator))
 
                     parameters, returnType
-                | ValueSome(Named((parameters), isTupled)) ->
+                | ValueSome(Named(parameters, isTupled)) ->
                     let parameters =
                         parameters
                         |> List.mapi(fun index (name, value) ->

@@ -9,12 +9,12 @@ module ArrayOrListPat =
 
     let CloseTextNode = Attributes.defineScalar<SingleTextNode> "CloseTextNode"
 
-    let Parameters = Attributes.defineWidgetCollection "Parameters"
+    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
 
     let WidgetKey =
         Widgets.register "ArrayOrList" (fun widget ->
             let openTextNode = Widgets.getScalarValue widget OpenTextNode
-            let values = Widgets.getNodesFromWidgetCollection<Pattern> widget Parameters
+            let values = Widgets.getScalarValue widget Parameters
             let closeTextNode = Widgets.getScalarValue widget CloseTextNode
 
             Pattern.ArrayOrList(PatArrayOrListNode(openTextNode, values, closeTextNode, Range.Zero)))
@@ -23,18 +23,18 @@ module ArrayOrListPat =
 module ArrayOrListPatBuilders =
     type Ast with
 
-        static member ListPat() =
-            CollectionBuilder<Pattern, Pattern>(
+        static member ListPat(values: WidgetBuilder<Pattern> list) =
+            WidgetBuilder<Pattern>(
                 ArrayOrListPat.WidgetKey,
-                ArrayOrListPat.Parameters,
+                ArrayOrListPat.Parameters.WithValue(values |> List.map Gen.mkOak),
                 ArrayOrListPat.OpenTextNode.WithValue(SingleTextNode.leftBracket),
                 ArrayOrListPat.CloseTextNode.WithValue(SingleTextNode.rightBracket)
             )
 
-        static member ArrayPat() =
-            CollectionBuilder<Pattern, Pattern>(
+        static member ArrayPat(values: WidgetBuilder<Pattern> list) =
+            WidgetBuilder<Pattern>(
                 ArrayOrListPat.WidgetKey,
-                ArrayOrListPat.Parameters,
+                ArrayOrListPat.Parameters.WithValue(values |> List.map Gen.mkOak),
                 ArrayOrListPat.OpenTextNode.WithValue(SingleTextNode.leftArray),
                 ArrayOrListPat.CloseTextNode.WithValue(SingleTextNode.rightArray)
             )

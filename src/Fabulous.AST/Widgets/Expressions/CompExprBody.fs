@@ -7,12 +7,12 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module CompExprBody =
-    let Statements = Attributes.defineWidgetCollection "Value"
+    let Statements =
+        Attributes.defineScalar<ComputationExpressionStatement list> "Value"
 
     let WidgetKey =
         Widgets.register "CompExprBody" (fun widget ->
-            let statements =
-                Widgets.getNodesFromWidgetCollection<ComputationExpressionStatement> widget Statements
+            let statements = Widgets.getScalarValue widget Statements
 
             Expr.CompExprBody(ExprCompExprBodyNode(statements, Range.Zero)))
 
@@ -20,9 +20,10 @@ module CompExprBody =
 module CompExprBodyBuilders =
     type Ast with
 
-        static member CompExprBodyExpr() =
-            CollectionBuilder<Expr, ComputationExpressionStatement>(
+        static member CompExprBodyExpr(value: WidgetBuilder<ComputationExpressionStatement> list) =
+            let statements = value |> List.map Gen.mkOak
+
+            WidgetBuilder<Expr>(
                 CompExprBody.WidgetKey,
-                CompExprBody.Statements,
-                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
+                AttributesBundle(StackList.one(CompExprBody.Statements.WithValue(statements)), Array.empty, Array.empty)
             )

@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module NamePatPairs =
-    let Pairs = Attributes.defineWidgetCollection "Items"
+    let Pairs = Attributes.defineScalar<NamePatPair list> "Items"
 
     let Identifiers = Attributes.defineScalar<string> "Identifiers"
 
@@ -14,7 +14,7 @@ module NamePatPairs =
 
     let WidgetKey =
         Widgets.register "Ands" (fun widget ->
-            let items = Widgets.getNodesFromWidgetCollection<NamePatPair> widget Pairs
+            let items = Widgets.getScalarValue widget Pairs
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let typeParams =
@@ -49,27 +49,15 @@ module NamePatPairs =
 module NamePatPairsBuilders =
     type Ast with
 
-        static member NamePatPairsPat(ident: string) =
-            CollectionBuilder<Pattern, NamePatPair>(
+        static member NamePatPairsPat(ident: string, pairs: WidgetBuilder<NamePatPair> list) =
+            WidgetBuilder<Pattern>(
                 NamePatPairs.WidgetKey,
-                NamePatPairs.Pairs,
+                NamePatPairs.Pairs.WithValue(pairs |> List.map Gen.mkOak),
                 NamePatPairs.Identifiers.WithValue(ident)
             )
 
-        static member NamePatPairsPat(ident: string, typeParams: string list) =
-            CollectionBuilder<Pattern, NamePatPair>(
-                NamePatPairs.WidgetKey,
-                NamePatPairs.Pairs,
-                NamePatPairs.Identifiers.WithValue(ident),
-                NamePatPairs.TypeParams.WithValue(typeParams)
-            )
-
 [<Extension>]
-type NamePatPairsYieldExtensions =
+type NamePatPairsYieldModifiers =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, NamePatPair>, x: WidgetBuilder<NamePatPair>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let widget = Ast.EscapeHatch(node).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline typeParams(this: WidgetBuilder<Pattern>, values: string list) =
+        this.AddScalar(NamePatPairs.TypeParams.WithValue(values))

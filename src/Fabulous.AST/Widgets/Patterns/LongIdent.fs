@@ -1,10 +1,12 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module LongIdentPattern =
-    let Pairs = Attributes.defineWidgetCollection "Items"
+    let Pairs = Attributes.defineScalar<Pattern list> "Items"
 
     let Identifiers = Attributes.defineScalar<string> "Identifiers"
 
@@ -12,7 +14,7 @@ module LongIdentPattern =
 
     let WidgetKey =
         Widgets.register "LongIdent" (fun widget ->
-            let items = Widgets.getNodesFromWidgetCollection<Pattern> widget Pairs
+            let items = Widgets.getScalarValue widget Pairs
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
 
             let typeParams =
@@ -45,20 +47,31 @@ module LongIdentPattern =
 module LongIdentPatternBuilders =
     type Ast with
 
-        static member LongIdentPat() =
-            CollectionBuilder<Pattern, Pattern>(LongIdentPattern.WidgetKey, LongIdentPattern.Pairs)
-
-        static member LongIdentPat(ident: string) =
-            CollectionBuilder<Pattern, Pattern>(
+        static member LongIdentPat(pairs: WidgetBuilder<Pattern> list) =
+            WidgetBuilder<Pattern>(
                 LongIdentPattern.WidgetKey,
-                LongIdentPattern.Pairs,
-                LongIdentPattern.Identifiers.WithValue(ident)
+                AttributesBundle(
+                    StackList.one(LongIdentPattern.Pairs.WithValue(pairs |> List.map Gen.mkOak)),
+                    Array.empty,
+                    Array.empty
+                )
             )
 
-        static member LongIdentPat(ident: string, typeParams: string list) =
-            CollectionBuilder<Pattern, Pattern>(
+        static member LongIdentPat(ident: string, pairs: WidgetBuilder<Pattern> list) =
+            WidgetBuilder<Pattern>(
                 LongIdentPattern.WidgetKey,
-                LongIdentPattern.Pairs,
-                LongIdentPattern.Identifiers.WithValue(ident),
-                LongIdentPattern.TypeParams.WithValue(typeParams)
+                AttributesBundle(
+                    StackList.two(
+                        LongIdentPattern.Identifiers.WithValue(ident),
+                        LongIdentPattern.Pairs.WithValue(pairs |> List.map Gen.mkOak)
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
             )
+
+[<Extension>]
+type LongIdentPatternModifiers =
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<Pattern>, values: string list) =
+        this.AddScalar(LongIdentPattern.TypeParams.WithValue(values))
