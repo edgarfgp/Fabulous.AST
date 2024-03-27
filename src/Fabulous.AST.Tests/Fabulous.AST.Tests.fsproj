@@ -51,6 +51,9 @@
         <Compile Include="Expressions\StructTuple.fs" />
         <Compile Include="Expressions\ArrayOrList.fs" />
         <Compile Include="Expressions\App.fs" />
+        <Compile Include="Expressions\Computation.fs" />
+        <Compile Include="Expressions\ObjExpr.fs" />
+        <Compile Include="Expressions\NamedComputation.fs" />
         <Compile Include="Expressions\Constant.fs" />
         <Compile Include="Expressions\Match.fs" />
         <Compile Include="Expressions\InfixApp.fs" />
