@@ -9,6 +9,8 @@ open Fantomas.FCS.Text
 module Pattern =
     let Value = Attributes.defineScalar<Pattern> "Value"
 
+    let TypeParams = Attributes.defineScalar<string list> "TyparDecls"
+
     let WidgetKey =
         Widgets.register "Parameters" (fun widget ->
             let value = Widgets.getScalarValue widget Value
@@ -34,3 +36,9 @@ module PatternBuilders =
 
         static member WildPat() =
             Ast.BasePattern(Pattern.Wild(SingleTextNode.underscore))
+
+[<Extension>]
+type PatternModifiers =
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<Pattern>, values: string list) =
+        this.AddScalar(Pattern.TypeParams.WithValue(values))

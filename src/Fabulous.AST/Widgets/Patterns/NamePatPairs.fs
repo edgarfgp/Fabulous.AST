@@ -10,12 +10,10 @@ module NamePatPairs =
 
     let Identifiers = Attributes.defineScalar<string> "Identifiers"
 
-    let TypeParams = Attributes.defineScalar<string list> "TyparDecls"
-
     let WidgetKey =
         Widgets.register "Ands" (fun widget ->
             let items = Widgets.getScalarValue widget Pairs
-            let typeParams = Widgets.tryGetScalarValue widget TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget Pattern.TypeParams
 
             let typeParams =
                 match typeParams with
@@ -55,9 +53,3 @@ module NamePatPairsBuilders =
                 NamePatPairs.Pairs.WithValue(pairs |> List.map Gen.mkOak),
                 NamePatPairs.Identifiers.WithValue(ident)
             )
-
-[<Extension>]
-type NamePatPairsYieldModifiers =
-    [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<Pattern>, values: string list) =
-        this.AddScalar(NamePatPairs.TypeParams.WithValue(values))

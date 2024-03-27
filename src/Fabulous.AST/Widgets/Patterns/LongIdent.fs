@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
@@ -10,12 +9,10 @@ module LongIdentPattern =
 
     let Identifiers = Attributes.defineScalar<string> "Identifiers"
 
-    let TypeParams = Attributes.defineScalar<string list> "TyparDecls"
-
     let WidgetKey =
         Widgets.register "LongIdent" (fun widget ->
             let items = Widgets.getScalarValue widget Pairs
-            let typeParams = Widgets.tryGetScalarValue widget TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget Pattern.TypeParams
 
             let typeParams =
                 match typeParams with
@@ -69,9 +66,3 @@ module LongIdentPatternBuilders =
                     Array.empty
                 )
             )
-
-[<Extension>]
-type LongIdentPatternModifiers =
-    [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<Pattern>, values: string list) =
-        this.AddScalar(LongIdentPattern.TypeParams.WithValue(values))

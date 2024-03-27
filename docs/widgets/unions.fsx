@@ -73,10 +73,7 @@ Oak() {
             )
 
         (Union("Colors2") {
-            UnionParamsCase("Red") {
-                Field("a", LongIdent("string"))
-                Field("b", LongIdent "'other")
-            }
+            UnionCase("Red", [ Field("a", LongIdent("string")); Field("b", LongIdent "'other") ])
 
             UnionCase("Green")
             UnionCase("Blue")
