@@ -82,8 +82,12 @@
         <Compile Include="Widgets\Expressions\OptVar.fs" />
         <Compile Include="Widgets\Expressions\ComputationExpressionStatement.fs" />
         <Compile Include="Widgets\Expressions\CompExprBody.fs" />
+        <Compile Include="Widgets\Expressions\SameInfixApps.fs" />
+        <Compile Include="Widgets\Expressions\ObjExpr.fs" />
         <Compile Include="Widgets\Expressions\Quoted.fs" />
         <Compile Include="Widgets\Expressions\Typed.fs" />
+        <Compile Include="Widgets\Expressions\Computation.fs" />
+        <Compile Include="Widgets\Expressions\NamedComputation.fs" />
         <Compile Include="Widgets\Expressions\New.fs" />
         <Compile Include="Widgets\Expressions\Tuple.fs" />
         <Compile Include="Widgets\Expressions\StructTuple.fs" />

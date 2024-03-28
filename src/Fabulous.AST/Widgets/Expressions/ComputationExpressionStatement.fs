@@ -6,10 +6,9 @@ open Fantomas.FCS.Text
 
 module ComputationExpressionStatement =
     let Binding = Attributes.defineWidget "Value"
-
     let InKeyword = Attributes.defineScalar<bool> "InKeyword"
-
-    let OtherExpr = Attributes.defineWidget "OtherExpr"
+    let ExprValue = Attributes.defineWidget "OtherExpr"
+    let PatternValue = Attributes.defineWidget "Pattern"
 
     let WidgetLetOrUseStatementKey =
         Widgets.register "LetOrUseStatement" (fun widget ->
@@ -24,8 +23,26 @@ module ComputationExpressionStatement =
 
     let WidgetOtherStatementKey =
         Widgets.register "OtherStatement" (fun widget ->
-            let otherExpr = Widgets.getNodeFromWidget<Expr> widget OtherExpr
+            let otherExpr = Widgets.getNodeFromWidget<Expr> widget ExprValue
             ComputationExpressionStatement.OtherStatement(otherExpr))
+
+    let WidgetLetOrUseBangStatementKey =
+        Widgets.register "LetOrUseBangStatement" (fun widget ->
+            let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
+            let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
+
+            ComputationExpressionStatement.LetOrUseBangStatement(
+                ExprLetOrUseBangNode(SingleTextNode.letBang, pat, SingleTextNode.equals, expr, Range.Zero)
+            ))
+
+    let WidgetAndBangStatementKey =
+        Widgets.register "AndBangStatement" (fun widget ->
+            let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
+            let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
+
+            ComputationExpressionStatement.AndBangStatement(
+                ExprAndBang(SingleTextNode.andBang, pat, SingleTextNode.equals, expr, Range.Zero)
+            ))
 
 [<AutoOpen>]
 module ComputationExpressionStatementBuilders =
@@ -46,7 +63,29 @@ module ComputationExpressionStatementBuilders =
                 ComputationExpressionStatement.WidgetOtherStatementKey,
                 AttributesBundle(
                     StackList.empty(),
-                    [| ComputationExpressionStatement.OtherExpr.WithValue(value.Compile()) |],
+                    [| ComputationExpressionStatement.ExprValue.WithValue(value.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member LetOrUseBangExpr(pat: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
+            WidgetBuilder<ComputationExpressionStatement>(
+                ComputationExpressionStatement.WidgetLetOrUseBangStatementKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| ComputationExpressionStatement.PatternValue.WithValue(pat.Compile())
+                       ComputationExpressionStatement.ExprValue.WithValue(expr.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member AndBangExpr(pat: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
+            WidgetBuilder<ComputationExpressionStatement>(
+                ComputationExpressionStatement.WidgetAndBangStatementKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| ComputationExpressionStatement.PatternValue.WithValue(pat.Compile())
+                       ComputationExpressionStatement.ExprValue.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )

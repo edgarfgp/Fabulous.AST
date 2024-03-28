@@ -73,3 +73,6 @@ module SingleTextNode =
     let ``extern`` = SingleTextNode.Create "extern"
     let hash = SingleTextNode.Create "#"
     let inKeyword = SingleTextNode.Create "in"
+    let letBang = SingleTextNode.Create "let!"
+    let andBang = SingleTextNode.Create "and!"
+    let ``use`` = SingleTextNode.Create "use"
