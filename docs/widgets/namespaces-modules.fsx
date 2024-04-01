@@ -1,6 +1,6 @@
 ﻿(**
 ---
-title: Namespaces and Modules
+title: Organizing Code
 category: widgets
 index: 2
 ---
@@ -9,7 +9,7 @@ index: 2
 (**
 # Namespaces
 
-A namespace lets you organize code into areas of related functionality by enabling you to attach a name to a grouping of F# program elements. Namespaces are typically top-level elements in F# files.
+Both namespaces and modules are used for organizing the code in a hierarchical, logical way.
 
 *)
 
