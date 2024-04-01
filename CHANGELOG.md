@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre3] - 2024-04-01
+
+### Changed
+- More Widget `Expr` by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/80
+
 ## [1.0.0-pre2] - 2024-03-27
 
 ### Changed
@@ -132,7 +137,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre2...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre3...HEAD
+[1.0.0-pre3]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre3
 [1.0.0-pre2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre2
 [1.0.0-pre1]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre1
 [0.9.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/0.9.0
