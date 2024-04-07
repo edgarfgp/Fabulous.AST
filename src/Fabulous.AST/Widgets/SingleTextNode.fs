@@ -76,3 +76,6 @@ module SingleTextNode =
     let letBang = SingleTextNode.Create "let!"
     let andBang = SingleTextNode.Create "and!"
     let ``use`` = SingleTextNode.Create "use"
+    let ``for`` = SingleTextNode.Create "for"
+    let ``do`` = SingleTextNode.Create "do"
+    let arrow = SingleTextNode.Create "->"
