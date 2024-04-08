@@ -49,6 +49,7 @@
         <Compile Include="Expressions\New.fs" />
         <Compile Include="Expressions\IndexRange.fs" />
         <Compile Include="Expressions\ForEach.fs" />
+        <Compile Include="Expressions\While.fs" />
         <Compile Include="Expressions\Tuple.fs" />
         <Compile Include="Expressions\StructTuple.fs" />
         <Compile Include="Expressions\ArrayOrList.fs" />

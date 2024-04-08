@@ -91,6 +91,7 @@
         <Compile Include="Widgets\Expressions\New.fs" />
         <Compile Include="Widgets\Expressions\IndexRange.fs" />
         <Compile Include="Widgets\Expressions\ForEach.fs" />
+        <Compile Include="Widgets\Expressions\While.fs" />
         <Compile Include="Widgets\Expressions\Tuple.fs" />
         <Compile Include="Widgets\Expressions\StructTuple.fs" />
         <Compile Include="Widgets\Expressions\ArrayOrList.fs" />
