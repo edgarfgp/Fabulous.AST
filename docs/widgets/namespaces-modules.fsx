@@ -17,8 +17,8 @@ Both namespaces and modules are used for organizing the code in a hierarchical, 
 ## Constructors
 | Constructors                                      | Description |
 |---------------------------------------------------|-------------|
-| Namespace(name: string,) | Creates a namespace with the specified name. |
-| TopLevelModule(name: string,) | Creates a top-level module with the specified name. |
+| Namespace(name: string) | Creates a namespace with the specified name. |
+| TopLevelModule(name: string) | Creates a top-level module with the specified name. |
 | AnonymousModule() | Creates an anonymous module. |
 
 ## Properties
