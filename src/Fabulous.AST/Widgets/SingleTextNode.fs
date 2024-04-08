@@ -79,3 +79,4 @@ module SingleTextNode =
     let ``for`` = SingleTextNode.Create "for"
     let ``do`` = SingleTextNode.Create "do"
     let arrow = SingleTextNode.Create "->"
+    let ``while`` = SingleTextNode.Create "while"
