@@ -120,8 +120,9 @@
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Function.fs" />
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Property.fs" />
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Method.fs" />
-        <Compile Include="Widgets\MemberDefinitions\InterfaceMember.fs" />
-        <Compile Include="Widgets\MemberDefinitions\AbstractMember.fs" />
+        <Compile Include="Widgets\MemberDefinitions\Interface.fs" />
+        <Compile Include="Widgets\MemberDefinitions\AbstractSlot.fs" />
+        <Compile Include="Widgets\MemberDefinitions\AutoProperty.fs" />
         <Compile Include="Widgets\TypeDefinitions\Field.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\EnumCase.fs" />

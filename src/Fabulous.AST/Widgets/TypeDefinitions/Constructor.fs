@@ -69,7 +69,7 @@ module ImplicitConstructorBuilders =
                 )
             )
 
-        static member Constructor() = //Ast.Constructor(Ast.UnitPat())
+        static member Constructor() =
             WidgetBuilder<ImplicitConstructorNode>(
                 Constructor.WidgetKey,
                 AttributesBundle(StackList.empty(), Array.empty, Array.empty)
