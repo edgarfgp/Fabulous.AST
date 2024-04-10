@@ -30,8 +30,9 @@
         <Compile Include="ModuleDeclarations\TopLevelBindings\Method.fs" />
         <Compile Include="OpenDirectives\Open.fs" />
         <Compile Include="OpenDirectives\OpenType.fs" />
-        <Compile Include="MemberDefinitions\InterfaceMember.fs" />
-        <Compile Include="MemberDefinitions\AbstractMember.fs" />
+        <Compile Include="MemberDefinitions\Interface.fs" />
+        <Compile Include="MemberDefinitions\AbstractSlot.fs" />
+        <Compile Include="MemberDefinitions\AutoProperty.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
         <Compile Include="TypeDefinitions\Abbrev.fs" />
         <Compile Include="TypeDefinitions\Measure.fs" />
