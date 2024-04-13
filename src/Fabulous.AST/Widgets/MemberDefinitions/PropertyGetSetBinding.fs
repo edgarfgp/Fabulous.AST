@@ -129,12 +129,40 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
+        static member GetterBinding(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
+            WidgetBuilder<PropertyGetSetBindingNode>(
+                PropertyGetSetBinding.WidgetKey,
+                AttributesBundle(
+                    StackList.three(
+                        PropertyGetSetBinding.Parameters.WithValue([ parameter ] |> List.map(Gen.mkOak)),
+                        PropertyGetSetBinding.IsSetter.WithValue(false),
+                        PropertyGetSetBinding.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
         static member GetterBinding(parameters: WidgetBuilder<Pattern> list, expr: StringVariant) =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
                 AttributesBundle(
                     StackList.three(
                         PropertyGetSetBinding.Parameters.WithValue(parameters |> List.map(Gen.mkOak)),
+                        PropertyGetSetBinding.IsSetter.WithValue(false),
+                        PropertyGetSetBinding.BodyExpr.WithValue(StringOrWidget.StringExpr(expr))
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
+            )
+
+        static member GetterBinding(parameter: WidgetBuilder<Pattern>, expr: StringVariant) =
+            WidgetBuilder<PropertyGetSetBindingNode>(
+                PropertyGetSetBinding.WidgetKey,
+                AttributesBundle(
+                    StackList.three(
+                        PropertyGetSetBinding.Parameters.WithValue([ parameter ] |> List.map(Gen.mkOak)),
                         PropertyGetSetBinding.IsSetter.WithValue(false),
                         PropertyGetSetBinding.BodyExpr.WithValue(StringOrWidget.StringExpr(expr))
                     ),

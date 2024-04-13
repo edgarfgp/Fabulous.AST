@@ -78,6 +78,8 @@
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
+        <Compile Include="Widgets\Expressions\Set.fs" />
+        <Compile Include="Widgets\Expressions\IndexWithoutDot.fs" />
         <Compile Include="Widgets\Expressions\TypeApp.fs" />
         <Compile Include="Widgets\Expressions\OptVar.fs" />
         <Compile Include="Widgets\Expressions\ComputationExpressionStatement.fs" />

@@ -9,7 +9,7 @@ open type Ast
 module PropertyGetSet =
 
     [<Fact>]
-    let ``Produces a classes with an auto property``() =
+    let ``Produces a classes with get set members``() =
         Oak() {
             AnonymousModule() {
                 Class(
@@ -48,6 +48,18 @@ module PropertyGetSet =
                         SetterBinding(ParenPat(ParameterPat("value", String())), ConstantExpr(ConstantUnit()))
                             .returnType(Unit())
                     )
+
+                    Property(
+                        "this.Item",
+                        GetterBinding(
+                            ParenPat(NamedPat("index")),
+                            IndexWithoutDotExpr(Unquoted("ordinals"), Unquoted("index"))
+                        ),
+                        SetterBinding(
+                            [ NamedPat("index"); NamedPat("value") ],
+                            SetExpr(IndexWithoutDotExpr(Unquoted("ordinals"), Unquoted("index")), Unquoted("value"))
+                        )
+                    )
                 }
 
             }
@@ -74,5 +86,9 @@ type Person (name: string, age: int) =
     member this.LastName
         with get (): string = lastName
         and set (value: string): unit = ()
+
+    member this.Item
+        with get (index) = ordinals[index]
+        and set index value = ordinals[index] <- value
 
 """
