@@ -248,3 +248,16 @@ type ClassYieldExtensions =
         (this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>, x: WidgetBuilder<MemberDefnAutoPropertyNode>) : CollectionContent =
         let node = Gen.mkOak x
         ClassYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<TypeDefnRegularNode, MemberDefn>, x: MemberDefnPropertyGetSetNode)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.PropertyGetSet(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>, x: WidgetBuilder<MemberDefnPropertyGetSetNode>) : CollectionContent =
+        let node = Gen.mkOak x
+        ClassYieldExtensions.Yield(this, node)

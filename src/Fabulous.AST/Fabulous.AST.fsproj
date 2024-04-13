@@ -123,6 +123,8 @@
         <Compile Include="Widgets\MemberDefinitions\Interface.fs" />
         <Compile Include="Widgets\MemberDefinitions\AbstractSlot.fs" />
         <Compile Include="Widgets\MemberDefinitions\AutoProperty.fs" />
+        <Compile Include="Widgets\MemberDefinitions\PropertyGetSetBinding.fs" />
+        <Compile Include="Widgets\MemberDefinitions\PropertyGetSet.fs" />
         <Compile Include="Widgets\TypeDefinitions\Field.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\EnumCase.fs" />
