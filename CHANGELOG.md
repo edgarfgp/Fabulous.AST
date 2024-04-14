@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre5] - 2024-04-14
+
+### Added
+- WhileExpr widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/82
+- AutoProperty widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/83
+
+### Changed
+- Update Property widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/84
+
 ## [1.0.0-pre4] - 2024-04-07
 
 ### Added
