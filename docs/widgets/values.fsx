@@ -22,7 +22,7 @@ index: 4
 ## Properties
 | Properties            | Description |
 |-----------------------|-------------|
-| xmlDocs(, xmlDocs: string list) | Adds XML documentation to the value binding. |
+| xmlDocs(xmlDocs: string list) | Adds XML documentation to the value binding. |
 | attributes(attributes: WidgetBuilder<AttributeNode> list) | Adds attributes of the value binding. |
 | attributes(attributes: string list) | Adds attributes to the value binding. |
 | attribute(attribute: WidgetBuilder<AttributeNode>) | Adds an attribute to the value binding. |

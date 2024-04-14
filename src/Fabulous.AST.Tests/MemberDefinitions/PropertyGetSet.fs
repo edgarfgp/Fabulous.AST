@@ -66,7 +66,7 @@ module PropertyGetSet =
         }
         |> produces
             """
-type Person (name: string, age: int) =
+type Person(name: string, age: int) =
     member this.Name
         with get () = name
         and set value = ()

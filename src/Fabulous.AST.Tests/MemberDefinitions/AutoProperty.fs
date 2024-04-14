@@ -38,7 +38,7 @@ module AutoProperty =
         }
         |> produces
             """
-type Person (name: string, age: int) =
+type Person(name: string, age: int) =
     member val Name = name with get, set
     member val Age = age with get, set
     member val A = "" with get

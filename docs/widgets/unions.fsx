@@ -20,7 +20,7 @@ index: 6
 | Properties            | Description |
 |-----------------------|-------------|
 | members() | Sets the members of the union. |
-| xmlDocs(, xmlDocs: string list) | Adds XML documentation to the union. |
+| xmlDocs(xmlDocs: string list) | Adds XML documentation to the union. |
 | typeParams(typeParams: string list) | Adds type parameters to the union. |
 | attributes(attributes: WidgetBuilder<AttributeNode> list) | Adds attributes to the union. |
 | attributes(attributes: string list) | Adds attributes to the union. |

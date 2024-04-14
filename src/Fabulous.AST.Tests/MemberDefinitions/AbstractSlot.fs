@@ -101,7 +101,7 @@ type Meh =
         }
         |> produces
             """
-type Meh <'other, 'another> =
+type Meh<'other, 'another> =
     abstract member Area: float with get
     abstract member Area1: float with get
     abstract member Area2: float with set

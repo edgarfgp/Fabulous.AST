@@ -15,6 +15,8 @@ module ClassEnd =
 
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Constructor = Attributes.defineWidget "Constructor"
+    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let WidgetKey =
         Widgets.register "ClassEnd" (fun widget ->
@@ -39,6 +41,15 @@ module ClassEnd =
                             Range.Zero
                         )
                     )
+                | ValueNone -> None
+
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
+
+            let xmlDocs =
+                match lines with
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
                 | ValueNone -> None
 
             let typeParams = Widgets.tryGetScalarValue widget TypeParams
@@ -67,13 +78,24 @@ module ClassEnd =
                     |> TyparDecls.PostfixList
                     |> Some
 
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
             TypeDefnExplicitNode(
                 TypeNameNode(
-                    None,
+                    xmlDocs,
                     multipleAttributes,
                     SingleTextNode.``type``,
-                    Some(SingleTextNode.Create(name)),
-                    IdentListNode([], Range.Zero),
+                    accessControl,
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
                     [],
                     implicitConstructor,
@@ -109,6 +131,10 @@ module ClassEndBuilders =
 [<Extension>]
 type ClassEndModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
+        this.AddScalar(ClassEnd.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnExplicitNode>, values: WidgetBuilder<AttributeNode> list)
         =
@@ -138,6 +164,18 @@ type ClassEndModifiers =
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: string list) =
         this.AddScalar(ClassEnd.TypeParams.WithValue(typeParams))
+
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<TypeDefnExplicitNode>) =
+        this.AddScalar(ClassEnd.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<TypeDefnExplicitNode>) =
+        this.AddScalar(ClassEnd.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<TypeDefnExplicitNode>) =
+        this.AddScalar(ClassEnd.Accessibility.WithValue(AccessControl.Internal))
 
 [<Extension>]
 type ClassEndYieldExtensions =

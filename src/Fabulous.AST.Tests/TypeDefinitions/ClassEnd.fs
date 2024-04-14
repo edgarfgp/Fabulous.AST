@@ -20,7 +20,7 @@ type MyClass = class end
         Oak() { AnonymousModule() { ClassEnd("MyClass", Constructor()) } }
         |> produces
             """
-type MyClass () = class end
+type MyClass() = class end
             """
 
     [<Fact>]
@@ -35,7 +35,7 @@ type MyClass () = class end
         |> produces
             """
 [<Sealed; AbstractClass>]
-type MyClass () = class end
+type MyClass() = class end
             """
 
     [<Fact>]
@@ -50,7 +50,7 @@ type MyClass () = class end
         |> produces
             """
 [<Sealed; AbstractClass>]
-type MyClass (name: string) = class end
+type MyClass(name: string) = class end
             """
 
     [<Fact>]
@@ -65,7 +65,7 @@ type MyClass (name: string) = class end
         |> produces
             """
 [<Sealed; AbstractClass>]
-type MyClass <'a>(name: string) = class end
+type MyClass<'a>(name: string) = class end
             """
 
     [<Fact>]
@@ -73,7 +73,7 @@ type MyClass <'a>(name: string) = class end
         Oak() { AnonymousModule() { ClassEnd("MyClass") |> _.typeParams([ "'a"; "'b" ]) } }
         |> produces
             """
-type MyClass <'a, 'b> = class end
+type MyClass<'a, 'b> = class end
             """
 
     [<Fact>]
@@ -81,5 +81,5 @@ type MyClass <'a, 'b> = class end
         Oak() { AnonymousModule() { ClassEnd("MyClass", Constructor()).typeParams([ "'a"; "'b" ]) } }
         |> produces
             """
-type MyClass <'a, 'b>() = class end
+type MyClass<'a, 'b>() = class end
             """
