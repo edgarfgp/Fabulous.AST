@@ -64,6 +64,8 @@
         <Compile Include="Widgets\Patterns\Ands.fs" />
         <Compile Include="Widgets\Patterns\Tuple.fs" />
         <Compile Include="Widgets\Patterns\ArrayOrList.fs" />
+        <Compile Include="Widgets\Patterns\RecordField.fs" />
+        <Compile Include="Widgets\Patterns\Record.fs" />
         <Compile Include="Widgets\Patterns\StructTuple.fs" />
         <Compile Include="Widgets\Patterns\NamePatPair.fs" />
         <Compile Include="Widgets\Patterns\NamePatPairs.fs" />
