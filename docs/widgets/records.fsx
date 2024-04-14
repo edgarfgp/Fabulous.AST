@@ -20,7 +20,7 @@ index: 5
 | Properties            | Description |
 |-----------------------|-------------|
 | members() | Sets the members of the record. |
-| xmlDocs(, xmlDocs: string list) | Adds XML documentation to the record. |
+| xmlDocs(xmlDocs: string list) | Adds XML documentation to the record. |
 | typeParams(typeParams: string list) | Adds type parameters to the record. |
 | attributes(attributes: WidgetBuilder<AttributeNode> list) | Adds attributes to the record. |
 | attributes(attributes: string list) | Adds attributes to the record. |

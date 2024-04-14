@@ -95,7 +95,7 @@ type MyRecord =
 type Meh =
     abstract member Name: string
 
-type Person () =
+type Person() =
     interface Meh with
         member this.Name = "23"
 """

@@ -20,6 +20,8 @@ module Class =
 
     let IsClass = Attributes.defineScalar<bool> "IsClass"
 
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
     let WidgetKey =
         Widgets.register "Class" (fun widget ->
             let name =
@@ -95,13 +97,24 @@ module Class =
 
                 | ValueSome constructor -> Some constructor
 
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
             TypeDefnRegularNode(
                 TypeNameNode(
                     xmlDocs,
                     multipleAttributes,
                     SingleTextNode.``type``,
-                    Some(SingleTextNode.Create(name)),
-                    IdentListNode([], Range.Zero),
+                    accessControl,
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
                     [],
                     constructor,
@@ -182,6 +195,18 @@ type ClassModifiers =
     static member inline attribute(this: WidgetBuilder<TypeDefnRegularNode>, attribute: string) =
         ClassModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<TypeDefnRegularNode>) =
+        this.AddScalar(Class.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<TypeDefnRegularNode>) =
+        this.AddScalar(Class.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<TypeDefnRegularNode>) =
+        this.AddScalar(Class.Accessibility.WithValue(AccessControl.Internal))
+
 [<Extension>]
 type ClassYieldExtensions =
     [<Extension>]
@@ -246,5 +271,18 @@ type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield
         (this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>, x: WidgetBuilder<MemberDefnAutoPropertyNode>) : CollectionContent =
+        let node = Gen.mkOak x
+        ClassYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<TypeDefnRegularNode, MemberDefn>, x: MemberDefnPropertyGetSetNode)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.PropertyGetSet(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<TypeDefnRegularNode, MemberDefn>, x: WidgetBuilder<MemberDefnPropertyGetSetNode>) : CollectionContent =
         let node = Gen.mkOak x
         ClassYieldExtensions.Yield(this, node)

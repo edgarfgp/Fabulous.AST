@@ -16,7 +16,7 @@ module Class =
         Oak() { AnonymousModule() { Class("Person") { Property("this.Name", EscapeHatch(expr)) } } }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name = name
 
 """
@@ -27,10 +27,26 @@ type Person () =
         Oak() { AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) } } }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name = ""
 
 """
+
+    [<Fact>]
+    let ``Produces a private class with``() =
+
+        Oak() {
+            AnonymousModule() {
+                Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) }
+                |> _.toPrivate()
+            }
+        }
+        |> produces
+            """
+type private Person() =
+    member this.Name = ""
+
+    """
 
     [<Fact>]
     let ``Produces a class explicit constructor with params``() =
@@ -49,7 +65,7 @@ type Person () =
         }
         |> produces
             """
-type Person (name, lastName, age) =
+type Person(name, lastName, age) =
     member this.Name = name
 
 """
@@ -76,7 +92,7 @@ type Person (name, lastName, age) =
         }
         |> produces
             """
-type Person (name: string, lastName: string, ?age: int) =
+type Person(name: string, lastName: string, ?age: int) =
     member this.Name = name
 """
 
@@ -94,7 +110,7 @@ type Person (name: string, lastName: string, ?age: int) =
         }
         |> produces
             """
-type Person (name: string, age: int) =
+type Person(name: string, age: int) =
     member this.Name = name
 
 """
@@ -112,7 +128,7 @@ type Person (name: string, age: int) =
         |> produces
             """
 [<Struct>]
-type Person (name: string) =
+type Person(name: string) =
     member this.Name = name
 
 """
@@ -130,7 +146,7 @@ type Person (name: string) =
         |> produces
             """
 [<Sealed; AbstractClass>]
-type Person () =
+type Person() =
     member this.Name = ""
 
 """
@@ -147,7 +163,7 @@ module GenericClass =
         }
         |> produces
             """
-type Person <'a, 'b>() =
+type Person<'a, 'b>() =
     member this.Name = ""
 
 """
@@ -164,7 +180,7 @@ type Person <'a, 'b>() =
         }
         |> produces
             """
-type Person <'a, 'b>() =
+type Person<'a, 'b>() =
     member this.Name = ""
 
 """
@@ -182,7 +198,7 @@ type Person <'a, 'b>() =
         |> produces
             """
 [<Struct>]
-type Person <'a, 'b>() =
+type Person<'a, 'b>() =
     member this.Name = ""
 
 """

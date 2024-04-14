@@ -33,6 +33,7 @@
         <Compile Include="MemberDefinitions\Interface.fs" />
         <Compile Include="MemberDefinitions\AbstractSlot.fs" />
         <Compile Include="MemberDefinitions\AutoProperty.fs" />
+        <Compile Include="MemberDefinitions\PropertyGetSet.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
         <Compile Include="TypeDefinitions\Abbrev.fs" />
         <Compile Include="TypeDefinitions\Measure.fs" />

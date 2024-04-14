@@ -199,7 +199,7 @@ type Colors<'other> =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name1 = "name"
     static member Name2 = "name"
 
@@ -219,7 +219,7 @@ type Person () =
         }
         |> produces
             """
-type Person <'other>() =
+type Person<'other>() =
     member this.Name1 = "name"
     static member Name2 = "name"
 
@@ -237,7 +237,7 @@ type Person <'other>() =
         }
         |> produces
             """
-type Person () =
+type Person() =
     /// This is a comment
     member this.Name = "name"
 
@@ -267,7 +267,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member public this.Name = "name"
     member private this.Age = "name"
     member internal this.Address = "name"
@@ -285,7 +285,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name: int = 23
 """
 
@@ -296,7 +296,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member inline this.Name = "name"
 
 """
@@ -311,7 +311,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     [<Obsolete>]
     member this.Name = 23
 """

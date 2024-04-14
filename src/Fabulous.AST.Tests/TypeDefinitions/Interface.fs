@@ -44,7 +44,7 @@ module GenericInterface =
         }
         |> produces
             """
-type MyInterface <'other, 'another> =
+type MyInterface<'other, 'another> =
     abstract member Add: int -> int -> string -> int
     abstract member Pi: float
     abstract member Area: float with get, set

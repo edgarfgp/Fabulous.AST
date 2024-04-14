@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
@@ -80,3 +81,6 @@ module SingleTextNode =
     let ``do`` = SingleTextNode.Create "do"
     let arrow = SingleTextNode.Create "->"
     let ``while`` = SingleTextNode.Create "while"
+    let get = SingleTextNode.Create "get"
+    let set = SingleTextNode.Create "set"
+    let ``and`` = SingleTextNode.Create "and"

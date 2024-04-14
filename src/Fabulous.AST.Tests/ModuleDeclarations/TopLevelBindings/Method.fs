@@ -198,7 +198,7 @@ type Colors =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name() = 23
 """
 
@@ -213,7 +213,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name(p: string) = 23
 """
 
@@ -232,7 +232,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name(name: string, age: int) = 23
 """
 
@@ -254,7 +254,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name (name: string) (age: int) = 23
 """
 
@@ -497,7 +497,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     static member private GetPrimitiveReader
         (t: System.Type, reader: Microsoft.Data.SqlClient.SqlDataReader, isOpt: bool, isNullable: bool)
         =
@@ -568,7 +568,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     [<Obsolete>]
     member this.Name() = 23
 
@@ -583,7 +583,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member inline this.Name() = 23
 """
 
@@ -599,7 +599,7 @@ type Person () =
         }
         |> produces
             """
-type Person () =
+type Person() =
     member this.Name<'other>() = 23
             """
 
