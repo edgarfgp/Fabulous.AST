@@ -5,7 +5,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module RecordPat =
-    let Fields = Attributes.defineScalar<PatRecordField list> "Parameters"
+    let Fields = Attributes.defineScalar<PatRecordField list> "Fields"
 
     let WidgetKey =
         Widgets.register "RecordPat" (fun widget ->

@@ -8,9 +8,7 @@ module RecordFieldPat =
 
     let Prefix = Attributes.defineScalar<StringVariant> "Prefix"
 
-    let FieldName = Attributes.defineScalar<StringVariant> "OpenTextNode"
-
-    let CloseTextNode = Attributes.defineScalar<SingleTextNode> "CloseTextNode"
+    let FieldName = Attributes.defineScalar<StringVariant> "FieldName"
 
     let Pat = Attributes.defineScalar<StringOrWidget<Pattern>> "Pat"
 
