@@ -22,7 +22,7 @@ extern void HelloWorld()
         Oak() {
             AnonymousModule() {
                 ExternBinding("HelloWorld", "void")
-                    .parameter(ExternBindingPat("string", ConstantPat("x")))
+                    .parameter(ExternBindingPat("string", ConstantPat(Unquoted "x")))
             }
         }
         |> produces
@@ -36,8 +36,8 @@ extern void HelloWorld(string x)
             AnonymousModule() {
                 ExternBinding("HelloWorld", "void")
                     .parameters(
-                        [ ExternBindingPat("string", ConstantPat("x"))
-                          ExternBindingPat(Int32(), ConstantPat("y")) ]
+                        [ ExternBindingPat("string", ConstantPat(Unquoted "x"))
+                          ExternBindingPat(Int32(), ConstantPat(Unquoted "y")) ]
                     )
             }
         }
