@@ -36,6 +36,8 @@
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\RationalConstNode.fs" />
+        <Compile Include="Widgets\Measure.fs" />
+        <Compile Include="Widgets\Constant.fs" />
         <Compile Include="Widgets\Types\LongIdent.fs" />
         <Compile Include="Widgets\Types\HashConstraint.fs" />
         <Compile Include="Widgets\Types\StaticConstant.fs" />
@@ -56,7 +58,6 @@
         <Compile Include="Widgets\Patterns\Pattern.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Named.fs" />
-        <Compile Include="Widgets\Patterns\Const.fs" />
         <Compile Include="Widgets\Patterns\Or.fs" />
         <Compile Include="Widgets\Patterns\Paren.fs" />
         <Compile Include="Widgets\Patterns\IsInst.fs" />
@@ -74,8 +75,6 @@
         <Compile Include="Widgets\Patterns\NamedParenStarIdent.fs" />
         <Compile Include="Widgets\Patterns\As.fs" />
         <Compile Include="Widgets\Patterns\ListCons.fs" />
-        <Compile Include="Widgets\Expressions\Measure\Measure.fs" />
-        <Compile Include="Widgets\Expressions\Constant.fs" />
         <Compile Include="Widgets\Expressions\Expr.fs" />
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />

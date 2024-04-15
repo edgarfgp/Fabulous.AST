@@ -9,7 +9,7 @@ module Expr =
     let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
 
     let WidgetKey =
-        Widgets.register "Expr" (fun widget ->
+        Widgets.register "ConstantExpr" (fun widget ->
             let value = Widgets.getScalarValue widget Value
 
             let value =
