@@ -75,7 +75,6 @@ module ImplicitConstructorBuilders =
                 AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )
 
-[<Extension>]
 type ImplicitConstructorModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: string list) =

@@ -62,7 +62,6 @@ module SingleBuilders =
                 )
             )
 
-[<Extension>]
 type SingleExprModifiers =
     [<Extension>]
     static member inline addSpace(this: WidgetBuilder<Expr>, value: bool) =

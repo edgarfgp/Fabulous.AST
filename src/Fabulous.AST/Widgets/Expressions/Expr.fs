@@ -49,7 +49,6 @@ module ExprBuilders =
         static member NullExpr() =
             WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
 
-[<Extension>]
 type ExprYieldExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, Expr>, x: WidgetBuilder<Expr>) : CollectionContent =

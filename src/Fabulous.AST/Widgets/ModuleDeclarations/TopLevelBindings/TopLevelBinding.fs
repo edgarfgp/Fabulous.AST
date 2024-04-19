@@ -22,7 +22,6 @@ module BindingNode =
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
     let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
 
-[<Extension>]
 type TopLevelBindingModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
@@ -89,7 +88,6 @@ type TopLevelBindingModifiers =
     static member inline typeParams(this: WidgetBuilder<BindingNode>, typeParams: string list) =
         this.AddScalar(BindingNode.TypeParams.WithValue(typeParams))
 
-[<Extension>]
 type ValueYieldExtensions =
     [<Extension>]
     static member inline Yield

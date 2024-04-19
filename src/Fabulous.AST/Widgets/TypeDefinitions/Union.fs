@@ -125,7 +125,6 @@ module UnionBuilders =
                 AttributesBundle(StackList.one(Union.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-[<Extension>]
 type UnionModifiers =
     [<Extension>]
     static member inline members(this: WidgetBuilder<TypeDefnUnionNode>, members: WidgetBuilder<BindingNode> list) =
@@ -196,7 +195,6 @@ type UnionModifiers =
     static member inline toInternal(this: WidgetBuilder<TypeDefnUnionNode>) =
         this.AddScalar(Union.Accessibility.WithValue(AccessControl.Internal))
 
-[<Extension>]
 type UnionYieldExtensions =
     [<Extension>]
     static member inline Yield
@@ -208,7 +206,6 @@ type UnionYieldExtensions =
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
-[<Extension>]
 type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield

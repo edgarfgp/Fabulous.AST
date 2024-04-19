@@ -50,7 +50,6 @@ module ModuleDeclAttributeNodeBuilders =
                 )
             )
 
-[<Extension>]
 type ModuleDeclAttributeModifiers =
     [<Extension>]
     static member inline attributes
@@ -81,7 +80,6 @@ type ModuleDeclAttributeModifiers =
     static member inline attribute(this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: string) =
         ModuleDeclAttributeModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
-[<Extension>]
 type ModuleDeclAttributesYieldExtensions =
     [<Extension>]
     static member inline Yield

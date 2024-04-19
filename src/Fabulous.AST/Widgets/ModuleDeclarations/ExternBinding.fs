@@ -130,7 +130,6 @@ module ExternBindingNodeBuilders =
                 )
             )
 
-[<Extension>]
 type ExternBindingNodeModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, comments: string list) =
@@ -192,7 +191,6 @@ type ExternBindingNodeModifiers =
         =
         ExternBindingNodeModifiers.parameters(this, [ value ])
 
-[<Extension>]
 type ExternBindingNodeYieldExtensions =
     [<Extension>]
     static member inline Yield

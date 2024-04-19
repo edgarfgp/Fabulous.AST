@@ -30,7 +30,6 @@ module AnonymousModuleBuilders =
         static member Oak() =
             CollectionBuilder<Oak, ModuleOrNamespaceNode>(Oak.WidgetKey, Oak.Decls)
 
-[<Extension>]
 type AnonymousModuleModifiers =
     [<Extension>]
     static member inline hashDirectives(this: WidgetBuilder<Oak>, values: WidgetBuilder<ParsedHashDirectiveNode> list) =
@@ -40,7 +39,6 @@ type AnonymousModuleModifiers =
     static member inline hashDirective(this: WidgetBuilder<Oak>, value: WidgetBuilder<ParsedHashDirectiveNode>) =
         AnonymousModuleModifiers.hashDirectives(this, [ value ])
 
-[<Extension>]
 type AnonymousModuleExtensions =
     [<Extension>]
     static member inline Yield

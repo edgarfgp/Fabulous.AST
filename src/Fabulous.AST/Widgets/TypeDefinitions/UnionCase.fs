@@ -82,7 +82,6 @@ module UnionCaseBuilders =
                 )
             )
 
-[<Extension>]
 type UnionCaseModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: string list) =

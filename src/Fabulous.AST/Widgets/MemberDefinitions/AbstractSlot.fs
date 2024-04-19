@@ -377,7 +377,6 @@ module AbstractMemberBuilders =
                 )
             )
 
-[<Extension>]
 type AbstractMemberModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, comments: string list) =

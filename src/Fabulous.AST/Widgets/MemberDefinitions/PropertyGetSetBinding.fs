@@ -253,7 +253,6 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
-[<Extension>]
 type PropertyGetSetBindingModifiers =
     [<Extension>]
     static member inline toInlined(this: WidgetBuilder<PropertyGetSetBindingNode>) =

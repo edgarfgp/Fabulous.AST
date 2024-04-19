@@ -158,7 +158,6 @@ module ClassBuilders =
                 )
             )
 
-[<Extension>]
 type ClassModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string list) =
@@ -207,7 +206,6 @@ type ClassModifiers =
     static member inline toInternal(this: WidgetBuilder<TypeDefnRegularNode>) =
         this.AddScalar(Class.Accessibility.WithValue(AccessControl.Internal))
 
-[<Extension>]
 type ClassYieldExtensions =
     [<Extension>]
     static member inline Yield

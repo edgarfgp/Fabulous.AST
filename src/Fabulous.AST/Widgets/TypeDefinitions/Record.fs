@@ -126,7 +126,6 @@ module RecordBuilders =
                 AttributesBundle(StackList.one(Record.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-[<Extension>]
 type RecordModifiers =
     [<Extension>]
     static member inline members(this: WidgetBuilder<TypeDefnRecordNode>, members: WidgetBuilder<BindingNode> list) =
@@ -197,7 +196,6 @@ type RecordModifiers =
     static member inline toInternal(this: WidgetBuilder<TypeDefnRecordNode>) =
         this.AddScalar(Record.Accessibility.WithValue(AccessControl.Internal))
 
-[<Extension>]
 type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield

@@ -93,7 +93,6 @@ module ExternBindingPatternNodeBuilders =
                 )
             )
 
-[<Extension>]
 type ExternBindingPatternNodeModifiers =
     [<Extension>]
     static member inline attributes

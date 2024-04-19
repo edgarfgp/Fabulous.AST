@@ -97,7 +97,6 @@ module EnumCaseBuilders =
                 )
             )
 
-[<Extension>]
 type EnumCaseModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: string list) =

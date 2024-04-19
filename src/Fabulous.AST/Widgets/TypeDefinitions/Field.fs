@@ -91,7 +91,6 @@ module FieldBuilders =
                 )
             )
 
-[<Extension>]
 type FieldModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<FieldNode>, comments: string list) =

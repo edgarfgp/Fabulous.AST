@@ -63,7 +63,6 @@ module NestedModuleBuilders =
                 AttributesBundle(StackList.one(NestedModule.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-[<Extension>]
 type NestedModuleModifiers =
     [<Extension>]
     static member inline toRecursive(this: WidgetBuilder<NestedModuleNode>) =
@@ -81,7 +80,6 @@ type NestedModuleModifiers =
     static member inline toInternal(this: WidgetBuilder<NestedModuleNode>) =
         this.AddScalar(NestedModule.Accessibility.WithValue(AccessControl.Internal))
 
-[<Extension>]
 type NestedModuleYieldExtensions =
     [<Extension>]
     static member inline Yield
