@@ -122,7 +122,6 @@ module ModuleOrNamespaceBuilders =
                 )
             )
 
-[<Extension>]
 type ModuleOrNamespaceModifiers =
     [<Extension>]
     static member inline toRecursive(this: WidgetBuilder<ModuleOrNamespaceNode>) =
@@ -140,7 +139,6 @@ type ModuleOrNamespaceModifiers =
     static member inline toInternal(this: WidgetBuilder<ModuleOrNamespaceNode>) =
         this.AddScalar(ModuleOrNamespace.Accessibility.WithValue(AccessControl.Internal))
 
-[<Extension>]
 type ModuleOrNamespaceExtensions =
     [<Extension>]
     static member inline Yield

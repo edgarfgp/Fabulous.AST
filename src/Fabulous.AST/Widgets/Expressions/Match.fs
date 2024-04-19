@@ -58,7 +58,6 @@ module MatchBuilders =
                 )
             )
 
-[<Extension>]
 type MatchYieldExtensions =
     [<Extension>]
     static member inline Yield

@@ -87,7 +87,6 @@ module PatternBuilders =
         static member UnitPat() =
             WidgetBuilder<Pattern>(Pattern.WidgetUnitKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
 
-[<Extension>]
 type PatternModifiers =
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<Pattern>, values: string list) =

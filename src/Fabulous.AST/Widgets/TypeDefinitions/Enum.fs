@@ -84,7 +84,6 @@ module EnumBuilders =
                 AttributesBundle(StackList.one(Enum.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-[<Extension>]
 type EnumModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnEnumNode>, xmlDocs: string list) =
@@ -117,7 +116,6 @@ type EnumModifiers =
     static member inline attribute(this: WidgetBuilder<TypeDefnEnumNode>, attribute: string) =
         EnumModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
-[<Extension>]
 type EnumYieldExtensions =
     [<Extension>]
     static member inline Yield

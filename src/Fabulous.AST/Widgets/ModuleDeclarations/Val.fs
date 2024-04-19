@@ -149,7 +149,6 @@ module ValBuilders =
                 )
             )
 
-[<Extension>]
 type ValNodeModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ValNode>, comments: string list) =
@@ -204,7 +203,6 @@ type ValNodeModifiers =
     static member inline typeParams(this: WidgetBuilder<ValNode>, typeParams: string list) =
         this.AddScalar(Val.TypeParams.WithValue(typeParams))
 
-[<Extension>]
 type ValYieldExtensions =
     [<Extension>]
     static member inline Yield

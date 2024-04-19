@@ -71,7 +71,6 @@ module ObjExprBuilders =
                 )
             )
 
-[<Extension>]
 type ObjExprModifiers =
     [<Extension>]
     static member bindings(this: WidgetBuilder<Expr>, bindings: WidgetBuilder<BindingNode> list) =

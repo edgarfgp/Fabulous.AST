@@ -139,7 +139,6 @@ module PropertyGetSetMemberMemberBuilders =
                 )
             )
 
-[<Extension>]
 type PropertyGetSetMemberModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: string list) =

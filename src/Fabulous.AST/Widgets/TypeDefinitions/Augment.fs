@@ -54,7 +54,6 @@ module AugmentBuilders =
                 AttributesBundle(StackList.one(Augmentation.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-[<Extension>]
 type AugmentYieldExtensions =
     [<Extension>]
     static member inline Yield

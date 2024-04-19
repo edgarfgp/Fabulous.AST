@@ -154,7 +154,6 @@ module ForEachBuilders =
                 )
             )
 
-[<Extension>]
 type ForEachExprModifiers =
     [<Extension>]
     static member useArrow(this: WidgetBuilder<Expr>) =

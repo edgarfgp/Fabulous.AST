@@ -48,7 +48,6 @@ module HashDirectiveBuilders =
             let args = value |> List.map(Unquoted)
             Ast.BaseHashDirective(ident, args)
 
-[<Extension>]
 type HashDirectiveNodeExtensions =
 
     [<Extension>]

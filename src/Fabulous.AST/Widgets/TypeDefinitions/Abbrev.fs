@@ -74,7 +74,6 @@ module AbbrevBuilders =
                 )
             )
 
-[<Extension>]
 type AbbrevYieldExtensions =
     [<Extension>]
     static member inline Yield

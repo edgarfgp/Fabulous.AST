@@ -46,7 +46,6 @@ module OpenTypeBuilders =
                 )
             )
 
-[<Extension>]
 type OpenTypeYieldExtensions =
     [<Extension>]
     static member inline Yield

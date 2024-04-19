@@ -27,7 +27,6 @@ module OpenBuilders =
                 AttributesBundle(StackList.one(Open.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-[<Extension>]
 type OpenYieldExtensions =
     [<Extension>]
     static member inline Yield

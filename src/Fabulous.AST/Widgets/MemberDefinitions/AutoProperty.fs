@@ -186,7 +186,6 @@ module AutoPropertyMemberBuilders =
                 )
             )
 
-[<Extension>]
 type AutoPropertyMemberModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, values: string list) =

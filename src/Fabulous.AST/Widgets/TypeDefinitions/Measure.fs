@@ -149,20 +149,17 @@ module TypeDefnAbbrevNodeBuilders =
                 )
             )
 
-[<Extension>]
 type TypeNameNodeModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeNameNode>, comments: string list) =
         this.AddScalar(TypeDefnAbbrevNode.XmlDocs.WithValue(comments))
 
-[<Extension>]
 type UnitsOfTypeDefnAbbrevNodeAbbrevModifiers =
 
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, comments: string list) =
         this.AddScalar(TypeDefnAbbrevNode.XmlDocsAbbrev.WithValue(comments))
 
-[<Extension>]
 type TypeDefnAbbrevNodeYieldExtensions =
     [<Extension>]
     static member inline Yield

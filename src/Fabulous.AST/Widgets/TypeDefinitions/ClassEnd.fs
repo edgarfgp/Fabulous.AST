@@ -128,7 +128,6 @@ module ClassEndBuilders =
                 )
             )
 
-[<Extension>]
 type ClassEndModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
@@ -177,7 +176,6 @@ type ClassEndModifiers =
     static member inline toInternal(this: WidgetBuilder<TypeDefnExplicitNode>) =
         this.AddScalar(ClassEnd.Accessibility.WithValue(AccessControl.Internal))
 
-[<Extension>]
 type ClassEndYieldExtensions =
     [<Extension>]
     static member inline Yield
