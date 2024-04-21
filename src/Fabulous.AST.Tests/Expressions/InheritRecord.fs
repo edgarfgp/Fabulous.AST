@@ -15,31 +15,27 @@ module InheritRecord =
             AnonymousModule() {
                 InheritRecordExpr(
                     InheritConstructorTypeOnly(Unquoted "BaseClass"),
-                    [
-                       RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                       RecordFieldExpr("C", ConstantExpr(Unquoted "2"))
-                    ])
+                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
+                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                )
 
                 InheritRecordExpr(
                     InheritConstructorParen(Unquoted "BaseClass", ParenExpr(ConstantExpr(Unquoted "1"))),
-                    [
-                       RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                       RecordFieldExpr("C", ConstantExpr(Unquoted "2"))
-                    ])
+                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
+                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                )
 
                 InheritRecordExpr(
                     InheritConstructorUnit(Unquoted "BaseClass"),
-                    [
-                       RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                       RecordFieldExpr("C", ConstantExpr(Unquoted "2"))
-                    ])
+                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
+                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                )
 
                 InheritRecordExpr(
                     InheritConstructorOther(Unquoted "BaseClass", ParenExpr(ConstantExpr(Unquoted "1"))),
-                    [
-                       RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                       RecordFieldExpr("C", ConstantExpr(Unquoted "2"))
-                    ])
+                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
+                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                )
             }
         }
         |> produces
