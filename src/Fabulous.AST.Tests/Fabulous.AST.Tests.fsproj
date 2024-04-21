@@ -62,6 +62,7 @@
         <Compile Include="Expressions\Constant.fs" />
         <Compile Include="Expressions\Match.fs" />
         <Compile Include="Expressions\InfixApp.fs" />
+        <Compile Include="Expressions\InheritRecord.fs" />
         <Compile Include="Expressions\Record.fs" />
         <Compile Include="Expressions\Conditionals.fs" />
         <Compile Include="Patterns\Or.fs" />

@@ -38,6 +38,7 @@
         <Compile Include="Widgets\RationalConstNode.fs" />
         <Compile Include="Widgets\Measure.fs" />
         <Compile Include="Widgets\Constant.fs" />
+        <Compile Include="Widgets\InheritConstructor.fs" />
         <Compile Include="Widgets\Types\LongIdent.fs" />
         <Compile Include="Widgets\Types\HashConstraint.fs" />
         <Compile Include="Widgets\Types\StaticConstant.fs" />
@@ -87,7 +88,8 @@
         <Compile Include="Widgets\Expressions\CompExprBody.fs" />
         <Compile Include="Widgets\Expressions\SameInfixApps.fs" />
         <Compile Include="Widgets\Expressions\ObjExpr.fs" />
-        <Compile Include="Widgets\Expressions\Quoted.fs" />
+        <Compile Include="Widgets\Expressions\Quote.fs" />
+        <Compile Include="Widgets\Expressions\InheritRecord.fs" />
         <Compile Include="Widgets\Expressions\Typed.fs" />
         <Compile Include="Widgets\Expressions\Computation.fs" />
         <Compile Include="Widgets\Expressions\NamedComputation.fs" />
