@@ -84,3 +84,4 @@ module SingleTextNode =
     let get = SingleTextNode.Create "get"
     let set = SingleTextNode.Create "set"
     let ``and`` = SingleTextNode.Create "and"
+    let ``inherit`` = SingleTextNode.Create "inherit"
