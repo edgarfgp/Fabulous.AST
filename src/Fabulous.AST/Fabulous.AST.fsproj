@@ -126,6 +126,7 @@
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Property.fs" />
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Method.fs" />
         <Compile Include="Widgets\MemberDefinitions\Interface.fs" />
+        <Compile Include="Widgets\MemberDefinitions\Inherit.fs" />
         <Compile Include="Widgets\MemberDefinitions\AbstractSlot.fs" />
         <Compile Include="Widgets\MemberDefinitions\AutoProperty.fs" />
         <Compile Include="Widgets\MemberDefinitions\PropertyGetSetBinding.fs" />
