@@ -36,6 +36,7 @@
         <Compile Include="MemberDefinitions\PropertyGetSet.fs" />
         <Compile Include="MemberDefinitions\InheritConstructor.fs" />
         <Compile Include="MemberDefinitions\Inherit.fs" />
+        <Compile Include="MemberDefinitions\LetBinding.fs" />
         <Compile Include="TypeDefinitions\Union.fs" />
         <Compile Include="TypeDefinitions\Abbrev.fs" />
         <Compile Include="TypeDefinitions\Measure.fs" />
