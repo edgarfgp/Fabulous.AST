@@ -14,9 +14,12 @@ module Single =
             AnonymousModule() {
                 Value(
                     "x",
-                    SingleExpr("a", ConstantExpr(Constant(Unquoted "b")))
-                        .addSpace(true)
-                        .supportsStroustrup(false)
+                    SingleExpr(
+                        SingleNode("a", ConstantExpr(Constant(Unquoted "b")))
+                            .addSpace(true)
+                            .supportsStroustrup(false)
+                    )
+
                 )
             }
         }
