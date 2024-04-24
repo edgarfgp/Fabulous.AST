@@ -29,7 +29,7 @@ module EnumCase =
             let value =
                 match value with
                 | StringOrWidget.StringExpr value ->
-                    Expr.Constant(Constant.FromText(SingleTextNode.Create(value.Normalize())))
+                    Expr.Constant(Constant.FromText(SingleTextNode.Create(StringVariant.normalize value)))
                 | StringOrWidget.WidgetExpr value -> value
 
             let xmlDocs =

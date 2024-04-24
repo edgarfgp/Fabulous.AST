@@ -87,7 +87,7 @@ type MyRecord =
             AnonymousModule() {
                 Interface("Meh") { AbstractProperty("Name", String()) }
 
-                Class("Person") { InterfaceMember("Meh", [ Property("this.Name", ConstantExpr(Quoted "23")) ]) }
+                Class("Person") { InterfaceMember("Meh", [ Property("this.Name", ConstantExpr(DoubleQuoted "23")) ]) }
             }
         }
         |> produces

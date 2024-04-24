@@ -57,7 +57,11 @@ module ExternBindingPattern =
                 | ValueSome value ->
                     match value with
                     | StringOrWidget.StringExpr value ->
-                        Some(Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value.Normalize()), Range.Zero)))
+                        Some(
+                            Pattern.Named(
+                                PatNamedNode(None, SingleTextNode.Create(StringVariant.normalize value), Range.Zero)
+                            )
+                        )
                     | StringOrWidget.WidgetExpr pattern -> Some pattern
                 | ValueNone -> None
 

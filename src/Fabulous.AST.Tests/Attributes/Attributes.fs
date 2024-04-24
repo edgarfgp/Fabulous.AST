@@ -23,7 +23,7 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 Value("x", Unquoted "12")
-                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "This is obsolete"))))
+                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(DoubleQuoted "This is obsolete"))))
             }
         }
         |> produces
@@ -37,7 +37,7 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 Value("x", Unquoted "12")
-                    .attributes([ Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "This is obsolete"))) ])
+                    .attributes([ Attribute("Obsolete", ParenExpr(ConstantExpr(DoubleQuoted "This is obsolete"))) ])
             }
         }
         |> produces

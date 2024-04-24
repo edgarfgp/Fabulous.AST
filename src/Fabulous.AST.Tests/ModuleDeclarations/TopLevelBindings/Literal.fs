@@ -31,7 +31,7 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 for name, value in images do
-                    Value(name, ConstantExpr(Quoted $"{value}")).attribute("Literal")
+                    Value(name, ConstantExpr(DoubleQuoted $"{value}")).attribute("Literal")
             }
         }
         |> produces

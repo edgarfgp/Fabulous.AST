@@ -11,7 +11,7 @@ module Computation =
 
     [<Fact>]
     let ``let value with a Computation expression``() =
-        Oak() { AnonymousModule() { ComputationExpr(ConstantExpr(Quoted "a")) } }
+        Oak() { AnonymousModule() { ComputationExpr(ConstantExpr(DoubleQuoted "a")) } }
         |> produces
             """
 { "a" }

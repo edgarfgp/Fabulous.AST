@@ -14,7 +14,9 @@ module PropertyGetSet =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])))
+                    ImplicitConstructor(
+                        ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ]))
+                    )
                 ) {
                     Property(
                         "this.Name",

@@ -14,12 +14,12 @@ module LetBinding =
             AnonymousModule() {
                 Class("Person") {
 
-                    LetBinding(Value("_name", Quoted "").toMutable())
+                    LetBinding(Value("_name", DoubleQuoted "").toMutable())
 
                     LetBindings(
-                        [ Value("_age", Quoted "0").toMutable()
-                          Value("_height", Quoted "0.0").toMutable()
-                          Value("_weight", Quoted "0.0").toMutable() ]
+                        [ Value("_age", DoubleQuoted "0").toMutable()
+                          Value("_height", DoubleQuoted "0.0").toMutable()
+                          Value("_weight", DoubleQuoted "0.0").toMutable() ]
                     )
 
                     Property(

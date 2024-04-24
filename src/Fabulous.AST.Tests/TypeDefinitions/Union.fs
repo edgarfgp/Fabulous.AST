@@ -69,7 +69,7 @@ type Colors =
                     UnionCase("Yellow")
                 })
                     .interfaces(
-                        [ InterfaceMember("IMyInterface", [ Property("x.GetValue", ConstantExpr(Quoted "")) ]) ]
+                        [ InterfaceMember("IMyInterface", [ Property("x.GetValue", ConstantExpr(DoubleQuoted "")) ]) ]
                     )
 
             }
@@ -229,7 +229,7 @@ type Colors<'other> =
                 })
                     .typeParams([ "'other" ])
                     .interfaces(
-                        [ InterfaceMember("IMyInterface", [ Property("x.GetValue", ConstantExpr(Quoted "")) ]) ]
+                        [ InterfaceMember("IMyInterface", [ Property("x.GetValue", ConstantExpr(DoubleQuoted "")) ]) ]
                     )
             }
         }

@@ -14,11 +14,8 @@ module BindingMethodNode =
             let name =
                 match name with
                 | StringOrWidget.StringExpr name ->
-                    match name with
-                    | Quoted name -> SingleTextNode.Create name
-                    | Unquoted name -> SingleTextNode.Create name
-                    | TripleQuoted name -> SingleTextNode.Create name
-                | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
+                    Some(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes name))
+                | StringOrWidget.WidgetExpr _ -> None
 
             let parameters = Widgets.getScalarValue widget BindingNode.Parameters
             let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
@@ -131,7 +128,14 @@ module BindingMethodNode =
                 false,
                 inlineNode,
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
+                Choice1Of2(
+                    IdentListNode(
+                        [ match name with
+                          | None -> ()
+                          | Some value -> IdentifierOrDot.Ident(value) ],
+                        Range.Zero
+                    )
+                ),
                 typeParams,
                 parameters,
                 returnType,

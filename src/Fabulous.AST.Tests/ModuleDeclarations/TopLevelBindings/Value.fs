@@ -49,7 +49,7 @@ let x = 12
                         "GdmtSubcommands",
                         ArrayExpr(
                             [ for subcommand in subcommands do
-                                  ConstantExpr(Quoted subcommand) ]
+                                  ConstantExpr(DoubleQuoted subcommand) ]
                         )
                     )
                 }

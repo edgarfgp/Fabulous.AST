@@ -48,7 +48,7 @@ module Types =
                 Value("m", Unquoted "1.0").returnType(Double())
                 Value("n", Unquoted "1.0f").returnType(Single())
                 Value("o", Unquoted "'c'").returnType(Char())
-                Value("p", Quoted "str").returnType(String())
+                Value("p", DoubleQuoted "str").returnType(String())
                 Value("q", Unquoted "()").returnType(Unit())
                 Value("r", Unquoted "1.").returnType(Float())
                 Value("s", Unquoted "1.f").returnType(Float32())

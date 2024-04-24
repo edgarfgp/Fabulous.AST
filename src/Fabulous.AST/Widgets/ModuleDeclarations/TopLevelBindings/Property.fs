@@ -115,8 +115,8 @@ module BindingProperty =
 
             let name =
                 match name with
-                | StringOrWidget.StringExpr name ->
-                    let name = SingleTextNode.Create(name.Normalize())
+                | StringOrWidget.StringExpr value ->
+                    let name = SingleTextNode.Create(StringVariant.normalize value)
                     Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero))
                 | StringOrWidget.WidgetExpr pattern -> Choice2Of2(pattern)
 

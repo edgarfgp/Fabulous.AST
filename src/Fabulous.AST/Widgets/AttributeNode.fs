@@ -25,7 +25,7 @@ module AttributeNode =
                     match expr with
                     | StringOrWidget.StringExpr value ->
                         Expr.Constant(
-                            Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
+                            Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierBackticks(value)))
                         )
                         |> Some
                     | StringOrWidget.WidgetExpr value -> Some value

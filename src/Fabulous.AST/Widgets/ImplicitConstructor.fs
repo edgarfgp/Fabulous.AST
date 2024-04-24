@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
-module Constructor =
+module ImplicitConstructor =
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
@@ -16,6 +16,10 @@ module Constructor =
     let TypeParams = Attributes.defineScalar<string list> "TypeParams"
 
     let Patterns = Attributes.defineWidget "Pattern"
+
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
+    let Alias = Attributes.defineScalar<StringVariant> "Alias"
 
     let WidgetKey =
         Widgets.register "ImplicitConstructor" (fun widget ->
@@ -54,38 +58,72 @@ module Constructor =
                 | ValueSome pattern -> pattern
                 | ValueNone -> pattern
 
-            ImplicitConstructorNode(xmlDocs, multipleAttributes, None, pattern, None, Range.Zero))
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
+            let alias =
+                match Widgets.tryGetScalarValue widget Alias with
+                | ValueNone -> None
+                | ValueSome value ->
+                    let value = StringParsing.normalizeIdentifierBackticks value
+                    Some(AsSelfIdentifierNode(SingleTextNode.``as``, SingleTextNode.Create(value), Range.Zero))
+
+            ImplicitConstructorNode(xmlDocs, multipleAttributes, accessControl, pattern, alias, Range.Zero))
 
 [<AutoOpen>]
 module ImplicitConstructorBuilders =
     type Ast with
-        static member Constructor(pattern: WidgetBuilder<Pattern>) =
+        static member ImplicitConstructor(pattern: WidgetBuilder<Pattern>) =
             WidgetBuilder<ImplicitConstructorNode>(
-                Constructor.WidgetKey,
+                ImplicitConstructor.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    [| Constructor.Patterns.WithValue(pattern.Compile()) |],
+                    [| ImplicitConstructor.Patterns.WithValue(pattern.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member Constructor() =
+        static member ImplicitConstructor(pattern: WidgetBuilder<Pattern>, alias: StringVariant) =
             WidgetBuilder<ImplicitConstructorNode>(
-                Constructor.WidgetKey,
+                ImplicitConstructor.WidgetKey,
+                AttributesBundle(
+                    StackList.one(ImplicitConstructor.Alias.WithValue(alias)),
+                    [| ImplicitConstructor.Patterns.WithValue(pattern.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member ImplicitConstructor() =
+            WidgetBuilder<ImplicitConstructorNode>(
+                ImplicitConstructor.WidgetKey,
                 AttributesBundle(StackList.empty(), Array.empty, Array.empty)
+            )
+
+        static member ImplicitConstructor(alias: StringVariant) =
+            WidgetBuilder<ImplicitConstructorNode>(
+                ImplicitConstructor.WidgetKey,
+                AttributesBundle(StackList.one(ImplicitConstructor.Alias.WithValue(alias)), Array.empty, Array.empty)
             )
 
 type ImplicitConstructorModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: string list) =
-        this.AddScalar(Constructor.XmlDocs.WithValue(xmlDocs))
+        this.AddScalar(ImplicitConstructor.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<ImplicitConstructorNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
-            Constructor.MultipleAttributes.WithValue(
+            ImplicitConstructor.MultipleAttributes.WithValue(
                 [ for attr in attributes do
                       Gen.mkOak attr ]
             )
@@ -108,3 +146,15 @@ type ImplicitConstructorModifiers =
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ImplicitConstructorNode>, attribute: string) =
         ImplicitConstructorModifiers.attributes(this, [ Ast.Attribute(attribute) ])
+
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<ImplicitConstructorNode>) =
+        this.AddScalar(ImplicitConstructor.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<ImplicitConstructorNode>) =
+        this.AddScalar(ImplicitConstructor.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<ImplicitConstructorNode>) =
+        this.AddScalar(ImplicitConstructor.Accessibility.WithValue(AccessControl.Internal))

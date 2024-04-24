@@ -14,7 +14,7 @@ module ObjExpr =
         Oak() {
             AnonymousModule() {
                 ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit()))
-                    .bindings([ Method("x.ToString", [], ConstantExpr(Quoted("F#"))) ])
+                    .bindings([ Method("x.ToString", [], ConstantExpr(DoubleQuoted("F#"))) ])
             }
         }
         |> produces
@@ -41,7 +41,7 @@ module ObjExpr =
                                   InfixAppExpr(
                                       ConstantExpr(Constant(Unquoted "format")),
                                       "=",
-                                      ConstantExpr(Constant(Quoted "D"))
+                                      ConstantExpr(Constant(DoubleQuoted "D"))
                                   ),
                                   SameInfixAppsExpr(
                                       ConstantExpr(Unquoted("delim1")),

@@ -33,6 +33,7 @@
         <Compile Include="DSL\Attributes.fs" />
         <Compile Include="DSL\Gen.fs" />
         <Compile Include="Widgets\SingleTextNode.fs" />
+        <Compile Include="Widgets\StringParsing.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
         <Compile Include="Widgets\SingleNode.fs" />
@@ -56,7 +57,7 @@
         <Compile Include="Widgets\Types\MeasurePower.fs" />
         <Compile Include="Widgets\Types\Funs.fs" />
         <Compile Include="Widgets\Types\CommonTypes.fs" />
-        <Compile Include="Widgets\Attributes\AttributeNode.fs" />
+        <Compile Include="Widgets\AttributeNode.fs" />
         <Compile Include="Widgets\Patterns\Pattern.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Named.fs" />
@@ -142,7 +143,7 @@
         <Compile Include="Widgets\TypeDefinitions\Measure.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />
-        <Compile Include="Widgets\TypeDefinitions\Constructor.fs" />
+        <Compile Include="Widgets\ImplicitConstructor.fs" />
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />
         <Compile Include="Widgets\TypeDefinitions\ClassEnd.fs" />
         <Compile Include="Widgets\TypeDefinitions\Augment.fs" />

@@ -13,6 +13,7 @@
     <ItemGroup>
         <Compile Include="TestHelpers.fs" />
         <Compile Include="WidgetTests.fs" />
+        <Compile Include="StringVariant.fs" />
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
         <Compile Include="ModuleDeclarations\AnonymousModule.fs" />

@@ -114,9 +114,9 @@ type HEX = { R: int; G: int; B: int }
         Oak() {
             AnonymousModule() {
                 HashDirective("if", "!DEBUG")
-                Value("str", ConstantExpr(Quoted "Not debugging!"))
+                Value("str", ConstantExpr(DoubleQuoted "Not debugging!"))
                 HashDirective("else")
-                Value("str", ConstantExpr(Quoted "Debugging!"))
+                Value("str", ConstantExpr(DoubleQuoted "Debugging!"))
                 HashDirective("endif")
             }
         }

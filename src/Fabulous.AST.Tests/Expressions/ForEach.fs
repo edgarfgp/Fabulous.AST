@@ -44,8 +44,8 @@ for i in 0..9 do
                     "i",
                     "0..9",
                     CompExprBodyExpr(
-                        [ OtherExpr(AppExpr("printfn", ConstantExpr(Quoted(""))))
-                          OtherExpr(AppExpr("printfn", ConstantExpr(Quoted(""))))
+                        [ OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
+                          OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
                           OtherExpr(InfixAppExpr(Unquoted("i"), "|>", Unquoted("ignore"))) ]
                     )
                 )

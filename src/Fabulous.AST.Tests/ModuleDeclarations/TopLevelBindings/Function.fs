@@ -143,7 +143,7 @@ let x (i: int, j: string, k: bool) = ()
         Oak() {
             AnonymousModule() {
                 (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "Use bar instead"))))
+                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(DoubleQuoted "Use bar instead"))))
             }
         }
         |> produces

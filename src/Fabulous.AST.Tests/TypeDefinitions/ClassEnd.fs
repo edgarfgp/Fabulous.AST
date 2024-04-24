@@ -17,7 +17,7 @@ type MyClass = class end
 
     [<Fact>]
     let ``Produces a class end with constructor``() =
-        Oak() { AnonymousModule() { ClassEnd("MyClass", Constructor()) } }
+        Oak() { AnonymousModule() { ClassEnd("MyClass", ImplicitConstructor()) } }
         |> produces
             """
 type MyClass() = class end
@@ -27,7 +27,7 @@ type MyClass() = class end
     let ``Produces a class end with constructor and attributes``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", Constructor())
+                ClassEnd("MyClass", ImplicitConstructor())
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
@@ -42,7 +42,7 @@ type MyClass() = class end
     let ``Produces a class end with constructor params``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", Constructor(ParenPat(ParameterPat("name", String()))))
+                ClassEnd("MyClass", ImplicitConstructor(ParenPat(ParameterPat("name", String()))))
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
@@ -57,7 +57,7 @@ type MyClass(name: string) = class end
     let ``Produces a class end with constructor params and type args``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", Constructor(ParenPat(ParameterPat("name", String()))))
+                ClassEnd("MyClass", ImplicitConstructor(ParenPat(ParameterPat("name", String()))))
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
                     .typeParams([ "'a" ])
             }
@@ -78,7 +78,7 @@ type MyClass<'a, 'b> = class end
 
     [<Fact>]
     let ``Produces a class end with constructor and  type params``() =
-        Oak() { AnonymousModule() { ClassEnd("MyClass", Constructor()).typeParams([ "'a"; "'b" ]) } }
+        Oak() { AnonymousModule() { ClassEnd("MyClass", ImplicitConstructor()).typeParams([ "'a"; "'b" ]) } }
         |> produces
             """
 type MyClass<'a, 'b>() = class end

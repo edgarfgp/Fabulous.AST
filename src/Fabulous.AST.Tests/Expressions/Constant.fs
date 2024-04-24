@@ -11,7 +11,7 @@ module Constant =
 
     [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantString``() =
-        Oak() { AnonymousModule() { Value("x", ConstantExpr(Quoted "a")) } }
+        Oak() { AnonymousModule() { Value("x", ConstantExpr(DoubleQuoted "a")) } }
         |> produces
             """
 

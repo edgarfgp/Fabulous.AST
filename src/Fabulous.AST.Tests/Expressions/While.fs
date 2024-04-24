@@ -34,8 +34,8 @@ while true do
                 WhileExpr(
                     "true",
                     CompExprBodyExpr(
-                        [ OtherExpr(AppExpr("printfn", ConstantExpr(Quoted(""))))
-                          OtherExpr(AppExpr("printfn", ConstantExpr(Quoted(""))))
+                        [ OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
+                          OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
                           OtherExpr(InfixAppExpr(Unquoted("0"), "|>", Unquoted("ignore"))) ]
                     )
                 )

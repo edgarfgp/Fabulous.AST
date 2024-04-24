@@ -66,7 +66,10 @@ module TypeDefnAbbrevNode =
                 match powerType with
                 | StringOrWidget.StringExpr value ->
                     Type.LongIdent(
-                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value.Normalize())) ], Range.Zero)
+                        IdentListNode(
+                            [ IdentifierOrDot.Ident(SingleTextNode.Create(StringVariant.normalize value)) ],
+                            Range.Zero
+                        )
                     )
                 | StringOrWidget.WidgetExpr value -> value
 

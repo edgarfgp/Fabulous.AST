@@ -83,7 +83,7 @@ module BindingValue =
                         let returnType =
                             Type.LongIdent(
                                 IdentListNode(
-                                    [ IdentifierOrDot.Ident(SingleTextNode.Create(value.Normalize())) ],
+                                    [ IdentifierOrDot.Ident(SingleTextNode.Create(StringVariant.normalize value)) ],
                                     Range.Zero
                                 )
                             )

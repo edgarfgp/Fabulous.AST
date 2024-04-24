@@ -24,7 +24,7 @@ type Person() =
     [<Fact>]
     let ``Produces a class explicit constructor with no params``() =
 
-        Oak() { AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) } } }
+        Oak() { AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) } } }
         |> produces
             """
 type Person() =
@@ -37,7 +37,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) }
+                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
                 |> _.toPrivate()
             }
         }
@@ -54,7 +54,7 @@ type private Person() =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(
+                    ImplicitConstructor(
                         ParenPat(TuplePat([ ParameterPat("name"); ParameterPat("lastName"); ParameterPat("age") ]))
                     )
                 ) {
@@ -76,7 +76,7 @@ type Person(name, lastName, age) =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(
+                    ImplicitConstructor(
                         ParenPat(
                             TuplePat(
                                 [ ParameterPat("name", String())
@@ -102,7 +102,9 @@ type Person(name: string, lastName: string, ?age: int) =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])))
+                    ImplicitConstructor(
+                        ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ]))
+                    )
                 ) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
                 }
@@ -119,7 +121,7 @@ type Person(name: string, age: int) =
     let ``Produces a class marked as a Struct explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
-                (Class("Person", Constructor(ParenPat(ParameterPat("name", String())))) {
+                (Class("Person", ImplicitConstructor(ParenPat(ParameterPat("name", String())))) {
                     Property("this.Name", ConstantExpr(Unquoted "name"))
                 })
                     .attribute(Attribute("Struct"))
@@ -156,7 +158,7 @@ module GenericClass =
     let ``Produces a generic class``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) }
+                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
                 |> _.typeParams([ "'a"; "'b" ])
 
             }
@@ -173,7 +175,7 @@ type Person<'a, 'b>() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) }
+                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
                 |> _.typeParams([ "'a"; "'b" ])
 
             }
@@ -189,7 +191,7 @@ type Person<'a, 'b>() =
     let ``Produces a struct generic class with a constructor``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) }
+                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
                 |> _.typeParams([ "'a"; "'b" ])
                 |> _.attribute(Attribute("Struct"))
 
