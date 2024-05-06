@@ -13,7 +13,7 @@ module OpenType =
 
     [<Fact>]
     let ``Produces a simple open type directive from a string``() =
-        Oak() { AnonymousModule() { OpenType("ABC") } }
+        Oak() { AnonymousModule() { OpenType(LongIdent "ABC") } }
         |> produces
             """
 

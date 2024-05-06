@@ -1,7 +1,6 @@
 namespace Fabulous.AST.Tests.ModuleDeclarations
 
 open Fabulous.AST.Tests
-open Fantomas.Core.SyntaxOak
 open Xunit
 
 open Fabulous.AST
@@ -11,7 +10,7 @@ open type Ast
 module AnonymousModule =
     [<Fact>]
     let ``Produces a simple hello world console app``() =
-        Oak() { AnonymousModule() { AppExpr("printfn", ConstantExpr(DoubleQuoted("hello, world"))) } }
+        Oak() { AnonymousModule() { AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String("hello, world"))) } }
         |> produces
             """
 
@@ -23,9 +22,9 @@ printfn "hello, world"
     let ``Produces Hello world with a let binding``() =
         Oak() {
             AnonymousModule() {
-                Value("x", DoubleQuoted "hello, world")
+                Value(ConstantPat(Constant("x")), ConstantExpr(String("hello, world")))
 
-                AppExpr("printfn", [ ConstantExpr(DoubleQuoted "%s"); ConstantExpr(Unquoted "x") ])
+                AppExpr(ConstantExpr(Constant("printfn")), [ ConstantExpr(String("%s")); ConstantExpr(Constant("x")) ])
 
             }
         }
@@ -43,7 +42,7 @@ printfn "%s" x
         Oak() {
             AnonymousModule() {
                 for i = 0 to 2 do
-                    AppExpr("printfn", [ ConstantExpr(DoubleQuoted "%s"); ConstantExpr(Unquoted $"{i}") ])
+                    AppExpr(ConstantExpr(Constant("printfn")), [ ConstantExpr(String("%s")); ConstantExpr(Int(i)) ])
             }
         }
 

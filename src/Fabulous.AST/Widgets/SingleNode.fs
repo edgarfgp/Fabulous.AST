@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module SingleNode =
-    let Value = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
+    let Value = Attributes.defineWidget "Value"
 
     let SupportsStroustrup = Attributes.defineScalar<bool> "SupportsStroustrup"
 
@@ -16,16 +16,7 @@ module SingleNode =
 
     let WidgetKey =
         Widgets.register "SingleNode" (fun widget ->
-            let expr = Widgets.getScalarValue widget Value
-
-            let expr =
-                match expr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
+            let expr = Widgets.getNodeFromWidget widget Value
             let supportsStroustrup = Widgets.getScalarValue widget SupportsStroustrup
             let addSpace = Widgets.getScalarValue widget AddSpace
             let leading = Widgets.getScalarValue widget Leading
@@ -39,27 +30,17 @@ module SingleNodeBuilders =
             WidgetBuilder<ExprSingleNode>(
                 SingleNode.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        SingleNode.Leading.WithValue(leading),
-                        SingleNode.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
-                    ),
-                    Array.empty,
+                    StackList.one(SingleNode.Leading.WithValue(leading)),
+                    [| SingleNode.Value.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member SingleNode(leading: string, value: StringVariant) =
-            WidgetBuilder<ExprSingleNode>(
-                SingleNode.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        SingleNode.Leading.WithValue(leading),
-                        SingleNode.Value.WithValue(StringOrWidget.StringExpr(value))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member SingleNode(leading: string, value: WidgetBuilder<Constant>) =
+            Ast.SingleNode(leading, Ast.ConstantExpr(value))
+
+        static member SingleNode(leading: string, value: string) =
+            Ast.SingleNode(leading, Ast.Constant(value))
 
 type SingleNodeModifiers =
     [<Extension>]

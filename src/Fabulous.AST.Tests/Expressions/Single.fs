@@ -13,9 +13,9 @@ module Single =
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
+                    ConstantPat(Constant("x")),
                     SingleExpr(
-                        SingleNode("a", ConstantExpr(Constant(Unquoted "b")))
+                        SingleNode("a", ConstantExpr(Constant("b")))
                             .addSpace(true)
                             .supportsStroustrup(false)
                     )

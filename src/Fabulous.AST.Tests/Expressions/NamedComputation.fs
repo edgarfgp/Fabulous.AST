@@ -11,9 +11,7 @@ module NamedComputation =
 
     [<Fact>]
     let ``let value with a NamedComputationExpr expression``() =
-        Oak() {
-            AnonymousModule() { NamedComputationExpr(ConstantExpr(Unquoted "task"), ConstantExpr(DoubleQuoted "a")) }
-        }
+        Oak() { AnonymousModule() { NamedComputationExpr(ConstantExpr(Constant "task"), ConstantExpr(String("a"))) } }
         |> produces
             """
 task { "a" }

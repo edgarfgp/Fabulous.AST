@@ -14,13 +14,13 @@ module Value =
     [<Theory>]
     [<InlineData("Red Blue", "``Red Blue``")>]
     [<InlineData("Red_Blue", "Red_Blue")>]
-    [<InlineData(" Red Blue ", "``Red Blue``")>]
+    [<InlineData(" Red Blue ", "`` Red Blue ``")>]
     [<InlineData("net6.0", "``net6.0``")>]
-    [<InlineData(" net6.0 ", "``net6.0``")>]
+    [<InlineData(" net6.0 ", "`` net6.0 ``")>]
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
-        Oak() { AnonymousModule() { Value(value, Unquoted "12") } }
+        Oak() { AnonymousModule() { Value(value, ConstantExpr(Int(12))) } }
         |> produces
             $$"""
 
@@ -29,7 +29,7 @@ let {{expected}} = 12
 
     [<Fact>]
     let ``Simple Let binding``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12") } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } }
         |> produces
             """
 
@@ -46,10 +46,10 @@ let x = 12
             Namespace("Gdmt.Launcher") {
                 NestedModule("Subcommands") {
                     Value(
-                        "GdmtSubcommands",
+                        ConstantPat(Constant("GdmtSubcommands")),
                         ArrayExpr(
                             [ for subcommand in subcommands do
-                                  ConstantExpr(DoubleQuoted subcommand) ]
+                                  ConstantExpr(String subcommand) ]
                         )
                     )
                 }
@@ -72,11 +72,7 @@ module Subcommands =
             AnonymousModule() {
                 Value(
                     TuplePat([ NamedPat("x"); NamedPat("y"); NamedPat("z") ]),
-                    TupleExpr(
-                        [ ConstantExpr(Unquoted "1")
-                          ConstantExpr(Unquoted "2")
-                          ConstantExpr(Unquoted "3") ]
-                    )
+                    TupleExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2); ConstantExpr(Int 3) ])
                 )
             }
         }
@@ -91,8 +87,9 @@ let x, y, z = 1, 2, 3
     let ``Simple Let binding with return type``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12").returnType(Int32())
-                Value("z", TripleQuoted("12"))
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).returnType(Int())
+
+                Value(ConstantPat(Constant("z")), ConstantExpr(RawString(Int(12))))
             }
         }
         |> produces
@@ -105,17 +102,23 @@ let z = \"\"\"12\"\"\"
     let ``Simple Let binding with return widget type``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12").returnType("int")
-                Value("y", Unquoted "12").returnType(LongIdent("int"))
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .returnType(LongIdent "int")
 
-                Value("z", Unquoted "12")
+                Value(ConstantPat(Constant("y")), ConstantExpr(Int(12)))
+                    .returnType(LongIdent("int"))
+
+                Value(ConstantPat(Constant("z")), ConstantExpr(Int(12)))
                     .returnType(Funs(LongIdent("string"), [ LongIdent("int") ]))
 
-                Value("a", Unquoted "12").returnType(Funs("string", [ LongIdent("int") ]))
+                Value(ConstantPat(Constant("a")), ConstantExpr(Int(12)))
+                    .returnType(Funs(LongIdent "string", [ LongIdent("int") ]))
 
-                Value("b", Unquoted "12").returnType("string -> int")
+                Value(ConstantPat(Constant("b")), ConstantExpr(Int(12)))
+                    .returnType(LongIdent "string -> int")
 
-                Value("c", Unquoted "12").returnType(HashConstraint(LongIdent("int")))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Int(12)))
+                    .returnType(HashConstraint(LongIdent("int")))
             }
         }
         |> produces
@@ -132,7 +135,7 @@ let c: #int = 12
 
     [<Fact>]
     let ``Simple Let binding with an expression``() =
-        Oak() { AnonymousModule() { Value("x", ConstantExpr(Unquoted "12")) } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } }
         |> produces
             """
 
@@ -144,8 +147,10 @@ let x = 12
     let ``Simple Let binding with type params Postfix``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12").typeParams([ "'T" ])
-                Value("x", Unquoted "12").typeParams([ "'a"; "'b"; "'c" ])
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
+
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .typeParams([ "'a"; "'b"; "'c" ])
             }
         }
         |> produces
@@ -160,8 +165,10 @@ let x<'a, 'b, 'c> = 12
     let ``Simple Let binding with type params Prefix``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12").typeParams([ "'T" ])
-                Value("x", Unquoted "12").typeParams([ "'a"; "'b"; "'c" ])
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
+
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .typeParams([ "'a"; "'b"; "'c" ])
             }
         }
         |> produces
@@ -174,9 +181,9 @@ let x<'a, 'b, 'c> = 12
     let ``Simple Let binding with type params SinglePrefix``() =
         Oak() {
             AnonymousModule() {
-                Value("x", ConstantExpr(Unquoted "12")).typeParams([ "'T" ])
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
 
-                Value("x", Unquoted "12").typeParams([ "'T" ])
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
             }
         }
         |> produces
@@ -187,7 +194,7 @@ let x<'T> = 12
 
     [<Fact>]
     let ``Simple Let private binding``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").toPrivate() } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toPrivate() } }
         |> produces
             """
 
@@ -197,7 +204,7 @@ let private x = 12
 
     [<Fact>]
     let ``Simple Let internal binding``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").toInternal() } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toInternal() } }
         |> produces
             """
 
@@ -207,7 +214,12 @@ let internal x = 12
 
     [<Fact>]
     let ``Simple Let binding with a single xml doc``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").xmlDocs([ "This is a comment" ]) } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .xmlDocs([ "This is a comment" ])
+            }
+        }
         |> produces
             """
 
@@ -220,7 +232,7 @@ let x = 12
     let ``Simple Let binding with multiline xml doc``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12")
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
 
                     .xmlDocs(
                         [ "This is a fist comment"
@@ -244,7 +256,8 @@ let x = 12
     let ``Simple Let binding with multiline with a single attribute``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12").attribute("Obsolete")
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .attribute(Attribute "Obsolete")
 
             }
         }
@@ -259,7 +272,7 @@ let x = 12
     let ``Simple Let binding with multiline with a multiple attributes``() =
         Oak() {
             AnonymousModule() {
-                Value("x", Unquoted "12")
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
                     .attributes([ Attribute("EditorBrowsable"); Attribute("Obsolete") ])
 
             }
@@ -330,7 +343,7 @@ let x = 12
 
     [<Fact>]
     let ``Produces a top level mutable let binding``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").toMutable() } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toMutable() } }
         |> produces
             """
 
@@ -340,7 +353,13 @@ let mutable x = 12
 
     [<Fact>]
     let ``Produces a top level mutable let binding with return type``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").returnType(Int32()).toMutable() } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .returnType(Int())
+                    .toMutable()
+            }
+        }
         |> produces
             """
 
@@ -350,7 +369,7 @@ let mutable x: int = 12
 
     [<Fact>]
     let ``Produces a top level mutable let binding with an expression``() =
-        Oak() { AnonymousModule() { Value("x", ConstantExpr(Unquoted "12")).toMutable() } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toMutable() } }
         |> produces
             """
 
@@ -360,7 +379,13 @@ let mutable x = 12
 
     [<Fact>]
     let ``Produces a top level inlined let binding with type params and an expression``() =
-        Oak() { AnonymousModule() { Value("x", ConstantExpr(Unquoted "12")).toInlined().typeParams([ "'a" ]) } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .toInlined()
+                    .typeParams([ "'a" ])
+            }
+        }
         |> produces
             """
 
@@ -372,9 +397,20 @@ let inline x<'a> = 12
     let ``Produces let binding with AppLongIdentAndSingleParenArg expression``() =
         Oak() {
             AnonymousModule() {
-                Value("res", AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], ConstantExpr(ConstantUnit())))
-                Value("res2", AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], "()"))
-                Value("res3", AppLongIdentAndSingleParenArgExpr("conn.Open", "()"))
+                Value(
+                    ConstantPat(Constant("res")),
+                    AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], ConstantExpr(ConstantUnit()))
+                )
+
+                Value(
+                    ConstantPat(Constant("res2")),
+                    AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], ConstantExpr(Constant("()")))
+                )
+
+                Value(
+                    ConstantPat(Constant("res3")),
+                    AppLongIdentAndSingleParenArgExpr("conn.Open", ConstantExpr(Constant("()")))
+                )
             }
         }
         |> produces

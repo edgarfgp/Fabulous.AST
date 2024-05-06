@@ -12,7 +12,12 @@ open type Ast
 module Literal =
     [<Fact>]
     let ``Produces a Literal constant``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").attribute("Literal") } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .attribute(Attribute "Literal")
+            }
+        }
         |> produces
             """
 [<Literal>]
@@ -31,7 +36,8 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 for name, value in images do
-                    Value(name, ConstantExpr(DoubleQuoted $"{value}")).attribute("Literal")
+                    Value(ConstantPat(Constant(name)), ConstantExpr(String(value)))
+                        .attribute(Attribute "Literal")
             }
         }
         |> produces
@@ -52,7 +58,13 @@ let Sunflower = "sunflower.png"
 
     [<Fact>]
     let ``Produces a Literal constant with xml docs``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").attribute("Literal").xmlDocs([ "This is a comment" ]) } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .attribute(Attribute "Literal")
+                    .xmlDocs([ "This is a comment" ])
+            }
+        }
         |> produces
             """
 /// This is a comment
@@ -63,7 +75,13 @@ let x = 12
 
     [<Fact>]
     let ``Produces Literal constant with an access control ``() =
-        Oak() { AnonymousModule() { Value("x", Unquoted "12").attribute("Literal").toInternal() } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .attribute(Attribute "Literal")
+                    .toInternal()
+            }
+        }
         |> produces
             """
 

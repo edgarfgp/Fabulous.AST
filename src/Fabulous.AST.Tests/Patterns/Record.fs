@@ -13,15 +13,9 @@ module RecordPat =
     let ``let value with a Record pattern``() =
         Oak() {
             AnonymousModule() {
-                Value(
-                    RecordPat([ RecordFieldPat(Unquoted("A"), DoubleQuoted("3")) ]),
-                    ConstantExpr(Constant(Unquoted "12"))
-                )
+                Value(RecordPat([ RecordFieldPat("A", ConstantPat(String("3"))) ]), ConstantExpr(Int(12)))
 
-                Value(
-                    RecordPat([ RecordFieldPat(Unquoted("B"), DoubleQuoted("4"), Unquoted("x")) ]),
-                    ConstantExpr(Constant(Unquoted "12"))
-                )
+                Value(RecordPat([ RecordFieldPat("B", ConstantPat(String("4")), "x") ]), ConstantExpr(Int(12)))
             }
         }
         |> produces

@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -20,10 +21,7 @@ module NestedModule =
             let name = Widgets.getScalarValue widget Name
 
             let name =
-                name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
-                |> SingleTextNode.Create
+                name |> PrettyNaming.NormalizeIdentifierBackticks |> SingleTextNode.Create
 
             let moduleDecls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
 

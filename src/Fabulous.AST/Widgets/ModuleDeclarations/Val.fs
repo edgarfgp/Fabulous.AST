@@ -20,7 +20,7 @@ module Val =
 
     let Identifier = Attributes.defineScalar<string> "Identifier"
 
-    let ReturnType = Attributes.defineScalar<StringOrWidget<Type>> "Identifier"
+    let ReturnType = Attributes.defineWidget "Identifier"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -68,14 +68,7 @@ module Val =
             let identifier = Widgets.getScalarValue widget Identifier
             let identifier = SingleTextNode.Create(identifier)
 
-            let returnType = Widgets.getScalarValue widget ReturnType
-
-            let returnType =
-                match returnType with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                | StringOrWidget.WidgetExpr widget -> widget
+            let returnType = Widgets.getNodeFromWidget widget ReturnType
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -127,24 +120,8 @@ module ValBuilders =
             WidgetBuilder<ValNode>(
                 Val.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        Val.Identifier.WithValue(identifier),
-                        Val.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak returnType))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member Val(identifier: string, returnType: string) =
-            WidgetBuilder<ValNode>(
-                Val.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        Val.Identifier.WithValue(identifier),
-                        Val.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted returnType))
-                    ),
-                    Array.empty,
+                    StackList.one(Val.Identifier.WithValue(identifier)),
+                    [| Val.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
                 )
             )
@@ -172,20 +149,8 @@ type ValNodeModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ValNode>, attributes: string list) =
-        ValNodeModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<ValNode>, attribute: WidgetBuilder<AttributeNode>) =
         ValNodeModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<ValNode>, attribute: string) =
-        ValNodeModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ValNode>) =

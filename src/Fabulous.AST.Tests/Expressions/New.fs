@@ -11,7 +11,9 @@ module New =
 
     [<Fact>]
     let ``let value with a New expression``() =
-        Oak() { AnonymousModule() { Value("x", NewExpr(LongIdent("MyType"), ConstantExpr(Constant(Unquoted "12")))) } }
+        Oak() {
+            AnonymousModule() { Value(ConstantPat(Constant("x")), NewExpr(LongIdent("MyType"), ConstantExpr(Int(12)))) }
+        }
         |> produces
             """
 
@@ -20,7 +22,11 @@ let x = new MyType 12
 
     [<Fact>]
     let ``let value with a New expression with parenthesis``() =
-        Oak() { AnonymousModule() { Value("x", NewExpr("MyType", ParenExpr(ConstantExpr(Constant(Unquoted "12"))))) } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), NewExpr(LongIdent "MyType", ParenExpr(ConstantExpr(Int(12)))))
+            }
+        }
         |> produces
             """
 

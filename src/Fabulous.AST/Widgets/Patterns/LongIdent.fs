@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module LongIdentPattern =
@@ -33,7 +34,9 @@ module LongIdentPattern =
 
             let identifier =
                 match identifier with
-                | ValueSome value -> [ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ]
+                | ValueSome value ->
+                    [ let value = PrettyNaming.NormalizeIdentifierBackticks value
+                      IdentifierOrDot.Ident(SingleTextNode.Create(value)) ]
                 | ValueNone -> []
 
             Pattern.LongIdent(

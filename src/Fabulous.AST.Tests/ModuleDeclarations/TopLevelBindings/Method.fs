@@ -15,58 +15,95 @@ module MethodMembers =
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
                     .members(
-                        [ Method("this.A", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                        [ Method(
+                              "this.A",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
 
-                          Method("this.C", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "this.C",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
                               .toInlined()
 
-                          Method("B", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "B",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
                               .toStatic()
 
-                          Method("D", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "D",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
                               .toInlined()
                               .toStatic()
 
-                          Method("this.E", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "this.E",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
                           |> _.returnType(String())
 
-                          Method("this.F", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "this.F",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
                               .toInlined()
                           |> _.returnType(String())
 
-                          Method("G", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "G",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
                               .toStatic()
                           |> _.returnType(String())
 
-                          Method("H", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "H",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
                               .toStatic()
                               .toInlined()
                           |> _.returnType(String())
 
-                          Method("this.I", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                          Method(
+                              "this.I",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          )
 
                           Method(
                               "this.J",
-                              ParenPat(TuplePat([ ParameterPat("p", String()); ParameterPat("p2", String()) ])),
-                              ConstantExpr(DoubleQuoted "")
+                              ParenPat(
+                                  TuplePat(
+                                      [ ParameterPat(ConstantPat(Constant "p"), String())
+                                        ParameterPat(ConstantPat(Constant("p2")), String()) ]
+                                  )
+                              ),
+                              ConstantExpr(String "")
                           )
 
                           Method(
                               "this.K",
-                              [ ParenPat(ParameterPat("p", String()))
-                                ParenPat(ParameterPat("p2", String())) ],
-                              ConstantExpr(DoubleQuoted "")
+                              [ ParenPat(ParameterPat(ConstantPat(Constant "p"), String()))
+                                ParenPat(ParameterPat(ConstantPat(Constant "p2"), String())) ],
+                              ConstantExpr(String "")
                           )
 
                           Method(
                               "__.DoSomething",
                               UnitPat(),
                               IfThenElseExpr(
-                                  InfixAppExpr(
-                                      ConstantExpr(Constant(Unquoted "x")),
-                                      "=",
-                                      ConstantExpr(Constant(Unquoted "12"))
-                                  ),
+                                  InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Constant("12"))),
                                   ConstantExpr(ConstantUnit()),
                                   ConstantExpr(ConstantUnit())
                               )
@@ -106,7 +143,13 @@ type Colors =
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .members([ Method("this.A", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted "")) ])
+                    .members(
+                        [ Method(
+                              "this.A",
+                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                              ConstantExpr(String "")
+                          ) ]
+                    )
             }
         }
         |> produces
@@ -132,7 +175,11 @@ type Colors<'other> =
                 })
                     .typeParams([ "'other" ])
                     .members(
-                        [ Method("A", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                        [ Method(
+                              "A",
+                              ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
+                              ConstantExpr(String "")
+                          )
                               .toStatic() ]
                     )
             }
@@ -155,7 +202,13 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members([ Method("this.A", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted "")) ])
+                    .members(
+                        [ Method(
+                              "this.A",
+                              ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
+                              ConstantExpr(String "")
+                          ) ]
+                    )
             }
         }
         |> produces
@@ -174,7 +227,11 @@ type Colors =
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
                     .members(
-                        [ Method("A", ParenPat(ParameterPat("p", String())), ConstantExpr(DoubleQuoted ""))
+                        [ Method(
+                              "A",
+                              ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
+                              ConstantExpr(String "")
+                          )
                               .toStatic() ]
                     )
             }
@@ -193,7 +250,7 @@ type Colors =
     let ``Produces a classes with a method member``() =
         Oak() {
             AnonymousModule() {
-                Class("Person", ImplicitConstructor()) { Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23")) }
+                Class("Person", ImplicitConstructor()) { Method("this.Name", UnitPat(), ConstantExpr(Int 23)) }
             }
         }
         |> produces
@@ -207,7 +264,11 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Method("this.Name", ParenPat(ParameterPat("p", String())), ConstantExpr(Unquoted "23"))
+                    Method(
+                        "this.Name",
+                        ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
+                        ConstantExpr(Int 23)
+                    )
                 }
             }
         }
@@ -224,8 +285,13 @@ type Person() =
                 Class("Person") {
                     Method(
                         "this.Name",
-                        ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])),
-                        ConstantExpr(Unquoted "23")
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("name")), String())
+                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
+                            )
+                        ),
+                        ConstantExpr(Int 23)
                     )
                 }
             }
@@ -244,10 +310,10 @@ type Person() =
                     Method(
                         "this.Name",
                         LongIdentPat(
-                            [ ParenPat(ParameterPat("name", String()))
-                              ParenPat(ParameterPat("age", Int32())) ]
+                            [ ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))
+                              ParenPat(ParameterPat(ConstantPat(Constant("age")), Int())) ]
                         ),
-                        ConstantExpr(Unquoted "23")
+                        ConstantExpr(Int 23)
                     )
                 }
             }
@@ -267,51 +333,55 @@ type Person() =
                         "GetPrimitiveReader",
                         ParenPat(
                             TuplePat(
-                                [ ParameterPat("t", LongIdent("System.Type"))
-                                  ParameterPat("reader", LongIdent("Microsoft.Data.SqlClient.SqlDataReader"))
-                                  ParameterPat("isOpt", Boolean())
-                                  ParameterPat("isNullable", Boolean()) ]
+                                [ ParameterPat(ConstantPat(Constant("t")), LongIdent("System.Type"))
+                                  ParameterPat(
+                                      ConstantPat(Constant("reader")),
+                                      LongIdent("Microsoft.Data.SqlClient.SqlDataReader")
+                                  )
+                                  ParameterPat(ConstantPat(Constant("isOpt")), Boolean())
+                                  ParameterPat(ConstantPat(Constant("isNullable")), Boolean()) ]
                             )
                         ),
                         CompExprBodyExpr(
                             [ LetOrUseExpr(
                                   Function(
                                       "wrapValue",
-                                      [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
+                                      [ ParameterPat(ConstantPat(Constant("get")))
+                                        ParenPat(ParameterPat(ConstantPat(Constant("ord")), Int())) ],
                                       IfThenElifExpr(
                                           [ IfThenExpr(
-                                                ConstantExpr(Unquoted "isOpt"),
+                                                ConstantExpr(Constant "isOpt"),
                                                 InfixAppExpr(
                                                     ParenExpr(
                                                         IfThenElseExpr(
                                                             AppExpr(
                                                                 OptVarExpr("reader.IsDBNull"),
-                                                                ConstantExpr(Unquoted("ord"))
+                                                                ConstantExpr(Constant("ord"))
                                                             ),
-                                                            ConstantExpr(Unquoted "None"),
-                                                            ConstantExpr(Unquoted("get ord |> box"))
+                                                            ConstantExpr(Constant "None"),
+                                                            ConstantExpr(Constant("get ord |> box"))
                                                         )
                                                     ),
                                                     "|>",
-                                                    Unquoted("box")
+                                                    ConstantExpr(Constant "box")
                                                 )
                                             )
 
                                             ElIfThenExpr(
-                                                ConstantExpr(Unquoted "isNullable"),
+                                                ConstantExpr(Constant "isNullable"),
                                                 ParenExpr(
                                                     IfThenElseExpr(
                                                         AppExpr(
                                                             OptVarExpr("reader.IsDBNull"),
-                                                            ConstantExpr(Unquoted("ord"))
+                                                            ConstantExpr(Constant("ord"))
                                                         ),
                                                         AppLongIdentAndSingleParenArgExpr(
                                                             [ "System"; "Nullable" ],
-                                                            "()"
+                                                            ConstantExpr(Constant "()")
                                                         ),
                                                         InfixAppExpr(
                                                             AppExpr(
-                                                                ParenExpr(ConstantExpr(Unquoted("get ord"))),
+                                                                ParenExpr(ConstantExpr(Constant("get ord"))),
                                                                 OptVarExpr("System.Nullable")
                                                             ),
                                                             "|>",
@@ -320,7 +390,7 @@ type Person() =
                                                     )
                                                 )
                                             ) ],
-                                          ConstantExpr(Unquoted("get ord |> box"))
+                                          ConstantExpr(Constant("get ord |> box"))
                                       )
                                   )
                               )
@@ -328,164 +398,255 @@ type Person() =
                               LetOrUseExpr(
                                   Function(
                                       "wrapRef",
-                                      [ ParameterPat("get"); ParenPat(ParameterPat("ord", Int32())) ],
+                                      [ ParameterPat(ConstantPat(Constant("get")))
+                                        ParenPat(ParameterPat(ConstantPat(Constant("ord")), Int())) ],
                                       IfThenElifExpr(
                                           [ IfThenExpr(
-                                                ConstantExpr(Unquoted "isOpt"),
+                                                ConstantExpr(Constant "isOpt"),
                                                 InfixAppExpr(
                                                     ParenExpr(
                                                         IfThenElseExpr(
                                                             AppExpr(
                                                                 OptVarExpr("reader.IsDBNull"),
-                                                                ConstantExpr(Unquoted("ord"))
+                                                                ConstantExpr(Constant("ord"))
                                                             ),
-                                                            ConstantExpr(Unquoted "None"),
-                                                            ConstantExpr(Unquoted("get ord |> Some"))
+                                                            ConstantExpr(Constant "None"),
+                                                            ConstantExpr(Constant("get ord |> Some"))
                                                         )
                                                     ),
                                                     "|>",
-                                                    Unquoted("box")
+                                                    ConstantExpr(Constant "box")
                                                 )
                                             ) ],
-                                          ConstantExpr(Unquoted("get ord |> box"))
+                                          ConstantExpr(Constant("get ord |> box"))
                                       )
                                   )
                               )
 
-                              LetOrUseExpr(Use("wrapValue", OptVarExpr("reader.GetGuid")))
+                              LetOrUseExpr(Use(ConstantPat(Constant "wrapValue"), OptVarExpr("reader.GetGuid")))
 
                               OtherExpr(
                                   IfThenElifExpr(
                                       [ IfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("System.Guid")),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetGuid")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", Boolean()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetBoolean")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", Int32()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt32")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", Int64()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt64")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", Int16()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetInt16")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", Byte()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetByte")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", Double()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDouble")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("System.Single")),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetFloat")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", Decimal()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDecimal")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", String()),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetString")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("System.DateTimeOffset")),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTimeOffset")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("System.DateOnly")),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateOnly")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("System.TimeOnly")),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetTimeOnly")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("System.DateTime")),
-                                            AppLongIdentAndSingleParenArgExpr(
-                                                "Some",
-                                                ParenExpr(AppExpr("wrapValue", OptVarExpr("reader.GetDateTime")))
-                                            )
-                                        )
-
-                                        ElIfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("byte []")),
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), LongIdent("System.Guid")),
                                             AppLongIdentAndSingleParenArgExpr(
                                                 "Some",
                                                 ParenExpr(
-                                                    AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue<byte []>"))
+                                                    AppExpr(
+                                                        ConstantExpr(Constant("wrapValue")),
+                                                        OptVarExpr("reader.GetGuid")
+                                                    )
                                                 )
                                             )
                                         )
 
                                         ElIfThenExpr(
-                                            TypeAppExpr("typedefof", LongIdent("obj")),
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Boolean()),
                                             AppLongIdentAndSingleParenArgExpr(
                                                 "Some",
-                                                ParenExpr(AppExpr("wrapRef", OptVarExpr("reader.GetFieldValue")))
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetBoolean")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Int()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetInt32")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Int64()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetInt64")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Int16()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetInt16")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Byte()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetByte")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Double()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetDouble")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), LongIdent("System.Single")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetFloat")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Decimal()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetDecimal")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), String()),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapRef"),
+                                                        OptVarExpr("reader.GetString")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(
+                                                ConstantExpr(Constant("typedefof")),
+                                                LongIdent("System.DateTimeOffset")
+                                            ),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetDateTimeOffset")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(
+                                                ConstantExpr(Constant("typedefof")),
+                                                LongIdent("System.DateOnly")
+                                            ),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetDateOnly")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(
+                                                ConstantExpr(Constant("typedefof")),
+                                                LongIdent("System.TimeOnly")
+                                            ),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetTimeOnly")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(
+                                                ConstantExpr(Constant("typedefof")),
+                                                LongIdent("System.DateTime")
+                                            ),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant "wrapValue"),
+                                                        OptVarExpr("reader.GetDateTime")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), LongIdent("byte []")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant("wrapRef")),
+                                                        OptVarExpr("reader.GetFieldValue<byte []>")
+                                                    )
+                                                )
+                                            )
+                                        )
+
+                                        ElIfThenExpr(
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), LongIdent("obj")),
+                                            AppLongIdentAndSingleParenArgExpr(
+                                                "Some",
+                                                ParenExpr(
+                                                    AppExpr(
+                                                        ConstantExpr(Constant("wrapRef")),
+                                                        OptVarExpr("reader.GetFieldValue")
+                                                    )
+                                                )
                                             )
                                         ) ],
-                                      ConstantExpr(Unquoted "None")
+                                      ConstantExpr(Constant "None")
                                   )
                               ) ]
                         )
@@ -561,8 +722,8 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23"))
-                        .attribute("Obsolete")
+                    Method("this.Name", UnitPat(), ConstantExpr(Int 23))
+                        .attribute(Attribute "Obsolete")
                 }
             }
         }
@@ -577,9 +738,7 @@ type Person() =
     [<Fact>]
     let ``Produces an inline method member``() =
         Oak() {
-            AnonymousModule() {
-                Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23")).toInlined() }
-            }
+            AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Int 23)).toInlined() } }
         }
         |> produces
             """
@@ -591,10 +750,7 @@ type Person() =
     let ``Produces an method member with type parameters``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Method("this.Name", UnitPat(), ConstantExpr(Unquoted "23"))
-                        .typeParams([ "'other" ])
-                }
+                Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Int 23)).typeParams([ "'other" ]) }
             }
         }
         |> produces
@@ -608,7 +764,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 (Union("Person") { UnionCase("Name") })
-                    .members([ Method("this.Name", UnitPat(), ConstantExpr(DoubleQuoted "name")) ])
+                    .members([ Method("this.Name", UnitPat(), ConstantExpr(String "name")) ])
             }
         }
         |> produces
@@ -632,7 +788,7 @@ type Person =
                     UnionCase("Yellow")
                 })
                     .typeParams([ "'other" ])
-                    .members([ Method("this.Name", UnitPat(), ConstantExpr(DoubleQuoted "name")) ])
+                    .members([ Method("this.Name", UnitPat(), ConstantExpr(String "name")) ])
 
             }
         }

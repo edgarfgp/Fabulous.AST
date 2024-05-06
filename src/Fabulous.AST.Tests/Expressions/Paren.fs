@@ -10,7 +10,7 @@ open type Ast
 module Paren =
     [<Fact>]
     let ``let value with a expression wrapped parenthesis``() =
-        Oak() { AnonymousModule() { Value("x", ParenExpr(ConstantExpr(Constant(Unquoted "12")))) } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ParenExpr(ConstantExpr(Int(12)))) } }
         |> produces
             """
 

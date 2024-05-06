@@ -11,7 +11,7 @@ module ValTests =
 
     [<Fact>]
     let ``Produces a Val``() =
-        Oak() { AnonymousModule() { Val("x", "string") } }
+        Oak() { AnonymousModule() { Val("x", LongIdent("string")) } }
         |> produces
             """
 val x: string
@@ -28,7 +28,7 @@ val mutable x: string
 
     [<Fact>]
     let ``Produces a InlinedVal``() =
-        Oak() { AnonymousModule() { Val("x", "string").toInlined() } }
+        Oak() { AnonymousModule() { Val("x", LongIdent("string")).toInlined() } }
 
         |> produces
             """
@@ -37,7 +37,7 @@ val inline x: string
 
     [<Fact>]
     let ``Produces a Val with attribute``() =
-        Oak() { AnonymousModule() { Val("x", String()).attribute("DefaultValue") } }
+        Oak() { AnonymousModule() { Val("x", String()).attribute(Attribute "DefaultValue") } }
 
         |> produces
             """
@@ -50,7 +50,11 @@ val x: string
         Oak() {
             AnonymousModule() {
                 Val("x", String())
-                    .attributes([ "DefaultValue"; "OtherAttribute"; "AnotherAttribute" ])
+                    .attributes(
+                        [ Attribute "DefaultValue"
+                          Attribute "OtherAttribute"
+                          Attribute "AnotherAttribute" ]
+                    )
             }
         }
 
@@ -64,11 +68,11 @@ val x: string
     let ``Produces a Val with accessControl``() =
         Oak() {
             AnonymousModule() {
-                Val("x", String()).attribute("DefaultValue").toInternal()
+                Val("x", String()).attribute(Attribute "DefaultValue").toInternal()
 
-                Val("y", String()).attribute("DefaultValue").toPrivate()
+                Val("y", String()).attribute(Attribute "DefaultValue").toPrivate()
 
-                Val("z", String()).attribute("DefaultValue").toPublic()
+                Val("z", String()).attribute(Attribute "DefaultValue").toPublic()
             }
         }
 

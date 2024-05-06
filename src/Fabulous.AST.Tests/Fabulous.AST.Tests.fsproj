@@ -13,7 +13,7 @@
     <ItemGroup>
         <Compile Include="TestHelpers.fs" />
         <Compile Include="WidgetTests.fs" />
-        <Compile Include="StringVariant.fs" />
+        <Compile Include="Constant.fs" />
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
         <Compile Include="ModuleDeclarations\AnonymousModule.fs" />
@@ -72,6 +72,8 @@
         <Compile Include="Expressions\Conditionals.fs" />
         <Compile Include="Patterns\Or.fs" />
         <Compile Include="Patterns\As.fs" />
+        <Compile Include="Patterns\OptionalVal.fs" />
+        <Compile Include="Patterns\Paren.fs" />
         <Compile Include="Patterns\Ands.fs" />
         <Compile Include="Patterns\Tuple.fs" />
         <Compile Include="Patterns\Record.fs" />

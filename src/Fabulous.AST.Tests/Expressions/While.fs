@@ -11,7 +11,7 @@ module While =
 
     [<Fact>]
     let ``let value with a WhileExpr expression``() =
-        Oak() { AnonymousModule() { WhileExpr("true", "0") } }
+        Oak() { AnonymousModule() { WhileExpr(ConstantExpr(Bool(true)), ConstantExpr(Int(0))) } }
         |> produces
             """
 while true do
@@ -20,7 +20,14 @@ while true do
 
     [<Fact>]
     let ``let value with a WhileExpr expression using do ignore``() =
-        Oak() { AnonymousModule() { WhileExpr("true", InfixAppExpr(Unquoted("0"), "|>", Unquoted("ignore"))) } }
+        Oak() {
+            AnonymousModule() {
+                WhileExpr(
+                    ConstantExpr(Bool(true)),
+                    InfixAppExpr(ConstantExpr(Int(0)), "|>", ConstantExpr(Constant("ignore")))
+                )
+            }
+        }
         |> produces
             """
 while true do
@@ -32,11 +39,11 @@ while true do
         Oak() {
             AnonymousModule() {
                 WhileExpr(
-                    "true",
+                    ConstantExpr(Bool(true)),
                     CompExprBodyExpr(
-                        [ OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
-                          OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
-                          OtherExpr(InfixAppExpr(Unquoted("0"), "|>", Unquoted("ignore"))) ]
+                        [ OtherExpr(AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String(""))))
+                          OtherExpr(AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String(""))))
+                          OtherExpr(InfixAppExpr(ConstantExpr(Int(0)), "|>", ConstantExpr(Constant("ignore")))) ]
                     )
                 )
             }

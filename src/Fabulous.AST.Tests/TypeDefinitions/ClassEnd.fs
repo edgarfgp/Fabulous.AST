@@ -42,7 +42,10 @@ type MyClass() = class end
     let ``Produces a class end with constructor params``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", ImplicitConstructor(ParenPat(ParameterPat("name", String()))))
+                ClassEnd(
+                    "MyClass",
+                    ImplicitConstructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))
+                )
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
@@ -57,7 +60,10 @@ type MyClass(name: string) = class end
     let ``Produces a class end with constructor params and type args``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", ImplicitConstructor(ParenPat(ParameterPat("name", String()))))
+                ClassEnd(
+                    "MyClass",
+                    ImplicitConstructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))
+                )
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
                     .typeParams([ "'a" ])
             }

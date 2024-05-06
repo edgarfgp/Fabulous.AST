@@ -25,3 +25,11 @@ module AndsBuilders =
                     Array.empty
                 )
             )
+
+        static member AndsPat(values: WidgetBuilder<Constant> list) =
+            let values = values |> List.map Ast.ConstantPat
+            Ast.AndsPat(values)
+
+        static member AndsPat(values: string list) =
+            let values = values |> List.map(Ast.Constant)
+            Ast.AndsPat(values)

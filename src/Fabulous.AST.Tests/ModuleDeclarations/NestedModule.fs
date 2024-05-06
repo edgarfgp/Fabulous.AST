@@ -13,7 +13,7 @@ module NestedModule =
 
     [<Fact>]
     let ``Produces a NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } } }
+        Oak() { AnonymousModule() { NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } } }
 
         |> produces
             """
@@ -59,7 +59,12 @@ module A =
 
     [<Fact>]
     let ``Produces a recursive NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } |> _.toRecursive() } }
+        Oak() {
+            AnonymousModule() {
+                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                |> _.toRecursive()
+            }
+        }
 
         |> produces
             """
@@ -71,7 +76,12 @@ module rec A =
 
     [<Fact>]
     let ``Produces a private NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } |> _.toPrivate() } }
+        Oak() {
+            AnonymousModule() {
+                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                |> _.toPrivate()
+            }
+        }
         |> produces
             """
 
@@ -82,7 +92,12 @@ module private A =
 
     [<Fact>]
     let ``Produces a internal NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value("x", Unquoted "12") } |> _.toInternal() } }
+        Oak() {
+            AnonymousModule() {
+                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                |> _.toInternal()
+            }
+        }
         |> produces
             """
 
@@ -149,7 +164,7 @@ module Foo =
                     )
                 }
 
-                NestedModule("Bar") { Value("x", Unquoted "12") }
+                NestedModule("Bar") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
             }
         }
 

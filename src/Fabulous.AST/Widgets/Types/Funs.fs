@@ -38,13 +38,3 @@ module FunsBuilders =
                     Array.empty
                 )
             )
-
-        static member Funs(returnType: string, parameters: WidgetBuilder<Type> list) =
-            WidgetBuilder<Type>(
-                TypeFuns.WidgetKey,
-                AttributesBundle(
-                    StackList.one(TypeFuns.Parameters.WithValue(parameters |> List.map Gen.mkOak)),
-                    [| TypeFuns.Return.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    Array.empty
-                )
-            )

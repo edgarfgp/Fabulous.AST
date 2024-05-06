@@ -11,7 +11,11 @@ module ForEach =
 
     [<Fact>]
     let ``let value with a ForEach expression using do``() =
-        Oak() { AnonymousModule() { ForEachExpr("i", "0..9", "i") } }
+        Oak() {
+            AnonymousModule() {
+                ForEachExpr(ConstantPat(Constant("i")), ConstantExpr(Constant("0..9")), ConstantExpr(Constant("i")))
+            }
+        }
         |> produces
             """
 for i in 0..9 do
@@ -20,7 +24,15 @@ for i in 0..9 do
 
     [<Fact>]
     let ``let value with a ForEach IndexRange expression``() =
-        Oak() { AnonymousModule() { ForEachExpr("i", IndexRangeExpr("0", "9"), "i") } }
+        Oak() {
+            AnonymousModule() {
+                ForEachExpr(
+                    ConstantPat(Constant("i")),
+                    IndexRangeExpr(ConstantExpr(Int(0)), ConstantExpr(Int(9))),
+                    ConstantExpr(Constant("i"))
+                )
+            }
+        }
         |> produces
             """
 for i in 0..9 do
@@ -29,7 +41,15 @@ for i in 0..9 do
 
     [<Fact>]
     let ``let value with a ForEach expression using do ignore``() =
-        Oak() { AnonymousModule() { ForEachExpr("i", "0..9", InfixAppExpr(Unquoted("i"), "|>", Unquoted("ignore"))) } }
+        Oak() {
+            AnonymousModule() {
+                ForEachExpr(
+                    ConstantPat(Constant("i")),
+                    ConstantExpr(Constant("0..9")),
+                    InfixAppExpr(ConstantExpr(Constant("i")), "|>", ConstantExpr(Constant("ignore")))
+                )
+            }
+        }
         |> produces
             """
 for i in 0..9 do
@@ -41,12 +61,12 @@ for i in 0..9 do
         Oak() {
             AnonymousModule() {
                 ForEachExpr(
-                    "i",
-                    "0..9",
+                    ConstantPat(Constant("i")),
+                    ConstantExpr(Constant("0..9")),
                     CompExprBodyExpr(
-                        [ OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
-                          OtherExpr(AppExpr("printfn", ConstantExpr(DoubleQuoted(""))))
-                          OtherExpr(InfixAppExpr(Unquoted("i"), "|>", Unquoted("ignore"))) ]
+                        [ OtherExpr(AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String(""))))
+                          OtherExpr(AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String(""))))
+                          OtherExpr(InfixAppExpr(ConstantExpr(Constant("i")), "|>", ConstantExpr(Constant("ignore")))) ]
                     )
                 )
             }
@@ -61,7 +81,12 @@ for i in 0..9 do
 
     [<Fact>]
     let ``let value with a ForEach expression using arrow``() =
-        Oak() { AnonymousModule() { ForEachExpr("i", "0..9", "i").useArrow() } }
+        Oak() {
+            AnonymousModule() {
+                ForEachExpr(ConstantPat(Constant("i")), ConstantExpr(Constant("0..9")), ConstantExpr(Constant("i")))
+                    .useArrow()
+            }
+        }
         |> produces
             """
 for i in 0..9 -> i

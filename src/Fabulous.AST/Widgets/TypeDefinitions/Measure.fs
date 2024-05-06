@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -10,11 +11,9 @@ module TypeDefnAbbrevNode =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let PowerType = Attributes.defineScalar<StringOrWidget<Type>> "PowerType"
+    let PowerType = Attributes.defineWidget "PowerType"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-
-    let XmlDocsAbbrev = Attributes.defineScalar<string list> "XmlDoc"
 
     let WidgetKey =
         Widgets.register "TypeDefnAbbrevNode" (fun widget ->
@@ -60,20 +59,9 @@ module TypeDefnAbbrevNode =
     let WidgetAbbrevKey =
         Widgets.register "TypeDefnAbbrevNode" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let powerType = Widgets.getScalarValue widget PowerType
+            let powerType = Widgets.getNodeFromWidget widget PowerType
 
-            let powerType =
-                match powerType with
-                | StringOrWidget.StringExpr value ->
-                    Type.LongIdent(
-                        IdentListNode(
-                            [ IdentifierOrDot.Ident(SingleTextNode.Create(StringVariant.normalize value)) ],
-                            Range.Zero
-                        )
-                    )
-                | StringOrWidget.WidgetExpr value -> value
-
-            let lines = Widgets.tryGetScalarValue widget XmlDocsAbbrev
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -120,37 +108,28 @@ module TypeDefnAbbrevNode =
 module TypeDefnAbbrevNodeBuilders =
     type Ast with
 
-        static member inline Measure(name: string) =
+        static member Measure(name: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             WidgetBuilder<TypeNameNode>(
                 TypeDefnAbbrevNode.WidgetKey,
                 AttributesBundle(StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)), Array.empty, Array.empty)
             )
 
-        static member inline Measure(name: string, powerType: WidgetBuilder<Type>) =
+        static member Measure(name: string, powerType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             WidgetBuilder<TypeDefnAbbrevNode>(
                 TypeDefnAbbrevNode.WidgetAbbrevKey,
                 AttributesBundle(
-                    StackList.two(
-                        TypeDefnAbbrevNode.Name.WithValue(name),
-                        TypeDefnAbbrevNode.PowerType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak powerType))
-                    ),
-                    Array.empty,
+                    StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)),
+                    [| TypeDefnAbbrevNode.PowerType.WithValue(powerType.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member inline Measure(name: string, powerType: string) =
-            WidgetBuilder<TypeDefnAbbrevNode>(
-                TypeDefnAbbrevNode.WidgetAbbrevKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeDefnAbbrevNode.Name.WithValue(name),
-                        TypeDefnAbbrevNode.PowerType.WithValue(StringOrWidget.StringExpr(Unquoted powerType))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member Measure(name: string, powerType: string) =
+            Ast.Measure(name, Ast.LongIdent(powerType))
 
 type TypeNameNodeModifiers =
     [<Extension>]
@@ -161,7 +140,7 @@ type UnitsOfTypeDefnAbbrevNodeAbbrevModifiers =
 
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, comments: string list) =
-        this.AddScalar(TypeDefnAbbrevNode.XmlDocsAbbrev.WithValue(comments))
+        this.AddScalar(TypeDefnAbbrevNode.XmlDocs.WithValue(comments))
 
 type TypeDefnAbbrevNodeYieldExtensions =
     [<Extension>]

@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -27,9 +28,7 @@ module Record =
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name =
-                Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
             let members = Widgets.tryGetScalarValue widget Members
@@ -120,6 +119,8 @@ module Record =
 module RecordBuilders =
     type Ast with
         static member Record(name: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
@@ -165,20 +166,8 @@ type RecordModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnRecordNode>, attributes: string list) =
-        RecordModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRecordNode>, attribute: WidgetBuilder<AttributeNode>) =
         RecordModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnRecordNode>, attribute: string) =
-        RecordModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRecordNode>, value: string list) =

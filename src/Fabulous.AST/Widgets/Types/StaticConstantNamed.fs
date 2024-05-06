@@ -32,14 +32,3 @@ module TypeStaticConstantNamedBuilders =
                     Array.empty
                 )
             )
-
-        static member StaticConstantNamed(identifier: string, value: string) =
-            WidgetBuilder<Type>(
-                TypeStaticConstantNamed.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| TypeStaticConstantNamed.Identifier.WithValue(Ast.LongIdent(identifier).Compile())
-                       TypeStaticConstantNamed.Value.WithValue(Ast.LongIdent(value).Compile()) |],
-                    Array.empty
-                )
-            )

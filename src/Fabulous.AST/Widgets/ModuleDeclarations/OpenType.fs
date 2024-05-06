@@ -7,43 +7,20 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module OpenType =
-    let Target = Attributes.defineScalar<StringOrWidget<Type>> "Target"
+    let Target = Attributes.defineWidget "Target"
 
     let WidgetKey =
         Widgets.register "OpenType" (fun widget ->
-            let target = Widgets.getScalarValue widget Target
-
-            let target =
-                match target with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                | StringOrWidget.WidgetExpr widget -> widget
-
+            let target = Widgets.getNodeFromWidget widget Target
             OpenTargetNode(target, Range.Zero))
 
 [<AutoOpen>]
 module OpenTypeBuilders =
     type Ast with
-
-        static member OpenType(name: string) =
-            WidgetBuilder<OpenTargetNode>(
-                OpenType.WidgetKey,
-                AttributesBundle(
-                    StackList.one(OpenType.Target.WithValue(StringOrWidget.StringExpr(Unquoted name))),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
         static member OpenType(name: WidgetBuilder<Type>) =
             WidgetBuilder<OpenTargetNode>(
                 OpenType.WidgetKey,
-                AttributesBundle(
-                    StackList.one(OpenType.Target.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak name))),
-                    Array.empty,
-                    Array.empty
-                )
+                AttributesBundle(StackList.empty(), [| OpenType.Target.WithValue(name.Compile()) |], Array.empty)
             )
 
 type OpenTypeYieldExtensions =

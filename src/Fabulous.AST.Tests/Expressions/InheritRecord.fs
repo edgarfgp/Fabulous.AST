@@ -14,27 +14,27 @@ module InheritRecord =
         Oak() {
             AnonymousModule() {
                 InheritRecordExpr(
-                    InheritConstructorTypeOnly(Unquoted "BaseClass"),
-                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                    InheritConstructorTypeOnly(LongIdent "BaseClass"),
+                    [ RecordFieldExpr("B", ConstantExpr(Int 1))
+                      RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
 
                 InheritRecordExpr(
-                    InheritConstructorParen(Unquoted "BaseClass", ParenExpr(ConstantExpr(Unquoted "1"))),
-                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                    InheritConstructorParen(LongIdent "BaseClass", ParenExpr(ConstantExpr(Constant "1"))),
+                    [ RecordFieldExpr("B", ConstantExpr(Constant "1"))
+                      RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
 
                 InheritRecordExpr(
-                    InheritConstructorUnit(Unquoted "BaseClass"),
-                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                    InheritConstructorUnit(LongIdent "BaseClass"),
+                    [ RecordFieldExpr("B", ConstantExpr(Constant "1"))
+                      RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
 
                 InheritRecordExpr(
-                    InheritConstructorOther(Unquoted "BaseClass", ParenExpr(ConstantExpr(Unquoted "1"))),
-                    [ RecordFieldExpr("B", ConstantExpr(Unquoted "1"))
-                      RecordFieldExpr("C", ConstantExpr(Unquoted "2")) ]
+                    InheritConstructorOther(LongIdent "BaseClass", ParenExpr(ConstantExpr(Constant "1"))),
+                    [ RecordFieldExpr("B", ConstantExpr(Constant "1"))
+                      RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
             }
         }

@@ -8,19 +8,12 @@ module IsInst =
 
     let Token = Attributes.defineScalar<SingleTextNode> "Token"
 
-    let InstType = Attributes.defineScalar<StringOrWidget<Type>> "InstType"
+    let InstType = Attributes.defineWidget "InstType"
 
     let WidgetKey =
         Widgets.register "IsInst" (fun widget ->
             let token = Widgets.getScalarValue widget Token
-            let instType = Widgets.getScalarValue widget InstType
-
-            let instType =
-                match instType with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                | StringOrWidget.WidgetExpr widget -> widget
+            let instType = Widgets.getNodeFromWidget widget InstType
 
             Pattern.IsInst(PatIsInstNode(token, instType, Range.Zero)))
 
@@ -32,37 +25,8 @@ module IsInstPatBuilders =
             WidgetBuilder<Pattern>(
                 IsInst.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        IsInst.InstType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
-                        IsInst.Token.WithValue(SingleTextNode.isInstance)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member IsInstPat(value: string) =
-            WidgetBuilder<Pattern>(
-                IsInst.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        IsInst.InstType.WithValue(StringOrWidget.StringExpr(Unquoted value)),
-                        IsInst.Token.WithValue(SingleTextNode.isInstance)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member IsInstPat(token: string, value: string) =
-            WidgetBuilder<Pattern>(
-                IsInst.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        IsInst.Token.WithValue(SingleTextNode.Create(token)),
-                        IsInst.InstType.WithValue(StringOrWidget.StringExpr(Unquoted value))
-                    ),
-                    Array.empty,
+                    StackList.one(IsInst.Token.WithValue(SingleTextNode.isInstance)),
+                    [| IsInst.InstType.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )

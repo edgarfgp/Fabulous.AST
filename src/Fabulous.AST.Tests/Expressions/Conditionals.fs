@@ -43,33 +43,33 @@ if x = 12 then
     let ``Produces if-then expression on a let binding``() =
         let ifThenExpr =
             IfThenExpr(
-                InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 12)),
                 ConstantExpr(ConstantUnit())
             )
 
         Oak() {
             AnonymousModule() {
-                Value("res", ifThenExpr)
+                Value(ConstantPat(Constant("res")), ifThenExpr)
 
                 Value(
-                    "res2",
+                    ConstantPat(Constant("res2")),
                     IfThenElseExpr(
-                        InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Constant(Unquoted "12"))),
+                        InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Int(12))),
                         ConstantExpr(ConstantUnit()),
                         ConstantExpr(ConstantUnit())
                     )
                 )
 
                 Value(
-                    "res3",
+                    ConstantPat(Constant("res3")),
                     IfThenElifExpr(
                         [ IfThenExpr(
-                              InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                              InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 12)),
                               ConstantExpr(ConstantUnit())
                           )
 
                           ElIfThenExpr(
-                              InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Unquoted "11")),
+                              InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Int 11)),
                               ConstantExpr(ConstantUnit())
                           ) ],
                         ConstantExpr(ConstantUnit())
@@ -97,8 +97,15 @@ let res3 =
     let ``Produces if-then expression  with expr widgets``() =
         Oak() {
             AnonymousModule() {
-                IfThenExpr(InfixAppExpr(Unquoted "x", "=", Unquoted "12"), ConstantExpr(ConstantUnit()))
-                ElIfThenExpr(InfixAppExpr(Unquoted "x", "=", Unquoted "12"), ConstantExpr(ConstantUnit()))
+                IfThenExpr(
+                    InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Int(12))),
+                    ConstantExpr(ConstantUnit())
+                )
+
+                ElIfThenExpr(
+                    InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Int(12))),
+                    ConstantExpr(ConstantUnit())
+                )
             }
         }
         |> produces
@@ -146,7 +153,7 @@ elif x = 12 then
         Oak() {
             AnonymousModule() {
                 ElIfThenExpr(
-                    InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                    InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 12)),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -163,7 +170,7 @@ elif x = 12 then
         Oak() {
             AnonymousModule() {
                 ElseIfThenExpr(
-                    InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Constant(Unquoted "12"))),
+                    InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Int(12))),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -182,12 +189,12 @@ module IfThenElif =
             AnonymousModule() {
                 IfThenElifExpr(
                     [ IfThenExpr(
-                          InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                          InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 12)),
                           ConstantExpr(ConstantUnit())
                       )
 
                       ElIfThenExpr(
-                          InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Unquoted "11")),
+                          InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Int 11)),
                           ConstantExpr(ConstantUnit())
                       ) ]
                 )
@@ -207,12 +214,12 @@ elif x = 11 then
             AnonymousModule() {
                 IfThenElifExpr(
                     [ IfThenExpr(
-                          InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "12")),
+                          InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 12)),
                           ConstantExpr(ConstantUnit())
                       )
 
                       ElIfThenExpr(
-                          InfixAppExpr(ConstantExpr(Unquoted "x"), "=", ConstantExpr(Unquoted "11")),
+                          InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 11)),
                           ConstantExpr(ConstantUnit())
                       ) ],
                     ConstantExpr(ConstantUnit())
@@ -279,7 +286,7 @@ else ()
         Oak() {
             AnonymousModule() {
                 IfThenElseExpr(
-                    InfixAppExpr(ConstantExpr(Constant(Unquoted "x")), "=", ConstantExpr(Constant(Unquoted "12"))),
+                    InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Int(12))),
                     ConstantExpr(ConstantUnit()),
                     ConstantExpr(ConstantUnit())
                 )

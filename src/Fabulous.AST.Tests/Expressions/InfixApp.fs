@@ -13,7 +13,7 @@ module InfixApp =
     let ``let value with a InfixApp expression``() =
         Oak() {
             AnonymousModule() {
-                InfixAppExpr(ConstantExpr(Constant(Unquoted "a")), "|>", ConstantExpr(Constant(Unquoted "b")))
+                InfixAppExpr(ConstantExpr(Constant("a")), "|>", ConstantExpr(Constant("b")))
 
             }
         }

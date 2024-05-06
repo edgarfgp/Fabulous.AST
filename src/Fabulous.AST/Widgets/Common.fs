@@ -11,11 +11,6 @@ type AccessControl =
     | Unknown
 
 [<RequireQualifiedAccess>]
-type StringOrWidget<'T> =
-    | StringExpr of StringVariant
-    | WidgetExpr of 'T
-
-[<RequireQualifiedAccess>]
 type ModuleOrNamespaceDecl =
     | TopLevelModule of string
     | Namespace of string
@@ -41,7 +36,7 @@ module CommonExtensions =
             |> fun v -> XmlDocNode(v, Range.Zero)
 
     type TyparDecls with
-        static member inline Postfix(decl: string) =
+        static member Postfix(decl: string) =
             TyparDecls.PostfixList(
                 TyparDeclsPostfixListNode(
                     SingleTextNode.lessThan,
@@ -52,7 +47,7 @@ module CommonExtensions =
                 )
             )
 
-        static member inline Postfix(decls: string list) =
+        static member Postfix(decls: string list) =
             TyparDecls.PostfixList(
                 TyparDeclsPostfixListNode(
                     SingleTextNode.lessThan,
@@ -64,12 +59,12 @@ module CommonExtensions =
                 )
             )
 
-        static member inline Postfix(decl: TyparDeclNode) =
+        static member Postfix(decl: TyparDeclNode) =
             TyparDecls.PostfixList(
                 TyparDeclsPostfixListNode(SingleTextNode.lessThan, [ decl ], [], SingleTextNode.greaterThan, Range.Zero)
             )
 
-        static member inline Postfix(decls: TyparDeclNode list) =
+        static member Postfix(decls: TyparDeclNode list) =
             TyparDecls.PostfixList(
                 TyparDeclsPostfixListNode(
                     SingleTextNode.lessThan,
@@ -81,7 +76,7 @@ module CommonExtensions =
                 )
             )
 
-        static member inline Prefix(decl: string) =
+        static member Prefix(decl: string) =
             TyparDecls.PrefixList(
                 TyparDeclsPrefixListNode(
                     SingleTextNode.leftParenthesis,
@@ -91,7 +86,7 @@ module CommonExtensions =
                 )
             )
 
-        static member inline Prefix(decls: string list) =
+        static member Prefix(decls: string list) =
             TyparDecls.PrefixList(
                 TyparDeclsPrefixListNode(
                     SingleTextNode.leftParenthesis,
@@ -102,7 +97,7 @@ module CommonExtensions =
                 )
             )
 
-        static member inline Prefix(decl: TyparDeclNode) =
+        static member Prefix(decl: TyparDeclNode) =
             TyparDecls.PrefixList(
                 TyparDeclsPrefixListNode(
                     SingleTextNode.leftParenthesis,
@@ -112,7 +107,7 @@ module CommonExtensions =
                 )
             )
 
-        static member inline Prefix(decls: TyparDeclNode list) =
+        static member Prefix(decls: TyparDeclNode list) =
             TyparDecls.PrefixList(
                 TyparDeclsPrefixListNode(
                     SingleTextNode.leftParenthesis,
@@ -123,10 +118,10 @@ module CommonExtensions =
                 )
             )
 
-        static member inline SinglePrefix(decl: string) =
+        static member SinglePrefix(decl: string) =
             TyparDecls.SinglePrefix(TyparDeclNode(None, SingleTextNode.Create decl, [], Range.Zero))
 
-        static member inline SinglePrefix(decl: TyparDeclNode) = TyparDecls.SinglePrefix(decl)
+        static member SinglePrefix(decl: TyparDeclNode) = TyparDecls.SinglePrefix(decl)
 
 [<RequireQualifiedAccess>]
 module List =

@@ -44,7 +44,7 @@ type HEX = { R: int; G: int; B: int }
                     Field("G", LongIdent("int"))
                     Field("B", LongIdent("int"))
                 })
-                    .attribute("Obsolete")
+                    .attribute(Attribute "Obsolete")
             }
         }
         |> produces
@@ -69,7 +69,7 @@ type HEX = { R: int; G: int; B: int }
                     Field("G", LongIdent("int"))
                     Field("B", LongIdent("int"))
                 })
-                    .attribute("Obsolete")
+                    .attribute(Attribute "Obsolete")
             }
         }
         |> produces
@@ -114,9 +114,9 @@ type HEX = { R: int; G: int; B: int }
         Oak() {
             AnonymousModule() {
                 HashDirective("if", "!DEBUG")
-                Value("str", ConstantExpr(DoubleQuoted "Not debugging!"))
+                Value(ConstantPat(Constant("str")), ConstantExpr(String("Not debugging!")))
                 HashDirective("else")
-                Value("str", ConstantExpr(DoubleQuoted "Debugging!"))
+                Value(ConstantPat(Constant("str")), ConstantExpr(String("Debugging!")))
                 HashDirective("endif")
             }
         }

@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module NamePatPair =
@@ -11,7 +12,9 @@ module NamePatPair =
 
     let WidgetKey =
         Widgets.register "NamePatPair" (fun widget ->
-            let ident = Widgets.getScalarValue widget Ident
+            let ident =
+                Widgets.getScalarValue widget Ident |> PrettyNaming.NormalizeIdentifierBackticks
+
             let pat = Widgets.getNodeFromWidget widget Pat
             NamePatPair(SingleTextNode.Create(ident), SingleTextNode.equals, pat, Range.Zero))
 
@@ -25,16 +28,6 @@ module NamePatPairBuilders =
                 AttributesBundle(
                     StackList.one(NamePatPair.Ident.WithValue(ident)),
                     [| NamePatPair.Pat.WithValue(pat.Compile()) |],
-                    Array.empty
-                )
-            )
-
-        static member NamePatPairPat(ident: string, pat: string) =
-            WidgetBuilder<NamePatPair>(
-                NamePatPair.WidgetKey,
-                AttributesBundle(
-                    StackList.one(NamePatPair.Ident.WithValue(ident)),
-                    [| NamePatPair.Pat.WithValue(Ast.NamedPat(pat).Compile()) |],
                     Array.empty
                 )
             )

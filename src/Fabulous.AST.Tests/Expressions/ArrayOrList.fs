@@ -14,12 +14,8 @@ module ArrayOrList =
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
-                    ArrayExpr(
-                        [ ConstantExpr(Unquoted "1")
-                          ConstantExpr(Unquoted "2")
-                          ConstantExpr(Unquoted "3") ]
-                    )
+                    ConstantPat(Constant("x")),
+                    ArrayExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2); ConstantExpr(Int 3) ])
                 )
             }
         }
@@ -34,12 +30,8 @@ let x = [| 1; 2; 3 |]
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
-                    ListExpr(
-                        [ ConstantExpr(Unquoted "1")
-                          ConstantExpr(Unquoted "2")
-                          ConstantExpr(Unquoted "3") ]
-                    )
+                    ConstantPat(Constant("x")),
+                    ListExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2); ConstantExpr(Int 3) ])
                 )
             }
         }

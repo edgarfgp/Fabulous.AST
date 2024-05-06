@@ -13,7 +13,9 @@ module Class =
     let ``Produces a class implicit constructor``() =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
 
-        Oak() { AnonymousModule() { Class("Person") { Property("this.Name", EscapeHatch(expr)) } } }
+        Oak() {
+            AnonymousModule() { Class("Person") { Property(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) } }
+        }
         |> produces
             """
 type Person() =
@@ -24,7 +26,11 @@ type Person() =
     [<Fact>]
     let ``Produces a class explicit constructor with no params``() =
 
-        Oak() { AnonymousModule() { Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) } } }
+        Oak() {
+            AnonymousModule() {
+                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+            }
+        }
         |> produces
             """
 type Person() =
@@ -37,7 +43,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
+                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.toPrivate()
             }
         }
@@ -55,10 +61,16 @@ type private Person() =
                 Class(
                     "Person",
                     ImplicitConstructor(
-                        ParenPat(TuplePat([ ParameterPat("name"); ParameterPat("lastName"); ParameterPat("age") ]))
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("name")))
+                                  ParameterPat(ConstantPat(Constant("lastName")))
+                                  ParameterPat(ConstantPat(Constant("age"))) ]
+                            )
+                        )
                     )
                 ) {
-                    Property("this.Name", ConstantExpr(Unquoted "name"))
+                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
 
             }
@@ -79,14 +91,14 @@ type Person(name, lastName, age) =
                     ImplicitConstructor(
                         ParenPat(
                             TuplePat(
-                                [ ParameterPat("name", String())
-                                  ParameterPat("lastName", String())
-                                  ParameterPat("?age", Int32()) ]
+                                [ ParameterPat(ConstantPat(Constant("name")), String())
+                                  ParameterPat(ConstantPat(Constant("lastName")), String())
+                                  ParameterPat(ConstantPat(Constant("?age")), Int()) ]
                             )
                         )
                     )
                 ) {
-                    Property("this.Name", ConstantExpr(Unquoted "name"))
+                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
             }
         }
@@ -103,10 +115,15 @@ type Person(name: string, lastName: string, ?age: int) =
                 Class(
                     "Person",
                     ImplicitConstructor(
-                        ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ]))
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("name")), String())
+                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
+                            )
+                        )
                     )
                 ) {
-                    Property("this.Name", ConstantExpr(Unquoted "name"))
+                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
             }
         }
@@ -121,8 +138,8 @@ type Person(name: string, age: int) =
     let ``Produces a class marked as a Struct explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
-                (Class("Person", ImplicitConstructor(ParenPat(ParameterPat("name", String())))) {
-                    Property("this.Name", ConstantExpr(Unquoted "name"))
+                (Class("Person", ImplicitConstructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))) {
+                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 })
                     .attribute(Attribute("Struct"))
             }
@@ -141,7 +158,7 @@ type Person(name: string) =
 
         Oak() {
             AnonymousModule() {
-                (Class("Person") { Property("this.Name", EscapeHatch(expr)) })
+                (Class("Person") { Property(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) })
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
             }
         }
@@ -158,7 +175,7 @@ module GenericClass =
     let ``Produces a generic class``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
+                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams([ "'a"; "'b" ])
 
             }
@@ -175,7 +192,7 @@ type Person<'a, 'b>() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
+                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams([ "'a"; "'b" ])
 
             }
@@ -191,7 +208,7 @@ type Person<'a, 'b>() =
     let ``Produces a struct generic class with a constructor``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property("this.Name", ConstantExpr(DoubleQuoted "")) }
+                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams([ "'a"; "'b" ])
                 |> _.attribute(Attribute("Struct"))
 

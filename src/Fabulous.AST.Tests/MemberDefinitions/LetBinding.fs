@@ -14,18 +14,18 @@ module LetBinding =
             AnonymousModule() {
                 Class("Person") {
 
-                    LetBinding(Value("_name", DoubleQuoted "").toMutable())
+                    LetBinding(Value(ConstantPat(Constant "_name"), ConstantExpr(String(""))).toMutable())
 
                     LetBindings(
-                        [ Value("_age", DoubleQuoted "0").toMutable()
-                          Value("_height", DoubleQuoted "0.0").toMutable()
-                          Value("_weight", DoubleQuoted "0.0").toMutable() ]
+                        [ Value(ConstantPat(Constant "_age"), ConstantExpr(String("0"))).toMutable()
+                          Value(ConstantPat(Constant "_height"), ConstantExpr(String("0.0"))).toMutable()
+                          Value(ConstantPat(Constant "_weight"), ConstantExpr(String("0.0"))).toMutable() ]
                     )
 
                     Property(
                         "this.Name",
-                        GetterBinding(Unquoted("_name")),
-                        SetterBinding(NamedPat("value"), Unquoted("_name <- value"))
+                        GetterBinding(ConstantExpr(Constant "_name")),
+                        SetterBinding(NamedPat("value"), ConstantExpr(Constant "_name <- value"))
                     )
 
                 }

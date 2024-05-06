@@ -5,22 +5,14 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module TypeApp =
-    let IdentifierExpr = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
+    let IdentifierExpr = Attributes.defineWidget "Value"
 
     let TypeParameters = Attributes.defineScalar<Type list> "TypeParameters"
 
     let WidgetKey =
         Widgets.register "TypeApp" (fun widget ->
             let parameters = Widgets.getScalarValue widget TypeParameters
-            let identifierExpr = Widgets.getScalarValue widget IdentifierExpr
-
-            let identifierExpr =
-                match identifierExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
+            let identifierExpr = Widgets.getNodeFromWidget widget IdentifierExpr
 
             Expr.TypeApp(
                 ExprTypeAppNode(
@@ -42,52 +34,11 @@ module TypeAppBuilders =
             WidgetBuilder<Expr>(
                 TypeApp.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        TypeApp.IdentifierExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
-                        TypeApp.TypeParameters.WithValue(parameters)
-                    ),
-                    Array.empty,
+                    StackList.one(TypeApp.TypeParameters.WithValue(parameters)),
+                    [| TypeApp.IdentifierExpr.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
 
         static member TypeAppExpr(value: WidgetBuilder<Expr>, parameter: WidgetBuilder<Type>) =
-            WidgetBuilder<Expr>(
-                TypeApp.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeApp.IdentifierExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
-                        TypeApp.TypeParameters.WithValue([ Gen.mkOak parameter ])
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member TypeAppExpr(value: string, parameters: WidgetBuilder<Type> list) =
-            let parameters = parameters |> List.map Gen.mkOak
-
-            WidgetBuilder<Expr>(
-                TypeApp.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeApp.IdentifierExpr.WithValue(StringOrWidget.StringExpr(Unquoted(value))),
-                        TypeApp.TypeParameters.WithValue(parameters)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member TypeAppExpr(value: string, parameter: WidgetBuilder<Type>) =
-            WidgetBuilder<Expr>(
-                TypeApp.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeApp.IdentifierExpr.WithValue(StringOrWidget.StringExpr(Unquoted(value))),
-                        TypeApp.TypeParameters.WithValue([ Gen.mkOak parameter ])
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            Ast.TypeAppExpr(value, [ parameter ])

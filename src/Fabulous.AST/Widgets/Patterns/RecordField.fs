@@ -2,92 +2,53 @@ namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module RecordFieldPat =
 
-    let Prefix = Attributes.defineScalar<StringVariant> "Prefix"
+    let Prefix = Attributes.defineScalar<string> "Prefix"
 
-    let FieldName = Attributes.defineScalar<StringVariant> "FieldName"
+    let FieldName = Attributes.defineScalar<string> "FieldName"
 
-    let Pat = Attributes.defineScalar<StringOrWidget<Pattern>> "Pat"
+    let Pat = Attributes.defineWidget "Pat"
 
     let WidgetKey =
         Widgets.register "RecordFieldPat" (fun widget ->
-            let fieldName = Widgets.getScalarValue widget FieldName
-            let pattern = Widgets.getScalarValue widget Pat
+            let fieldName =
+                Widgets.getScalarValue widget FieldName
+                |> PrettyNaming.NormalizeIdentifierBackticks
 
-            let pattern =
-                match pattern with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierQuotes value
-                    Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value), Range.Zero))
-                | StringOrWidget.WidgetExpr pat -> pat
+            let pattern = Widgets.getNodeFromWidget widget Pat
 
             let prefix =
                 Widgets.tryGetScalarValue widget Prefix
-                |> ValueOption.map(fun x ->
-                    let x = StringParsing.normalizeIdentifierQuotes x
-                    Some(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(x)) ], Range.Zero)))
+                |> ValueOption.map(fun value ->
+                    let value = PrettyNaming.NormalizeIdentifierBackticks value
+                    Some(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)))
                 |> ValueOption.defaultValue None
-
-            let fieldName = StringParsing.normalizeIdentifierQuotes fieldName
 
             PatRecordField(prefix, SingleTextNode.Create(fieldName), SingleTextNode.equals, pattern, Range.Zero))
 
 [<AutoOpen>]
 module RecordFieldPatBuilders =
     type Ast with
-        static member RecordFieldPat(name: StringVariant, pat: WidgetBuilder<Pattern>) =
+        static member RecordFieldPat(name: string, pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<PatRecordField>(
                 RecordFieldPat.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        RecordFieldPat.FieldName.WithValue(name),
-                        RecordFieldPat.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pat))
-                    ),
-                    Array.empty,
+                    StackList.one(RecordFieldPat.FieldName.WithValue(name)),
+                    [| RecordFieldPat.Pat.WithValue(pat.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member RecordFieldPat(name: StringVariant, pat: WidgetBuilder<Pattern>, prefix: StringVariant) =
+        static member RecordFieldPat(name: string, pat: WidgetBuilder<Pattern>, prefix: string) =
             WidgetBuilder<PatRecordField>(
                 RecordFieldPat.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        RecordFieldPat.FieldName.WithValue(name),
-                        RecordFieldPat.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pat)),
-                        RecordFieldPat.Prefix.WithValue(prefix)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member RecordFieldPat(name: StringVariant, pat: StringVariant) =
-            WidgetBuilder<PatRecordField>(
-                RecordFieldPat.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        RecordFieldPat.FieldName.WithValue(name),
-                        RecordFieldPat.Pat.WithValue(StringOrWidget.StringExpr(pat))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member RecordFieldPat(name: StringVariant, pat: StringVariant, prefix: StringVariant) =
-            WidgetBuilder<PatRecordField>(
-                RecordFieldPat.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        RecordFieldPat.FieldName.WithValue(name),
-                        RecordFieldPat.Pat.WithValue(StringOrWidget.StringExpr(pat)),
-                        RecordFieldPat.Prefix.WithValue(prefix)
-                    ),
-                    Array.empty,
+                    StackList.two(RecordFieldPat.FieldName.WithValue(name), RecordFieldPat.Prefix.WithValue(prefix)),
+                    [| RecordFieldPat.Pat.WithValue(pat.Compile()) |],
                     Array.empty
                 )
             )

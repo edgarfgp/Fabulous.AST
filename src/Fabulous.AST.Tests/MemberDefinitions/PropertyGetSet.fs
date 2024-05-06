@@ -15,39 +15,47 @@ module PropertyGetSet =
                 Class(
                     "Person",
                     ImplicitConstructor(
-                        ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ]))
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("name")), String())
+                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
+                            )
+                        )
                     )
                 ) {
                     Property(
                         "this.Name",
-                        GetterBinding(Unquoted("name")),
-                        SetterBinding(NamedPat("value"), Unquoted("()"))
+                        GetterBinding(ConstantExpr(Constant("name"))),
+                        SetterBinding(NamedPat("value"), ConstantExpr(Constant("()")))
                     )
 
                     Property(
                         "this.Age",
-                        GetterBinding(Unquoted("age")),
+                        GetterBinding(ConstantExpr(Constant("age"))),
                         SetterBinding(NamedPat("value"), ConstantExpr(ConstantUnit()))
                     )
                         .toInlined()
 
                     Property(
                         "this.Name2",
-                        GetterBinding(Unquoted("name")).toInlined(),
-                        SetterBinding(NamedPat("value"), Unquoted("()"))
+                        GetterBinding(ConstantExpr(Constant("name"))).toInlined(),
+                        SetterBinding(NamedPat("value"), ConstantExpr(Constant("()")))
                     )
                         .toPrivate()
 
                     Property(
                         "this.FirstName",
-                        GetterBinding(Unquoted("firstName")),
-                        SetterBinding(ParenPat(NamedPat("value")), Unquoted("()"))
+                        GetterBinding(ConstantExpr(Constant("firstName"))),
+                        SetterBinding(ParenPat(NamedPat("value")), ConstantExpr(Constant("()")))
                     )
 
                     Property(
                         "this.LastName",
-                        GetterBinding(Unquoted("lastName")).returnType(String()),
-                        SetterBinding(ParenPat(ParameterPat("value", String())), ConstantExpr(ConstantUnit()))
+                        GetterBinding(ConstantExpr(Constant("lastName"))).returnType(String()),
+                        SetterBinding(
+                            ParenPat(ParameterPat(ConstantPat(Constant("value")), String())),
+                            ConstantExpr(ConstantUnit())
+                        )
                             .returnType(Unit())
                     )
 
@@ -55,11 +63,14 @@ module PropertyGetSet =
                         "this.Item",
                         GetterBinding(
                             ParenPat(NamedPat("index")),
-                            IndexWithoutDotExpr(Unquoted("ordinals"), Unquoted("index"))
+                            IndexWithoutDotExpr(ConstantExpr(Constant("ordinals")), ConstantExpr(Constant("index")))
                         ),
                         SetterBinding(
                             [ NamedPat("index"); NamedPat("value") ],
-                            SetExpr(IndexWithoutDotExpr(Unquoted("ordinals"), Unquoted("index")), Unquoted("value"))
+                            SetExpr(
+                                IndexWithoutDotExpr(ConstantExpr(Constant("ordinals")), ConstantExpr(Constant("index"))),
+                                ConstantExpr(Constant("value"))
+                            )
                         )
                     )
                 }

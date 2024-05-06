@@ -15,7 +15,7 @@ module NamePatPairsPat =
             AnonymousModule() {
                 Value(
                     NamePatPairsPat("x", [ NamePatPairPat("A", NamedPat("B")); NamePatPairPat("B", NamedPat("A")) ]),
-                    ConstantExpr(Constant(Unquoted "12"))
+                    ConstantExpr(Int(12))
                 )
             }
         }
@@ -32,7 +32,7 @@ let x (A = B; B = A) = 12
                 Value(
                     NamePatPairsPat("x", [ NamePatPairPat("A", NamedPat("B")); NamePatPairPat("B", NamedPat("A")) ])
                         .typeParams([ "'a"; "'b" ]),
-                    ConstantExpr(Constant(Unquoted "12"))
+                    ConstantExpr(Int(12))
                 )
             }
         }

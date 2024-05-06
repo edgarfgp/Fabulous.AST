@@ -156,22 +156,10 @@ type PropertyGetSetMemberModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: string list) =
-        PropertyGetSetMemberModifiers.attributes(
-            this,
-            [ for attribute in values do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, value: WidgetBuilder<AttributeNode>)
         =
         PropertyGetSetMemberModifiers.attributes(this, [ value ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, value: string) =
-        PropertyGetSetMemberModifiers.attributes(this, [ Ast.Attribute(value) ])
 
     [<Extension>]
     static member inline toStatic(this: WidgetBuilder<MemberDefnPropertyGetSetNode>) =

@@ -14,13 +14,13 @@ module Union =
     [<Theory>]
     [<InlineData("Red Blue", "``Red Blue``")>]
     [<InlineData("Red_Blue", "Red_Blue")>]
-    [<InlineData(" Red Blue ", "``Red Blue``")>]
+    [<InlineData(" Red Blue ", "`` Red Blue ``")>]
     [<InlineData("net6.0", "``net6.0``")>]
-    [<InlineData(" net6.0 ", "``net6.0``")>]
+    [<InlineData(" net6.0 ", "`` net6.0 ``")>]
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
-        Oak() { AnonymousModule() { Union("Colors ") { UnionCase(value) } } }
+        Oak() { AnonymousModule() { Union("Colors") { UnionCase(value) } } }
         |> produces
             $$"""
 
@@ -69,7 +69,10 @@ type Colors =
                     UnionCase("Yellow")
                 })
                     .interfaces(
-                        [ InterfaceMember("IMyInterface", [ Property("x.GetValue", ConstantExpr(DoubleQuoted "")) ]) ]
+                        [ InterfaceMember(
+                              LongIdent "IMyInterface",
+                              [ Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String "")) ]
+                          ) ]
                     )
 
             }
@@ -95,7 +98,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 Union("Colors") {
-                    UnionCase("Red", [ Field("a", String()); Field("b", "int") ])
+                    UnionCase("Red", [ Field("a", String()); Field("b", LongIdent "int") ])
 
                     UnionCase("Green")
                     UnionCase("Blue")
@@ -229,7 +232,10 @@ type Colors<'other> =
                 })
                     .typeParams([ "'other" ])
                     .interfaces(
-                        [ InterfaceMember("IMyInterface", [ Property("x.GetValue", ConstantExpr(DoubleQuoted "")) ]) ]
+                        [ InterfaceMember(
+                              LongIdent "IMyInterface",
+                              [ Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String "")) ]
+                          ) ]
                     )
             }
         }

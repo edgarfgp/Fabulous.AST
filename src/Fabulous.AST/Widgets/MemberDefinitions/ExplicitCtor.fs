@@ -13,11 +13,11 @@ module ExplicitConstructorMember =
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
-    let Pat = Attributes.defineScalar<StringOrWidget<Pattern>> "Pat"
+    let Pat = Attributes.defineWidget "Pat"
 
     let Alias = Attributes.defineScalar<string> "Alias"
 
-    let ExprValue = Attributes.defineScalar<StringOrWidget<Expr>> "ExprValue"
+    let ExprValue = Attributes.defineWidget "ExprValue"
 
     let WidgetKey =
         Widgets.register "ExplicitConstructorMember" (fun widget ->
@@ -59,29 +59,14 @@ module ExplicitConstructorMember =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let pat = Widgets.getScalarValue widget Pat
-
-            let pat =
-                match pat with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierQuotes value
-                    Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value), Range.Zero))
-                | StringOrWidget.WidgetExpr pat -> pat
+            let pat = Widgets.getNodeFromWidget widget Pat
 
             let alias =
                 match Widgets.tryGetScalarValue widget Alias with
                 | ValueSome value -> Some(SingleTextNode.Create value)
                 | ValueNone -> None
 
-            let expr = Widgets.getScalarValue widget ExprValue
-
-            let expr =
-                match expr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
+            let expr = Widgets.getNodeFromWidget widget ExprValue
 
             MemberDefnExplicitCtorNode(
                 xmlDocs,
@@ -103,37 +88,9 @@ module ExplicitConstructorBuilders =
             WidgetBuilder<MemberDefnExplicitCtorNode>(
                 ExplicitConstructorMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member ExplicitCtor(pattern: StringVariant, expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
-                ExplicitConstructorMember.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.StringExpr(pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: StringVariant) =
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
-                ExplicitConstructorMember.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.StringExpr(expr))
-                    ),
-                    Array.empty,
+                    StackList.empty(),
+                    [| ExplicitConstructorMember.Pat.WithValue(pattern.Compile())
+                       ExplicitConstructorMember.ExprValue.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
@@ -142,67 +99,9 @@ module ExplicitConstructorBuilders =
             WidgetBuilder<MemberDefnExplicitCtorNode>(
                 ExplicitConstructorMember.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr)),
-                        ExplicitConstructorMember.Alias.WithValue(alias)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member ExplicitCtor(pattern: StringVariant, expr: WidgetBuilder<Expr>, alias: string) =
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
-                ExplicitConstructorMember.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.StringExpr(pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr)),
-                        ExplicitConstructorMember.Alias.WithValue(alias)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: StringVariant, alias: string) =
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
-                ExplicitConstructorMember.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.StringExpr(expr)),
-                        ExplicitConstructorMember.Alias.WithValue(alias)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member ExplicitCtor(pattern: StringVariant, expr: StringVariant) =
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
-                ExplicitConstructorMember.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.StringExpr(pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.StringExpr(expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member ExplicitCtor(pattern: StringVariant, expr: StringVariant, alias: string) =
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
-                ExplicitConstructorMember.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ExplicitConstructorMember.Pat.WithValue(StringOrWidget.StringExpr(pattern)),
-                        ExplicitConstructorMember.ExprValue.WithValue(StringOrWidget.StringExpr(expr)),
-                        ExplicitConstructorMember.Alias.WithValue(alias)
-                    ),
-                    Array.empty,
+                    StackList.one(ExplicitConstructorMember.Alias.WithValue(alias)),
+                    [| ExplicitConstructorMember.Pat.WithValue(pattern.Compile())
+                       ExplicitConstructorMember.ExprValue.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
@@ -224,22 +123,10 @@ type ExplicitConstructorModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<MemberDefnExplicitCtorNode>, attributes: string list) =
-        ExplicitConstructorModifiers.attributes(
-            this,
-            [ for attr in attributes do
-                  Ast.Attribute(attr) ]
-        )
-
-    [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<MemberDefnExplicitCtorNode>, attribute: WidgetBuilder<AttributeNode>)
         =
         ExplicitConstructorModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<MemberDefnExplicitCtorNode>, attribute: string) =
-        ExplicitConstructorModifiers.attribute(this, Ast.Attribute(attribute))
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<MemberDefnExplicitCtorNode>) =

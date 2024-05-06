@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -19,7 +20,7 @@ module ImplicitConstructor =
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
-    let Alias = Attributes.defineScalar<StringVariant> "Alias"
+    let Alias = Attributes.defineScalar<string> "Alias"
 
     let WidgetKey =
         Widgets.register "ImplicitConstructor" (fun widget ->
@@ -73,7 +74,7 @@ module ImplicitConstructor =
                 match Widgets.tryGetScalarValue widget Alias with
                 | ValueNone -> None
                 | ValueSome value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
+                    let value = PrettyNaming.NormalizeIdentifierBackticks value
                     Some(AsSelfIdentifierNode(SingleTextNode.``as``, SingleTextNode.Create(value), Range.Zero))
 
             ImplicitConstructorNode(xmlDocs, multipleAttributes, accessControl, pattern, alias, Range.Zero))
@@ -91,7 +92,7 @@ module ImplicitConstructorBuilders =
                 )
             )
 
-        static member ImplicitConstructor(pattern: WidgetBuilder<Pattern>, alias: StringVariant) =
+        static member ImplicitConstructor(pattern: WidgetBuilder<Pattern>, alias: string) =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
                 AttributesBundle(
@@ -107,7 +108,7 @@ module ImplicitConstructorBuilders =
                 AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )
 
-        static member ImplicitConstructor(alias: StringVariant) =
+        static member ImplicitConstructor(alias: string) =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
                 AttributesBundle(StackList.one(ImplicitConstructor.Alias.WithValue(alias)), Array.empty, Array.empty)
@@ -130,22 +131,10 @@ type ImplicitConstructorModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ImplicitConstructorNode>, attributes: string list) =
-        ImplicitConstructorModifiers.attributes(
-            this,
-            [ for attr in attributes do
-                  Ast.Attribute(attr) ]
-        )
-
-    [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<ImplicitConstructorNode>, attribute: WidgetBuilder<AttributeNode>)
         =
         ImplicitConstructorModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<ImplicitConstructorNode>, attribute: string) =
-        ImplicitConstructorModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ImplicitConstructorNode>) =

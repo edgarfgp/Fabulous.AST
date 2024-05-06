@@ -7,7 +7,7 @@ open Fantomas.Core.SyntaxOak
 module IfThenElif =
     let Branches = Attributes.defineScalar<Expr list> "ElifExpr"
 
-    let ElseExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ElseExpr"
+    let ElseExpr = Attributes.defineWidget "ElseExpr"
 
     let WidgetKey =
         Widgets.register "IfThenElif" (fun widget ->
@@ -18,23 +18,12 @@ module IfThenElif =
                     | :? ExprIfThenNode as node -> Some node
                     | _ -> None)
 
-            let elseExpr = Widgets.tryGetScalarValue widget ElseExpr
+            let elseExpr = Widgets.tryGetNodeFromWidget widget ElseExpr
 
             let elseExpr =
                 match elseExpr with
                 | ValueNone -> None
-                | ValueSome stringOrWidget ->
-                    match stringOrWidget with
-                    | StringOrWidget.StringExpr value ->
-                        Some(
-                            SingleTextNode.``else``,
-                            Expr.Constant(
-                                Constant.FromText(
-                                    SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value))
-                                )
-                            )
-                        )
-                    | StringOrWidget.WidgetExpr expr -> Some(SingleTextNode.``else``, expr)
+                | ValueSome expr -> Some(SingleTextNode.``else``, expr)
 
             Expr.IfThenElif(ExprIfThenElifNode(branches, elseExpr, Range.Zero)))
 
@@ -48,24 +37,8 @@ module IfThenElifBuilders =
             WidgetBuilder<Expr>(
                 IfThenElif.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        IfThenElif.Branches.WithValue(branches),
-                        IfThenElif.ElseExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member inline IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: StringVariant) =
-            WidgetBuilder<Expr>(
-                IfThenElif.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        IfThenElif.Branches.WithValue(branches |> List.map Gen.mkOak),
-                        IfThenElif.ElseExpr.WithValue(StringOrWidget.StringExpr(elseExpr))
-                    ),
-                    Array.empty,
+                    StackList.one(IfThenElif.Branches.WithValue(branches)),
+                    [| IfThenElif.ElseExpr.WithValue(elseExpr.Compile()) |],
                     Array.empty
                 )
             )

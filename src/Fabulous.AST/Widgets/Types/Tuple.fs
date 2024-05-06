@@ -35,18 +35,14 @@ module TypeTupleBuilders =
                 TypeTuple.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-
                     [| TypeTuple.Path.WithValue(first.Compile())
                        TypeTuple.Exponent.WithValue(exponent.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member Tuple(first: string, exponent: string) =
-            Ast.Tuple(Ast.LongIdent(first), Ast.LongIdent(exponent))
-
-        static member Tuple(first: string, second: string, exponent: WidgetBuilder<Type>) =
-            Ast.Tuple(Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent second), exponent)
-
-        static member Tuple(first: string list, second: string list, exponent: WidgetBuilder<Type>) =
-            Ast.Tuple(Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent second), exponent)
+// static member Tuple(first: WidgetBuilder<Type>, second: WidgetBuilder<Type>, exponent: WidgetBuilder<Type>) =
+//     Ast.Tuple(Ast.AppPostfix(first, second), exponent)
+//
+// static member Tuple(first: string list, second: string list, exponent: WidgetBuilder<Type>) =
+//     Ast.Tuple(Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent second), exponent)

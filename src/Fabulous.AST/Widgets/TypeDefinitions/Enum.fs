@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -20,9 +21,7 @@ module Enum =
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->
             let name =
-                Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let enumCaseNodes =
                 Widgets.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
@@ -101,20 +100,8 @@ type EnumModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnEnumNode>, attributes: string list) =
-        EnumModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnEnumNode>, attribute: WidgetBuilder<AttributeNode>) =
         EnumModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnEnumNode>, attribute: string) =
-        EnumModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
 type EnumYieldExtensions =
     [<Extension>]

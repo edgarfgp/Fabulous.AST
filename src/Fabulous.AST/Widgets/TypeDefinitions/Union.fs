@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -26,9 +27,7 @@ module Union =
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name =
-                Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let unionCaseNode =
                 Widgets.getNodesFromWidgetCollection<UnionCaseNode> widget UnionCaseNode
@@ -119,6 +118,8 @@ module Union =
 module UnionBuilders =
     type Ast with
         static member Union(name: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
@@ -168,20 +169,8 @@ type UnionModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnUnionNode>, attributes: string list) =
-        UnionModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnUnionNode>, attribute: WidgetBuilder<AttributeNode>) =
         UnionModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnUnionNode>, attribute: string) =
-        UnionModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnUnionNode>) =

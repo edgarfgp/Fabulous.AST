@@ -14,7 +14,7 @@ module ObjExpr =
         Oak() {
             AnonymousModule() {
                 ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit()))
-                    .bindings([ Method("x.ToString", [], ConstantExpr(DoubleQuoted("F#"))) ])
+                    .bindings([ Method("x.ToString", [], ConstantExpr(String("F#"))) ])
             }
         }
         |> produces
@@ -33,22 +33,21 @@ module ObjExpr =
                               "x.ToString",
                               ParenPat(
                                   TuplePat(
-                                      [ ParameterPat("format", String())
-                                        ParameterPat("provider", LongIdent("System.IFormatProvider")) ]
+                                      [ ParameterPat(ConstantPat(Constant("format")), String())
+                                        ParameterPat(
+                                            ConstantPat(Constant("provider")),
+                                            LongIdent("System.IFormatProvider")
+                                        ) ]
                                   )
                               ),
                               IfThenElseExpr(
-                                  InfixAppExpr(
-                                      ConstantExpr(Constant(Unquoted "format")),
-                                      "=",
-                                      ConstantExpr(Constant(DoubleQuoted "D"))
-                                  ),
+                                  InfixAppExpr(ConstantExpr(Constant("format")), "=", ConstantExpr(String("D"))),
                                   SameInfixAppsExpr(
-                                      ConstantExpr(Unquoted("delim1")),
-                                      [ ("+", ConstantExpr(Unquoted("value")))
-                                        ("+", ConstantExpr(Unquoted("delim2"))) ]
+                                      ConstantExpr(Constant("delim1")),
+                                      [ ("+", ConstantExpr(Constant("value")))
+                                        ("+", ConstantExpr(Constant("delim2"))) ]
                                   ),
-                                  ConstantExpr(Unquoted "value")
+                                  ConstantExpr(Constant "value")
                               )
                           ) ]
                     )

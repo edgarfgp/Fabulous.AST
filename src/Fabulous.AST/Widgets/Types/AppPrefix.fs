@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -21,6 +22,7 @@ module TypeAppPrefix =
                 | ValueSome postIdentifier ->
                     IdentListNode(
                         [ for identifier in postIdentifier do
+                              let identifier = PrettyNaming.NormalizeIdentifierBackticks identifier
                               IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ],
                         Range.Zero
                     )

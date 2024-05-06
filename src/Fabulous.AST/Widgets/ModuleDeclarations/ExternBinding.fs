@@ -13,7 +13,7 @@ module ExternBinding =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let AttributesOfType = Attributes.defineWidget "MultipleAttributes"
-    let TypeVal = Attributes.defineScalar<StringOrWidget<Type>> "Type"
+    let TypeVal = Attributes.defineWidget "Type"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Identifier = Attributes.defineScalar<string> "Identifier"
@@ -56,18 +56,7 @@ module ExternBinding =
                 | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
                 | ValueNone -> None
 
-            let tp = Widgets.getScalarValue widget TypeVal
-
-            let tp =
-                match tp with
-                | StringOrWidget.StringExpr value ->
-                    Type.LongIdent(
-                        IdentListNode(
-                            [ IdentifierOrDot.Ident(SingleTextNode.Create(StringVariant.normalize value)) ],
-                            Range.Zero
-                        )
-                    )
-                | StringOrWidget.WidgetExpr widget -> widget
+            let tp = Widgets.getNodeFromWidget widget TypeVal
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -106,29 +95,12 @@ module ExternBinding =
 [<AutoOpen>]
 module ExternBindingNodeBuilders =
     type Ast with
-
-        static member ExternBinding(name: string, ``type``: string) =
+        static member ExternBinding(name: string, tp: WidgetBuilder<Type>) =
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        ExternBinding.Identifier.WithValue(name),
-                        ExternBinding.TypeVal.WithValue(StringOrWidget.StringExpr(Unquoted ``type``))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member ExternBinding(name: string, ``type``: WidgetBuilder<Type>) =
-            WidgetBuilder<ExternBindingNode>(
-                ExternBinding.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        ExternBinding.Identifier.WithValue(name),
-                        ExternBinding.TypeVal.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(``type``)))
-                    ),
-                    Array.empty,
+                    StackList.one(ExternBinding.Identifier.WithValue(name)),
+                    [| ExternBinding.TypeVal.WithValue(tp.Compile()) |],
                     Array.empty
                 )
             )
@@ -150,20 +122,8 @@ type ExternBindingNodeModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ExternBindingNode>, attributes: string list) =
-        ExternBindingNodeModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: WidgetBuilder<AttributeNode>) =
         ExternBindingNodeModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: string) =
-        ExternBindingNodeModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ExternBindingNode>) =

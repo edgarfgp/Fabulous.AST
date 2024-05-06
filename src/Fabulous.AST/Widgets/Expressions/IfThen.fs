@@ -6,32 +6,14 @@ open Fantomas.Core.SyntaxOak
 
 module IfThen =
     let IfNode = Attributes.defineScalar<IfKeywordNode> "IfNode"
-    let IfExpr = Attributes.defineScalar<StringOrWidget<Expr>> "IfExpr"
-    let ThenExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ThenExpr"
+    let IfExpr = Attributes.defineWidget "IfExpr"
+    let ThenExpr = Attributes.defineWidget "ThenExpr"
 
     let WidgetKey =
         Widgets.register "IfThen" (fun widget ->
             let ifNode = Widgets.getScalarValue widget IfNode
-            let ifExpr = Widgets.getScalarValue widget IfExpr
-
-            let ifExpr =
-                match ifExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
-            let thenExpr = Widgets.getScalarValue widget ThenExpr
-
-            let thenExpr =
-                match thenExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
+            let ifExpr = Widgets.getNodeFromWidget widget IfExpr
+            let thenExpr = Widgets.getNodeFromWidget widget ThenExpr
             Expr.IfThen(ExprIfThenNode(ifNode, ifExpr, SingleTextNode.``then``, thenExpr, Range.Zero)))
 
 [<AutoOpen>]
@@ -42,26 +24,9 @@ module IfThenBuilders =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``if``)),
-                        IfThen.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak ifExpr)),
-                        IfThen.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member inline IfThenExpr(ifExpr: StringVariant, thenExpr: StringVariant) =
-            WidgetBuilder<Expr>(
-                IfThen.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``if``)),
-                        IfThen.IfExpr.WithValue(StringOrWidget.StringExpr(ifExpr)),
-                        IfThen.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr))
-                    ),
-                    Array.empty,
+                    StackList.one(IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``if``))),
+                    [| IfThen.IfExpr.WithValue(ifExpr.Compile())
+                       IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
                     Array.empty
                 )
             )
@@ -70,26 +35,9 @@ module IfThenBuilders =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``elif``)),
-                        IfThen.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elIfExpr)),
-                        IfThen.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member inline ElIfThenExpr(elIfExpr: StringVariant, thenExpr: StringVariant) =
-            WidgetBuilder<Expr>(
-                IfThen.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``elif``)),
-                        IfThen.IfExpr.WithValue(StringOrWidget.StringExpr(elIfExpr)),
-                        IfThen.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr))
-                    ),
-                    Array.empty,
+                    StackList.one(IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``elif``))),
+                    [| IfThen.IfExpr.WithValue(elIfExpr.Compile())
+                       IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
                     Array.empty
                 )
             )
@@ -98,34 +46,15 @@ module IfThenBuilders =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
+                    StackList.one(
                         IfThen.IfNode.WithValue(
                             IfKeywordNode.ElseIf(
                                 ElseIfNode(Range.Zero, Range.Zero, Unchecked.defaultof<Node>, Range.Zero)
                             )
-                        ),
-                        IfThen.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseIfExpr)),
-                        IfThen.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr))
+                        )
                     ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
-        static member inline ElseIfThenExpr(elseIfExpr: StringVariant, thenExpr: StringVariant) =
-            WidgetBuilder<Expr>(
-                IfThen.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        IfThen.IfNode.WithValue(
-                            IfKeywordNode.ElseIf(
-                                ElseIfNode(Range.Zero, Range.Zero, Unchecked.defaultof<Node>, Range.Zero)
-                            )
-                        ),
-                        IfThen.IfExpr.WithValue(StringOrWidget.StringExpr(elseIfExpr)),
-                        IfThen.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr))
-                    ),
-                    Array.empty,
+                    [| IfThen.IfExpr.WithValue(elseIfExpr.Compile())
+                       IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
                     Array.empty
                 )
             )

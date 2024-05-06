@@ -6,34 +6,24 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module ExternBindingPattern =
-    let PatternVal = Attributes.defineScalar<StringOrWidget<Pattern>> "DoExpression"
+    let PatternVal = Attributes.defineWidget "DoExpression"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let TypeValue = Attributes.defineScalar<StringOrWidget<Type>> "Type"
+    let TypeValue = Attributes.defineWidget "Type"
 
     let WidgetKey =
         Widgets.register "ExternBindingPattern" (fun widget ->
-            let pat = Widgets.tryGetScalarValue widget PatternVal
+            let pat = Widgets.tryGetNodeFromWidget widget PatternVal
 
             let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
-            let tp = Widgets.tryGetScalarValue widget TypeValue
+            let tp = Widgets.tryGetNodeFromWidget widget TypeValue
 
             let tp =
                 match tp with
-                | ValueSome tp ->
-                    match tp with
-                    | StringOrWidget.StringExpr value ->
-                        let value = StringParsing.normalizeIdentifierBackticks value
-
-                        Some(
-                            Type.LongIdent(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
-                            )
-                        )
-                    | StringOrWidget.WidgetExpr widget -> Some widget
+                | ValueSome tp -> Some tp
                 | ValueNone -> None
 
             let multipleAttributes =
@@ -54,15 +44,7 @@ module ExternBindingPattern =
 
             let pat =
                 match pat with
-                | ValueSome value ->
-                    match value with
-                    | StringOrWidget.StringExpr value ->
-                        Some(
-                            Pattern.Named(
-                                PatNamedNode(None, SingleTextNode.Create(StringVariant.normalize value), Range.Zero)
-                            )
-                        )
-                    | StringOrWidget.WidgetExpr pattern -> Some pattern
+                | ValueSome value -> Some value
                 | ValueNone -> None
 
             ExternBindingPatternNode(multipleAttributes, tp, pat, Range.Zero))
@@ -70,29 +52,13 @@ module ExternBindingPattern =
 [<AutoOpen>]
 module ExternBindingPatternNodeBuilders =
     type Ast with
-
-        static member ExternBindingPat(value: string, pat: WidgetBuilder<Pattern>) =
-            WidgetBuilder<ExternBindingPatternNode>(
-                ExternBindingPattern.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        ExternBindingPattern.PatternVal.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pat)),
-                        ExternBindingPattern.TypeValue.WithValue(StringOrWidget.StringExpr(Unquoted value))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
         static member ExternBindingPat(value: WidgetBuilder<Type>, pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<ExternBindingPatternNode>(
                 ExternBindingPattern.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        ExternBindingPattern.PatternVal.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pat)),
-                        ExternBindingPattern.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
-                    ),
-                    Array.empty,
+                    StackList.empty(),
+                    [| ExternBindingPattern.PatternVal.WithValue(pat.Compile())
+                       ExternBindingPattern.TypeValue.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
@@ -110,19 +76,7 @@ type ExternBindingPatternNodeModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ExternBindingPatternNode>, attributes: string list) =
-        ExternBindingPatternNodeModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<ExternBindingPatternNode>, attribute: WidgetBuilder<AttributeNode>)
         =
         ExternBindingPatternNodeModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<ExternBindingPatternNode>, attribute: string) =
-        ExternBindingPatternNodeModifiers.attributes(this, [ Ast.Attribute(attribute) ])
