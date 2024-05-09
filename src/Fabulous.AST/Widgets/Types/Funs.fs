@@ -38,3 +38,6 @@ module FunsBuilders =
                     Array.empty
                 )
             )
+
+        static member Funs(returnType: string, parameters: string list) =
+            Ast.Funs(Ast.LongIdent returnType, parameters |> List.map Ast.LongIdent)

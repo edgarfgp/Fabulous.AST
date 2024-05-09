@@ -42,7 +42,7 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .attributes([ Attribute("Obsolete", ParenExpr(ConstantExpr(String("This is obsolete")))) ])
+                    .attributes([ Attribute("Obsolete", ParenExpr(String("This is obsolete"))) ])
             }
         }
         |> produces

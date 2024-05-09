@@ -32,4 +32,47 @@ module AppBuilders =
                 )
             )
 
+        static member AppExpr(name: WidgetBuilder<Constant>, items: WidgetBuilder<Expr> list) =
+            Ast.AppExpr(Ast.ConstantExpr(name), items)
+
+        static member AppExpr(name: string, items: WidgetBuilder<Expr> list) = Ast.AppExpr(Ast.Constant(name), items)
+
+        static member AppExpr(name: WidgetBuilder<Expr>, items: WidgetBuilder<Constant> list) =
+            Ast.AppExpr(name, items |> List.map Ast.ConstantExpr)
+
+        static member AppExpr(name: WidgetBuilder<Expr>, items: string list) =
+            Ast.AppExpr(name, items |> List.map Ast.Constant)
+
+        static member AppExpr(name: WidgetBuilder<Constant>, items: WidgetBuilder<Constant> list) =
+            Ast.AppExpr(name, items |> List.map Ast.ConstantExpr)
+
+        static member AppExpr(name: WidgetBuilder<Constant>, items: string list) =
+            Ast.AppExpr(name, items |> List.map Ast.Constant)
+
+        static member AppExpr(name: string, items: WidgetBuilder<Constant> list) =
+            Ast.AppExpr(Ast.Constant(name), items |> List.map Ast.ConstantExpr)
+
+        static member AppExpr(name: string, items: string list) =
+            Ast.AppExpr(name, items |> List.map Ast.Constant)
+
         static member AppExpr(name: WidgetBuilder<Expr>, item: WidgetBuilder<Expr>) = Ast.AppExpr(name, [ item ])
+
+        static member AppExpr(name: WidgetBuilder<Constant>, item: WidgetBuilder<Expr>) = Ast.AppExpr(name, [ item ])
+
+        static member AppExpr(name: string, item: WidgetBuilder<Expr>) = Ast.AppExpr(name, [ item ])
+
+        static member AppExpr(name: WidgetBuilder<Expr>, item: WidgetBuilder<Constant>) = Ast.AppExpr(name, [ item ])
+
+        static member AppExpr(name: WidgetBuilder<Constant>, item: WidgetBuilder<Constant>) =
+            Ast.AppExpr(name, [ item ])
+
+        static member AppExpr(name: string, item: WidgetBuilder<Constant>) = Ast.AppExpr(name, [ item ])
+
+        static member AppExpr(name: WidgetBuilder<Expr>, item: string) =
+            Ast.AppExpr(name, [ Ast.Constant(item) ])
+
+        static member AppExpr(name: WidgetBuilder<Constant>, item: string) =
+            Ast.AppExpr(name, [ Ast.Constant(item) ])
+
+        static member AppExpr(name: string, item: string) =
+            Ast.AppExpr(name, [ Ast.Constant(item) ])

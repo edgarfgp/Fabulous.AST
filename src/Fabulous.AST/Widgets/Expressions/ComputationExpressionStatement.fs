@@ -79,6 +79,15 @@ module ComputationExpressionStatementBuilders =
                 )
             )
 
+        static member LetOrUseBangExpr(pat: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.LetOrUseBangExpr(Ast.ConstantPat(pat), expr)
+
+        static member LetOrUseBangExpr(pat: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
+            Ast.LetOrUseBangExpr(Ast.ConstantPat(pat), Ast.ConstantExpr(expr))
+
+        static member LetOrUseBangExpr(pat: string, expr: string) =
+            Ast.LetOrUseBangExpr(Ast.Constant(pat), Ast.Constant(expr))
+
         static member AndBangExpr(pat: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<ComputationExpressionStatement>(
                 ComputationExpressionStatement.WidgetAndBangStatementKey,
@@ -89,3 +98,12 @@ module ComputationExpressionStatementBuilders =
                     Array.empty
                 )
             )
+
+        static member AndBangExpr(pat: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.AndBangExpr(Ast.ConstantPat(pat), expr)
+
+        static member AndBangExpr(pat: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
+            Ast.AndBangExpr(pat, Ast.ConstantExpr(expr))
+
+        static member AndBangExpr(pat: string, expr: string) =
+            Ast.AndBangExpr(Ast.Constant(pat), Ast.Constant(expr))

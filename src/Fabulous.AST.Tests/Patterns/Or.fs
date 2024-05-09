@@ -11,10 +11,14 @@ module Or =
 
     [<Fact>]
     let ``let value with a Or pattern``() =
-        Oak() { AnonymousModule() { Value(OrPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Int(12))) } }
+        Oak() { AnonymousModule() {
+            Value(OrPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Int(12)))
+            Value(OrPat("A", "B"), ConstantExpr(Int(12)))
+        } }
         |> produces
             """
 
+let A | B = 12
 let A | B = 12
 """
 

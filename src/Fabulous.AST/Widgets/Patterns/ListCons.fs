@@ -34,3 +34,9 @@ module ListConsBuilders =
                     Array.empty
                 )
             )
+
+        static member ListConsPat(lhs: WidgetBuilder<Constant>, rhs: WidgetBuilder<Constant>) =
+            Ast.ListConsPat(Ast.ConstantPat(lhs), Ast.ConstantPat(rhs))
+
+        static member ListConsPat(lhs: string, rhs: string) =
+            Ast.ListConsPat(Ast.Constant(lhs), Ast.Constant(rhs))

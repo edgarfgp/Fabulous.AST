@@ -13,10 +13,14 @@ module Typed =
         Oak() {
             AnonymousModule() {
                 Value(ConstantPat(Constant("x")), TypedExpr(ConstantExpr(Int(2)), ":", LongIdent("string")))
+                Value(ConstantPat(Constant("x")), TypedExpr(Int(2), ":", LongIdent("string")))
+                Value(ConstantPat(Constant("x")), TypedExpr("2", ":", "string"))
             }
         }
         |> produces
             """
 
+let x = 2: string
+let x = 2: string
 let x = 2: string
 """

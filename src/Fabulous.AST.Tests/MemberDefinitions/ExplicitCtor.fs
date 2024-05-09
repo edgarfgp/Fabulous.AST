@@ -16,9 +16,9 @@ module ExplicitCtor =
                     ExplicitCtor(
                         ParenPat(
                             TuplePat(
-                                [ ParameterPat(ConstantPat(Constant "x"))
-                                  ParameterPat(ConstantPat(Constant "y"))
-                                  ParameterPat(ConstantPat(Constant "z")) ]
+                                [ (ConstantPat(Constant "x"))
+                                  (ConstantPat(Constant "y"))
+                                  (ConstantPat(Constant "z")) ]
                             )
                         ),
                         RecordExpr(
@@ -32,9 +32,9 @@ module ExplicitCtor =
                     ExplicitCtor(
                         ParenPat(
                             TuplePat(
-                                [ ParameterPat(ConstantPat(Constant "x"))
-                                  ParameterPat(ConstantPat(Constant "y"))
-                                  ParameterPat(ConstantPat(Constant "z")) ]
+                                [ Constant "x"
+                                  Constant "y"
+                                  Constant "z" ]
                             )
                         ),
                         RecordExpr(

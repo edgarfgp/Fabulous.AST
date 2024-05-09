@@ -40,11 +40,23 @@ module IndexRangeBuilders =
                 )
             )
 
+        static member IndexFromRangeExpr(fromExpr: WidgetBuilder<Constant>) =
+            Ast.IndexFromRangeExpr(Ast.ConstantExpr(fromExpr))
+
+        static member IndexFromRangeExpr(fromExpr: string) =
+            Ast.IndexFromRangeExpr(Ast.Constant(fromExpr))
+
         static member IndexToRangeExpr(toExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 IndexRange.WidgetKey,
                 AttributesBundle(StackList.empty(), [| IndexRange.ToExpr.WithValue(toExpr.Compile()) |], Array.empty)
             )
+
+        static member IndexToRangeExpr(toExpr: WidgetBuilder<Constant>) =
+            Ast.IndexToRangeExpr(Ast.ConstantExpr(toExpr))
+
+        static member IndexToRangeExpr(toExpr: string) =
+            Ast.IndexToRangeExpr(Ast.Constant(toExpr))
 
         static member IndexRangeExpr(from: WidgetBuilder<Expr>, toExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
@@ -56,3 +68,18 @@ module IndexRangeBuilders =
                     Array.empty
                 )
             )
+
+        static member IndexRangeExpr(from: WidgetBuilder<Constant>, toExpr: WidgetBuilder<Expr>) =
+            Ast.IndexRangeExpr(Ast.ConstantExpr(from), toExpr)
+
+        static member IndexRangeExpr(from: string, toExpr: WidgetBuilder<Expr>) =
+            Ast.IndexRangeExpr(Ast.Constant(from), toExpr)
+
+        static member IndexRangeExpr(from: WidgetBuilder<Expr>, toExpr: WidgetBuilder<Constant>) =
+            Ast.IndexRangeExpr(from, Ast.ConstantExpr(toExpr))
+
+        static member IndexRangeExpr(from: WidgetBuilder<Constant>, toExpr: WidgetBuilder<Constant>) =
+            Ast.IndexRangeExpr(Ast.ConstantExpr(from), Ast.ConstantExpr(toExpr))
+
+        static member IndexRangeExpr(from: string, toExpr: string) =
+            Ast.IndexRangeExpr(Ast.Constant(from), Ast.Constant(toExpr))

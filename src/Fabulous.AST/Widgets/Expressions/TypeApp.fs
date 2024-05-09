@@ -40,5 +40,25 @@ module TypeAppBuilders =
                 )
             )
 
+        static member TypeAppExpr(value: WidgetBuilder<Constant>, parameters: WidgetBuilder<Type> list) =
+            Ast.TypeAppExpr(Ast.ConstantExpr(value), parameters)
+
+        static member TypeAppExpr(value: string, parameters: WidgetBuilder<Type> list) =
+            Ast.TypeAppExpr(Ast.Constant(value), parameters)
+
+        static member TypeAppExpr(value: string, parameters: string list) =
+            let parameters = parameters |> List.map Ast.LongIdent
+            Ast.TypeAppExpr(Ast.Constant(value), parameters)
+
         static member TypeAppExpr(value: WidgetBuilder<Expr>, parameter: WidgetBuilder<Type>) =
             Ast.TypeAppExpr(value, [ parameter ])
+
+        static member TypeAppExpr(value: WidgetBuilder<Expr>, parameter: string) =
+            Ast.TypeAppExpr(value, [ Ast.LongIdent(parameter) ])
+
+        static member TypeAppExpr(value: WidgetBuilder<Constant>, parameter: WidgetBuilder<Type>) =
+            Ast.TypeAppExpr(value, [ parameter ])
+
+        static member TypeAppExpr(value: string, parameter: WidgetBuilder<Type>) = Ast.TypeAppExpr(value, [ parameter ])
+
+        static member TypeAppExpr(value: string, parameter: string) = Ast.TypeAppExpr(value, [ parameter ])

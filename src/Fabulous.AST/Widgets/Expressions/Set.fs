@@ -29,3 +29,9 @@ module SetBuilders =
                     Array.empty
                 )
             )
+
+        static member SetExpr(identifier: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
+            Ast.SetExpr(Ast.ConstantExpr(identifier), Ast.ConstantExpr(expr))
+
+        static member SetExpr(identifier: string, expr: string) =
+            Ast.SetExpr(Ast.Constant(identifier), Ast.Constant(expr))

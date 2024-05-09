@@ -56,6 +56,9 @@ module TypeAppPrefixBuilders =
                 )
             )
 
+        static member AppPrefix(t: string, arguments: string) =
+            Ast.AppPrefix(Ast.LongIdent t, Ast.LongIdent arguments)
+
         static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, arguments: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,
@@ -66,3 +69,6 @@ module TypeAppPrefixBuilders =
                     Array.empty
                 )
             )
+
+        static member AppPrefix(t: string, postIdentifier: string list, arguments: string) =
+            Ast.AppPrefix(Ast.LongIdent t, postIdentifier, Ast.LongIdent arguments)

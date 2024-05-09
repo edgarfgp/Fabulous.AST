@@ -21,3 +21,7 @@ module LazyBuilders =
                 Lazy.WidgetKey,
                 AttributesBundle(StackList.empty(), [| Lazy.Value.WithValue(value.Compile()) |], Array.empty)
             )
+
+        static member LazyExpr(value: WidgetBuilder<Constant>) = Ast.LazyExpr(Ast.ConstantExpr(value))
+
+        static member LazyExpr(value: string) = Ast.LazyExpr(Ast.Constant(value))

@@ -34,3 +34,9 @@ module AsBuilders =
                     Array.empty
                 )
             )
+
+        static member AsPat(lhs: WidgetBuilder<Constant>, rhs: WidgetBuilder<Constant>) =
+            Ast.AsPat(Ast.ConstantPat(lhs), Ast.ConstantPat(rhs))
+
+        static member AsPat(lhs: string, rhs: string) =
+            Ast.AsPat(Ast.Constant(lhs), Ast.Constant(rhs))

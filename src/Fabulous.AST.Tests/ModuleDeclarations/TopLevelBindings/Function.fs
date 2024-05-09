@@ -89,10 +89,14 @@ let x (i) = ()
         Oak() {
             AnonymousModule() {
                 Function("x", ParenPat(ParameterPat(NamedPat("i"), Int())), ConstantExpr(ConstantUnit()))
+                Function("x", ParenPat(ParameterPat("i", Int())), ConstantExpr(ConstantUnit()))
+                Function("x", ParenPat(ParameterPat("i", "int")), ConstantExpr(ConstantUnit()))
             }
         }
         |> produces
             """
+let x (i: int) = ()
+let x (i: int) = ()
 let x (i: int) = ()
 
 """

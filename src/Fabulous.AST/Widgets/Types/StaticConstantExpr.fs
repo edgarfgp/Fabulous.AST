@@ -30,3 +30,6 @@ module TypeStaticConstantExprBuilders =
                     Array.empty
                 )
             )
+
+        static member StaticConstantExpr(constant: string, expr: string) =
+            Ast.StaticConstantExpr(constant, Ast.ConstantExpr expr)

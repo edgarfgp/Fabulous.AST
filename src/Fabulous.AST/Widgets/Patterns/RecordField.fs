@@ -43,6 +43,12 @@ module RecordFieldPatBuilders =
                 )
             )
 
+        static member RecordFieldPat(name: string, pat: WidgetBuilder<Constant>) =
+            Ast.RecordFieldPat(name, Ast.ConstantPat(pat))
+
+        static member RecordFieldPat(name: string, pat: string) =
+            Ast.RecordFieldPat(name, Ast.Constant(pat))
+
         static member RecordFieldPat(name: string, pat: WidgetBuilder<Pattern>, prefix: string) =
             WidgetBuilder<PatRecordField>(
                 RecordFieldPat.WidgetKey,
@@ -52,3 +58,9 @@ module RecordFieldPatBuilders =
                     Array.empty
                 )
             )
+
+        static member RecordFieldPat(name: string, pat: WidgetBuilder<Constant>, prefix: string) =
+            Ast.RecordFieldPat(name, Ast.ConstantPat(pat), prefix)
+
+        static member RecordFieldPat(name: string, pat: string, prefix: string) =
+            Ast.RecordFieldPat(name, Ast.Constant(pat), prefix)

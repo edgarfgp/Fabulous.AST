@@ -30,3 +30,15 @@ module WhileBuilders =
                     Array.empty
                 )
             )
+
+        static member WhileExpr(expr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.WhileExpr(Ast.ConstantExpr(expr), Ast.ConstantExpr(bodyExpr))
+
+        static member WhileExpr(expr: string, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.WhileExpr(Ast.Constant(expr), bodyExpr)
+
+        static member WhileExpr(expr: WidgetBuilder<Constant>, bodyExpr: string) =
+            Ast.WhileExpr(expr, Ast.Constant(bodyExpr))
+
+        static member WhileExpr(expr: string, bodyExpr: string) =
+            Ast.WhileExpr(Ast.Constant(expr), Ast.Constant(bodyExpr))

@@ -20,10 +20,17 @@ let x = lazy 12
 
     [<Fact>]
     let ``let value with a lazy expression widgets``() =
-        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), LazyExpr(ConstantExpr(Int(12)))) } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), LazyExpr(ConstantExpr(Int(12))))
+                Value(ConstantPat(Constant("x")), LazyExpr(Int(12)))
+                Value(ConstantPat(Constant("x")), LazyExpr("12"))
+            }
+        }
         |> produces
             """
-
+let x = lazy 12
+let x = lazy 12
 let x = lazy 12
 """
 

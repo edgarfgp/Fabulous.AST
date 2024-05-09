@@ -43,7 +43,7 @@ module ArrayOrListBuilders =
             Ast.ListExpr(parameters)
 
         static member ListExpr(value: string list) =
-            let parameters = value |> List.map(Ast.ConstantExpr)
+            let parameters = value |> List.map(Ast.Constant)
             Ast.ListExpr(parameters)
 
         static member ArrayExpr(value: WidgetBuilder<Expr> list) =
@@ -67,5 +67,5 @@ module ArrayOrListBuilders =
             Ast.ArrayExpr(parameters)
 
         static member ArrayExpr(value: string list) =
-            let parameters = value |> List.map(Ast.ConstantExpr)
+            let parameters = value |> List.map(Ast.Constant)
             Ast.ArrayExpr(parameters)

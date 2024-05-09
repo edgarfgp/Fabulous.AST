@@ -441,7 +441,7 @@ type Person() =
                                         )
 
                                         ElIfThenExpr(
-                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Boolean()),
+                                            TypeAppExpr(Constant("typedefof"), Boolean()),
                                             AppLongIdentAndSingleParenArgExpr(
                                                 "Some",
                                                 ParenExpr(
@@ -454,7 +454,7 @@ type Person() =
                                         )
 
                                         ElIfThenExpr(
-                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Int()),
+                                            TypeAppExpr("typedefof", Int()),
                                             AppLongIdentAndSingleParenArgExpr(
                                                 "Some",
                                                 ParenExpr(
@@ -467,7 +467,7 @@ type Person() =
                                         )
 
                                         ElIfThenExpr(
-                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), Int64()),
+                                            TypeAppExpr(ConstantExpr(Constant("typedefof")), "int64"),
                                             AppLongIdentAndSingleParenArgExpr(
                                                 "Some",
                                                 ParenExpr(

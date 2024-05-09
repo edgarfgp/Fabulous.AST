@@ -30,3 +30,6 @@ module TypeMeasurePowerBuilders =
                     Array.empty
                 )
             )
+
+        static member MeasurePower(value: string, rational: WidgetBuilder<RationalConstNode>) =
+            Ast.MeasurePower(Ast.LongIdent value, rational)

@@ -24,3 +24,5 @@ module TypeHashConstraintBuilders =
                     Array.empty
                 )
             )
+
+        static member HashConstraint(value: string) = Ast.HashConstraint(Ast.LongIdent value)

@@ -26,3 +26,5 @@ module TypeArrayBuilders =
                     Array.empty
                 )
             )
+
+        static member Array(value: string, rank: int) = Ast.Array(Ast.LongIdent value, rank)

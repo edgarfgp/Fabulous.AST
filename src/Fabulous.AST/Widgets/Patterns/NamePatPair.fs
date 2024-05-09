@@ -31,3 +31,9 @@ module NamePatPairBuilders =
                     Array.empty
                 )
             )
+
+        static member NamePatPairPat(ident: string, pat: WidgetBuilder<Constant>) =
+            Ast.NamePatPairPat(ident, Ast.ConstantPat(pat))
+
+        static member NamePatPairPat(ident: string, pat: string) =
+            Ast.NamePatPairPat(ident, Ast.Constant(pat))

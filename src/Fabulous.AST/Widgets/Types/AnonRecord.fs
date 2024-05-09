@@ -51,6 +51,10 @@ module TypeAnonRecordBuilders =
                 )
             )
 
+        static member AnonRecord(fields: (string * string) list) =
+            let fields = fields |> List.map(fun (name, value) -> (name, Ast.LongIdent value))
+            Ast.AnonRecord(fields)
+
         static member StructAnonRecord(fields: (string * WidgetBuilder<Type>) list) =
             WidgetBuilder<Type>(
                 TypeAnonRecord.WidgetKey,
@@ -60,3 +64,7 @@ module TypeAnonRecordBuilders =
                     Array.empty
                 )
             )
+
+        static member StructAnonRecord(fields: (string * string) list) =
+            let fields = fields |> List.map(fun (name, value) -> (name, Ast.LongIdent value))
+            Ast.StructAnonRecord(fields)

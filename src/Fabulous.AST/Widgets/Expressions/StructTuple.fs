@@ -36,3 +36,9 @@ module StructTupleBuilders =
                 StructTuple.WidgetKey,
                 AttributesBundle(StackList.one(StructTuple.Items.WithValue(parameters)), Array.empty, Array.empty)
             )
+
+        static member StructTupleExpr(value: WidgetBuilder<Constant> list) =
+            Ast.StructTupleExpr(value |> List.map Ast.ConstantExpr)
+
+        static member StructTupleExpr(value: string list) =
+            Ast.StructTupleExpr(value |> List.map Ast.Constant)

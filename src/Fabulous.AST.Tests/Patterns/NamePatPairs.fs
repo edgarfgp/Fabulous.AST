@@ -17,11 +17,17 @@ module NamePatPairsPat =
                     NamePatPairsPat("x", [ NamePatPairPat("A", NamedPat("B")); NamePatPairPat("B", NamedPat("A")) ]),
                     ConstantExpr(Int(12))
                 )
+
+                Value(
+                    NamePatPairsPat("x", [ NamePatPairPat("A", Constant("B")); NamePatPairPat("B", "A") ]),
+                    ConstantExpr(Int(12))
+                )
             }
         }
         |> produces
             """
 
+let x (A = B; B = A) = 12
 let x (A = B; B = A) = 12
 """
 

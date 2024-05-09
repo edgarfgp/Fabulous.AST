@@ -5,44 +5,50 @@ open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
 module TypeTuple =
-    let Path = Attributes.defineWidget "Path"
-
-    let Exponent = Attributes.defineWidget "Exponent"
+    let Items = Attributes.defineScalar<Type list> "Items"
+    let Exponent = Attributes.defineScalar<string> "Exponent"
 
     let WidgetKey =
         Widgets.register "TypeTuple" (fun widget ->
-            let path = Widgets.getNodeFromWidget<Type> widget Path
-            let exponent = Widgets.getNodeFromWidget<Type> widget Exponent
+            let exponent =
+                Widgets.tryGetScalarValue widget Exponent
+                |> ValueOption.map(SingleTextNode.Create)
+                |> ValueOption.defaultValue(SingleTextNode.star)
 
-            Type.Tuple(
-                TypeTupleNode(
-                    [ Choice1Of2(path)
-                      Choice1Of2(
-                          Type.LongIdent(
-                              IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.forwardSlash) ], Range.Zero)
-                          )
-                      )
-                      Choice1Of2(exponent) ],
-                    Range.Zero
-                )
-            ))
+            let items =
+                Widgets.getScalarValue widget Items
+                |> List.map Choice1Of2
+                |> List.intersperse(Choice2Of2(exponent))
+
+            Type.Tuple(TypeTupleNode(items, Range.Zero)))
 
 [<AutoOpen>]
 module TypeTupleBuilders =
     type Ast with
-        static member Tuple(first: WidgetBuilder<Type>, exponent: WidgetBuilder<Type>) =
+        static member Tuple(items: WidgetBuilder<Type> list) =
+            let items = items |> List.map Gen.mkOak
+
+            WidgetBuilder<Type>(
+                TypeTuple.WidgetKey,
+                AttributesBundle(StackList.one(TypeTuple.Items.WithValue(items)), Array.empty, Array.empty)
+            )
+
+        static member Tuple(items: WidgetBuilder<Type> list, exponent: string) =
+            let items = items |> List.map Gen.mkOak
+
             WidgetBuilder<Type>(
                 TypeTuple.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    [| TypeTuple.Path.WithValue(first.Compile())
-                       TypeTuple.Exponent.WithValue(exponent.Compile()) |],
+                    StackList.two(TypeTuple.Exponent.WithValue(exponent), TypeTuple.Items.WithValue(items)),
+                    Array.empty,
                     Array.empty
                 )
             )
 
-// static member Tuple(first: WidgetBuilder<Type>, second: WidgetBuilder<Type>, exponent: WidgetBuilder<Type>) =
-//     Ast.Tuple(Ast.AppPostfix(first, second), exponent)
-//
-// static member Tuple(first: string list, second: string list, exponent: WidgetBuilder<Type>) =
-//     Ast.Tuple(Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent second), exponent)
+        static member Tuple(items: string list) =
+            let items = items |> List.map Ast.LongIdent
+            Ast.Tuple(items)
+
+        static member Tuple(items: string list, exponent: string) =
+            let items = items |> List.map Ast.LongIdent
+            Ast.Tuple(items, exponent)

@@ -29,3 +29,15 @@ module IndexWithoutDotBuilders =
                     Array.empty
                 )
             )
+
+        static member IndexWithoutDotExpr(identifier: WidgetBuilder<Expr>, indexer: WidgetBuilder<Constant>) =
+            Ast.IndexWithoutDotExpr(identifier, Ast.ConstantExpr(indexer))
+
+        static member IndexWithoutDotExpr(identifier: WidgetBuilder<Constant>, indexer: WidgetBuilder<Constant>) =
+            Ast.IndexWithoutDotExpr(Ast.ConstantExpr(identifier), Ast.ConstantExpr(indexer))
+
+        static member IndexWithoutDotExpr(identifier: WidgetBuilder<Constant>, indexer: WidgetBuilder<Expr>) =
+            Ast.IndexWithoutDotExpr(Ast.ConstantExpr(identifier), indexer)
+
+        static member IndexWithoutDotExpr(identifier: string, indexer: string) =
+            Ast.IndexWithoutDotExpr(Ast.Constant(identifier), Ast.Constant(indexer))

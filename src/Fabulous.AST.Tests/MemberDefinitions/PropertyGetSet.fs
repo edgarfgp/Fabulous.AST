@@ -62,13 +62,13 @@ module PropertyGetSet =
                     Property(
                         "this.Item",
                         GetterBinding(
-                            ParenPat(NamedPat("index")),
-                            IndexWithoutDotExpr(ConstantExpr(Constant("ordinals")), ConstantExpr(Constant("index")))
+                            ParenPat("index"),
+                            IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")))
                         ),
                         SetterBinding(
                             [ NamedPat("index"); NamedPat("value") ],
                             SetExpr(
-                                IndexWithoutDotExpr(ConstantExpr(Constant("ordinals")), ConstantExpr(Constant("index"))),
+                                IndexWithoutDotExpr(ConstantExpr(Constant("ordinals")), Constant("index")),
                                 ConstantExpr(Constant("value"))
                             )
                         )

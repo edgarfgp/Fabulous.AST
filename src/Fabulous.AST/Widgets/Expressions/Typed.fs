@@ -31,3 +31,15 @@ module TypedBuilders =
                     Array.empty
                 )
             )
+
+        static member TypedExpr(value: WidgetBuilder<Constant>, operator: string, t: WidgetBuilder<Type>) =
+            Ast.TypedExpr(Ast.ConstantExpr(value), operator, t)
+
+        static member TypedExpr(value: WidgetBuilder<Constant>, operator: string, t: string) =
+            Ast.TypedExpr(value, operator, Ast.LongIdent(t))
+
+        static member TypedExpr(value: string, operator: string, t: WidgetBuilder<Type>) =
+            Ast.TypedExpr(Ast.Constant(value), operator, t)
+
+        static member TypedExpr(value: string, operator: string, t: string) =
+            Ast.TypedExpr(value, operator, Ast.LongIdent(t))

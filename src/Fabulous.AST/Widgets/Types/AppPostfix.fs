@@ -28,3 +28,6 @@ module TypeAppPostfixBuilders =
                     Array.empty
                 )
             )
+
+        static member AppPostfix(first: string, last: string) =
+            Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent last)

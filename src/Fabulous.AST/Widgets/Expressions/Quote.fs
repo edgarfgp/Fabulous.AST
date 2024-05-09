@@ -21,3 +21,7 @@ module QuotedBuilders =
                 Quoted.WidgetKey,
                 AttributesBundle(StackList.empty(), [| Quoted.Value.WithValue(value.Compile()) |], Array.empty)
             )
+
+        static member QuotedExpr(value: WidgetBuilder<Constant>) = Ast.QuotedExpr(Ast.ConstantExpr(value))
+
+        static member QuotedExpr(value: string) = Ast.QuotedExpr(Ast.Constant(value))

@@ -37,3 +37,21 @@ module NamedComputationBuilders =
                     Array.empty
                 )
             )
+
+        static member NamedComputationExpr(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>) =
+            Ast.NamedComputationExpr(Ast.ConstantExpr(name), body)
+
+        static member NamedComputationExpr(name: string, body: WidgetBuilder<Expr>) =
+            Ast.NamedComputationExpr(Ast.ConstantExpr(name), body)
+
+        static member NamedComputationExpr(name: string, body: WidgetBuilder<Constant>) =
+            Ast.NamedComputationExpr(name, Ast.ConstantExpr(body))
+
+        static member NamedComputationExpr(name: WidgetBuilder<Expr>, body: WidgetBuilder<Constant>) =
+            Ast.NamedComputationExpr(name, Ast.ConstantExpr(body))
+
+        static member NamedComputationExpr(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
+            Ast.NamedComputationExpr(Ast.ConstantExpr(name), Ast.ConstantExpr(body))
+
+        static member NamedComputationExpr(name: string, body: string) =
+            Ast.NamedComputationExpr(Ast.Constant(name), Ast.Constant(body))
