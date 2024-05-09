@@ -13,8 +13,9 @@ module ObjExpr =
     let ``let value with a ObjExpr expression when typename is a class``() =
         Oak() {
             AnonymousModule() {
-                ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit()))
-                    .bindings([ Method("x.ToString", [], ConstantExpr(String("F#"))) ])
+                ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit())) {
+                    Method("x.ToString", [], ConstantExpr(String("F#")))
+                }
             }
         }
         |> produces
@@ -27,9 +28,8 @@ module ObjExpr =
     let ``let value with a ObjExpr expression when typename is not a class``() =
         Oak() {
             AnonymousModule() {
-                ObjExpr(LongIdent("System.IFormattable"))
-                    .bindings(
-                        [ Method(
+                ObjExpr(LongIdent("System.IFormattable")) {
+                            Method(
                               "x.ToString",
                               ParenPat(
                                   TuplePat(
@@ -49,8 +49,8 @@ module ObjExpr =
                                   ),
                                   ConstantExpr(Constant "value")
                               )
-                          ) ]
-                    )
+                          )
+                    }
             }
         }
         |> produces

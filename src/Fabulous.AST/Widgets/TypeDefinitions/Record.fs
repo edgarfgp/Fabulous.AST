@@ -14,7 +14,7 @@ module Record =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let Members = Attributes.defineScalar<MemberDefn list> "Members"
+    let Members = Attributes.defineWidgetCollection "Members"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -31,12 +31,9 @@ module Record =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
-            let members = Widgets.tryGetScalarValue widget Members
 
             let members =
-                match members with
-                | ValueSome members -> members
-                | ValueNone -> []
+                Widgets.tryGetNodesFromWidgetCollection widget Members |> Option.defaultValue []
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -129,26 +126,8 @@ module RecordBuilders =
 
 type RecordModifiers =
     [<Extension>]
-    static member inline members(this: WidgetBuilder<TypeDefnRecordNode>, members: WidgetBuilder<BindingNode> list) =
-        this.AddScalar(
-            Record.Members.WithValue(
-                [ for memb in members do
-                      let node = Gen.mkOak memb
-                      MemberDefn.Member(node) ]
-            )
-        )
-
-    [<Extension>]
-    static member inline interfaces
-        (this: WidgetBuilder<TypeDefnRecordNode>, members: WidgetBuilder<MemberDefnInterfaceNode> list)
-        =
-        this.AddScalar(
-            Record.Members.WithValue(
-                [ for memb in members do
-                      let node = Gen.mkOak memb
-                      MemberDefn.Interface(node) ]
-            )
-        )
+    static member inline members(this: WidgetBuilder<TypeDefnRecordNode>) =
+        AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
 
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: string list) =
@@ -200,3 +179,31 @@ type RecordYieldExtensions =
     static member inline Yield(_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: FieldNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: BindingNode)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: MemberDefnInterfaceNode)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>) : CollectionContent =
+        let node = Gen.mkOak x
+        RecordYieldExtensions.Yield(this, node)

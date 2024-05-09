@@ -68,13 +68,11 @@ type Colors =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
-                    .interfaces(
-                        [ InterfaceMember(
-                              LongIdent "IMyInterface",
-                              [ Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String "")) ]
-                          ) ]
-                    )
-
+                    .members() {
+                        InterfaceMember("IMyInterface") {
+                            Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
+                        }
+                    }
             }
         }
         |> produces
@@ -231,12 +229,11 @@ type Colors<'other> =
                     UnionCase("Yellow")
                 })
                     .typeParams([ "'other" ])
-                    .interfaces(
-                        [ InterfaceMember(
-                              LongIdent "IMyInterface",
-                              [ Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String "")) ]
-                          ) ]
-                    )
+                    .members() {
+                        InterfaceMember(LongIdent "IMyInterface") {
+                            Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
+                        }
+                    }
             }
         }
 

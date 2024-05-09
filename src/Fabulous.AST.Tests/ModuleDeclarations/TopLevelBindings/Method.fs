@@ -14,8 +14,8 @@ module MethodMembers =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members(
-                        [ Method(
+                    .members() {
+                          Method(
                               "this.A",
                               ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                               ConstantExpr(String "")
@@ -108,8 +108,8 @@ module MethodMembers =
                                   ConstantExpr(ConstantUnit())
                               )
 
-                          ) ]
-                    )
+                          )
+                    }
             }
         }
         |> produces
@@ -143,13 +143,13 @@ type Colors =
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .members(
-                        [ Method(
+                    .members(){
+                        Method(
                               "this.A",
                               ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                               ConstantExpr(String "")
-                          ) ]
-                    )
+                          )
+                    }
             }
         }
         |> produces
@@ -174,14 +174,14 @@ type Colors<'other> =
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .members(
-                        [ Method(
+                    .members() {
+                        Method(
                               "A",
                               ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
                               ConstantExpr(String "")
                           )
-                              .toStatic() ]
-                    )
+                              .toStatic()
+                    }
             }
         }
 
@@ -202,13 +202,13 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members(
-                        [ Method(
+                    .members() {
+                        Method(
                               "this.A",
                               ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
                               ConstantExpr(String "")
-                          ) ]
-                    )
+                          )
+                    }
             }
         }
         |> produces
@@ -226,14 +226,14 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members(
-                        [ Method(
+                    .members(){
+                        Method(
                               "A",
                               ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
                               ConstantExpr(String "")
                           )
-                              .toStatic() ]
-                    )
+                              .toStatic()
+                    }
             }
         }
         |> produces
@@ -764,7 +764,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 (Union("Person") { UnionCase("Name") })
-                    .members([ Method("this.Name", UnitPat(), ConstantExpr(String "name")) ])
+                    .members() { Method("this.Name", UnitPat(), ConstantExpr(String "name")) }
             }
         }
         |> produces
@@ -788,7 +788,7 @@ type Person =
                     UnionCase("Yellow")
                 })
                     .typeParams([ "'other" ])
-                    .members([ Method("this.Name", UnitPat(), ConstantExpr(String "name")) ])
+                    .members() { Method("this.Name", UnitPat(), ConstantExpr(String "name")) }
 
             }
         }

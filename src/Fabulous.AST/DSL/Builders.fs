@@ -210,3 +210,38 @@ type CollectionBuilder<'marker, 'itemMarker> =
                 struct (StackList.add(&scalarAttributes, attr), widgetAttributes, widgetCollectionAttributes)
             )
     end
+
+[<Struct>]
+type AttributeCollectionBuilder<'marker, 'itemMarker> =
+    struct
+        val Widget: WidgetBuilder<'marker>
+        val Attr: WidgetCollectionAttributeDefinition
+
+        new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition) =
+            { Widget = widget; Attr = attr }
+
+        member inline x.Run(c: CollectionContent) =
+            let attrValue =
+                match MutStackArray1.toArraySlice &c.Widgets with
+                | ValueNone -> ArraySlice.emptyWithNull()
+                | ValueSome slice -> slice
+
+            x.Widget.AddWidgetCollection(x.Attr.WithValue(attrValue))
+
+        member inline _.Combine(a: CollectionContent, b: CollectionContent) : CollectionContent =
+            { Widgets = MutStackArray1.combineMut(&a.Widgets, b.Widgets) }
+
+        member inline _.Zero() : CollectionContent = { Widgets = MutStackArray1.Empty }
+
+        member inline _.Delay([<InlineIfLambda>] f) : CollectionContent = f()
+
+        member inline x.For<'t>(sequence: 't seq, [<InlineIfLambda>] f: 't -> CollectionContent) : CollectionContent =
+            let mutable res: CollectionContent = x.Zero()
+
+            // this is essentially Fold, not sure what is more optimal
+            // handwritten version of via Seq.Fold
+            for t in sequence do
+                res <- x.Combine(res, f t)
+
+            res
+    end
