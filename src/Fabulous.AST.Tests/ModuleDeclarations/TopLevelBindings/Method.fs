@@ -13,103 +13,86 @@ module MethodMembers =
 
         Oak() {
             AnonymousModule() {
-                (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members() {
-                          Method(
-                              "this.A",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
+                (Record("Colors") { Field("X", LongIdent("string")) }).members() {
+                    Method(
+                        "this.A",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String "")
+                    )
 
-                          Method(
-                              "this.C",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toInlined()
+                    Method(
+                        "this.C",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String "")
+                    )
+                        .toInlined()
 
-                          Method(
-                              "B",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toStatic()
+                    Method("B", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                        .toStatic()
 
-                          Method(
-                              "D",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toInlined()
-                              .toStatic()
+                    Method("D", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                        .toInlined()
+                        .toStatic()
 
-                          Method(
-                              "this.E",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                          |> _.returnType(String())
+                    Method(
+                        "this.E",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String "")
+                    )
+                    |> _.returnType(String())
 
-                          Method(
-                              "this.F",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toInlined()
-                          |> _.returnType(String())
+                    Method(
+                        "this.F",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String "")
+                    )
+                        .toInlined()
+                    |> _.returnType(String())
 
-                          Method(
-                              "G",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toStatic()
-                          |> _.returnType(String())
+                    Method("G", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                        .toStatic()
+                    |> _.returnType(String())
 
-                          Method(
-                              "H",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toStatic()
-                              .toInlined()
-                          |> _.returnType(String())
+                    Method("H", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                        .toStatic()
+                        .toInlined()
+                    |> _.returnType(String())
 
-                          Method(
-                              "this.I",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
+                    Method(
+                        "this.I",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String "")
+                    )
 
-                          Method(
-                              "this.J",
-                              ParenPat(
-                                  TuplePat(
-                                      [ ParameterPat(ConstantPat(Constant "p"), String())
-                                        ParameterPat(ConstantPat(Constant("p2")), String()) ]
-                                  )
-                              ),
-                              ConstantExpr(String "")
-                          )
+                    Method(
+                        "this.J",
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant "p"), String())
+                                  ParameterPat(ConstantPat(Constant("p2")), String()) ]
+                            )
+                        ),
+                        ConstantExpr(String "")
+                    )
 
-                          Method(
-                              "this.K",
-                              [ ParenPat(ParameterPat(ConstantPat(Constant "p"), String()))
-                                ParenPat(ParameterPat(ConstantPat(Constant "p2"), String())) ],
-                              ConstantExpr(String "")
-                          )
+                    Method(
+                        "this.K",
+                        [ ParenPat(ParameterPat(ConstantPat(Constant "p"), String()))
+                          ParenPat(ParameterPat(ConstantPat(Constant "p2"), String())) ],
+                        ConstantExpr(String "")
+                    )
 
-                          Method(
-                              "__.DoSomething",
-                              UnitPat(),
-                              IfThenElseExpr(
-                                  InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Constant("12"))),
-                                  ConstantExpr(ConstantUnit()),
-                                  ConstantExpr(ConstantUnit())
-                              )
+                    Method(
+                        "__.DoSomething",
+                        UnitPat(),
+                        IfThenElseExpr(
+                            InfixAppExpr(ConstantExpr(Constant("x")), "=", ConstantExpr(Constant("12"))),
+                            ConstantExpr(ConstantUnit()),
+                            ConstantExpr(ConstantUnit())
+                        )
 
-                          )
-                    }
+                    )
+                }
             }
         }
         |> produces
@@ -143,13 +126,13 @@ type Colors =
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .members(){
-                        Method(
-                              "this.A",
-                              ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                              ConstantExpr(String "")
-                          )
-                    }
+                    .members() {
+                    Method(
+                        "this.A",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String "")
+                    )
+                }
             }
         }
         |> produces
@@ -175,13 +158,9 @@ type Colors<'other> =
                 })
                     .typeParams([ "'other" ])
                     .members() {
-                        Method(
-                              "A",
-                              ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toStatic()
-                    }
+                    Method("A", ParenPat(ParameterPat(ConstantPat(Constant("p")), String())), ConstantExpr(String ""))
+                        .toStatic()
+                }
             }
         }
 
@@ -201,14 +180,13 @@ type Colors<'other> =
     let ``Produces a record with method member``() =
         Oak() {
             AnonymousModule() {
-                (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members() {
-                        Method(
-                              "this.A",
-                              ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
-                              ConstantExpr(String "")
-                          )
-                    }
+                (Record("Colors") { Field("X", LongIdent("string")) }).members() {
+                    Method(
+                        "this.A",
+                        ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
+                        ConstantExpr(String "")
+                    )
+                }
             }
         }
         |> produces
@@ -225,15 +203,10 @@ type Colors =
     let ``Produces a record with static method member``() =
         Oak() {
             AnonymousModule() {
-                (Record("Colors") { Field("X", LongIdent("string")) })
-                    .members(){
-                        Method(
-                              "A",
-                              ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
-                              ConstantExpr(String "")
-                          )
-                              .toStatic()
-                    }
+                (Record("Colors") { Field("X", LongIdent("string")) }).members() {
+                    Method("A", ParenPat(ParameterPat(ConstantPat(Constant("p")), String())), ConstantExpr(String ""))
+                        .toStatic()
+                }
             }
         }
         |> produces
@@ -763,8 +736,9 @@ type Person() =
     let ``Produces a union with a method member ``() =
         Oak() {
             AnonymousModule() {
-                (Union("Person") { UnionCase("Name") })
-                    .members() { Method("this.Name", UnitPat(), ConstantExpr(String "name")) }
+                (Union("Person") { UnionCase("Name") }).members() {
+                    Method("this.Name", UnitPat(), ConstantExpr(String "name"))
+                }
             }
         }
         |> produces
@@ -788,7 +762,9 @@ type Person =
                     UnionCase("Yellow")
                 })
                     .typeParams([ "'other" ])
-                    .members() { Method("this.Name", UnitPat(), ConstantExpr(String "name")) }
+                    .members() {
+                    Method("this.Name", UnitPat(), ConstantExpr(String "name"))
+                }
 
             }
         }

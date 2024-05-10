@@ -11,9 +11,7 @@ module As =
 
     [<Fact>]
     let ``let value with a As pattern``() =
-        Oak() { AnonymousModule() {
-            Value(AsPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Int(12)))
-        } }
+        Oak() { AnonymousModule() { Value(AsPat(NamedPat("A"), NamedPat("B")), ConstantExpr(Int(12))) } }
         |> produces
             """
 

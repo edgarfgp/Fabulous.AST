@@ -58,7 +58,7 @@ Oak() {
         Function("x", ParameterPat("i"), ConstantExpr(ConstantUnit()))
         Function("x1", NamedPat("i"), ConstantExpr(ConstantUnit()))
         Function("x2", ParenPat(NamedPat("i")), ConstantExpr(ConstantUnit()))
-        Function("x3", ParenPat(ParameterPat(NamedPat("i"), Int32())), ConstantExpr(ConstantUnit()))
+        Function("x3", ParenPat(ParameterPat(NamedPat("i"), Int())), ConstantExpr(ConstantUnit()))
 
         Function("x4", TuplePat([ NamedPat("i"); NamedPat("j"); NamedPat("k") ]), ConstantExpr(ConstantUnit()))
 
@@ -67,7 +67,7 @@ Oak() {
         Function(
             "x6",
             TuplePat(
-                [ ParameterPat(NamedPat("i"), Int32())
+                [ ParameterPat(NamedPat("i"), Int())
                   ParameterPat(NamedPat("j"), String())
                   ParameterPat(NamedPat("k"), Boolean()) ]
             ),
@@ -77,7 +77,7 @@ Oak() {
         Open("System")
 
         Function("x7", NamedPat("i"), ConstantExpr(ConstantUnit()))
-            .attribute (Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "Use bar instead"))))
+            .attribute (Attribute("Obsolete", ParenExpr(ConstantExpr("Use bar instead"))))
 
         Function("x8", NamedPat("i"), ConstantExpr(ConstantUnit())).xmlDocs [ "Im a function" ]
 
@@ -121,7 +121,7 @@ open System
 [<Obsolete("Use bar instead")>]
 let x7 i = ()
 
-/// Im a function
+/// I'm a function
 let x8 i = ()
 let x9 i : unit = ()
 let foo (x: 'T, i: 'U) : unit = ()

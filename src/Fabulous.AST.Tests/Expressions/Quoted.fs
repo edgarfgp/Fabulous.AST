@@ -13,7 +13,7 @@ module Quoted =
         Oak() {
             AnonymousModule() {
                 Value(ConstantPat(Constant("x")), QuotedExpr(ConstantExpr(Int(12))))
-                Value(ConstantPat(Constant("x")), QuotedExpr (Int(12)))
+                Value(ConstantPat(Constant("x")), QuotedExpr(Int(12)))
                 Value(ConstantPat(Constant("x")), QuotedExpr "12")
             }
         }

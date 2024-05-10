@@ -21,23 +21,15 @@ module InterfaceMembers =
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .members(){
-                        InterfaceMember(LongIdent "IMyInterface") {
-                            Method(
-                                    "x.GetValue",
-                                    UnitPat(),
-                                    ConstantExpr(Constant "x.MyField2")
-                                )
-                        }
-
-                        InterfaceMember("IMyInterface2"){
-                            Method(
-                                 "x.GetValue",
-                                 UnitPat(),
-                                 ConstantExpr(Constant "x.MyField2")
-                             )
-                        }
+                    .members() {
+                    InterfaceMember(LongIdent "IMyInterface") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
+
+                    InterfaceMember("IMyInterface2") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                    }
+                }
 
             }
         }
@@ -78,14 +70,10 @@ type Colors<'other> =
                     Field("MyField2", LongIdent("string"))
                 })
                     .members() {
-                        InterfaceMember(LongIdent "IMyInterface") {
-                              Method(
-                                    "x.GetValue",
-                                    UnitPat(),
-                                    ConstantExpr(Constant "x.MyField2")
-                                )
-                          }
+                    InterfaceMember(LongIdent "IMyInterface") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
+                }
             }
         }
         |> produces

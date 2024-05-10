@@ -417,10 +417,7 @@ let inline x<'a> = 12
                     AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], ConstantUnit())
                 )
 
-                Value(
-                    ConstantPat(Constant("res5")),
-                    AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], "()")
-                )
+                Value(ConstantPat(Constant("res5")), AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], "()"))
             }
         }
         |> produces

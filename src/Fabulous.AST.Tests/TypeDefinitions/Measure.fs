@@ -28,12 +28,19 @@ module UnitsOfMeasure =
                 Measure("ft").xmlDocs([ "Distance, feet" ])
                 Measure("s").xmlDocs([ "Time, seconds." ])
 
-                Measure("N", Tuple([AppPostfix(LongIdent "kg", LongIdent "m"); MeasurePower(LongIdent "s", Integer "2")], "/"))
+                Measure(
+                    "N",
+                    Tuple(
+                        [ AppPostfix(LongIdent "kg", LongIdent "m")
+                          MeasurePower(LongIdent "s", Integer "2") ],
+                        "/"
+                    )
+                )
                     .xmlDocs([ "Force, Newtons." ])
 
                 Measure("bar").xmlDocs([ "Pressure, bar." ])
 
-                Measure("Pa", Tuple([LongIdent("N"); MeasurePower(LongIdent "m", Integer "2")], "/"))
+                Measure("Pa", Tuple([ LongIdent("N"); MeasurePower(LongIdent "m", Integer "2") ], "/"))
                     .xmlDocs([ "Pressure, Pascals" ])
 
                 Measure("ml").xmlDocs([ "Volume, milliliters." ])

@@ -218,7 +218,8 @@ type AttributeCollectionBuilder<'marker, 'itemMarker> =
         val Attr: WidgetCollectionAttributeDefinition
 
         new(widget: WidgetBuilder<'marker>, attr: WidgetCollectionAttributeDefinition) =
-            { Widget = widget; Attr = attr }
+            { Widget = widget
+              Attr = attr }
 
         member inline x.Run(c: CollectionContent) =
             let attrValue =

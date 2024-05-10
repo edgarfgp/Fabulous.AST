@@ -110,7 +110,12 @@ for i in 0..9 do
     let ``let value with a ForEach expression using arrow``() =
         Oak() {
             AnonymousModule() {
-                ForEachArrowExpr(ConstantPat(Constant("i")), ConstantExpr(Constant("0..9")), ConstantExpr(Constant("i")))
+                ForEachArrowExpr(
+                    ConstantPat(Constant("i")),
+                    ConstantExpr(Constant("0..9")),
+                    ConstantExpr(Constant("i"))
+                )
+
                 ForEachArrowExpr(ConstantPat "i", ConstantExpr "0..9", Constant("i"))
                 ForEachArrowExpr(Constant("i"), Constant("0..9"), Constant("i"))
                 ForEachArrowExpr("i", "0..9", "i")

@@ -47,15 +47,11 @@ open type Fabulous.AST.Ast
 
 Oak() {
     AnonymousModule() {
-        Value("x", ConstantExpr(Unquoted "12"))
-        IfThenExpr(InfixAppExpr(Unquoted "x", "=", Unquoted "12"), ConstantExpr(ConstantUnit()))
-        ElIfThenExpr(InfixAppExpr(Unquoted "x", "=", Unquoted "12"), ConstantExpr(ConstantUnit()))
+        Value("x", ConstantExpr("12"))
+        IfThenExpr(InfixAppExpr("x", "=", "12"), ConstantExpr(ConstantUnit()))
+        ElIfThenExpr(InfixAppExpr("x", "=", "12"), ConstantExpr(ConstantUnit()))
 
-        IfThenElseExpr(
-            InfixAppExpr(Unquoted "x", "=", Unquoted "12"),
-            ConstantExpr(ConstantUnit()),
-            ConstantExpr(ConstantUnit())
-        )
+        IfThenElseExpr(InfixAppExpr("x", "=", "12"), ConstantExpr(ConstantUnit()), ConstantExpr(ConstantUnit()))
 
 
     }

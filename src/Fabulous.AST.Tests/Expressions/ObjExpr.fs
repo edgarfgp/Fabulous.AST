@@ -29,28 +29,25 @@ module ObjExpr =
         Oak() {
             AnonymousModule() {
                 ObjExpr(LongIdent("System.IFormattable")) {
-                            Method(
-                              "x.ToString",
-                              ParenPat(
-                                  TuplePat(
-                                      [ ParameterPat(ConstantPat(Constant("format")), String())
-                                        ParameterPat(
-                                            ConstantPat(Constant("provider")),
-                                            LongIdent("System.IFormatProvider")
-                                        ) ]
-                                  )
-                              ),
-                              IfThenElseExpr(
-                                  InfixAppExpr(ConstantExpr(Constant("format")), "=", ConstantExpr(String("D"))),
-                                  SameInfixAppsExpr(
-                                      ConstantExpr(Constant("delim1")),
-                                      [ ("+", ConstantExpr(Constant("value")))
-                                        ("+", ConstantExpr(Constant("delim2"))) ]
-                                  ),
-                                  ConstantExpr(Constant "value")
-                              )
-                          )
-                    }
+                    Method(
+                        "x.ToString",
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("format")), String())
+                                  ParameterPat(ConstantPat(Constant("provider")), LongIdent("System.IFormatProvider")) ]
+                            )
+                        ),
+                        IfThenElseExpr(
+                            InfixAppExpr(ConstantExpr(Constant("format")), "=", ConstantExpr(String("D"))),
+                            SameInfixAppsExpr(
+                                ConstantExpr(Constant("delim1")),
+                                [ ("+", ConstantExpr(Constant("value")))
+                                  ("+", ConstantExpr(Constant("delim2"))) ]
+                            ),
+                            ConstantExpr(Constant "value")
+                        )
+                    )
+                }
             }
         }
         |> produces

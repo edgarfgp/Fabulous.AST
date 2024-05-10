@@ -30,13 +30,7 @@ module ExplicitCtor =
                     )
 
                     ExplicitCtor(
-                        ParenPat(
-                            TuplePat(
-                                [ Constant "x"
-                                  Constant "y"
-                                  Constant "z" ]
-                            )
-                        ),
+                        ParenPat(TuplePat([ Constant "x"; Constant "y"; Constant "z" ])),
                         RecordExpr(
                             [ RecordFieldExpr("X", ConstantExpr(Constant "x"))
                               RecordFieldExpr("Y", ConstantExpr(Constant "y"))

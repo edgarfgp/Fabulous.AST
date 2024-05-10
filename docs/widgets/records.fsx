@@ -54,27 +54,27 @@ Oak() {
             Field("Address", "string")
         })
             .xmlDocs([ "Normal record" ])
-            .members (
-                [ let parameters =
-                      TuplePat(
-                          [ ParameterPat("name", "string")
-                            ParameterPat("age", "int")
-                            ParameterPat("address", "string") ]
-                      )
+            .members () {
+            let parameters =
+                TuplePat(
+                    [ ParameterPat("name", "string")
+                      ParameterPat("age", "int")
+                      ParameterPat("address", "string") ]
+                )
 
-                  Method(
-                      "Create",
-                      parameters,
-                      RecordExpr(
-                          [ RecordFieldExpr("Name", ConstantExpr(Unquoted "name"))
-                            RecordFieldExpr("Age", ConstantExpr(Unquoted "age"))
-                            RecordFieldExpr("Address", ConstantExpr(Unquoted "address")) ]
-                      )
-                  )
-                      .toStatic ()
-
-                  Property("this.NameValue", ConstantExpr(Unquoted "this.Name")) ]
+            Method(
+                "Create",
+                parameters,
+                RecordExpr(
+                    [ RecordFieldExpr("Name", ConstantExpr("name"))
+                      RecordFieldExpr("Age", ConstantExpr("age"))
+                      RecordFieldExpr("Address", ConstantExpr("address")) ]
+                )
             )
+                .toStatic ()
+
+            Property("this.NameValue", ConstantExpr("this.Name"))
+        }
 
         (Record("Person") {
             Field("Name", "string")

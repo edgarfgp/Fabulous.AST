@@ -48,25 +48,25 @@ open type Fabulous.AST.Ast
 
 Oak() {
     AnonymousModule() {
-        Class("Person") { Property("this.Name", ConstantExpr(Quoted "")) }
+        Class("Person") { Property("this.Name", String("")) }
 
-        Class("Person2", Constructor(ParenPat(TuplePat([ ParameterPat("name") ])))) {
-            Property("this.Name", ConstantExpr(Unquoted "name"))
+        Class("Person2", ImplicitConstructor(ParenPat(TuplePat([ ParameterPat("name") ])))) {
+            Property("this.Name", ConstantExpr("name"))
         }
 
         Class(
             "Person3",
-            Constructor(ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("?age", Int32()) ])))
+            ImplicitConstructor(ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("?age", Int()) ])))
         ) {
-            Property("this.Name", ConstantExpr(Unquoted "name"))
+            Property("this.Name", ConstantExpr("name"))
         }
 
-        (Class("Person4", Constructor(ParenPat(ParameterPat("name", String())))) {
-            Property("this.Name", ConstantExpr(Unquoted "name"))
+        (Class("Person4", ImplicitConstructor(ParenPat(ParameterPat("name", String())))) {
+            Property("this.Name", ConstantExpr("name"))
         })
             .attribute (Attribute("Struct"))
 
-        (Class("Person5") { Property("this.Name", ConstantExpr(Quoted "")) })
+        (Class("Person5") { Property("this.Name", ConstantExpr("")) })
             .typeParams ([ "'a"; "'b" ])
     }
 }

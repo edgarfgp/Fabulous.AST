@@ -14,7 +14,7 @@ module Computation =
         Oak() {
             AnonymousModule() {
                 ComputationExpr(ConstantExpr(String("a")))
-                ComputationExpr (String("a"))
+                ComputationExpr(String("a"))
                 ComputationExpr "12"
             }
         }

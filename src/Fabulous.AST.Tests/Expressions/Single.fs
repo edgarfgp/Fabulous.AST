@@ -24,20 +24,12 @@ module Single =
 
                 Value(
                     ConstantPat(Constant("x")),
-                    SingleExpr(
-                        SingleNode("a", Constant("b"))
-                            .addSpace(true)
-                            .supportsStroustrup(false)
-                    )
+                    SingleExpr(SingleNode("a", Constant("b")).addSpace(true).supportsStroustrup(false))
                 )
 
                 Value(
                     ConstantPat(Constant("x")),
-                    SingleExpr(
-                        SingleNode("a", "b")
-                            .addSpace(true)
-                            .supportsStroustrup(false)
-                    )
+                    SingleExpr(SingleNode("a", "b").addSpace(true).supportsStroustrup(false))
                 )
             }
         }
