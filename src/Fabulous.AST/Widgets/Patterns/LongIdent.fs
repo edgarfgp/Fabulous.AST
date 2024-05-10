@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module LongIdentPattern =
@@ -33,7 +34,9 @@ module LongIdentPattern =
 
             let identifier =
                 match identifier with
-                | ValueSome value -> [ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ]
+                | ValueSome value ->
+                    [ let value = PrettyNaming.NormalizeIdentifierBackticks value
+                      IdentifierOrDot.Ident(SingleTextNode.Create(value)) ]
                 | ValueNone -> []
 
             Pattern.LongIdent(
@@ -54,6 +57,12 @@ module LongIdentPatternBuilders =
                 )
             )
 
+        static member LongIdentPat(pairs: WidgetBuilder<Constant> list) =
+            Ast.LongIdentPat(pairs |> List.map Ast.ConstantPat)
+
+        static member LongIdentPat(pairs: string list) =
+            Ast.LongIdentPat(pairs |> List.map Ast.Constant)
+
         static member LongIdentPat(ident: string, pairs: WidgetBuilder<Pattern> list) =
             WidgetBuilder<Pattern>(
                 LongIdentPattern.WidgetKey,
@@ -66,3 +75,9 @@ module LongIdentPatternBuilders =
                     Array.empty
                 )
             )
+
+        static member LongIdentPat(ident: string, pairs: WidgetBuilder<Constant> list) =
+            Ast.LongIdentPat(ident, pairs |> List.map Ast.ConstantPat)
+
+        static member LongIdentPat(ident: string, pairs: string list) =
+            Ast.LongIdentPat(ident, pairs |> List.map Ast.Constant)

@@ -12,7 +12,7 @@ module Augmentation =
         Oak() {
             AnonymousModule() {
                 Augmentation("DateTime") {
-                    Property("this.Print", ConstantExpr(ConstantUnit()))
+                    Property(ConstantPat(Constant("this.Print")), ConstantExpr(ConstantUnit()))
                     Method("this.Print", UnitPat(), ConstantExpr(ConstantUnit()))
                 }
             }

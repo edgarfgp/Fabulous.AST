@@ -13,7 +13,7 @@ module Abbrev =
 
     [<Fact>]
     let ``Produces type Abbrev``() =
-        Oak() { AnonymousModule() { Abbrev("MyInt", Int32()) } }
+        Oak() { AnonymousModule() { Abbrev("MyInt", Int()) } }
 
         |> produces
             """
@@ -46,7 +46,7 @@ type MyInt = int
 
         Oak() {
             AnonymousModule() {
-                Abbrev("MyInt", Int32())
+                Abbrev("MyInt", Int())
                 EscapeHatch(alias)
             }
         }
@@ -63,9 +63,9 @@ type MyFloat = float
     let ``Produces type Abbrev with TypeDefnAbbrevNode``() =
         Oak() {
             AnonymousModule() {
-                Abbrev("MyInt", Int32())
+                Abbrev("MyInt", Int())
 
-                Abbrev("MyString", "string")
+                Abbrev("MyString", LongIdent "string")
 
                 TypeDefnAbbrevNode(
                     TypeNameNode(

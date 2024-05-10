@@ -1,52 +1,35 @@
 namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
 module BindingProperty =
+    let Name = Attributes.defineScalar<Pattern> "Name"
+
     let WidgetKey =
         Widgets.register "PropertyMember" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.Name
+            let name = Widgets.getScalarValue widget Name
 
-            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
-            let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
-
-            let bodyExpr =
-                match bodyExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr value -> value
+            let bodyExpr = Widgets.getNodeFromWidget widget TopLevelBinding.BodyExpr
+            let isInlined = Widgets.tryGetScalarValue widget TopLevelBinding.IsInlined
 
             let isStatic =
-                Widgets.tryGetScalarValue widget BindingNode.IsStatic
+                Widgets.tryGetScalarValue widget TopLevelBinding.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
+            let returnType = Widgets.tryGetNodeFromWidget widget TopLevelBinding.Return
 
             let returnType =
                 match returnType with
                 | ValueNone -> None
-                | ValueSome value ->
-                    match value with
-                    | StringOrWidget.StringExpr value ->
-                        let value = StringParsing.normalizeIdentifierBackticks value
-
-                        let returnType =
-                            Type.LongIdent(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
-                            )
-
-                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-                    | StringOrWidget.WidgetExpr returnType ->
-                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
+                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
             let accessControl =
-                Widgets.tryGetScalarValue widget BindingNode.Accessibility
+                Widgets.tryGetScalarValue widget TopLevelBinding.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -56,7 +39,7 @@ module BindingProperty =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget TopLevelBinding.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -65,7 +48,7 @@ module BindingProperty =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes = Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -89,7 +72,7 @@ module BindingProperty =
                 | ValueSome false -> None
                 | ValueNone -> None
 
-            let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget TopLevelBinding.TypeParams
 
             let typeParams =
                 match typeParams with
@@ -113,13 +96,6 @@ module BindingProperty =
                   else
                       SingleTextNode.``member`` ]
 
-            let name =
-                match name with
-                | StringOrWidget.StringExpr name ->
-                    let name = SingleTextNode.Create(name.Normalize())
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero))
-                | StringOrWidget.WidgetExpr pattern -> Choice2Of2(pattern)
-
             BindingNode(
                 xmlDocs,
                 multipleAttributes,
@@ -127,7 +103,7 @@ module BindingProperty =
                 false,
                 inlineNode,
                 accessControl,
-                name,
+                Choice2Of2(name),
                 typeParams,
                 [],
                 returnType,
@@ -139,28 +115,37 @@ module BindingProperty =
 [<AutoOpen>]
 module BindingPropertyBuilders =
     type Ast with
-        static member Property(name: string, body: WidgetBuilder<Expr>) =
+        static member Property(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
             WidgetBuilder<BindingNode>(
                 BindingProperty.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body))
-                    ),
-                    Array.empty,
+                    StackList.one(BindingProperty.Name.WithValue(Gen.mkOak name)),
+                    [| TopLevelBinding.BodyExpr.WithValue(body.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member Property(name: string, body: StringVariant) =
-            WidgetBuilder<BindingNode>(
-                BindingProperty.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member Property(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>) =
+            Ast.Property(name, Ast.ConstantExpr(body))
+
+        static member Property(name: WidgetBuilder<Pattern>, body: string) =
+            Ast.Property(name, Ast.ConstantExpr(Ast.Constant(body)))
+
+        static member Property(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>) =
+            Ast.Property(Ast.ConstantPat(name), body)
+
+        static member Property(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
+            Ast.Property(name, Ast.ConstantExpr(body))
+
+        static member Property(name: string, body: WidgetBuilder<Expr>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Property(Ast.Constant(name), body)
+
+        static member Property(name: WidgetBuilder<Constant>, body: string) =
+            Ast.Property(name, Ast.ConstantExpr(Ast.Constant(body)))
+
+        static member Property(name: string, body: WidgetBuilder<Constant>) =
+            Ast.Property(name, Ast.ConstantExpr(body))
+
+        static member Property(name: string, body: string) =
+            Ast.Property(Ast.Constant(name), Ast.Constant(body))

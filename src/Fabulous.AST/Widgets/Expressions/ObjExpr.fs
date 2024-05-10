@@ -1,34 +1,36 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ObjExpr =
-    let Bindings = Attributes.defineScalar<BindingNode list> "Value"
+    let Bindings = Attributes.defineWidgetCollection "Value"
 
-    let Members = Attributes.defineScalar<MemberDefn list> "Members"
+    let Members = Attributes.defineWidgetCollection "Members"
 
     let Interfaces = Attributes.defineScalar<InterfaceImplNode list> "Interface"
 
-    let ExprValue = Attributes.defineWidget "ExprValue"
+    let Value = Attributes.defineWidget "ExprValue"
 
-    let TypeName = Attributes.defineWidget "TypeValue"
+    let Name = Attributes.defineWidget "TypeValue"
 
     let WidgetKey =
         Widgets.register "CompExprBody" (fun widget ->
             let bindings =
-                Widgets.tryGetScalarValue widget Bindings |> ValueOption.defaultValue []
+                Widgets.tryGetNodesFromWidgetCollection widget Bindings
+                |> Option.defaultValue []
 
             let members =
-                Widgets.tryGetScalarValue widget Members |> ValueOption.defaultValue []
+                Widgets.tryGetNodesFromWidgetCollection widget Members |> Option.defaultValue []
 
             let interfaces =
                 Widgets.tryGetScalarValue widget Interfaces |> ValueOption.defaultValue []
 
-            let typeName = Widgets.getNodeFromWidget<Type> widget TypeName
-            let exprValue = Widgets.tryGetNodeFromWidget<Expr> widget ExprValue
+            let typeName = Widgets.getNodeFromWidget<Type> widget Name
+            let exprValue = Widgets.tryGetNodeFromWidget<Expr> widget Value
 
             let exprValue =
                 match exprValue with
@@ -54,35 +56,67 @@ module ObjExpr =
 module ObjExprBuilders =
     type Ast with
 
-        static member ObjExpr(typeName: WidgetBuilder<Type>) =
-            WidgetBuilder<Expr>(
+        static member ObjExpr(name: WidgetBuilder<Type>) =
+            CollectionBuilder<Expr, BindingNode>(
                 ObjExpr.WidgetKey,
-                AttributesBundle(StackList.empty(), [| ObjExpr.TypeName.WithValue(typeName.Compile()) |], Array.empty)
+                ObjExpr.Bindings,
+                AttributesBundle(StackList.empty(), [| ObjExpr.Name.WithValue(name.Compile()) |], Array.empty)
             )
 
-        static member ObjExpr(typeName: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
+        static member ObjExpr(name: string) = Ast.ObjExpr(Ast.LongIdent(name))
+
+        static member ObjExpr(name: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
+            CollectionBuilder<Expr, BindingNode>(
                 ObjExpr.WidgetKey,
+                ObjExpr.Bindings,
                 AttributesBundle(
                     StackList.empty(),
-                    [| ObjExpr.TypeName.WithValue(typeName.Compile())
-                       ObjExpr.ExprValue.WithValue(expr.Compile()) |],
+                    [| ObjExpr.Name.WithValue(name.Compile())
+                       ObjExpr.Value.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
 
+        static member ObjExpr(name: string, expr: string) =
+            Ast.ObjExpr(Ast.LongIdent(name), Ast.ConstantExpr(expr))
+
 type ObjExprModifiers =
-    [<Extension>]
-    static member bindings(this: WidgetBuilder<Expr>, bindings: WidgetBuilder<BindingNode> list) =
-        let bindings = bindings |> List.map Gen.mkOak
-        this.AddScalar(ObjExpr.Bindings.WithValue(bindings))
 
     [<Extension>]
-    static member members(this: WidgetBuilder<Expr>, members: WidgetBuilder<MemberDefn> list) =
-        let members = members |> List.map Gen.mkOak
-        this.AddScalar(ObjExpr.Members.WithValue(members))
+    static member inline members(this: WidgetBuilder<Expr>) =
+        AttributeCollectionBuilder<Expr, BindingNode>(this, ObjExpr.Members)
+
+type ObjExprYieldExtensions =
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<Expr, BindingNode>, x: BindingNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Member(x))
+        { Widgets = MutStackArray1.One(widget.Compile()) }
 
     [<Extension>]
-    static member interfaces(this: WidgetBuilder<Expr>, interfaces: WidgetBuilder<InterfaceImplNode> list) =
-        let interfaces = interfaces |> List.map Gen.mkOak
-        this.AddScalar(ObjExpr.Interfaces.WithValue(interfaces))
+    static member inline Yield
+        (this: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ObjExprYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield
+        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        let widget = Ast.EscapeHatch(MemberDefn.Member(node)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: MemberDefnInterfaceNode)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ObjExprYieldExtensions.Yield(this, node)

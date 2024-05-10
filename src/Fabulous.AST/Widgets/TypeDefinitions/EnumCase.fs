@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -9,7 +10,7 @@ module EnumCase =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let Value = Attributes.defineScalar<StringOrWidget<Expr>> "Value"
+    let Value = Attributes.defineWidget "Value"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -19,18 +20,10 @@ module EnumCase =
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
             let name =
-                Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierQuotes
+                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
-            let value = Widgets.getScalarValue widget Value
+            let value = Widgets.getNodeFromWidget widget Value
             let lines = Widgets.tryGetScalarValue widget XmlDocs
-
-            let value =
-                match value with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(Constant.FromText(SingleTextNode.Create(value.Normalize())))
-                | StringOrWidget.WidgetExpr value -> value
 
             let xmlDocs =
                 match lines with
@@ -75,27 +68,16 @@ module EnumCaseBuilders =
             WidgetBuilder<EnumCaseNode>(
                 EnumCase.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        EnumCase.Name.WithValue(name),
-                        EnumCase.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))
-                    ),
-                    Array.empty,
+                    StackList.one(EnumCase.Name.WithValue(name)),
+                    [| EnumCase.Value.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member EnumCase(name: string, value: string) =
-            WidgetBuilder<EnumCaseNode>(
-                EnumCase.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        EnumCase.Name.WithValue(name),
-                        EnumCase.Value.WithValue(StringOrWidget.StringExpr(Unquoted(value)))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member EnumCase(name: string, value: WidgetBuilder<Constant>) =
+            Ast.EnumCase(name, Ast.ConstantExpr(value))
+
+        static member EnumCase(name: string, value: string) = Ast.EnumCase(name, Ast.Constant(value))
 
 type EnumCaseModifiers =
     [<Extension>]
@@ -112,17 +94,5 @@ type EnumCaseModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: string list) =
-        EnumCaseModifiers.attributes(
-            this,
-            [ for attr in attributes do
-                  Ast.Attribute(attr) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<EnumCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
         EnumCaseModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<EnumCaseNode>, attribute: string) =
-        EnumCaseModifiers.attributes(this, [ Ast.Attribute(attribute) ])

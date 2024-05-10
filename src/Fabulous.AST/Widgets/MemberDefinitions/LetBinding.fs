@@ -26,11 +26,11 @@ module LetBindingMemberBuilders =
                 )
             )
 
-        static member LetBinding(bindings: WidgetBuilder<BindingNode>) =
+        static member LetBinding(binding: WidgetBuilder<BindingNode>) =
             WidgetBuilder<BindingListNode>(
                 LetBindingMember.WidgetKey,
                 AttributesBundle(
-                    StackList.one(LetBindingMember.Bindings.WithValue([ bindings ] |> List.map Gen.mkOak)),
+                    StackList.one(LetBindingMember.Bindings.WithValue([ binding ] |> List.map Gen.mkOak)),
                     Array.empty,
                     Array.empty
                 )

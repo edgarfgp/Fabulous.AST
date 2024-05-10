@@ -5,20 +5,13 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module InheritConstructor =
-    let TypeValue = Attributes.defineScalar<StringOrWidget<Type>> "TypeValue"
+    let TypeValue = Attributes.defineWidget "TypeValue"
 
-    let ExprValue = Attributes.defineScalar<StringOrWidget<Expr>> "ExprValue"
+    let ExprValue = Attributes.defineWidget "ExprValue"
 
     let WidgetTypedOnlyKey =
         Widgets.register "TypedOnly" (fun widget ->
-            let typeValue = Widgets.getScalarValue widget TypeValue
-
-            let typeValue =
-                match typeValue with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                | StringOrWidget.WidgetExpr widget -> widget
+            let typeValue = Widgets.getNodeFromWidget widget TypeValue
 
             InheritConstructor.TypeOnly(
                 InheritConstructorTypeOnlyNode(SingleTextNode.``inherit``, typeValue, Range.Zero)
@@ -26,14 +19,7 @@ module InheritConstructor =
 
     let WidgetUnitKey =
         Widgets.register "Unit" (fun widget ->
-            let typeValue = Widgets.getScalarValue widget TypeValue
-
-            let typeValue =
-                match typeValue with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                | StringOrWidget.WidgetExpr widget -> widget
+            let typeValue = Widgets.getNodeFromWidget widget TypeValue
 
             InheritConstructor.Unit(
                 InheritConstructorUnitNode(
@@ -47,23 +33,8 @@ module InheritConstructor =
 
     let WidgetParentKey =
         Widgets.register "Paren" (fun widget ->
-            let typeValue = Widgets.getScalarValue widget TypeValue
-            let expr = Widgets.getScalarValue widget ExprValue
-
-            let expr =
-                match expr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr value -> value
-
-            let typeValue =
-                match typeValue with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                | StringOrWidget.WidgetExpr widget -> widget
+            let typeValue = Widgets.getNodeFromWidget widget TypeValue
+            let expr = Widgets.getNodeFromWidget widget ExprValue
 
             InheritConstructor.Paren(
                 InheritConstructorParenNode(SingleTextNode.``inherit``, typeValue, expr, Range.Zero)
@@ -71,23 +42,8 @@ module InheritConstructor =
 
     let WidgetOtherKey =
         Widgets.register "Other" (fun widget ->
-            let typeValue = Widgets.getScalarValue widget TypeValue
-            let expr = Widgets.getScalarValue widget ExprValue
-
-            let expr =
-                match expr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr value -> value
-
-            let typeValue =
-                match typeValue with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierBackticks value
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                | StringOrWidget.WidgetExpr widget -> widget
+            let typeValue = Widgets.getNodeFromWidget widget TypeValue
+            let expr = Widgets.getNodeFromWidget widget ExprValue
 
             InheritConstructor.Other(
                 InheritConstructorOtherNode(SingleTextNode.``inherit``, typeValue, expr, Range.Zero)
@@ -96,146 +52,80 @@ module InheritConstructor =
 [<AutoOpen>]
 module InheritConstructorBuilders =
     type Ast with
-        static member InheritConstructorTypeOnly(value: StringVariant) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetTypedOnlyKey,
-                AttributesBundle(
-                    StackList.one(InheritConstructor.TypeValue.WithValue(StringOrWidget.StringExpr value)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
-
         static member InheritConstructorTypeOnly(value: WidgetBuilder<Type>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetTypedOnlyKey,
                 AttributesBundle(
-                    StackList.one(InheritConstructor.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
-                    Array.empty,
+                    StackList.empty(),
+                    [| InheritConstructor.TypeValue.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member InheritConstructorUnit(value: StringVariant) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetUnitKey,
-                AttributesBundle(
-                    StackList.one(InheritConstructor.TypeValue.WithValue(StringOrWidget.StringExpr value)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InheritConstructorTypeOnly(value: string) =
+            Ast.InheritConstructorTypeOnly(Ast.LongIdent(value))
 
         static member InheritConstructorUnit(value: WidgetBuilder<Type>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetUnitKey,
                 AttributesBundle(
-                    StackList.one(InheritConstructor.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value))),
-                    Array.empty,
+                    StackList.empty(),
+                    [| InheritConstructor.TypeValue.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member InheritConstructorParen(ty: StringVariant, exp: StringVariant) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetParentKey,
-                AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.StringExpr ty),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.StringExpr exp)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InheritConstructorUnit(value: string) =
+            Ast.InheritConstructorUnit(Ast.LongIdent(value))
 
         static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetParentKey,
                 AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
-                    ),
-                    Array.empty,
+                    StackList.empty(),
+                    [| InheritConstructor.TypeValue.WithValue(value.Compile())
+                       InheritConstructor.ExprValue.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: StringVariant) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetParentKey,
-                AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.StringExpr expr)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
+            Ast.InheritConstructorParen(value, Ast.ConstantExpr(expr))
 
-        static member InheritConstructorParen(value: StringVariant, expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetParentKey,
-                AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.StringExpr value),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: string) =
+            Ast.InheritConstructorParen(value, Ast.Constant(expr))
 
-        static member InheritConstructorOther(value: StringVariant, expr: StringVariant) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetOtherKey,
-                AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.StringExpr value),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.StringExpr expr)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InheritConstructorParen(value: string, expr: WidgetBuilder<Expr>) =
+            Ast.InheritConstructorParen(Ast.LongIdent(value), expr)
+
+        static member InheritConstructorParen(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.InheritConstructorParen(Ast.LongIdent(value), Ast.ConstantExpr(expr))
+
+        static member InheritConstructorParen(value: string, expr: string) =
+            Ast.InheritConstructorParen(value, Ast.Constant(expr))
 
         static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetOtherKey,
                 AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
-                    ),
-                    Array.empty,
+                    StackList.empty(),
+                    [| InheritConstructor.TypeValue.WithValue(value.Compile())
+                       InheritConstructor.ExprValue.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: StringVariant) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetOtherKey,
-                AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.StringExpr expr)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InheritConstructorOther(value: string, expr: WidgetBuilder<Expr>) =
+            Ast.InheritConstructorOther(Ast.LongIdent(value), expr)
 
-        static member InheritConstructorOther(value: StringVariant, expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<InheritConstructor>(
-                InheritConstructor.WidgetOtherKey,
-                AttributesBundle(
-                    StackList.two(
-                        InheritConstructor.TypeValue.WithValue(StringOrWidget.StringExpr value),
-                        InheritConstructor.ExprValue.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InheritConstructorOther(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.InheritConstructorOther(value, Ast.ConstantExpr(expr))
+
+        static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
+            Ast.InheritConstructorOther(value, Ast.ConstantExpr(expr))
+
+        static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: string) =
+            Ast.InheritConstructorOther(value, Ast.Constant(expr))
+
+        static member InheritConstructorOther(value: string, expr: string) =
+            Ast.InheritConstructorOther(Ast.LongIdent(value), expr)

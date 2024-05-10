@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -25,9 +26,7 @@ module Class =
     let WidgetKey =
         Widgets.register "Class" (fun widget ->
             let name =
-                Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let constructor =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget ImplicitConstructor
@@ -179,20 +178,8 @@ type ClassModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnRegularNode>, attributes: string list) =
-        ClassModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRegularNode>, attribute: WidgetBuilder<AttributeNode>) =
         ClassModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnRegularNode>, attribute: string) =
-        ClassModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnRegularNode>) =

@@ -5,35 +5,21 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module IndexRange =
-    let FromExpr = Attributes.defineScalar<StringOrWidget<Expr>> "FromExpr"
+    let FromExpr = Attributes.defineWidget "FromExpr"
 
-    let ToExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ToExpr"
+    let ToExpr = Attributes.defineWidget "ToExpr"
 
     let WidgetKey =
         Widgets.register "IndexRange" (fun widget ->
-            let fromExpr = Widgets.tryGetScalarValue widget FromExpr
-
             let fromExpr =
-                match fromExpr with
-                | ValueSome(StringOrWidget.StringExpr value) ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                    |> Some
-                | ValueSome(StringOrWidget.WidgetExpr expr) -> Some expr
-                | ValueNone -> None
-
-            let toExpr = Widgets.tryGetScalarValue widget ToExpr
+                Widgets.tryGetNodeFromWidget widget FromExpr
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let toExpr =
-                match toExpr with
-                | ValueSome(StringOrWidget.StringExpr value) ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                    |> Some
-                | ValueSome(StringOrWidget.WidgetExpr expr) -> Some expr
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget ToExpr
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             Expr.IndexRange(ExprIndexRangeNode(fromExpr, SingleTextNode.Create(".."), toExpr, Range.Zero)))
 
@@ -48,90 +34,52 @@ module IndexRangeBuilders =
             WidgetBuilder<Expr>(
                 IndexRange.WidgetKey,
                 AttributesBundle(
-                    StackList.one(IndexRange.FromExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(fromExpr)))),
-                    Array.empty,
+                    StackList.empty(),
+                    [| IndexRange.FromExpr.WithValue(fromExpr.Compile()) |],
                     Array.empty
                 )
             )
 
+        static member IndexFromRangeExpr(fromExpr: WidgetBuilder<Constant>) =
+            Ast.IndexFromRangeExpr(Ast.ConstantExpr(fromExpr))
+
         static member IndexFromRangeExpr(fromExpr: string) =
-            WidgetBuilder<Expr>(
-                IndexRange.WidgetKey,
-                AttributesBundle(
-                    StackList.one(IndexRange.FromExpr.WithValue(StringOrWidget.StringExpr(Unquoted(fromExpr)))),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            Ast.IndexFromRangeExpr(Ast.Constant(fromExpr))
 
         static member IndexToRangeExpr(toExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 IndexRange.WidgetKey,
-                AttributesBundle(
-                    StackList.one(IndexRange.ToExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(toExpr)))),
-                    Array.empty,
-                    Array.empty
-                )
+                AttributesBundle(StackList.empty(), [| IndexRange.ToExpr.WithValue(toExpr.Compile()) |], Array.empty)
             )
 
+        static member IndexToRangeExpr(toExpr: WidgetBuilder<Constant>) =
+            Ast.IndexToRangeExpr(Ast.ConstantExpr(toExpr))
+
         static member IndexToRangeExpr(toExpr: string) =
-            WidgetBuilder<Expr>(
-                IndexRange.WidgetKey,
-                AttributesBundle(
-                    StackList.one(IndexRange.ToExpr.WithValue(StringOrWidget.StringExpr(Unquoted(toExpr)))),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            Ast.IndexToRangeExpr(Ast.Constant(toExpr))
 
         static member IndexRangeExpr(from: WidgetBuilder<Expr>, toExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 IndexRange.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        IndexRange.FromExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(from))),
-                        IndexRange.ToExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(toExpr)))
-                    ),
-                    Array.empty,
+                    StackList.empty(),
+                    [| IndexRange.FromExpr.WithValue(from.Compile())
+                       IndexRange.ToExpr.WithValue(toExpr.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member IndexRangeExpr(from: WidgetBuilder<Expr>, toExpr: string) =
-            WidgetBuilder<Expr>(
-                IndexRange.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        IndexRange.FromExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(from))),
-                        IndexRange.ToExpr.WithValue(StringOrWidget.StringExpr(Unquoted toExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member IndexRangeExpr(from: WidgetBuilder<Constant>, toExpr: WidgetBuilder<Expr>) =
+            Ast.IndexRangeExpr(Ast.ConstantExpr(from), toExpr)
 
         static member IndexRangeExpr(from: string, toExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                IndexRange.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        IndexRange.FromExpr.WithValue(StringOrWidget.StringExpr(Unquoted from)),
-                        IndexRange.ToExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak toExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            Ast.IndexRangeExpr(Ast.Constant(from), toExpr)
 
-        static member IndexRangeExpr(fromExpr: string, toExpr: string) =
-            WidgetBuilder<Expr>(
-                IndexRange.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        IndexRange.FromExpr.WithValue(StringOrWidget.StringExpr(Unquoted(fromExpr))),
-                        IndexRange.ToExpr.WithValue(StringOrWidget.StringExpr(Unquoted(toExpr)))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member IndexRangeExpr(from: WidgetBuilder<Expr>, toExpr: WidgetBuilder<Constant>) =
+            Ast.IndexRangeExpr(from, Ast.ConstantExpr(toExpr))
+
+        static member IndexRangeExpr(from: WidgetBuilder<Constant>, toExpr: WidgetBuilder<Constant>) =
+            Ast.IndexRangeExpr(Ast.ConstantExpr(from), Ast.ConstantExpr(toExpr))
+
+        static member IndexRangeExpr(from: string, toExpr: string) =
+            Ast.IndexRangeExpr(Ast.Constant(from), Ast.Constant(toExpr))

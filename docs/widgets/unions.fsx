@@ -54,23 +54,25 @@ Oak() {
             UnionCase("Blue")
             UnionCase("Yellow")
         })
-            .attribute("AutoOpen")
+            .attribute(Attribute "AutoOpen")
             .xmlDocs([ "This is a union type" ])
             .toPrivate()
-            .members (
-                [ Property("CurrentColor", ConstantExpr(Quoted "Red")).toStatic ()
-                  Method(
-                      "this.GetColor",
-                      ParameterPat("c", "Colors"),
-                      MatchExpr(
-                          Unquoted("c"),
-                          [ MatchClauseExpr(Unquoted("Red"), Quoted "Red")
-                            MatchClauseExpr(NamedPat("Green"), Quoted "Green")
-                            MatchClauseExpr(Unquoted("Blue"), Quoted "Blue")
-                            MatchClauseExpr(NamedPat("Yellow"), ConstantExpr(Quoted "Yellow")) ]
-                      )
-                  ) ]
+            .members () {
+            Property("CurrentColor", ConstantExpr(String "Red")).toStatic ()
+
+            Method(
+                "this.GetColor",
+                ParameterPat("c", "Colors"),
+                MatchExpr(
+                    "c",
+                    [ MatchClauseExpr("Red", String "Red")
+                      MatchClauseExpr(NamedPat("Green"), String "Green")
+                      MatchClauseExpr("Blue", String "Blue")
+                      MatchClauseExpr(NamedPat("Yellow"), ConstantExpr(String "Yellow")) ]
+                )
+
             )
+        }
 
         (Union("Colors2") {
             UnionCase("Red", [ Field("a", LongIdent("string")); Field("b", LongIdent "'other") ])
@@ -80,7 +82,9 @@ Oak() {
             UnionCase("Yellow")
         })
             .typeParams([ "'other" ])
-            .members ([ Property("Name", ConstantExpr(Quoted "name")).toStatic () ])
+            .members () {
+            Property("Name", ConstantExpr("name")).toStatic ()
+        }
     }
 }
 |> Gen.mkOak

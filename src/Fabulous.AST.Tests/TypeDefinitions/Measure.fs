@@ -16,7 +16,8 @@ module UnitsOfMeasure =
             AnonymousModule() {
                 Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-                Measure("ml", MeasurePowerInteger("cm", "3")).xmlDocs([ "Ml, milliliters." ])
+                Measure("ml", MeasurePower(LongIdent "cm", Integer "3"))
+                    .xmlDocs([ "Ml, milliliters." ])
 
                 Measure("g").xmlDocs([ "Mass, grams." ])
                 Measure("kg").xmlDocs([ "Mass, kilograms." ])
@@ -27,19 +28,26 @@ module UnitsOfMeasure =
                 Measure("ft").xmlDocs([ "Distance, feet" ])
                 Measure("s").xmlDocs([ "Time, seconds." ])
 
-                Measure("N", Tuple("kg", "m", MeasurePowerInteger([ "s" ], "2")))
+                Measure(
+                    "N",
+                    Tuple(
+                        [ AppPostfix(LongIdent "kg", LongIdent "m")
+                          MeasurePower(LongIdent "s", Integer "2") ],
+                        "/"
+                    )
+                )
                     .xmlDocs([ "Force, Newtons." ])
 
                 Measure("bar").xmlDocs([ "Pressure, bar." ])
 
-                Measure("Pa", Tuple(LongIdent "N", MeasurePowerInteger([ "m" ], "2")))
+                Measure("Pa", Tuple([ LongIdent("N"); MeasurePower(LongIdent "m", Integer "2") ], "/"))
                     .xmlDocs([ "Pressure, Pascals" ])
 
                 Measure("ml").xmlDocs([ "Volume, milliliters." ])
 
                 Measure("L").xmlDocs([ "Volume, liters." ])
 
-                Measure("Ml", "cm^3")
+                Measure("Ml", LongIdent "cm^3")
             }
         }
 

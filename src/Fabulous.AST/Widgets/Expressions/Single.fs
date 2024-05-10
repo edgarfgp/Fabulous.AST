@@ -1,10 +1,7 @@
 namespace Fabulous.AST
 
-open System
-open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Text
 
 module Single =
     let SingleNode = Attributes.defineWidget "SingleNode"

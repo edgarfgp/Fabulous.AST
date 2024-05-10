@@ -16,9 +16,9 @@ module Enum =
         Oak() {
             AnonymousModule() {
                 Enum("Colors") {
-                    EnumCase("Red", "0")
-                    EnumCase("Green", "1")
-                    EnumCase("Blue", "2")
+                    EnumCase("Red", ConstantExpr(Int 0))
+                    EnumCase("Green", ConstantExpr(Int 1))
+                    EnumCase("Blue", ConstantExpr(Int 2))
                 }
             }
         }
@@ -37,9 +37,9 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 Enum("Colors") {
-                    EnumCase("Red", "0")
-                    EnumCase("Green", ConstantExpr(Unquoted "1"))
-                    EnumCase("Blue", "2")
+                    EnumCase("Red", ConstantExpr(Int 0))
+                    EnumCase("Green", ConstantExpr(Int 1))
+                    EnumCase("Blue", ConstantExpr(Int 2))
                 }
             }
         }
@@ -57,9 +57,9 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 Enum("Colors") {
-                    EnumCase("Red", "0")
-                    EnumCase("Green", "1")
-                    EnumCase("Blue", "2")
+                    EnumCase("Red", ConstantExpr(Int 0))
+                    EnumCase("Green", ConstantExpr(Int 1))
+                    EnumCase("Blue", ConstantExpr(Int 2))
                 }
             }
         }
@@ -78,9 +78,9 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 Enum("Colors") {
-                    EnumCase("Red", "0")
-                    EnumCase("Green", "1")
-                    EnumCase("Blue", "2")
+                    EnumCase("Red", ConstantExpr(Int 0))
+                    EnumCase("Green", ConstantExpr(Int 1))
+                    EnumCase("Blue", ConstantExpr(Int 2))
 
                     EnumCaseNode(
                         None,
@@ -121,9 +121,9 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 Enum("Colors") {
-                    EnumCase("Red", "0")
-                    EnumCase("Green", "1")
-                    EnumCase("Blue", "2")
+                    EnumCase("Red", ConstantExpr(Int 0))
+                    EnumCase("Green", ConstantExpr(Int 1))
+                    EnumCase("Blue", ConstantExpr(Int 2))
                     EscapeHatch(enumCaseNode)
                 }
             }
@@ -147,7 +147,7 @@ type Colors =
             AnonymousModule() {
                 Enum("Colors") {
                     for i = 0 to colors.Length - 1 do
-                        EnumCase(colors.[i], $"{i}")
+                        EnumCase(colors.[i], ConstantExpr(Constant $"{i}"))
                 }
 
             }
@@ -171,9 +171,9 @@ type Colors =
             AnonymousModule() {
                 (Enum("Colors") {
                     for i = 0 to colors.Length - 1 do
-                        EnumCase(colors.[i], $"{i}")
+                        EnumCase(colors.[i], ConstantExpr(Constant $"{i}"))
                 })
-                    .attribute("FlagsAttribute")
+                    .attribute(Attribute "FlagsAttribute")
 
             }
         }
@@ -194,12 +194,13 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Enum("Colors") {
-                    EnumCase("Red", "0").attributes([ "Obsolete"; "MyAttribute" ])
+                    EnumCase("Red", ConstantExpr(Int 0))
+                        .attributes([ Attribute "Obsolete"; Attribute "MyAttribute" ])
 
-                    EnumCase("Green", "1")
-                    EnumCase("Blue", "2")
+                    EnumCase("Green", ConstantExpr(Int 1))
+                    EnumCase("Blue", ConstantExpr(Int 2))
                 })
-                    .attribute("FlagsAttribute")
+                    .attribute(Attribute "FlagsAttribute")
             }
         }
         |> produces

@@ -7,21 +7,12 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module Match =
-    let MatchExpr = Attributes.defineScalar<StringOrWidget<Expr>> "MatchExpr"
+    let MatchExpr = Attributes.defineWidget "MatchExpr"
     let MatchClauses = Attributes.defineScalar<MatchClauseNode list> "MatchClauses"
 
     let WidgetKey =
         Widgets.register "Match" (fun widget ->
-            let expr = Widgets.getScalarValue widget MatchExpr
-
-            let expr =
-                match expr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
+            let expr = Widgets.getNodeFromWidget widget MatchExpr
             let matchClauses = Widgets.getScalarValue widget MatchClauses
 
             Expr.Match(
@@ -36,27 +27,26 @@ module MatchBuilders =
             WidgetBuilder<Expr>(
                 Match.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        Match.MatchExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value))),
-                        Match.MatchClauses.WithValue(clauses |> List.map Gen.mkOak)
-                    ),
-                    Array.empty,
+                    StackList.one(Match.MatchClauses.WithValue(clauses |> List.map Gen.mkOak)),
+                    [| Match.MatchExpr.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member MatchExpr(matchExpr: StringVariant, clauses: WidgetBuilder<MatchClauseNode> list) =
-            WidgetBuilder<Expr>(
-                Match.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        Match.MatchExpr.WithValue(StringOrWidget.StringExpr(matchExpr)),
-                        Match.MatchClauses.WithValue(clauses |> List.map Gen.mkOak)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member MatchExpr(value: WidgetBuilder<Constant>, clauses: WidgetBuilder<MatchClauseNode> list) =
+            Ast.MatchExpr(Ast.ConstantExpr(value), clauses)
+
+        static member MatchExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> list) =
+            Ast.MatchExpr(Ast.Constant(value), clauses)
+
+        static member MatchExpr(value: WidgetBuilder<Expr>, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.MatchExpr(value, [ clause ])
+
+        static member MatchExpr(value: WidgetBuilder<Constant>, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.MatchExpr(Ast.ConstantExpr(value), clause)
+
+        static member MatchExpr(value: string, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.MatchExpr(Ast.Constant(value), clause)
 
 type MatchYieldExtensions =
     [<Extension>]

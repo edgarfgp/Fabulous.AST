@@ -31,6 +31,12 @@ module ArrayOrListPatBuilders =
                 ArrayOrListPat.CloseTextNode.WithValue(SingleTextNode.rightBracket)
             )
 
+        static member ListPat(values: WidgetBuilder<Constant> list) =
+            Ast.ListPat(values |> List.map Ast.ConstantPat)
+
+        static member ListPat(values: string list) =
+            Ast.ListPat(values |> List.map Ast.ConstantPat)
+
         static member ArrayPat(values: WidgetBuilder<Pattern> list) =
             WidgetBuilder<Pattern>(
                 ArrayOrListPat.WidgetKey,
@@ -38,3 +44,9 @@ module ArrayOrListPatBuilders =
                 ArrayOrListPat.OpenTextNode.WithValue(SingleTextNode.leftArray),
                 ArrayOrListPat.CloseTextNode.WithValue(SingleTextNode.rightArray)
             )
+
+        static member ArrayPat(values: WidgetBuilder<Constant> list) =
+            Ast.ArrayPat(values |> List.map Ast.ConstantPat)
+
+        static member ArrayPat(values: string list) =
+            Ast.ArrayPat(values |> List.map Ast.ConstantPat)

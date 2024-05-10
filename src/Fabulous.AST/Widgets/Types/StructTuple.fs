@@ -32,3 +32,7 @@ module TypeStructTupleBuilders =
                     Array.empty
                 )
             )
+
+        static member StructTuple(items: string list) =
+            let items = items |> List.map Ast.LongIdent
+            Ast.StructTuple(items)

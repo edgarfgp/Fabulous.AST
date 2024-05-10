@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module TypeAnonRecord =
@@ -15,7 +16,9 @@ module TypeAnonRecord =
 
             let fields =
                 fields
-                |> List.map(fun (name, widget) -> (SingleTextNode.Create(name), Gen.mkOak widget))
+                |> List.map(fun (name, widget) ->
+                    let name = PrettyNaming.NormalizeIdentifierBackticks name
+                    (SingleTextNode.Create(name), Gen.mkOak widget))
 
             let isStructNode = Widgets.getScalarValue widget IsStructNode
 
@@ -49,17 +52,8 @@ module TypeAnonRecordBuilders =
             )
 
         static member AnonRecord(fields: (string * string) list) =
-            let fields =
-                fields |> List.map(fun (name, typeName) -> (name, Ast.LongIdent(typeName)))
-
-            WidgetBuilder<Type>(
-                TypeAnonRecord.WidgetKey,
-                AttributesBundle(
-                    StackList.two(TypeAnonRecord.Fields.WithValue(fields), TypeAnonRecord.IsStructNode.WithValue(false)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            let fields = fields |> List.map(fun (name, value) -> (name, Ast.LongIdent value))
+            Ast.AnonRecord(fields)
 
         static member StructAnonRecord(fields: (string * WidgetBuilder<Type>) list) =
             WidgetBuilder<Type>(
@@ -72,14 +66,5 @@ module TypeAnonRecordBuilders =
             )
 
         static member StructAnonRecord(fields: (string * string) list) =
-            let fields =
-                fields |> List.map(fun (name, typeName) -> (name, Ast.LongIdent(typeName)))
-
-            WidgetBuilder<Type>(
-                TypeAnonRecord.WidgetKey,
-                AttributesBundle(
-                    StackList.two(TypeAnonRecord.Fields.WithValue(fields), TypeAnonRecord.IsStructNode.WithValue(true)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            let fields = fields |> List.map(fun (name, value) -> (name, Ast.LongIdent value))
+            Ast.StructAnonRecord(fields)

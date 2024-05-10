@@ -11,7 +11,7 @@ module Constant =
 
     [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantString``() =
-        Oak() { AnonymousModule() { Value("x", ConstantExpr(Quoted "a")) } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(String("a"))) } }
         |> produces
             """
 
@@ -22,7 +22,7 @@ let x = "a"
     let ``let value with a ConstantExpr expression with ConstantMeasure``() =
         Oak() {
             AnonymousModule() {
-                Value("x", ConstantExpr(ConstantMeasure(Constant(Unquoted "1.0"), MeasureSingle("cm"))))
+                Value(ConstantPat(Constant("x")), ConstantExpr(ConstantMeasure(Constant("1.0"), MeasureSingle("cm"))))
             }
         }
         |> produces
@@ -36,25 +36,28 @@ let x = 1.0<cm>
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
+                    ConstantPat(Constant("x")),
                     ConstantExpr(
                         ConstantMeasure(
-                            Constant(Unquoted "1.0"),
+                            Constant("1.0"),
                             MeasureSeq([ MeasureSingle("cm"); MeasureSingle("/"); MeasureSingle("m") ])
                         )
                     )
                 )
+
+                Value("y", ConstantExpr(ConstantMeasure(Constant("1.0"), MeasureSeq([ "cm"; "/"; "m" ]))))
             }
         }
         |> produces
             """
 
 let x = 1.0<cm / m>
+let y = 1.0<cm / m>
 """
 
     [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantUnit``() =
-        Oak() { AnonymousModule() { Value("x", ConstantExpr(ConstantUnit())) } }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(ConstantUnit())) } }
         |> produces
             """
 
@@ -66,10 +69,10 @@ let x = ()
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
+                    ConstantPat(Constant("x")),
                     ConstantExpr(
                         ConstantMeasure(
-                            Constant(Unquoted "55.0f"),
+                            Constant("55.0f"),
                             MeasureOperator("*", MeasureSingle("miles"), MeasureSingle("hour"))
                         )
                     )
@@ -87,12 +90,9 @@ let x = 55.0f<miles * hour>
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
+                    ConstantPat(Constant("x")),
                     ConstantExpr(
-                        ConstantMeasure(
-                            Constant(Unquoted "55.0f"),
-                            MeasureDivide("/", MeasureSingle("miles"), MeasureSingle("hour"))
-                        )
+                        ConstantMeasure(Constant("55.0f"), MeasureDivide(MeasureSingle("miles"), MeasureSingle("hour")))
                     )
                 )
             }
@@ -108,15 +108,12 @@ let x = 55.0f<miles / hour>
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
+                    ConstantPat(Constant("x")),
                     InfixAppExpr(
-                        ConstantExpr(Constant(Unquoted "55.0f")),
+                        ConstantExpr(Constant("55.0f")),
                         "/",
                         ConstantExpr(
-                            ConstantMeasure(
-                                Constant(Unquoted "1000.0"),
-                                MeasureDivide("/", MeasureSingle("g"), MeasureSingle("kg"))
-                            )
+                            ConstantMeasure(Constant("1000.0"), MeasureDivide(MeasureSingle("g"), MeasureSingle("kg")))
                         )
                     )
                 )
@@ -133,12 +130,9 @@ let x = 55.0f / 1000.0<g / kg>
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
+                    ConstantPat(Constant("x")),
                     ConstantExpr(
-                        ConstantMeasure(
-                            Constant(Unquoted "55.0f"),
-                            MeasurePower("*", MeasureSingle("miles"), Integer("hour"))
-                        )
+                        ConstantMeasure(Constant("55.0f"), MeasurePower(MeasureSingle("miles"), Integer("hour")))
                     )
                 )
             }
@@ -146,5 +140,5 @@ let x = 55.0f / 1000.0<g / kg>
         |> produces
             """
 
-let x = 55.0f<miles*hour>
+let x = 55.0f<miles^hour>
 """

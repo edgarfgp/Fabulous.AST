@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -21,9 +22,7 @@ module ClassEnd =
     let WidgetKey =
         Widgets.register "ClassEnd" (fun widget ->
             let name =
-                Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
 
@@ -145,20 +144,8 @@ type ClassEndModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeDefnExplicitNode>, attributes: string list) =
-        ClassEndModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: WidgetBuilder<AttributeNode>) =
         ClassEndModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: string) =
-        ClassEndModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: string list) =

@@ -14,8 +14,14 @@ module IndexRange =
         Oak() {
             AnonymousModule() {
                 IndexRangeExpr()
-                IndexFromRangeExpr("0")
-                IndexToRangeExpr("10")
+                IndexFromRangeExpr(ConstantExpr(Int(0)))
+                IndexFromRangeExpr(Int(0))
+                IndexFromRangeExpr "0"
+                IndexToRangeExpr(ConstantExpr(Int(10)))
+                IndexToRangeExpr(Int(10))
+                IndexToRangeExpr "10"
+                IndexRangeExpr(ConstantExpr(Int(0)), ConstantExpr(Int(10)))
+                IndexRangeExpr(Int(0), Int(10))
                 IndexRangeExpr("0", "10")
 
             }
@@ -24,6 +30,12 @@ module IndexRange =
             """
 ..
 0..
+0..
+0..
 ..10
+..10
+..10
+0..10
+0..10
 0..10
 """

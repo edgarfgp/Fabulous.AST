@@ -14,30 +14,38 @@ module AbstractMembers =
             AnonymousModule() {
                 Interface("Meh") {
                     AbstractGet("Area", Float())
-                    AbstractGet("Area1", "float")
+                    AbstractGet("Area1", LongIdent "float")
 
                     AbstractSet("Area2", Float())
-                    AbstractSet("Area3", "float")
+                    AbstractSet("Area3", LongIdent "float")
 
                     AbstractGetSet("Area4", Float())
-                    AbstractGetSet("Area5", "float")
+                    AbstractGetSet("Area5", LongIdent "float")
 
                     AbstractProperty("Pi", Float())
-                    AbstractProperty("Pi2", "float")
+                    AbstractProperty("Pi2", LongIdent "float")
 
-                    AbstractTupledMethod("Add", [ "int"; "int" ], "int")
-                    AbstractTupledMethod("Add2", [ Int32(); Int32() ], Int32())
+                    AbstractTupledMethod("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractTupledMethod("Add2", [ Int(); Int() ], Int())
 
-                    AbstractTupledMethod("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                    AbstractTupledMethod("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractTupledMethod("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                    AbstractTupledMethod(
+                        "Add4",
+                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
+                        LongIdent "int"
+                    )
 
-                    AbstractCurriedMethod("Add5", [ "int"; "int" ], "int")
-                    AbstractCurriedMethod("Add6", [ Int32(); Int32() ], Int32())
+                    AbstractCurriedMethod("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractCurriedMethod("Add6", [ Int(); Int() ], Int())
 
-                    AbstractCurriedMethod("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                    AbstractCurriedMethod("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractCurriedMethod("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                    AbstractCurriedMethod(
+                        "Add8",
+                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
+                        LongIdent "int"
+                    )
 
                 }
             }
@@ -70,30 +78,38 @@ type Meh =
             AnonymousModule() {
                 Interface("Meh") {
                     AbstractGet("Area", Float())
-                    AbstractGet("Area1", "float")
+                    AbstractGet("Area1", LongIdent "float")
 
                     AbstractSet("Area2", Float())
-                    AbstractSet("Area3", "float")
+                    AbstractSet("Area3", LongIdent "float")
 
                     AbstractGetSet("Area4", Float())
-                    AbstractGetSet("Area5", "float")
+                    AbstractGetSet("Area5", LongIdent "float")
 
                     AbstractProperty("Pi", Float())
-                    AbstractProperty("Pi2", "float")
+                    AbstractProperty("Pi2", LongIdent "float")
 
-                    AbstractTupledMethod("Add", [ "int"; "int" ], "int")
-                    AbstractTupledMethod("Add2", [ Int32(); Int32() ], Int32())
+                    AbstractTupledMethod("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractTupledMethod("Add2", [ Int(); Int() ], Int())
 
-                    AbstractTupledMethod("Add3", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                    AbstractTupledMethod("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractTupledMethod("Add4", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                    AbstractTupledMethod(
+                        "Add4",
+                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
+                        LongIdent "int"
+                    )
 
-                    AbstractCurriedMethod("Add5", [ "int"; "int" ], "int")
-                    AbstractCurriedMethod("Add6", [ Int32(); Int32() ], Int32())
+                    AbstractCurriedMethod("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractCurriedMethod("Add6", [ Int(); Int() ], Int())
 
-                    AbstractCurriedMethod("Add7", [ (Some "a", Int32()); (Some "b", Int32()) ], Int32())
+                    AbstractCurriedMethod("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractCurriedMethod("Add8", [ (Some "a", "int"); (Some "b", "int") ], "int")
+                    AbstractCurriedMethod(
+                        "Add8",
+                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
+                        LongIdent "int"
+                    )
 
                 }
                 |> _.typeParams([ "'other"; "'another" ])

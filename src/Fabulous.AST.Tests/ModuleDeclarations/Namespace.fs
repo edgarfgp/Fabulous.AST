@@ -12,7 +12,7 @@ open type Ast
 module Namespace =
     [<Fact>]
     let ``Produces a namespace with binding``() =
-        Oak() { Namespace("Fabulous.AST") { Value("x", Unquoted "3") } }
+        Oak() { Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) } }
         |> produces
             """
 namespace Fabulous.AST
@@ -23,9 +23,9 @@ let x = 3
     [<Fact>]
     let ``Produces a multiple namespaces``() =
         Oak() {
-            Namespace("Fabulous.AST") { Value("x", Unquoted "3") }
+            Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) }
 
-            Namespace("Fabulous.DSL") { Value("x", Unquoted "3") }
+            Namespace("Fabulous.DSL") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) }
         }
         |> produces
             """
@@ -39,7 +39,10 @@ let x = 3
 
     [<Fact>]
     let ``Produces a rec namespace with binding``() =
-        Oak() { (Namespace("Fabulous.AST") { Value("x", Unquoted "3") }).toRecursive() }
+        Oak() {
+            (Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) })
+                .toRecursive()
+        }
         |> produces
             """
 namespace rec Fabulous.AST

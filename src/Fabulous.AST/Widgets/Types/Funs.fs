@@ -1,8 +1,5 @@
 namespace Fabulous.AST
 
-open System
-open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -40,11 +37,10 @@ module FunsBuilders =
             )
 
         static member Funs(returnType: string, parameters: WidgetBuilder<Type> list) =
-            WidgetBuilder<Type>(
-                TypeFuns.WidgetKey,
-                AttributesBundle(
-                    StackList.one(TypeFuns.Parameters.WithValue(parameters |> List.map Gen.mkOak)),
-                    [| TypeFuns.Return.WithValue(Ast.LongIdent(returnType).Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.Funs(Ast.LongIdent returnType, parameters)
+
+        static member Funs(returnType: WidgetBuilder<Type>, parameters: string list) =
+            Ast.Funs(returnType, parameters |> List.map Ast.LongIdent)
+
+        static member Funs(returnType: string, parameters: string list) =
+            Ast.Funs(Ast.LongIdent returnType, parameters |> List.map Ast.LongIdent)

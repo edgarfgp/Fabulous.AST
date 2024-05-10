@@ -1,29 +1,22 @@
 namespace Fabulous.AST
 
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module RecordField =
-    let RecordExpr = Attributes.defineScalar<StringOrWidget<Expr>> "RecordExpr"
+    let RecordExpr = Attributes.defineWidget "RecordExpr"
 
     let Name = Attributes.defineScalar<string> "Name"
 
     let WidgetKey =
         Widgets.register "RecordField" (fun widget ->
-            let expr = Widgets.getScalarValue widget RecordExpr
-
-            let expr =
-                match expr with
-                | StringOrWidget.StringExpr expr ->
-                    let expr = StringParsing.normalizeIdentifierBackticks expr
-                    Expr.Constant(Constant.FromText(SingleTextNode.Create(expr)))
-                | StringOrWidget.WidgetExpr expr -> expr
+            let expr = Widgets.getNodeFromWidget widget RecordExpr
 
             let name =
                 Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                |> PrettyNaming.NormalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
             RecordFieldNode(
@@ -41,24 +34,14 @@ module RecordFieldBuilders =
             WidgetBuilder<RecordFieldNode>(
                 RecordField.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        RecordField.Name.WithValue(name),
-                        RecordField.RecordExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
-                    ),
-                    Array.empty,
+                    StackList.one(RecordField.Name.WithValue(name)),
+                    [| RecordField.RecordExpr.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
 
+        static member inline RecordFieldExpr(name: string, expr: WidgetBuilder<Constant>) =
+            Ast.RecordFieldExpr(name, Ast.ConstantExpr(expr))
+
         static member inline RecordFieldExpr(name: string, expr: string) =
-            WidgetBuilder<RecordFieldNode>(
-                RecordField.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        RecordField.Name.WithValue(name),
-                        RecordField.RecordExpr.WithValue(StringOrWidget.StringExpr(Unquoted expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            Ast.RecordFieldExpr(name, Ast.Constant(expr))

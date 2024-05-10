@@ -14,21 +14,30 @@ module AutoProperty =
             AnonymousModule() {
                 Class(
                     "Person",
-                    Constructor(ParenPat(TuplePat([ ParameterPat("name", String()); ParameterPat("age", Int32()) ])))
+                    ImplicitConstructor(
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("name")), String())
+                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
+                            )
+                        )
+                    )
                 ) {
-                    AutoProperty("Name", Unquoted "name")
-                    AutoProperty("Age", Unquoted "age")
-                    AutoPropertyGet("A", Quoted "")
-                    AutoPropertyGet("B", Quoted "").toStatic()
+                    AutoProperty("Name", ConstantExpr(Constant("name")))
+                    AutoProperty("Age", ConstantExpr(Constant("age")))
+                    AutoPropertyGet("A", ConstantExpr(String("")))
+                    AutoPropertyGet("B", ConstantExpr(String(""))).toStatic()
 
-                    AutoProperty("C", Quoted "").toPrivate().xmlDocs([ "Im a private property" ])
+                    AutoProperty("C", ConstantExpr(String("")))
+                        .toPrivate()
+                        .xmlDocs([ "Im a private property" ])
 
-                    AutoProperty("D", Quoted "")
+                    AutoProperty("D", ConstantExpr(String("")))
                         .toInternal()
                         .returnType(String())
                         .xmlDocs([ "Im an internal property with a return type" ])
 
-                    AutoProperty("E", Quoted "")
+                    AutoProperty("E", ConstantExpr(String("")))
                         .toPublic()
                         .attribute(Attribute("System.Obsolete"))
                         .xmlDocs([ "Im a public property with an attribute" ])

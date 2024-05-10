@@ -24,3 +24,7 @@ module ParenBuilders =
                 Paren.WidgetKey,
                 AttributesBundle(StackList.empty(), [| Paren.Value.WithValue(value.Compile()) |], Array.empty)
             )
+
+        static member ParenExpr(value: WidgetBuilder<Constant>) = Ast.ParenExpr(Ast.ConstantExpr(value))
+
+        static member ParenExpr(value: string) = Ast.ParenExpr(Ast.Constant(value))

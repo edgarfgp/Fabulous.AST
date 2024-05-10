@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
@@ -8,26 +9,18 @@ open type Fabulous.AST.Ast
 
 module BindingValue =
 
+    let Name = Attributes.defineScalar<Pattern> "Name"
+
     let LeadingKeyword = Attributes.defineScalar<SingleTextNode> "LeadingKeyword"
 
     let WidgetKey =
         Widgets.register "Value" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.Name
+            let name = Widgets.getScalarValue widget Name
             let leadingKeyword = Widgets.getScalarValue widget LeadingKeyword
-
-            let name =
-                match name with
-                | StringOrWidget.StringExpr name ->
-                    let name =
-                        name |> StringParsing.normalizeIdentifierBackticks |> SingleTextNode.Create
-
-                    Pattern.Named(PatNamedNode(None, name, Range.Zero))
-                | StringOrWidget.WidgetExpr pattern -> pattern
-
-            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
+            let bodyExpr = Widgets.getNodeFromWidget widget TopLevelBinding.BodyExpr
 
             let accessControl =
-                Widgets.tryGetScalarValue widget BindingNode.Accessibility
+                Widgets.tryGetScalarValue widget TopLevelBinding.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -37,7 +30,7 @@ module BindingValue =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget TopLevelBinding.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -46,7 +39,7 @@ module BindingValue =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes = Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -65,34 +58,21 @@ module BindingValue =
                 | ValueNone -> None
 
             let isMutable =
-                Widgets.tryGetScalarValue widget BindingNode.IsMutable
+                Widgets.tryGetScalarValue widget TopLevelBinding.IsMutable
                 |> ValueOption.defaultValue false
 
             let isInlined =
-                Widgets.tryGetScalarValue widget BindingNode.IsInlined
+                Widgets.tryGetScalarValue widget TopLevelBinding.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
+            let returnType = Widgets.tryGetNodeFromWidget widget TopLevelBinding.Return
 
             let returnType =
                 match returnType with
                 | ValueNone -> None
-                | ValueSome value ->
-                    match value with
-                    | StringOrWidget.StringExpr value ->
-                        let returnType =
-                            Type.LongIdent(
-                                IdentListNode(
-                                    [ IdentifierOrDot.Ident(SingleTextNode.Create(value.Normalize())) ],
-                                    Range.Zero
-                                )
-                            )
+                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
-                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-                    | StringOrWidget.WidgetExpr returnType ->
-                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-
-            let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget TopLevelBinding.TypeParams
 
             let typeParams =
                 match typeParams with
@@ -108,14 +88,6 @@ module BindingValue =
                     |> TyparDecls.PostfixList
                     |> Some
                 | ValueNone -> None
-
-            let bodyExpr =
-                match bodyExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr value -> value
 
             BindingNode(
                 xmlDocs,
@@ -137,73 +109,56 @@ module BindingValue =
 module BindingValueBuilders =
     type Ast with
         static member private BaseValue
-            (name: StringOrWidget<Pattern>, bodyExpr: StringOrWidget<Expr>, leadingKeyword: SingleTextNode)
+            (name: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>, leadingKeyword: SingleTextNode)
             =
             WidgetBuilder<BindingNode>(
                 BindingValue.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        BindingNode.Name.WithValue(name),
-                        BindingNode.BodyExpr.WithValue(bodyExpr),
+                    StackList.two(
+                        BindingValue.Name.WithValue(Gen.mkOak name),
                         BindingValue.LeadingKeyword.WithValue(leadingKeyword)
                     ),
-                    Array.empty,
+                    [| TopLevelBinding.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     Array.empty
                 )
             )
 
         static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(
-                StringOrWidget.WidgetExpr(Gen.mkOak name),
-                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
-                SingleTextNode.``let``
-            )
+            Ast.BaseValue(name, value, SingleTextNode.``let``)
+
+        static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>) =
+            Ast.Value(name, Ast.ConstantExpr(value))
+
+        static member Value(name: WidgetBuilder<Pattern>, value: string) =
+            Ast.Value(name, Ast.ConstantExpr(Ast.Constant(value)))
+
+        static member Value(name: WidgetBuilder<Constant>, value: WidgetBuilder<Constant>) =
+            Ast.Value(Ast.ConstantPat(name), Ast.ConstantExpr(value))
 
         static member Value(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(
-                StringOrWidget.StringExpr(Unquoted(name)),
-                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
-                SingleTextNode.``let``
-            )
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(Ast.ConstantPat(Ast.Constant(name)), value)
 
-        static member Value(name: WidgetBuilder<Pattern>, value: StringVariant) =
-            Ast.BaseValue(
-                StringOrWidget.WidgetExpr(Gen.mkOak name),
-                StringOrWidget.StringExpr value,
-                SingleTextNode.``let``
-            )
+        static member Value(name: string, value: WidgetBuilder<Constant>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(value))
 
-        static member Value(name: string, value: StringVariant) =
-            Ast.BaseValue(
-                StringOrWidget.StringExpr(Unquoted(name)),
-                StringOrWidget.StringExpr value,
-                SingleTextNode.``let``
-            )
+        static member Value(name: string, value: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(Ast.Constant(value)))
 
         static member Use(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(
-                StringOrWidget.WidgetExpr(Gen.mkOak name),
-                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
-                SingleTextNode.``use``
-            )
+            Ast.BaseValue(name, value, SingleTextNode.``use``)
+
+        static member Use(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>) =
+            Ast.BaseValue(name, Ast.ConstantExpr(value), SingleTextNode.``use``)
+
+        static member Use(name: WidgetBuilder<Pattern>, value: string) = Ast.Use(name, Ast.Constant(value))
 
         static member Use(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(
-                StringOrWidget.StringExpr(Unquoted(name)),
-                StringOrWidget.WidgetExpr(Gen.mkOak(value)),
-                SingleTextNode.``use``
-            )
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Use(Ast.ConstantPat(name), value)
 
-        static member Use(name: WidgetBuilder<Pattern>, value: StringVariant) =
-            Ast.BaseValue(
-                StringOrWidget.WidgetExpr(Gen.mkOak name),
-                StringOrWidget.StringExpr value,
-                SingleTextNode.``use``
-            )
+        static member Use(name: string, value: WidgetBuilder<Constant>) = Ast.Use(name, Ast.ConstantExpr(value))
 
-        static member Use(name: string, value: StringVariant) =
-            Ast.BaseValue(
-                StringOrWidget.StringExpr(Unquoted(name)),
-                StringOrWidget.StringExpr value,
-                SingleTextNode.``use``
-            )
+        static member Use(name: string, value: string) = Ast.Use(name, Ast.Constant(value))

@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
@@ -7,15 +8,27 @@ open Fantomas.FCS.Text
 module Named =
     let Value = Attributes.defineScalar<string> "Value"
 
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
     let WidgetKey =
         Widgets.register "Named" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Value
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                |> Fantomas.FCS.Syntax.PrettyNaming.NormalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
-            Pattern.Named(PatNamedNode(None, name, Range.Zero)))
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
+            Pattern.Named(PatNamedNode(accessControl, name, Range.Zero)))
 
 [<AutoOpen>]
 module NamedBuilders =
@@ -26,3 +39,16 @@ module NamedBuilders =
                 Named.WidgetKey,
                 AttributesBundle(StackList.one(Named.Value.WithValue(value)), Array.empty, Array.empty)
             )
+
+type NamedPatModifiers =
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<Pattern>) =
+        this.AddScalar(Named.Accessibility.WithValue(AccessControl.Private))
+
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<Pattern>) =
+        this.AddScalar(Named.Accessibility.WithValue(AccessControl.Public))
+
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<Pattern>) =
+        this.AddScalar(Named.Accessibility.WithValue(AccessControl.Internal))

@@ -1,13 +1,11 @@
 namespace Fabulous.AST
 
-open System
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
 type SingleTextNode =
     static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)
 
-/// Contains all the single text nodes that are used in the AST
 [<RequireQualifiedAccess>]
 module SingleTextNode =
     let lessThan = SingleTextNode.Create "<"
@@ -85,3 +83,4 @@ module SingleTextNode =
     let set = SingleTextNode.Create "set"
     let ``and`` = SingleTextNode.Create "and"
     let ``inherit`` = SingleTextNode.Create "inherit"
+    let power = SingleTextNode.Create "^"

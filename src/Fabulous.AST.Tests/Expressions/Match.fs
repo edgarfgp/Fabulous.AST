@@ -14,8 +14,8 @@ module Match =
         Oak() {
             AnonymousModule() {
                 MatchExpr(
-                    ListExpr([ ConstantExpr(Constant(Unquoted "1")); ConstantExpr(Constant(Unquoted "2")) ]),
-                    [ MatchClauseExpr(NamedPat("a"), ConstantExpr(Constant(Unquoted "3"))) ]
+                    ListExpr([ ConstantExpr(Int(1)); ConstantExpr(Int(2)) ]),
+                    MatchClauseExpr(NamedPat("a"), ConstantExpr(Int(3)))
                 )
             }
         }
@@ -28,7 +28,11 @@ match [ 1; 2 ] with
 
     [<Fact>]
     let ``Match expression 2``() =
-        Oak() { AnonymousModule() { MatchExpr(Unquoted "[ 1; 2 ]", [ MatchClauseExpr(Unquoted("a"), Unquoted "3") ]) } }
+        Oak() {
+            AnonymousModule() {
+                MatchExpr(ConstantExpr(Constant("[ 1; 2 ]")), MatchClauseExpr(NamedPat("a"), ConstantExpr(Int(3))))
+            }
+        }
         |> produces
             """
 

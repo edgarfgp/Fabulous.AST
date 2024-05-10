@@ -68,7 +68,7 @@ Now let's take a look at same example using Fabulous.AST:
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-Oak() { AnonymousModule() { Value("y", Unquoted "12") } }
+Oak() { AnonymousModule() { Value("y", "12") } }
 |> Gen.mkOak
 |> CodeFormatter.FormatOakAsync
 |> Async.RunSynchronously
@@ -107,7 +107,7 @@ let topLevelBinding: ModuleDecl =
 let sourceWithEscapeHatch =
     Oak() {
         AnonymousModule() {
-            Value("a", Unquoted "11")
+            Value("a", "11")
             EscapeHatch(topLevelBinding)
         }
     }

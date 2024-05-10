@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre6] - 2024-05-10
+
+### Changed
+- RecordPat widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/85
+- Unify Constant widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/86
+- Remove `Extension` attribute on types by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/87
+- InheritRecordExpr by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/88
+- Inherit Widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/89
+- Member LetBinding widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/90
+- ExplicitCtor Widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/91
+- Normalizing Widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/92
+
 ## [1.0.0-pre5] - 2024-04-14
 
 ### Added
@@ -151,7 +163,9 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre4...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre6...HEAD
+[1.0.0-pre6]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre6
+[1.0.0-pre5]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre5
 [1.0.0-pre4]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre4
 [1.0.0-pre3]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre3
 [1.0.0-pre2]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre2

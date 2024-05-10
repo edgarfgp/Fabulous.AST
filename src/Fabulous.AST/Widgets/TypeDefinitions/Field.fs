@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open System
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -20,14 +20,12 @@ module Field =
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let name =
-                Unquoted(name)
-                |> StringParsing.normalizeIdentifierBackticks
-                |> SingleTextNode.Create
-                |> Some
+                Widgets.tryGetScalarValue widget Name
+                |> ValueOption.map(fun x -> Some(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks x)))
+                |> ValueOption.defaultValue None
 
             let fieldType = Widgets.getNodeFromWidget widget FieldType
 
@@ -71,6 +69,14 @@ module Field =
 module FieldBuilders =
     type Ast with
 
+        static member Field(filedType: WidgetBuilder<Type>) =
+            WidgetBuilder<FieldNode>(
+                Field.WidgetKey,
+                AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(filedType.Compile()) |], Array.empty)
+            )
+
+        static member Field(filedType: string) = Ast.Field(Ast.LongIdent(filedType))
+
         static member Field(name: string, filedType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
@@ -82,14 +88,7 @@ module FieldBuilders =
             )
 
         static member Field(name: string, filedType: string) =
-            WidgetBuilder<FieldNode>(
-                Field.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Field.Name.WithValue(name)),
-                    [| Field.FieldType.WithValue(Ast.LongIdent(filedType).Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.Field(name, Ast.LongIdent(filedType))
 
 type FieldModifiers =
     [<Extension>]
@@ -110,17 +109,5 @@ type FieldModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: string list) =
-        FieldModifiers.attributes(
-            this,
-            [ for attr in attributes do
-                  Ast.Attribute(attr) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: WidgetBuilder<AttributeNode>) =
         FieldModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: string) =
-        FieldModifiers.attributes(this, [ Ast.Attribute(attribute) ])

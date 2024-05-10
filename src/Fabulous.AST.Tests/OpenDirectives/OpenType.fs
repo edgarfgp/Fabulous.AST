@@ -1,8 +1,6 @@
 namespace Fabulous.AST.Tests.OpenDirectives
 
 open Fabulous.AST.Tests
-open Fantomas.FCS.Text
-open Fantomas.Core.SyntaxOak
 open Xunit
 
 open Fabulous.AST
@@ -13,7 +11,7 @@ module OpenType =
 
     [<Fact>]
     let ``Produces a simple open type directive from a string``() =
-        Oak() { AnonymousModule() { OpenType("ABC") } }
+        Oak() { AnonymousModule() { OpenType(LongIdent "ABC") } }
         |> produces
             """
 

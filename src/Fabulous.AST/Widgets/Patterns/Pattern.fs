@@ -6,39 +6,24 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Pattern =
-    let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
-
-    let NullValue = Attributes.defineScalar<SingleTextNode> "Null"
-
-    let WildValue = Attributes.defineScalar<SingleTextNode> "Wild"
+    let Value = Attributes.defineWidget "Value"
 
     let TypeParams = Attributes.defineScalar<string list> "TyparDecls"
 
     let WidgetKey =
         Widgets.register "ConstPat" (fun widget ->
-            let value = Widgets.getScalarValue widget Value
-
-            let value =
-                match value with
-                | StringOrWidget.StringExpr value ->
-                    Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                | StringOrWidget.WidgetExpr constant -> constant
-
+            let value = Widgets.getNodeFromWidget widget Value
             Pattern.Const(value))
 
     let WidgetUnitKey =
-        Widgets.register "UnitPat" (fun widget ->
+        Widgets.register "UnitPat" (fun _ ->
             Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)))
 
     let WidgetNullKey =
-        Widgets.register "NullPat" (fun widget ->
-            let value = Widgets.getScalarValue widget NullValue
-            Pattern.Null(value))
+        Widgets.register "NullPat" (fun _ -> Pattern.Null(SingleTextNode.``null``))
 
     let WidgetWildKey =
-        Widgets.register "WildPat" (fun widget ->
-            let value = Widgets.getScalarValue widget WildValue
-            Pattern.Wild(value))
+        Widgets.register "WildPat" (fun _ -> Pattern.Wild(SingleTextNode.underscore))
 
 [<AutoOpen>]
 module PatternBuilders =
@@ -47,42 +32,16 @@ module PatternBuilders =
         static member ConstantPat(value: WidgetBuilder<Constant>) =
             WidgetBuilder<Pattern>(
                 Pattern.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Pattern.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value)))),
-                    Array.empty,
-                    Array.empty
-                )
+                AttributesBundle(StackList.empty(), [| Pattern.Value.WithValue(value.Compile()) |], Array.empty)
             )
 
-        static member ConstantPat(value: StringVariant) =
-            WidgetBuilder<Pattern>(
-                Pattern.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Pattern.Value.WithValue(StringOrWidget.StringExpr value)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ConstantPat(value: string) = Ast.ConstantPat(Ast.Constant(value))
 
         static member NullPat() =
-            WidgetBuilder<Pattern>(
-                Pattern.WidgetNullKey,
-                AttributesBundle(
-                    StackList.one(Pattern.NullValue.WithValue(SingleTextNode.``null``)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Pattern>(Pattern.WidgetNullKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
 
         static member WildPat() =
-            WidgetBuilder<Pattern>(
-                Pattern.WidgetWildKey,
-                AttributesBundle(
-                    StackList.one(Pattern.WildValue.WithValue(SingleTextNode.underscore)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Pattern>(Pattern.WidgetWildKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
 
         static member UnitPat() =
             WidgetBuilder<Pattern>(Pattern.WidgetUnitKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))

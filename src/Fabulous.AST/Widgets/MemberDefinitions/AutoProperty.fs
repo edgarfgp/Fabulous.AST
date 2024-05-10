@@ -9,7 +9,7 @@ open Microsoft.FSharp.Collections
 module AutoPropertyMember =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let Identifier = Attributes.defineScalar<string> "Identifier"
-    let ReturnType = Attributes.defineScalar<StringOrWidget<Type>> "Type"
+    let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
     let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
 
@@ -18,7 +18,7 @@ module AutoPropertyMember =
 
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
-    let BodyExpr = Attributes.defineScalar<StringOrWidget<Expr>> "BodyExpr"
+    let BodyExpr = Attributes.defineWidget "BodyExpr"
 
     let WidgetKey =
         Widgets.register "AutoPropertyMember" (fun widget ->
@@ -41,31 +41,13 @@ module AutoPropertyMember =
             let isStatic =
                 Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetScalarValue widget ReturnType
+            let returnType = Widgets.tryGetNodeFromWidget widget ReturnType
 
-            let bodyExpr = Widgets.getScalarValue widget BodyExpr
-
-            let bodyExpr =
-                match bodyExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr value -> value
+            let bodyExpr = Widgets.getNodeFromWidget widget BodyExpr
 
             let returnType =
                 match returnType with
-                | ValueSome tp ->
-                    match tp with
-                    | StringOrWidget.StringExpr value ->
-                        let value = StringParsing.normalizeIdentifierBackticks value
-
-                        Some(
-                            Type.LongIdent(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
-                            )
-                        )
-                    | StringOrWidget.WidgetExpr widget -> Some widget
+                | ValueSome tp -> Some tp
                 | ValueNone -> None
 
             let multipleAttributes =
@@ -134,57 +116,39 @@ module AutoPropertyMemberBuilders =
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
+                    StackList.two(
                         AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(true, true),
-                        AutoPropertyMember.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
+                        AutoPropertyMember.HasGetterSetter.WithValue(true, true)
                     ),
-                    Array.empty,
+                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member AutoProperty(identifier: string, expr: WidgetBuilder<Constant>) =
+            Ast.AutoProperty(identifier, Ast.ConstantExpr(expr))
+
+        static member AutoProperty(identifier: string, expr: string) =
+            Ast.AutoProperty(identifier, Ast.Constant(expr))
 
         static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
+                    StackList.two(
                         AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(true, false),
-                        AutoPropertyMember.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak expr))
+                        AutoPropertyMember.HasGetterSetter.WithValue(true, false)
                     ),
-                    Array.empty,
+                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member AutoProperty(identifier: string, expr: StringVariant) =
-            WidgetBuilder<MemberDefnAutoPropertyNode>(
-                AutoPropertyMember.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(true, true),
-                        AutoPropertyMember.BodyExpr.WithValue(StringOrWidget.StringExpr(expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Constant>) =
+            Ast.AutoPropertyGet(identifier, Ast.ConstantExpr(expr))
 
-        static member AutoPropertyGet(identifier: string, expr: StringVariant) =
-            WidgetBuilder<MemberDefnAutoPropertyNode>(
-                AutoPropertyMember.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(true, false),
-                        AutoPropertyMember.BodyExpr.WithValue(StringOrWidget.StringExpr(expr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member AutoPropertyGet(identifier: string, expr: string) =
+            Ast.AutoPropertyGet(identifier, Ast.Constant(expr))
 
 type AutoPropertyMemberModifiers =
     [<Extension>]
@@ -203,22 +167,10 @@ type AutoPropertyMemberModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<MemberDefnAutoPropertyNode>, values: string list) =
-        AutoPropertyMemberModifiers.attributes(
-            this,
-            [ for attribute in values do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: WidgetBuilder<AttributeNode>)
         =
         AutoPropertyMemberModifiers.attributes(this, [ value ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: string) =
-        AutoPropertyMemberModifiers.attributes(this, [ Ast.Attribute(value) ])
 
     [<Extension>]
     static member inline toStatic(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
@@ -238,8 +190,4 @@ type AutoPropertyMemberModifiers =
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: WidgetBuilder<Type>) =
-        this.AddScalar(AutoPropertyMember.ReturnType.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak value)))
-
-    [<Extension>]
-    static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: string) =
-        this.AddScalar(AutoPropertyMember.ReturnType.WithValue(StringOrWidget.StringExpr(Unquoted value)))
+        this.AddWidget(AutoPropertyMember.ReturnType.WithValue(value.Compile()))

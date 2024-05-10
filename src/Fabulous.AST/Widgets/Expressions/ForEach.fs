@@ -1,52 +1,27 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ForEach =
-    let Pat = Attributes.defineScalar<StringOrWidget<Pattern>> "Pat"
+    let Pat = Attributes.defineWidget "Pat"
 
-    let EnumExpr = Attributes.defineScalar<StringOrWidget<Expr>> "EnumExpr"
+    let EnumExpr = Attributes.defineWidget "EnumExpr"
 
     let IsArrow = Attributes.defineScalar<bool> "IsArrow"
 
-    let BodyExpr = Attributes.defineScalar<StringOrWidget<Expr>> "BodyExpr"
+    let BodyExpr = Attributes.defineWidget "BodyExpr"
 
     let WidgetKey =
         Widgets.register "ForEach" (fun widget ->
-            let pat = Widgets.getScalarValue widget Pat
-
-            let pat =
-                match pat with
-                | StringOrWidget.StringExpr value ->
-                    let value = StringParsing.normalizeIdentifierQuotes value
-                    Pattern.Named(PatNamedNode(None, SingleTextNode.Create(value), Range.Zero))
-                | StringOrWidget.WidgetExpr pat -> pat
-
-            let enumExpr = Widgets.getScalarValue widget EnumExpr
-
-            let enumExpr =
-                match enumExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
+            let pat = Widgets.getNodeFromWidget widget Pat
+            let enumExpr = Widgets.getNodeFromWidget widget EnumExpr
 
             let isArrow =
                 Widgets.tryGetScalarValue widget IsArrow |> ValueOption.defaultValue false
 
-            let bodyExpr = Widgets.getScalarValue widget BodyExpr
-
-            let bodyExpr =
-                match bodyExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
+            let bodyExpr = Widgets.getNodeFromWidget widget BodyExpr
 
             Expr.ForEach(ExprForEachNode(SingleTextNode.``for``, pat, enumExpr, isArrow, bodyExpr, Range.Zero)))
 
@@ -54,107 +29,107 @@ module ForEach =
 module ForEachBuilders =
     type Ast with
 
-        static member ForEachExpr
+        static member private ForEachBaseExpr
+            (
+                pattern: WidgetBuilder<Pattern>,
+                enumExpr: WidgetBuilder<Expr>,
+                bodyExpr: WidgetBuilder<Expr>,
+                isArrow: bool
+            ) =
+            WidgetBuilder<Expr>(
+                ForEach.WidgetKey,
+                AttributesBundle(
+                    StackList.one(ForEach.IsArrow.WithValue(isArrow)),
+                    [| ForEach.Pat.WithValue(pattern.Compile())
+                       ForEach.EnumExpr.WithValue(enumExpr.Compile())
+                       ForEach.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member ForEachDoExpr
             (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>)
             =
-            WidgetBuilder<Expr>(
-                ForEach.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ForEach.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pattern)),
-                        ForEach.EnumExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak enumExpr)),
-                        ForEach.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak bodyExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            Ast.ForEachBaseExpr(pattern, enumExpr, bodyExpr, false)
 
-        static member ForEachExpr(pattern: string, enumExpr: string, bodyExpr: string) =
-            WidgetBuilder<Expr>(
-                ForEach.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ForEach.Pat.WithValue(StringOrWidget.StringExpr(Unquoted pattern)),
-                        ForEach.EnumExpr.WithValue(StringOrWidget.StringExpr(Unquoted enumExpr)),
-                        ForEach.BodyExpr.WithValue(StringOrWidget.StringExpr(Unquoted bodyExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ForEachDoExpr
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>)
+            =
+            Ast.ForEachDoExpr(Ast.ConstantPat(pattern), enumExpr, bodyExpr)
 
-        static member ForEachExpr(pattern: string, enumExpr: WidgetBuilder<Expr>, bodyExpr: string) =
-            WidgetBuilder<Expr>(
-                ForEach.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ForEach.Pat.WithValue(StringOrWidget.StringExpr(Unquoted pattern)),
-                        ForEach.EnumExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak enumExpr)),
-                        ForEach.BodyExpr.WithValue(StringOrWidget.StringExpr(Unquoted bodyExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ForEachDoExpr(pattern: string, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachDoExpr(Ast.Constant(pattern), enumExpr, bodyExpr)
 
-        static member ForEachExpr(pattern: string, enumExpr: string, bodyExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                ForEach.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ForEach.Pat.WithValue(StringOrWidget.StringExpr(Unquoted pattern)),
-                        ForEach.EnumExpr.WithValue(StringOrWidget.StringExpr(Unquoted enumExpr)),
-                        ForEach.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak bodyExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ForEachDoExpr
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachDoExpr(pattern, Ast.ConstantExpr(enumExpr), bodyExpr)
 
-        static member ForEachExpr(pattern: string, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                ForEach.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ForEach.Pat.WithValue(StringOrWidget.StringExpr(Unquoted pattern)),
-                        ForEach.EnumExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak enumExpr)),
-                        ForEach.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak bodyExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ForEachDoExpr(pattern: WidgetBuilder<Pattern>, enumExpr: string, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachDoExpr(pattern, Ast.Constant(enumExpr), bodyExpr)
 
-        static member ForEachExpr(pattern: WidgetBuilder<Pattern>, enumExpr: string, bodyExpr: string) =
-            WidgetBuilder<Expr>(
-                ForEach.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ForEach.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pattern)),
-                        ForEach.EnumExpr.WithValue(StringOrWidget.StringExpr(Unquoted enumExpr)),
-                        ForEach.BodyExpr.WithValue(StringOrWidget.StringExpr(Unquoted bodyExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ForEachDoExpr
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.ForEachDoExpr(pattern, enumExpr, Ast.ConstantExpr(bodyExpr))
 
-        static member ForEachExpr(pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: string) =
-            WidgetBuilder<Expr>(
-                ForEach.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        ForEach.Pat.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak pattern)),
-                        ForEach.EnumExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak enumExpr)),
-                        ForEach.BodyExpr.WithValue(StringOrWidget.StringExpr(Unquoted bodyExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ForEachDoExpr(pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: string) =
+            Ast.ForEachDoExpr(pattern, enumExpr, Ast.Constant(bodyExpr))
 
-type ForEachExprModifiers =
-    [<Extension>]
-    static member useArrow(this: WidgetBuilder<Expr>) =
-        this.AddScalar(ForEach.IsArrow.WithValue(true))
+        static member ForEachDoExpr
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachDoExpr(Ast.ConstantPat(pattern), enumExpr, bodyExpr)
+
+        static member ForEachDoExpr(pattern: WidgetBuilder<Constant>, enumExpr: string, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachDoExpr(pattern, Ast.Constant(enumExpr), bodyExpr)
+
+        static member ForEachDoExpr(pattern: string, enumExpr: string, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachDoExpr(Ast.ConstantPat(pattern), Ast.ConstantExpr(enumExpr), bodyExpr)
+
+        static member ForEachDoExpr(pattern: string, enumExpr: string, bodyExpr: string) =
+            Ast.ForEachDoExpr(Ast.ConstantPat(pattern), Ast.ConstantExpr(enumExpr), Ast.Constant(bodyExpr))
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>)
+            =
+            Ast.ForEachBaseExpr(pattern, enumExpr, bodyExpr, true)
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>)
+            =
+            Ast.ForEachArrowExpr(Ast.ConstantPat(pattern), enumExpr, bodyExpr)
+
+        static member ForEachArrowExpr(pattern: string, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachArrowExpr(Ast.Constant(pattern), enumExpr, bodyExpr)
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachArrowExpr(pattern, Ast.ConstantExpr(enumExpr), bodyExpr)
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Pattern>, enumExpr: string, bodyExpr: WidgetBuilder<Expr>)
+            =
+            Ast.ForEachArrowExpr(pattern, Ast.Constant(enumExpr), bodyExpr)
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.ForEachArrowExpr(pattern, enumExpr, Ast.ConstantExpr(bodyExpr))
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: string)
+            =
+            Ast.ForEachArrowExpr(pattern, enumExpr, Ast.Constant(bodyExpr))
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.ForEachArrowExpr(Ast.ConstantPat(pattern), enumExpr, bodyExpr)
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.ForEachArrowExpr(Ast.ConstantPat(pattern), enumExpr, Ast.ConstantExpr(bodyExpr))
+
+        static member ForEachArrowExpr
+            (pattern: WidgetBuilder<Constant>, enumExpr: string, bodyExpr: WidgetBuilder<Expr>)
+            =
+            Ast.ForEachArrowExpr(pattern, Ast.Constant(enumExpr), bodyExpr)
+
+        static member ForEachArrowExpr(pattern: string, enumExpr: string, bodyExpr: string) =
+            Ast.ForEachArrowExpr(Ast.ConstantPat(pattern), Ast.ConstantExpr(enumExpr), Ast.Constant(bodyExpr))

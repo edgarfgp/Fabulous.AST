@@ -13,18 +13,30 @@ module Single =
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
+                    ConstantPat(Constant("x")),
                     SingleExpr(
-                        SingleNode("a", ConstantExpr(Constant(Unquoted "b")))
+                        SingleNode("a", ConstantExpr(Constant("b")))
                             .addSpace(true)
                             .supportsStroustrup(false)
                     )
 
+                )
+
+                Value(
+                    ConstantPat(Constant("x")),
+                    SingleExpr(SingleNode("a", Constant("b")).addSpace(true).supportsStroustrup(false))
+                )
+
+                Value(
+                    ConstantPat(Constant("x")),
+                    SingleExpr(SingleNode("a", "b").addSpace(true).supportsStroustrup(false))
                 )
             }
         }
         |> produces
             """
 
+let x = a b
+let x = a b
 let x = a b
 """

@@ -33,26 +33,48 @@ module Types =
     let ``Value with return primitive types``() =
         Oak() {
             AnonymousModule() {
-                Value("a", Unquoted "false").returnType(Boolean())
-                Value("b", Unquoted "0uy").returnType(Byte())
-                Value("c", Unquoted "1y").returnType(SByte())
-                Value("d", Unquoted "1s").returnType(Int16())
-                Value("e", Unquoted "1us").returnType(UInt16())
-                Value("f", Unquoted "1").returnType(Int32())
-                Value("g", Unquoted "1u").returnType(UInt32())
-                Value("h", Unquoted "1L").returnType(Int64())
-                Value("i", Unquoted "1UL").returnType(UInt64())
-                Value("j", Unquoted "nativeint 1").returnType(IntPtr())
-                Value("k", Unquoted "unativeint 1").returnType(UIntPtr())
-                Value("l", Unquoted "1.0m").returnType(Decimal())
-                Value("m", Unquoted "1.0").returnType(Double())
-                Value("n", Unquoted "1.0f").returnType(Single())
-                Value("o", Unquoted "'c'").returnType(Char())
-                Value("p", Quoted "str").returnType(String())
-                Value("q", Unquoted "()").returnType(Unit())
-                Value("r", Unquoted "1.").returnType(Float())
-                Value("s", Unquoted "1.f").returnType(Float32())
-                Value("t", Unquoted "obj").returnType(Obj())
+                Value(ConstantPat(Constant "a"), ConstantExpr(Bool false)).returnType(Boolean())
+
+                Value(ConstantPat(Constant "b"), ConstantExpr(Byte 0uy)).returnType(Byte())
+                Value(ConstantPat(Constant "c"), ConstantExpr(SByte 1y)).returnType(SByte())
+                Value(ConstantPat(Constant "d"), ConstantExpr(Int16 1s)).returnType(Int16())
+
+                Value(ConstantPat(Constant "e"), ConstantExpr(UInt16 1us)).returnType(UInt16())
+
+                Value(ConstantPat(Constant "f"), ConstantExpr(Int(1))).returnType(Int())
+                Value(ConstantPat(Constant "g"), ConstantExpr(UInt32 1u)).returnType(UInt32())
+                Value(ConstantPat(Constant "h"), ConstantExpr(Int64 1L)).returnType(Int64())
+
+                Value(ConstantPat(Constant "i"), ConstantExpr(UInt64 1UL)).returnType(UInt64())
+
+                Value(ConstantPat(Constant "j"), ConstantExpr(IntPtr(nativeint 1)))
+                    .returnType(IntPtr())
+
+                Value(ConstantPat(Constant "k"), ConstantExpr(UIntPtr(unativeint 1)))
+                    .returnType(UIntPtr())
+
+                Value(ConstantPat(Constant "l"), ConstantExpr(Decimal 1.0m))
+                    .returnType(Decimal())
+
+                Value(ConstantPat(Constant "m"), ConstantExpr(Constant "1.0"))
+                    .returnType(Double())
+
+                Value(ConstantPat(Constant "n"), ConstantExpr(Single 1.0f)).returnType(Single())
+
+                Value(ConstantPat(Constant "o"), ConstantExpr(Char 'c')).returnType(Char())
+
+                Value(ConstantPat(Constant "p"), ConstantExpr(String("str")))
+                    .returnType(String())
+
+                Value(ConstantPat(Constant "q"), ConstantExpr(Constant("()")))
+                    .returnType(Unit())
+
+                Value(ConstantPat(Constant "r"), ConstantExpr(Float 1.)).returnType(Float())
+
+                Value(ConstantPat(Constant "s"), ConstantExpr(Float32 1.f))
+                    .returnType(Float32())
+
+                Value(ConstantPat(Constant "t"), ConstantExpr(Constant "obj")).returnType(Obj())
             }
         }
         |> produces
@@ -74,15 +96,84 @@ let n: single = 1.0f
 let o: char = 'c'
 let p: string = "str"
 let q: unit = ()
-let r: float = 1.
-let s: float32 = 1.f
+let r: float = 1.0
+let s: float32 = 1.0f
 let t: obj = obj
 """
 
     [<Fact>]
     let ``Value with return non primitive types``() =
-        Oak() { AnonymousModule() { Value("a", Unquoted "false").returnType(StructTuple([ String(); String() ])) } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
+                    .returnType(StructTuple([ String(); String() ]))
+
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
+                    .returnType(HashConstraint(String()))
+
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
+                    .returnType(StaticConstant(String("A")))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(StaticConstantExpr("A", "B"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AnonRecord([ "a", String(); "b", String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(StaticConstantNamed(String(), String()))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Anon("A"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Var("A"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Array("string", 2))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(StructTuple([ String(); String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix(String(), String()))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix("string", "string"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("Map", [ String(); String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("A", "a", [ String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Tuple([ String(); String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(MeasurePower("cm", Integer(2)))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Funs(String(), [ Int() ]))
+            }
+        }
         |> produces
             """
 let a: struct (string , string) = false
+let b: #string = false
+let b: "A" = false
+let c: A B = false
+let c: {| a: string; b: string |} = false
+let c: string=string = false
+let c: A = false
+let c: A = false
+let c: string[,] = false
+let c: struct (string , string) = false
+let c: string string = false
+let c: string string = false
+let c: Map<string, string> = false
+let c: A.a<string> = false
+let c: string * string = false
+let c: cm^2 = false
+let c: int -> string = false
 """

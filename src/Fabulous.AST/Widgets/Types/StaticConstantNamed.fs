@@ -17,11 +17,6 @@ module TypeStaticConstantNamed =
 [<AutoOpen>]
 module TypeStaticConstantNamedBuilders =
     type Ast with
-        /// <summary>
-        /// Creates a type with an identifier and a value.
-        /// </summary>
-        /// <param name="identifier">The identifier of the type.</param>
-        /// <param name="value">The value of the type.</param>
         static member StaticConstantNamed(identifier: WidgetBuilder<Type>, value: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeStaticConstantNamed.WidgetKey,
@@ -33,13 +28,11 @@ module TypeStaticConstantNamedBuilders =
                 )
             )
 
+        static member StaticConstantNamed(identifier: string, value: WidgetBuilder<Type>) =
+            Ast.StaticConstantNamed(Ast.LongIdent identifier, value)
+
+        static member StaticConstantNamed(identifier: WidgetBuilder<Type>, value: string) =
+            Ast.StaticConstantNamed(identifier, Ast.LongIdent value)
+
         static member StaticConstantNamed(identifier: string, value: string) =
-            WidgetBuilder<Type>(
-                TypeStaticConstantNamed.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| TypeStaticConstantNamed.Identifier.WithValue(Ast.LongIdent(identifier).Compile())
-                       TypeStaticConstantNamed.Value.WithValue(Ast.LongIdent(value).Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.StaticConstantNamed(Ast.LongIdent identifier, Ast.LongIdent value)

@@ -14,21 +14,27 @@ module ExplicitCtor =
             AnonymousModule() {
                 Class("Person") {
                     ExplicitCtor(
-                        ParenPat(TuplePat([ ParameterPat("x"); ParameterPat("y"); ParameterPat("z") ])),
+                        ParenPat(
+                            TuplePat(
+                                [ (ConstantPat(Constant "x"))
+                                  (ConstantPat(Constant "y"))
+                                  (ConstantPat(Constant "z")) ]
+                            )
+                        ),
                         RecordExpr(
-                            [ RecordFieldExpr("X", ConstantExpr(Unquoted "x"))
-                              RecordFieldExpr("Y", ConstantExpr(Unquoted "y"))
-                              RecordFieldExpr("Z", ConstantExpr(Unquoted "z")) ]
+                            [ RecordFieldExpr("X", ConstantExpr(Constant "x"))
+                              RecordFieldExpr("Y", ConstantExpr(Constant "y"))
+                              RecordFieldExpr("Z", ConstantExpr(Constant "z")) ]
                         ),
                         "this"
                     )
 
                     ExplicitCtor(
-                        ParenPat(TuplePat([ ParameterPat("x"); ParameterPat("y"); ParameterPat("z") ])),
+                        ParenPat(TuplePat([ Constant "x"; Constant "y"; Constant "z" ])),
                         RecordExpr(
-                            [ RecordFieldExpr("X", ConstantExpr(Unquoted "x"))
-                              RecordFieldExpr("Y", ConstantExpr(Unquoted "y"))
-                              RecordFieldExpr("Z", ConstantExpr(Unquoted "z")) ]
+                            [ RecordFieldExpr("X", ConstantExpr(Constant "x"))
+                              RecordFieldExpr("Y", ConstantExpr(Constant "y"))
+                              RecordFieldExpr("Z", ConstantExpr(Constant "z")) ]
                         )
                     )
                 }

@@ -29,3 +29,11 @@ module TuplePatBuilders =
                 TuplePat.WidgetKey,
                 AttributesBundle(StackList.one(TuplePat.Parameters.WithValue(parameters)), Array.empty, Array.empty)
             )
+
+        static member TuplePat(values: WidgetBuilder<Constant> list) =
+            let values = values |> List.map Ast.ConstantPat
+            Ast.TuplePat(values)
+
+        static member TuplePat(values: string list) =
+            let values = values |> List.map(Ast.Constant)
+            Ast.TuplePat(values)

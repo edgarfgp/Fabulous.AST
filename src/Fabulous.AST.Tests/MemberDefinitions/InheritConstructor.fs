@@ -12,13 +12,16 @@ module InheritConstructor =
     let ``Produces a classes InheritConstructor``() =
         Oak() {
             AnonymousModule() {
-                Class("Person", Constructor(ParenPat(TuplePat([ ParameterPat("name", String()) ])))) {
-                    InheritConstructorUnit(Unquoted "BaseClass")
+                Class(
+                    "Person",
+                    ImplicitConstructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("name")), String()) ])))
+                ) {
+                    InheritConstructorUnit(LongIdent "BaseClass")
 
                     Property(
                         "this.Name",
-                        GetterBinding(Unquoted("name")),
-                        SetterBinding(NamedPat("value"), Unquoted("()"))
+                        GetterBinding(ConstantExpr(Constant "name")),
+                        SetterBinding(NamedPat("value"), ConstantExpr(Constant("()")))
                     )
 
                 }

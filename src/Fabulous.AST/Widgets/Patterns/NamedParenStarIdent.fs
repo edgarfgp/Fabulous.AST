@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module NamedParenStarIdent =
@@ -9,7 +10,8 @@ module NamedParenStarIdent =
 
     let WidgetKey =
         Widgets.register "NamedParenStarIdent" (fun widget ->
-            let value = Widgets.getScalarValue widget Value
+            let value =
+                Widgets.getScalarValue widget Value |> PrettyNaming.NormalizeIdentifierBackticks
 
             Pattern.NamedParenStarIdent(
                 PatNamedParenStarIdentNode(

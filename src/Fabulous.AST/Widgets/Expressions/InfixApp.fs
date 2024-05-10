@@ -5,77 +5,42 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module InfixApp =
-    let LeftHandSide = Attributes.defineScalar<StringOrWidget<Expr>> "LeftHandSide"
-    let Operator = Attributes.defineScalar "Operator"
-    let RightHandSide = Attributes.defineScalar<StringOrWidget<Expr>> "RightHandSide"
+    let LeftHandSide = Attributes.defineWidget "LeftHandSide"
+    let Operator = Attributes.defineScalar<string> "Operator"
+    let RightHandSide = Attributes.defineWidget "RightHandSide"
 
     let WidgetKey =
         Widgets.register "Condition" (fun widget ->
-            let lhs = Widgets.getScalarValue widget LeftHandSide
-
-            let lhs =
-                match lhs with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
+            let lhs = Widgets.getNodeFromWidget widget LeftHandSide
             let operator = Widgets.getScalarValue widget Operator
-            let rhs = Widgets.getScalarValue widget RightHandSide
-
-            let rhs =
-                match rhs with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
+            let rhs = Widgets.getNodeFromWidget widget RightHandSide
             Expr.InfixApp(ExprInfixAppNode(lhs, SingleTextNode.Create(operator), rhs, Range.Zero)))
 
 [<AutoOpen>]
 module InfixAppBuilders =
     type Ast with
-
-        static member inline InfixAppExpr(lhs: WidgetBuilder<Expr>, operator: string, rhs: WidgetBuilder<Expr>) =
+        static member InfixAppExpr(lhs: WidgetBuilder<Expr>, operator: string, rhs: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 InfixApp.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        InfixApp.Operator.WithValue(operator),
-                        InfixApp.LeftHandSide.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(lhs))),
-                        InfixApp.RightHandSide.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(rhs)))
-                    ),
-                    Array.empty,
+                    StackList.one(InfixApp.Operator.WithValue(operator)),
+                    [| InfixApp.LeftHandSide.WithValue(lhs.Compile())
+                       InfixApp.RightHandSide.WithValue(rhs.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member inline InfixAppExpr(lhs: WidgetBuilder<Expr>, operator: string, rhs: StringVariant) =
-            WidgetBuilder<Expr>(
-                InfixApp.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        InfixApp.Operator.WithValue(operator),
-                        InfixApp.LeftHandSide.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(lhs))),
-                        InfixApp.RightHandSide.WithValue(StringOrWidget.StringExpr(rhs))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InfixAppExpr(lhs: WidgetBuilder<Constant>, operator: string, rhs: WidgetBuilder<Expr>) =
+            Ast.InfixAppExpr(Ast.ConstantExpr(lhs), operator, rhs)
 
-        static member inline InfixAppExpr(lhs: StringVariant, operator: string, rhs: StringVariant) =
-            WidgetBuilder<Expr>(
-                InfixApp.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        InfixApp.Operator.WithValue(operator),
-                        InfixApp.LeftHandSide.WithValue(StringOrWidget.StringExpr(lhs)),
-                        InfixApp.RightHandSide.WithValue(StringOrWidget.StringExpr(rhs))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member InfixAppExpr(lhs: string, operator: string, rhs: WidgetBuilder<Expr>) =
+            Ast.InfixAppExpr(Ast.Constant(lhs), operator, rhs)
+
+        static member InfixAppExpr(lhs: WidgetBuilder<Constant>, operator: string, rhs: WidgetBuilder<Constant>) =
+            Ast.InfixAppExpr(lhs, operator, Ast.ConstantExpr(rhs))
+
+        static member InfixAppExpr(lhs: string, operator: string, rhs: WidgetBuilder<Constant>) =
+            Ast.InfixAppExpr(Ast.Constant(lhs), operator, rhs)
+
+        static member InfixAppExpr(lhs: string, operator: string, rhs: string) =
+            Ast.InfixAppExpr(lhs, operator, Ast.Constant(rhs))

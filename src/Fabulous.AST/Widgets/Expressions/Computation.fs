@@ -29,3 +29,8 @@ module ComputationBuilders =
                 Computation.WidgetKey,
                 AttributesBundle(StackList.empty(), [| Computation.BodyExpr.WithValue(body.Compile()) |], Array.empty)
             )
+
+        static member ComputationExpr(body: WidgetBuilder<Constant>) =
+            Ast.ComputationExpr(Ast.ConstantExpr(body))
+
+        static member ComputationExpr(body: string) = Ast.ComputationExpr(Ast.Constant(body))

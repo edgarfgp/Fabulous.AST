@@ -1,45 +1,19 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open Fantomas.FCS.Text
-open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module IfThenElse =
-    let IfExpr = Attributes.defineScalar<StringOrWidget<Expr>> "IfExpr"
-    let ThenExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ThenExpr"
-    let ElseExpr = Attributes.defineScalar<StringOrWidget<Expr>> "ElseExpr"
+    let IfExpr = Attributes.defineWidget "IfExpr"
+    let ThenExpr = Attributes.defineWidget "ThenExpr"
+    let ElseExpr = Attributes.defineWidget "ElseExpr"
 
     let WidgetKey =
         Widgets.register "IfThenElse" (fun widget ->
-            let ifExpr = Widgets.getScalarValue widget IfExpr
-            let thenExpr = Widgets.getScalarValue widget ThenExpr
-            let elseExpr = Widgets.getScalarValue widget ElseExpr
-
-            let ifExpr =
-                match ifExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
-            let thenExpr =
-                match thenExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
-
-            let elseExpr =
-                match elseExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr expr -> expr
+            let ifExpr = Widgets.getNodeFromWidget widget IfExpr
+            let thenExpr = Widgets.getNodeFromWidget widget ThenExpr
+            let elseExpr = Widgets.getNodeFromWidget widget ElseExpr
 
             Expr.IfThenElse(
                 ExprIfThenElseNode(
@@ -63,26 +37,47 @@ module IfThenElseBuilders =
             WidgetBuilder<Expr>(
                 IfThenElse.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        IfThenElse.IfExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak ifExpr)),
-                        IfThenElse.ThenExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak thenExpr)),
-                        IfThenElse.ElseExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak elseExpr))
-                    ),
-                    Array.empty,
+                    StackList.empty(),
+                    [| IfThenElse.IfExpr.WithValue(ifExpr.Compile())
+                       IfThenElse.ThenExpr.WithValue(thenExpr.Compile())
+                       IfThenElse.ElseExpr.WithValue(elseExpr.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member inline IfThenElseExpr(ifExpr: StringVariant, thenExpr: StringVariant, elseExpr: StringVariant) =
-            WidgetBuilder<Expr>(
-                IfThenElse.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        IfThenElse.IfExpr.WithValue(StringOrWidget.StringExpr(ifExpr)),
-                        IfThenElse.ThenExpr.WithValue(StringOrWidget.StringExpr(thenExpr)),
-                        IfThenElse.ElseExpr.WithValue(StringOrWidget.StringExpr(elseExpr))
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>)
+            =
+            Ast.IfThenElseExpr(Ast.ConstantExpr(ifExpr), thenExpr, elseExpr)
+
+        static member inline IfThenElseExpr
+            (ifExpr: string, thenExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>)
+            =
+            Ast.IfThenElseExpr(Ast.Constant(ifExpr), thenExpr, elseExpr)
+
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Constant>, elseExpr: WidgetBuilder<Expr>) =
+            Ast.IfThenElseExpr(ifExpr, Ast.ConstantExpr(thenExpr), elseExpr)
+
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Constant>, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElseExpr(ifExpr, Ast.ConstantExpr(thenExpr), Ast.ConstantExpr(elseExpr))
+
+        static member inline IfThenElseExpr(ifExpr: string, thenExpr: string, elseExpr: WidgetBuilder<Expr>) =
+            Ast.IfThenElseExpr(Ast.Constant(ifExpr), Ast.Constant(thenExpr), elseExpr)
+
+        static member inline IfThenElseExpr
+            (ifExpr: string, thenExpr: WidgetBuilder<Constant>, elseExpr: WidgetBuilder<Expr>)
+            =
+            Ast.IfThenElseExpr(Ast.Constant(ifExpr), thenExpr, elseExpr)
+
+        static member inline IfThenElseExpr
+            (ifExpr: string, thenExpr: WidgetBuilder<Constant>, elseExpr: WidgetBuilder<Constant>)
+            =
+            Ast.IfThenElseExpr(Ast.Constant(ifExpr), thenExpr, Ast.ConstantExpr(elseExpr))
+
+        static member inline IfThenElseExpr(ifExpr: string, thenExpr: string, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElseExpr(Ast.Constant(ifExpr), Ast.Constant(thenExpr), elseExpr)
+
+        static member inline IfThenElseExpr(ifExpr: string, thenExpr: string, elseExpr: string) =
+            Ast.IfThenElseExpr(Ast.Constant(ifExpr), Ast.Constant(thenExpr), Ast.Constant(elseExpr))

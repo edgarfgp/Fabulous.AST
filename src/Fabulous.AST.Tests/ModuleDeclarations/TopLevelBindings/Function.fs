@@ -9,12 +9,60 @@ open type Ast
 module Function =
 
     [<Fact>]
-    let ``Produces a function with parameter``() =
-        Oak() { AnonymousModule() { Function("x", ParameterPat("i"), ConstantExpr(ConstantUnit())) } }
+    let ``Produces a function with widget parameter``() =
+        Oak() {
+            AnonymousModule() { Function("x", ParameterPat(ConstantPat(Constant "i")), ConstantExpr(ConstantUnit())) }
+        }
         |> produces
             """
 
 let x i = ()
+
+"""
+
+    [<Fact>]
+    let ``Produces a function with widget parameters``() =
+        Oak() {
+            AnonymousModule() {
+                Function("x", [ ParameterPat(ConstantPat(Constant "i")) ], ConstantExpr(ConstantUnit()))
+                Function("x2", ParameterPat(ConstantPat("i")), ConstantExpr("()"))
+
+                Function(
+                    "y",
+                    [ ParameterPat(ConstantPat("i")); ParameterPat(ConstantPat("j")) ],
+                    ConstantExpr(ConstantUnit())
+                )
+
+                Function("y2", [ ParameterPat("i"); ParameterPat("j") ], ConstantExpr(ConstantUnit()))
+                Function("z", [ "i"; "j" ], ConstantExpr(ConstantUnit()))
+            }
+        }
+        |> produces
+            """
+
+let x i = ()
+let x2 i = ()
+let y i j = ()
+let y2 i j = ()
+let z i j = ()
+
+"""
+
+    [<Fact>]
+    let ``Produces a function with parameter``() =
+        Oak() {
+            AnonymousModule() {
+                Function("x", "i", ConstantExpr(ConstantUnit()))
+                Function("y", "i", ConstantUnit())
+                Function("z", "i", "()")
+            }
+        }
+        |> produces
+            """
+
+let x i = ()
+let y i = ()
+let z i = ()
 
 """
 
@@ -40,11 +88,15 @@ let x (i) = ()
     let ``Produces a function with single tupled typed parameter``() =
         Oak() {
             AnonymousModule() {
-                Function("x", ParenPat(ParameterPat(NamedPat("i"), Int32())), ConstantExpr(ConstantUnit()))
+                Function("x", ParenPat(ParameterPat(NamedPat("i"), Int())), ConstantExpr(ConstantUnit()))
+                Function("x", ParenPat(ParameterPat("i", Int())), ConstantExpr(ConstantUnit()))
+                Function("x", ParenPat(ParameterPat("i", "int")), ConstantExpr(ConstantUnit()))
             }
         }
         |> produces
             """
+let x (i: int) = ()
+let x (i: int) = ()
 let x (i: int) = ()
 
 """
@@ -55,7 +107,13 @@ let x (i: int) = ()
             AnonymousModule() {
                 Function(
                     "x",
-                    ParenPat(TuplePat([ ParameterPat("i"); ParameterPat("j"); ParameterPat("k") ])),
+                    ParenPat(
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant "i"))
+                              ParameterPat(ConstantPat(Constant "j"))
+                              ParameterPat(ConstantPat(Constant "k")) ]
+                        )
+                    ),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -88,7 +146,13 @@ let x (i, j, k) = ()
             AnonymousModule() {
                 Function(
                     "x",
-                    ParenPat(TuplePat([ ParameterPat("i", Int32()); ParameterPat("j", String()); ParameterPat("k") ])),
+                    ParenPat(
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant("i")), Int())
+                              ParameterPat(ConstantPat(Constant "j"), String())
+                              ParameterPat(ConstantPat(Constant "k")) ]
+                        )
+                    ),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -104,7 +168,11 @@ let x (i: int, j: string, k) = ()
             AnonymousModule() {
                 Function(
                     "x",
-                    LongIdentPat([ ParameterPat("i"); ParameterPat("j"); ParameterPat("k") ]),
+                    LongIdentPat(
+                        [ ParameterPat(ConstantPat(Constant "i"))
+                          ParameterPat(ConstantPat(Constant "j"))
+                          ParameterPat(ConstantPat(Constant "k")) ]
+                    ),
                     ConstantExpr(ConstantUnit())
                 )
             }
@@ -123,7 +191,7 @@ let x i j k = ()
                     "x",
                     ParenPat(
                         TuplePat(
-                            [ ParameterPat(NamedPat("i"), Int32())
+                            [ ParameterPat(NamedPat("i"), Int())
                               ParameterPat(NamedPat("j"), String())
                               ParameterPat(NamedPat("k"), Boolean()) ]
                         )
@@ -142,8 +210,8 @@ let x (i: int, j: string, k: bool) = ()
     let ``Produces a function with parameters and an attribute``() =
         Oak() {
             AnonymousModule() {
-                (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
-                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(Quoted "Use bar instead"))))
+                (Function("x", [ NamedPat("i") ], ConstantExpr(ConstantUnit())))
+                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(String "Use bar instead"))))
             }
         }
         |> produces
@@ -183,7 +251,12 @@ let x i : unit = ()
             AnonymousModule() {
                 (Function(
                     "foo",
-                    ParenPat(TuplePat([ ParameterPat("x", "'T"); ParameterPat(NamedPat("i"), "'U") ])),
+                    ParenPat(
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant "x"), LongIdent "'T")
+                              ParameterPat(NamedPat("i"), LongIdent "'U") ]
+                        )
+                    ),
                     ConstantExpr(ConstantUnit())
                 ))
                     .returnType(Unit())

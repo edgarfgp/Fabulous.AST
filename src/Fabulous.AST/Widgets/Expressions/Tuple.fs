@@ -29,3 +29,9 @@ module TupleBuilders =
                 Tuple.WidgetKey,
                 AttributesBundle(StackList.one(Tuple.Items.WithValue(parameters)), Array.empty, Array.empty)
             )
+
+        static member TupleExpr(value: WidgetBuilder<Constant> list) =
+            Ast.TupleExpr(value |> List.map Ast.ConstantExpr)
+
+        static member TupleExpr(value: string list) =
+            Ast.TupleExpr(value |> List.map Ast.Constant)

@@ -14,12 +14,8 @@ module Tuple =
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
-                    TupleExpr(
-                        [ ConstantExpr(Unquoted "1")
-                          ConstantExpr(Unquoted "2")
-                          ConstantExpr(Unquoted "3") ]
-                    )
+                    ConstantPat(Constant("x")),
+                    TupleExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2); ConstantExpr(Int 3) ])
                 )
             }
         }
@@ -34,14 +30,8 @@ let x = 1, 2, 3
         Oak() {
             AnonymousModule() {
                 Value(
-                    "x",
-                    ParenExpr(
-                        TupleExpr(
-                            [ ConstantExpr(Unquoted "1")
-                              ConstantExpr(Unquoted "2")
-                              ConstantExpr(Unquoted "3") ]
-                        )
-                    )
+                    ConstantPat(Constant("x")),
+                    ParenExpr(TupleExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2); ConstantExpr(Int 3) ]))
                 )
             }
         }

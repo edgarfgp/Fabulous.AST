@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
@@ -14,9 +15,7 @@ module Augmentation =
     let WidgetKey =
         Widgets.register "Augmentation" (fun widget ->
             let name =
-                Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
 

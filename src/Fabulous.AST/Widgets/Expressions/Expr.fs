@@ -6,18 +6,11 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module Expr =
-    let Value = Attributes.defineScalar<StringOrWidget<Constant>> "Value"
+    let Value = Attributes.defineWidget "Value"
 
     let WidgetKey =
         Widgets.register "ConstantExpr" (fun widget ->
-            let value = Widgets.getScalarValue widget Value
-
-            let value =
-                match value with
-                | StringOrWidget.StringExpr value ->
-                    Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                | StringOrWidget.WidgetExpr constant -> constant
-
+            let value = Widgets.getNodeFromWidget widget Value
             Expr.Constant(value))
 
     let WidgetNullKey =
@@ -29,22 +22,10 @@ module ExprBuilders =
         static member ConstantExpr(value: WidgetBuilder<Constant>) =
             WidgetBuilder<Expr>(
                 Expr.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Expr.Value.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak(value)))),
-                    Array.empty,
-                    Array.empty
-                )
+                AttributesBundle(StackList.empty(), [| Expr.Value.WithValue(value.Compile()) |], Array.empty)
             )
 
-        static member ConstantExpr(value: StringVariant) =
-            WidgetBuilder<Expr>(
-                Expr.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Expr.Value.WithValue(StringOrWidget.StringExpr value)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member ConstantExpr(value: string) = Ast.ConstantExpr(Ast.Constant(value))
 
         static member NullExpr() =
             WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))

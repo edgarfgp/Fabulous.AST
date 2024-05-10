@@ -50,6 +50,12 @@ module ModuleDeclAttributeNodeBuilders =
                 )
             )
 
+        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Constant>) =
+            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr))
+
+        static member ModuleDeclAttribute(doExpr: string) =
+            Ast.ModuleDeclAttribute(Ast.Constant(doExpr))
+
 type ModuleDeclAttributeModifiers =
     [<Extension>]
     static member inline attributes
@@ -63,22 +69,10 @@ type ModuleDeclAttributeModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ModuleDeclAttributesNode>, attributes: string list) =
-        ModuleDeclAttributeModifiers.attributes(
-            this,
-            [ for attribute in attributes do
-                  Ast.Attribute(attribute) ]
-        )
-
-    [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: WidgetBuilder<AttributeNode>)
         =
         ModuleDeclAttributeModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: string) =
-        ModuleDeclAttributeModifiers.attributes(this, [ Ast.Attribute(attribute) ])
 
 type ModuleDeclAttributesYieldExtensions =
     [<Extension>]

@@ -26,3 +26,11 @@ module StructTuplePatBuilders =
                     Array.empty
                 )
             )
+
+        static member StructTuplePat(values: WidgetBuilder<Constant> list) =
+            let values = values |> List.map Ast.ConstantPat
+            Ast.StructTuplePat(values)
+
+        static member StructTuplePat(values: string list) =
+            let values = values |> List.map(Ast.Constant)
+            Ast.StructTuplePat(values)

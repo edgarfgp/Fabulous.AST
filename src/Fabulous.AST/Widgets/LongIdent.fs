@@ -1,8 +1,29 @@
 namespace Fabulous.AST
 
+open Fantomas.FCS.Text
+open Fantomas.Core.SyntaxOak
+open Fabulous.AST.StackAllocatedCollections.StackList
+
+module TypeLongIdent =
+
+    let Value = Attributes.defineScalar<string> "Return"
+
+    let WidgetKey =
+        Widgets.register "LongIdentType" (fun widget ->
+            let value = Widgets.getScalarValue widget Value
+
+            Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)))
+
 [<AutoOpen>]
-module CommonTypeBuilders =
+module LongIdentTypeBuilders =
     type Ast with
+
+        static member LongIdent(value: string) =
+            WidgetBuilder<Type>(
+                TypeLongIdent.WidgetKey,
+                AttributesBundle(StackList.one(TypeLongIdent.Value.WithValue(value)), Array.empty, Array.empty)
+            )
+
         static member Boolean() = Ast.LongIdent("bool")
 
         static member Byte() = Ast.LongIdent("byte")
@@ -13,7 +34,7 @@ module CommonTypeBuilders =
 
         static member UInt16() = Ast.LongIdent("uint16")
 
-        static member Int32() = Ast.LongIdent("int")
+        static member Int() = Ast.LongIdent("int")
 
         static member UInt32() = Ast.LongIdent("uint")
 

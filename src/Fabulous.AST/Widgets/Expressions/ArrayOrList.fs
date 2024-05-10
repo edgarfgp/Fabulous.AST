@@ -38,6 +38,14 @@ module ArrayOrListBuilders =
                 )
             )
 
+        static member ListExpr(value: WidgetBuilder<Constant> list) =
+            let parameters = value |> List.map(Ast.ConstantExpr)
+            Ast.ListExpr(parameters)
+
+        static member ListExpr(value: string list) =
+            let parameters = value |> List.map(Ast.Constant)
+            Ast.ListExpr(parameters)
+
         static member ArrayExpr(value: WidgetBuilder<Expr> list) =
             let parameters = value |> List.map Gen.mkOak
 
@@ -53,3 +61,11 @@ module ArrayOrListBuilders =
                     Array.empty
                 )
             )
+
+        static member ArrayExpr(value: WidgetBuilder<Constant> list) =
+            let parameters = value |> List.map(Ast.ConstantExpr)
+            Ast.ArrayExpr(parameters)
+
+        static member ArrayExpr(value: string list) =
+            let parameters = value |> List.map(Ast.Constant)
+            Ast.ArrayExpr(parameters)

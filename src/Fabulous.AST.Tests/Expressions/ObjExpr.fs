@@ -13,8 +13,9 @@ module ObjExpr =
     let ``let value with a ObjExpr expression when typename is a class``() =
         Oak() {
             AnonymousModule() {
-                ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit()))
-                    .bindings([ Method("x.ToString", [], ConstantExpr(Quoted("F#"))) ])
+                ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit())) {
+                    Method("x.ToString", [], ConstantExpr(String("F#")))
+                }
             }
         }
         |> produces
@@ -27,31 +28,26 @@ module ObjExpr =
     let ``let value with a ObjExpr expression when typename is not a class``() =
         Oak() {
             AnonymousModule() {
-                ObjExpr(LongIdent("System.IFormattable"))
-                    .bindings(
-                        [ Method(
-                              "x.ToString",
-                              ParenPat(
-                                  TuplePat(
-                                      [ ParameterPat("format", String())
-                                        ParameterPat("provider", LongIdent("System.IFormatProvider")) ]
-                                  )
-                              ),
-                              IfThenElseExpr(
-                                  InfixAppExpr(
-                                      ConstantExpr(Constant(Unquoted "format")),
-                                      "=",
-                                      ConstantExpr(Constant(Quoted "D"))
-                                  ),
-                                  SameInfixAppsExpr(
-                                      ConstantExpr(Unquoted("delim1")),
-                                      [ ("+", ConstantExpr(Unquoted("value")))
-                                        ("+", ConstantExpr(Unquoted("delim2"))) ]
-                                  ),
-                                  ConstantExpr(Unquoted "value")
-                              )
-                          ) ]
+                ObjExpr(LongIdent("System.IFormattable")) {
+                    Method(
+                        "x.ToString",
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("format")), String())
+                                  ParameterPat(ConstantPat(Constant("provider")), LongIdent("System.IFormatProvider")) ]
+                            )
+                        ),
+                        IfThenElseExpr(
+                            InfixAppExpr(ConstantExpr(Constant("format")), "=", ConstantExpr(String("D"))),
+                            SameInfixAppsExpr(
+                                ConstantExpr(Constant("delim1")),
+                                [ ("+", ConstantExpr(Constant("value")))
+                                  ("+", ConstantExpr(Constant("delim2"))) ]
+                            ),
+                            ConstantExpr(Constant "value")
+                        )
                     )
+                }
             }
         }
         |> produces

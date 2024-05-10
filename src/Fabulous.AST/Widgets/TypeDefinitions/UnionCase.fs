@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -20,8 +21,7 @@ module UnionCase =
         Widgets.register "UnionCase" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Name
-                |> Unquoted
-                |> StringParsing.normalizeIdentifierBackticks
+                |> PrettyNaming.NormalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
             let fields = Widgets.tryGetScalarValue widget Fields
@@ -82,6 +82,14 @@ module UnionCaseBuilders =
                 )
             )
 
+        static member UnionCase(name: string, parameter: WidgetBuilder<FieldNode>) = Ast.UnionCase(name, [ parameter ])
+
+        static member UnionCase(name: string, parameters: (string * string) list) =
+            Ast.UnionCase(name, parameters |> List.map(Ast.Field))
+
+        static member UnionCase(name: string, parameters: (string * WidgetBuilder<Type>) list) =
+            Ast.UnionCase(name, parameters |> List.map(Ast.Field))
+
 type UnionCaseModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: string list) =
@@ -97,17 +105,5 @@ type UnionCaseModifiers =
         )
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: string list) =
-        UnionCaseModifiers.attributes(
-            this,
-            [ for attr in attributes do
-                  Ast.Attribute(attr) ]
-        )
-
-    [<Extension>]
     static member inline attribute(this: WidgetBuilder<UnionCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
         UnionCaseModifiers.attributes(this, [ attribute ])
-
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<UnionCaseNode>, attribute: string) =
-        UnionCaseModifiers.attributes(this, [ Ast.Attribute(attribute) ])

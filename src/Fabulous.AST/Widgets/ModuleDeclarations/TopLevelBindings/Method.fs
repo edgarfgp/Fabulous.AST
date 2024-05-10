@@ -7,40 +7,23 @@ open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
 module BindingMethodNode =
+    let Name = Attributes.defineScalar<string> "Name"
+
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
-            let name = Widgets.getScalarValue widget BindingNode.Name
-
-            let name =
-                match name with
-                | StringOrWidget.StringExpr name ->
-                    match name with
-                    | Quoted name -> SingleTextNode.Create name
-                    | Unquoted name -> SingleTextNode.Create name
-                    | TripleQuoted name -> SingleTextNode.Create name
-                | StringOrWidget.WidgetExpr _ -> failwith "Unexpected widget"
-
-            let parameters = Widgets.getScalarValue widget BindingNode.Parameters
-            let bodyExpr = Widgets.getScalarValue widget BindingNode.BodyExpr
-
-            let bodyExpr =
-                match bodyExpr with
-                | StringOrWidget.StringExpr value ->
-                    Expr.Constant(
-                        Constant.FromText(SingleTextNode.Create(StringParsing.normalizeIdentifierQuotes(value)))
-                    )
-                | StringOrWidget.WidgetExpr value -> value
-
-            let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
+            let name = Widgets.getScalarValue widget Name
+            let parameters = Widgets.getScalarValue widget TopLevelBinding.Parameters
+            let bodyExpr = Widgets.getNodeFromWidget widget TopLevelBinding.BodyExpr
+            let isInlined = Widgets.tryGetScalarValue widget TopLevelBinding.IsInlined
 
             let isStatic =
-                Widgets.tryGetScalarValue widget BindingNode.IsStatic
+                Widgets.tryGetScalarValue widget TopLevelBinding.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetScalarValue widget BindingNode.Return
+            let returnType = Widgets.tryGetNodeFromWidget widget TopLevelBinding.Return
 
             let accessControl =
-                Widgets.tryGetScalarValue widget BindingNode.Accessibility
+                Widgets.tryGetScalarValue widget TopLevelBinding.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -50,7 +33,7 @@ module BindingMethodNode =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget TopLevelBinding.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -62,21 +45,9 @@ module BindingMethodNode =
             let returnType =
                 match returnType with
                 | ValueNone -> None
-                | ValueSome value ->
-                    match value with
-                    | StringOrWidget.StringExpr value ->
-                        let value = StringParsing.normalizeIdentifierBackticks value
+                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
-                        let returnType =
-                            Type.LongIdent(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)
-                            )
-
-                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-                    | StringOrWidget.WidgetExpr returnType ->
-                        Some(BindingReturnInfoNode(SingleTextNode.colon, returnType, Range.Zero))
-
-            let attributes = Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
+            let attributes = Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
 
             let multipleAttributes =
                 match attributes with
@@ -100,7 +71,7 @@ module BindingMethodNode =
                 | ValueSome false -> None
                 | ValueNone -> None
 
-            let typeParams = Widgets.tryGetScalarValue widget BindingNode.TypeParams
+            let typeParams = Widgets.tryGetScalarValue widget TopLevelBinding.TypeParams
 
             let typeParams =
                 match typeParams with
@@ -131,7 +102,7 @@ module BindingMethodNode =
                 false,
                 inlineNode,
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero)),
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
                 typeParams,
                 parameters,
                 returnType,
@@ -144,62 +115,50 @@ module BindingMethodNode =
 module BindingMethodBuilders =
     type Ast with
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: StringVariant) =
-            WidgetBuilder<BindingNode>(
-                BindingMethodNode.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body)),
-                        BindingNode.Parameters.WithValue([ Gen.mkOak parameters ])
-                    ),
-                    [||],
-                    Array.empty
-                )
-            )
-
-        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, body: StringVariant) =
-            let parameters = parameters |> List.map(Gen.mkOak)
-
-            WidgetBuilder<BindingNode>(
-                BindingMethodNode.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.StringExpr(body)),
-                        BindingNode.Parameters.WithValue(parameters)
-                    ),
-                    [||],
-                    Array.empty
-                )
-            )
-
         static member Method(name: string, parameters: WidgetBuilder<Pattern> list, body: WidgetBuilder<Expr>) =
-            let parameters = parameters |> List.map(Gen.mkOak)
+            let parameters = parameters |> List.map Gen.mkOak
 
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body)),
-                        BindingNode.Parameters.WithValue(parameters)
+                    StackList.two(
+                        BindingMethodNode.Name.WithValue(name),
+                        TopLevelBinding.Parameters.WithValue(parameters)
                     ),
-                    Array.empty,
+                    [| TopLevelBinding.BodyExpr.WithValue(body.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
-            WidgetBuilder<BindingNode>(
-                BindingMethodNode.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        BindingNode.Name.WithValue(StringOrWidget.StringExpr(Unquoted(name))),
-                        BindingNode.BodyExpr.WithValue(StringOrWidget.WidgetExpr(Gen.mkOak body)),
-                        BindingNode.Parameters.WithValue([ Gen.mkOak parameters ])
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member Method(name: string, parameter: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.Method(name, [ parameter ], body)
+
+        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Method(name, parameters, Ast.ConstantExpr(bodyExpr))
+
+        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
+            Ast.Method(name, parameters, Ast.Constant(bodyExpr))
+
+        static member Method(name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Method(name, parameters, bodyExpr)
+
+        static member Method(name: string, parameters: string list, bodyExpr: string) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Method(name, parameters, bodyExpr)
+
+        static member Function(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Method(name, [ parameters ], bodyExpr)
+
+        static member Method(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string) =
+            Ast.Method(name, [ parameters ], bodyExpr)
+
+        static member Method(name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Method(name, [ parameters ], bodyExpr)
+
+        static member Method(name: string, parameters: string, bodyExpr: string) =
+            Ast.Method(name, [ parameters ], bodyExpr)

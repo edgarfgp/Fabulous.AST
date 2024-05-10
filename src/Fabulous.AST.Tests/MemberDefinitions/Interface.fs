@@ -13,6 +13,7 @@ module InterfaceMembers =
         Oak() {
             AnonymousModule() {
                 Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
+                Interface("IMyInterface2") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
                 (Record("Colors") {
                     Field("Green", LongIdent("string"))
@@ -20,12 +21,16 @@ module InterfaceMembers =
                     Field("Yellow", LongIdent("int"))
                 })
                     .typeParams([ "'other" ])
-                    .interfaces(
-                        [ InterfaceMember(
-                              "IMyInterface",
-                              [ Method("x.GetValue", UnitPat(), ConstantExpr(Unquoted "x.MyField2")) ]
-                          ) ]
-                    )
+                    .members() {
+                    InterfaceMember(LongIdent "IMyInterface") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                    }
+
+                    InterfaceMember("IMyInterface2") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                    }
+                }
+
             }
         }
 
@@ -34,12 +39,18 @@ module InterfaceMembers =
 type IMyInterface =
     abstract member GetValue: unit -> string
 
+type IMyInterface2 =
+    abstract member GetValue: unit -> string
+
 type Colors<'other> =
     { Green: string
       Blue: 'other
       Yellow: int }
 
     interface IMyInterface with
+        member x.GetValue() = x.MyField2
+
+    interface IMyInterface2 with
         member x.GetValue() = x.MyField2
 
 """
@@ -58,12 +69,11 @@ type Colors<'other> =
                     Field("MyField1", LongIdent("int"))
                     Field("MyField2", LongIdent("string"))
                 })
-                    .interfaces(
-                        [ InterfaceMember(
-                              "IMyInterface",
-                              [ Method("x.GetValue", UnitPat(), ConstantExpr(Unquoted "x.MyField2")) ]
-                          ) ]
-                    )
+                    .members() {
+                    InterfaceMember(LongIdent "IMyInterface") {
+                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                    }
+                }
             }
         }
         |> produces
@@ -87,7 +97,11 @@ type MyRecord =
             AnonymousModule() {
                 Interface("Meh") { AbstractProperty("Name", String()) }
 
-                Class("Person") { InterfaceMember("Meh", [ Property("this.Name", ConstantExpr(Quoted "23")) ]) }
+                Class("Person") {
+                    InterfaceMember(LongIdent "Meh") {
+                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                    }
+                }
             }
         }
         |> produces

@@ -10,14 +10,14 @@ module Record =
 
     [<Theory>]
     [<InlineData("First Name", "``First Name``")>]
-    [<InlineData(" First Name ", "``First Name``")>]
+    [<InlineData(" First Name ", "`` First Name ``")>]
     [<InlineData("First_Name", "First_Name")>]
     [<InlineData("net.6", "``net.6``")>]
-    [<InlineData(" net.6 ", "``net.6``")>]
+    [<InlineData(" net.6 ", "`` net.6 ``")>]
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces a record with fields with backticks`` (value: string) (expected: string) =
-        Oak() { AnonymousModule() { Record("Person ") { Field(value, LongIdent("int")) } } }
+        Oak() { AnonymousModule() { Record("Person") { Field(value, LongIdent("int")) } } }
         |> produces
             $$"""
 
@@ -33,7 +33,7 @@ type Person = { {{expected}}: int }
                     for colour in [ "Red"; "Green"; "Blue" ] do
                         Field(colour, LongIdent("int"))
                 })
-                    .attribute("Serializable")
+                    .attribute(Attribute "Serializable")
             }
         }
         |> produces
@@ -49,7 +49,7 @@ type Colors = { Red: int; Green: int; Blue: int }
         Oak() {
             AnonymousModule() {
                 Record("Colors") {
-                    Field("Red", LongIdent("int")).attribute("Obsolete")
+                    Field("Red", LongIdent("int")).attribute(Attribute "Obsolete")
 
                     Field("Green", LongIdent("int"))
                     Field("Blue", LongIdent("int"))
@@ -99,7 +99,7 @@ type Colors<'other> =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
-                    .attribute("Struct")
+                    .attribute(Attribute "Struct")
                     .typeParams([ "'other" ])
             }
         }

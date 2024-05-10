@@ -23,3 +23,5 @@ module TypeStaticConstantBuilders =
                     Array.empty
                 )
             )
+
+        static member StaticConstant(value: string) = Ast.StaticConstant(Ast.Constant value)
