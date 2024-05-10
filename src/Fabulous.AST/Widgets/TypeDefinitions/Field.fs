@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System
 open System.Runtime.CompilerServices
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text

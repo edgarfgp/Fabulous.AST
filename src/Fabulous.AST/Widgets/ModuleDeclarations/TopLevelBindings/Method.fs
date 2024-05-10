@@ -1,7 +1,6 @@
 namespace Fabulous.AST
 
 open Fabulous.AST.StackAllocatedCollections.StackList
-open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 

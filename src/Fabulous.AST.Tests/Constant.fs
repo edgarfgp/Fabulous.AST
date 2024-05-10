@@ -1,6 +1,5 @@
 namespace Fabulous.AST.Tests
 
-open Fantomas.Core
 
 open Fabulous.AST
 
