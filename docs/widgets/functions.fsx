@@ -77,7 +77,7 @@ Oak() {
         Open("System")
 
         Function("x7", NamedPat("i"), ConstantExpr(ConstantUnit()))
-            .attribute (Attribute("Obsolete", ParenExpr(ConstantExpr("Use bar instead"))))
+            .attribute (Attribute("Obsolete", ParenExpr(ConstantExpr(String "Use bar instead"))))
 
         Function("x8", NamedPat("i"), ConstantExpr(ConstantUnit())).xmlDocs [ "Im a function" ]
 

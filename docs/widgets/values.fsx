@@ -58,7 +58,7 @@ Oak() {
     AnonymousModule() {
         Value("value", String "12")
 
-        Value("value1", String "12")
+        Value("value1", "12")
 
         Value(
             "value3",
