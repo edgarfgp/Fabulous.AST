@@ -10,7 +10,7 @@ module TypeAppPrefix =
 
     let PostIdentifier = Attributes.defineScalar<string list> "PostIdentifier"
 
-    let Arguments = Attributes.defineWidget "Arguments"
+    let Arguments = Attributes.defineScalar<Type list> "Arguments"
 
     let WidgetKey =
         Widgets.register "TypeAppPrefix" (fun widget ->
@@ -29,14 +29,14 @@ module TypeAppPrefix =
                     |> Some
                 | ValueNone -> None
 
-            let arguments = Widgets.getNodeFromWidget<Type> widget Arguments
+            let arguments = Widgets.getScalarValue widget Arguments
 
             Type.AppPrefix(
                 TypeAppPrefixNode(
                     identifier,
                     postIdentifier,
                     SingleTextNode.lessThan,
-                    [ arguments ],
+                    arguments,
                     SingleTextNode.greaterThan,
                     Range.Zero
                 )
@@ -45,30 +45,47 @@ module TypeAppPrefix =
 [<AutoOpen>]
 module TypeAppPrefixBuilders =
     type Ast with
-        static member AppPrefix(t: WidgetBuilder<Type>, arguments: WidgetBuilder<Type>) =
+        static member AppPrefix(t: WidgetBuilder<Type>, arguments: WidgetBuilder<Type> list) =
+            let arguments = arguments |> List.map Gen.mkOak
+
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
-                    [| TypeAppPrefix.Identifier.WithValue(t.Compile())
-                       TypeAppPrefix.Arguments.WithValue(arguments.Compile()) |],
+                    StackList.one(TypeAppPrefix.Arguments.WithValue(arguments)),
+                    [| TypeAppPrefix.Identifier.WithValue(t.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member AppPrefix(t: string, arguments: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent t, arguments)
+
+        static member AppPrefix(t: string, arguments: string list) =
+            let arguments = arguments |> List.map Ast.LongIdent
+            Ast.AppPrefix(Ast.LongIdent t, arguments)
+
+        static member AppPrefix(t: WidgetBuilder<Type>, arguments: string list) =
+            let arguments = arguments |> List.map Ast.LongIdent
+            Ast.AppPrefix(t, arguments)
 
         static member AppPrefix(t: string, arguments: string) =
-            Ast.AppPrefix(Ast.LongIdent t, Ast.LongIdent arguments)
+            Ast.AppPrefix(Ast.LongIdent t, [ Ast.LongIdent arguments ])
 
-        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, arguments: WidgetBuilder<Type>) =
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, argument: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,
                 AttributesBundle(
-                    StackList.one(TypeAppPrefix.PostIdentifier.WithValue(postIdentifier)),
-                    [| TypeAppPrefix.Identifier.WithValue(t.Compile())
-                       TypeAppPrefix.Arguments.WithValue(arguments.Compile()) |],
+                    StackList.two(
+                        TypeAppPrefix.Arguments.WithValue([ Gen.mkOak argument ]),
+                        TypeAppPrefix.PostIdentifier.WithValue(postIdentifier)
+                    ),
+                    [| TypeAppPrefix.Identifier.WithValue(t.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member AppPrefix(t: string, postIdentifier: string list, argument: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent t, postIdentifier, argument)
 
         static member AppPrefix(t: string, postIdentifier: string list, arguments: string) =
             Ast.AppPrefix(Ast.LongIdent t, postIdentifier, Ast.LongIdent arguments)

@@ -82,6 +82,8 @@ module UnionCaseBuilders =
                 )
             )
 
+        static member UnionCase(name: string, parameter: WidgetBuilder<FieldNode>) = Ast.UnionCase(name, [ parameter ])
+
         static member UnionCase(name: string, parameters: (string * string) list) =
             Ast.UnionCase(name, parameters |> List.map(Ast.Field))
 

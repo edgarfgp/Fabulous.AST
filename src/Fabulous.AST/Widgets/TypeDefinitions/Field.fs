@@ -23,10 +23,9 @@ module Field =
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let name =
-                Widgets.getScalarValue widget Name
-                |> PrettyNaming.NormalizeIdentifierBackticks
-                |> SingleTextNode.Create
-                |> Some
+                Widgets.tryGetScalarValue widget Name
+                |> ValueOption.map(fun x -> Some(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks x)))
+                |> ValueOption.defaultValue None
 
             let fieldType = Widgets.getNodeFromWidget widget FieldType
 
@@ -69,6 +68,14 @@ module Field =
 [<AutoOpen>]
 module FieldBuilders =
     type Ast with
+
+        static member Field(filedType: WidgetBuilder<Type>) =
+            WidgetBuilder<FieldNode>(
+                Field.WidgetKey,
+                AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(filedType.Compile()) |], Array.empty)
+            )
+
+        static member Field(filedType: string) = Ast.Field(Ast.LongIdent(filedType))
 
         static member Field(name: string, filedType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(

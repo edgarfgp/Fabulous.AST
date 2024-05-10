@@ -222,7 +222,7 @@ type Colors<'other> =
                 Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
 
                 (Union("Colors") {
-                    UnionCase("Red", [ Field("a", String()); Field("b", LongIdent("'other")) ])
+                    UnionCase("Red", [ Field("a", String()); Field(LongIdent("'other")) ])
 
                     UnionCase("Green")
                     UnionCase("Blue")
@@ -243,7 +243,7 @@ type IMyInterface =
     abstract member GetValue: unit -> string
 
 type Colors<'other> =
-    | Red of a: string * b: 'other
+    | Red of a: string * 'other
     | Green
     | Blue
     | Yellow
