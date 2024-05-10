@@ -1,6 +1,5 @@
 namespace Fabulous.AST.Tests
 
-
 open Fabulous.AST
 
 open type Ast
