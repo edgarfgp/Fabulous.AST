@@ -56,7 +56,7 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .attribute(Attribute("Struct", "return"))
+                    .attribute(AttributeTarget("Struct", "return"))
             }
         }
         |> produces

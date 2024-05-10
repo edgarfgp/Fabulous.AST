@@ -92,7 +92,13 @@ module ImplicitConstructorBuilders =
                 )
             )
 
-        static member ImplicitConstructor(pattern: WidgetBuilder<Pattern>, alias: string) =
+        static member ImplicitConstructor(pattern: WidgetBuilder<Constant>) =
+            Ast.ImplicitConstructor(Ast.ConstantPat(pattern))
+
+        static member ImplicitConstructor(pattern: string) =
+            Ast.ImplicitConstructor(Ast.Constant(pattern))
+
+        static member ImplicitConstructorAlias(pattern: WidgetBuilder<Pattern>, alias: string) =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
                 AttributesBundle(
@@ -102,13 +108,19 @@ module ImplicitConstructorBuilders =
                 )
             )
 
+        static member ImplicitConstructorAlias(pattern: WidgetBuilder<Constant>, alias: string) =
+            Ast.ImplicitConstructorAlias(Ast.ConstantPat(pattern), alias)
+
+        static member ImplicitConstructorAlias(pattern: string, alias: string) =
+            Ast.ImplicitConstructorAlias(Ast.Constant(pattern), alias)
+
         static member ImplicitConstructor() =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
                 AttributesBundle(StackList.empty(), Array.empty, Array.empty)
             )
 
-        static member ImplicitConstructor(alias: string) =
+        static member ImplicitConstructorAlias(alias: string) =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
                 AttributesBundle(StackList.one(ImplicitConstructor.Alias.WithValue(alias)), Array.empty, Array.empty)

@@ -89,6 +89,21 @@ module InheritConstructorBuilders =
                 )
             )
 
+        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
+            Ast.InheritConstructorParen(value, Ast.ConstantExpr(expr))
+
+        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: string) =
+            Ast.InheritConstructorParen(value, Ast.Constant(expr))
+
+        static member InheritConstructorParen(value: string, expr: WidgetBuilder<Expr>) =
+            Ast.InheritConstructorParen(Ast.LongIdent(value), expr)
+
+        static member InheritConstructorParen(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.InheritConstructorParen(Ast.LongIdent(value), Ast.ConstantExpr(expr))
+
+        static member InheritConstructorParen(value: string, expr: string) =
+            Ast.InheritConstructorParen(value, Ast.Constant(expr))
+
         static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetOtherKey,
@@ -102,6 +117,9 @@ module InheritConstructorBuilders =
 
         static member InheritConstructorOther(value: string, expr: WidgetBuilder<Expr>) =
             Ast.InheritConstructorOther(Ast.LongIdent(value), expr)
+
+        static member InheritConstructorOther(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.InheritConstructorOther(value, Ast.ConstantExpr(expr))
 
         static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
             Ast.InheritConstructorOther(value, Ast.ConstantExpr(expr))

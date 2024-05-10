@@ -45,7 +45,7 @@ module AttributeNodeBuilders =
                 AttributesBundle(StackList.one(AttributeNode.TypeName.WithValue(value)), Array.empty, Array.empty)
             )
 
-        static member Attribute(value: string, target: string) =
+        static member AttributeTarget(value: string, target: string) =
             WidgetBuilder<AttributeNode>(
                 AttributeNode.WidgetKey,
                 AttributesBundle(
@@ -65,7 +65,13 @@ module AttributeNodeBuilders =
                 )
             )
 
-        static member Attribute(value: string, expr: WidgetBuilder<Expr>, target: string) =
+        static member Attribute(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.Attribute(value, Ast.ConstantExpr(expr))
+
+        static member Attribute(value: string, expr: string) =
+            Ast.Attribute(value, Ast.Constant(expr))
+
+        static member AttributeTarget(value: string, expr: WidgetBuilder<Expr>, target: string) =
             WidgetBuilder<AttributeNode>(
                 AttributeNode.WidgetKey,
                 AttributesBundle(
@@ -74,3 +80,9 @@ module AttributeNodeBuilders =
                     Array.empty
                 )
             )
+
+        static member AttributeTarget(value: string, expr: WidgetBuilder<Constant>, target: string) =
+            Ast.AttributeTarget(value, Ast.ConstantExpr(expr), target)
+
+        static member AttributeTarget(value: string, expr: string, target: string) =
+            Ast.AttributeTarget(value, Ast.Constant(expr), target)
