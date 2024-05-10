@@ -57,8 +57,13 @@ module TypeAppPrefixBuilders =
                 )
             )
 
+        static member AppPrefix(t: WidgetBuilder<Type>, argument: WidgetBuilder<Type>) = Ast.AppPrefix(t, [ argument ])
+
         static member AppPrefix(t: string, arguments: WidgetBuilder<Type> list) =
             Ast.AppPrefix(Ast.LongIdent t, arguments)
+
+        static member AppPrefix(t: string, argument: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent t, [ argument ])
 
         static member AppPrefix(t: string, arguments: string list) =
             let arguments = arguments |> List.map Ast.LongIdent
@@ -68,15 +73,19 @@ module TypeAppPrefixBuilders =
             let arguments = arguments |> List.map Ast.LongIdent
             Ast.AppPrefix(t, arguments)
 
-        static member AppPrefix(t: string, arguments: string) =
-            Ast.AppPrefix(Ast.LongIdent t, [ Ast.LongIdent arguments ])
+        static member AppPrefix(t: string, argument: string) =
+            Ast.AppPrefix(Ast.LongIdent t, [ Ast.LongIdent argument ])
 
-        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, argument: WidgetBuilder<Type>) =
+        static member AppPrefix
+            (t: WidgetBuilder<Type>, postIdentifier: string list, arguments: WidgetBuilder<Type> list)
+            =
+            let arguments = arguments |> List.map Gen.mkOak
+
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,
                 AttributesBundle(
                     StackList.two(
-                        TypeAppPrefix.Arguments.WithValue([ Gen.mkOak argument ]),
+                        TypeAppPrefix.Arguments.WithValue(arguments),
                         TypeAppPrefix.PostIdentifier.WithValue(postIdentifier)
                     ),
                     [| TypeAppPrefix.Identifier.WithValue(t.Compile()) |],
@@ -84,8 +93,23 @@ module TypeAppPrefixBuilders =
                 )
             )
 
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string, argument: WidgetBuilder<Type>) =
+            Ast.AppPrefix(t, [ postIdentifier ], [ argument ])
+
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string, argument: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(t, [ postIdentifier ], argument)
+
+        static member AppPrefix(t: string, postIdentifier: string, argument: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent t, [ postIdentifier ], argument)
+
         static member AppPrefix(t: string, postIdentifier: string list, argument: WidgetBuilder<Type>) =
-            Ast.AppPrefix(Ast.LongIdent t, postIdentifier, argument)
+            Ast.AppPrefix(Ast.LongIdent t, postIdentifier, [ argument ])
+
+        static member AppPrefix(t: string, postIdentifier: string, argument: WidgetBuilder<Type>) =
+            Ast.AppPrefix(t, [ postIdentifier ], argument)
 
         static member AppPrefix(t: string, postIdentifier: string list, arguments: string) =
-            Ast.AppPrefix(Ast.LongIdent t, postIdentifier, Ast.LongIdent arguments)
+            Ast.AppPrefix(t, postIdentifier, Ast.LongIdent arguments)
+
+        static member AppPrefix(t: string, postIdentifier: string, arguments: string) =
+            Ast.AppPrefix(t, [ postIdentifier ], arguments)

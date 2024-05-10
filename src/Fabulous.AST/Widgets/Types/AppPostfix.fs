@@ -29,5 +29,11 @@ module TypeAppPostfixBuilders =
                 )
             )
 
+        static member AppPostfix(first: string, last: WidgetBuilder<Type>) =
+            Ast.AppPostfix(Ast.LongIdent first, last)
+
+        static member AppPostfix(first: WidgetBuilder<Type>, last: string) =
+            Ast.AppPostfix(first, Ast.LongIdent last)
+
         static member AppPostfix(first: string, last: string) =
             Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent last)

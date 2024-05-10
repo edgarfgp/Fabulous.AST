@@ -28,5 +28,11 @@ module TypeStaticConstantNamedBuilders =
                 )
             )
 
+        static member StaticConstantNamed(identifier: string, value: WidgetBuilder<Type>) =
+            Ast.StaticConstantNamed(Ast.LongIdent identifier, value)
+
+        static member StaticConstantNamed(identifier: WidgetBuilder<Type>, value: string) =
+            Ast.StaticConstantNamed(identifier, Ast.LongIdent value)
+
         static member StaticConstantNamed(identifier: string, value: string) =
             Ast.StaticConstantNamed(Ast.LongIdent identifier, Ast.LongIdent value)

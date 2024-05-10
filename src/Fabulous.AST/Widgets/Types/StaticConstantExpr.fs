@@ -31,5 +31,8 @@ module TypeStaticConstantExprBuilders =
                 )
             )
 
+        static member StaticConstantExpr(constant: string, expr: WidgetBuilder<Constant>) =
+            Ast.StaticConstantExpr(constant, Ast.ConstantExpr(expr))
+
         static member StaticConstantExpr(constant: string, expr: string) =
             Ast.StaticConstantExpr(constant, Ast.ConstantExpr expr)

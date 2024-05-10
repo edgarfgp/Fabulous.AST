@@ -107,9 +107,73 @@ let t: obj = obj
             AnonymousModule() {
                 Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
                     .returnType(StructTuple([ String(); String() ]))
+
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
+                    .returnType(HashConstraint(String()))
+
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
+                    .returnType(StaticConstant(String("A")))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(StaticConstantExpr("A", "B"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AnonRecord([ "a", String(); "b", String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(StaticConstantNamed(String(), String()))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Anon("A"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Var("A"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Array("string", 2))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(StructTuple([ String(); String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix(String(), String()))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix("string", "string"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("Map", [ String(); String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("A", "a", [ String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Tuple([ String(); String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(MeasurePower("cm", Integer(2)))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(Funs(String(), [ Int() ]))
             }
         }
         |> produces
             """
 let a: struct (string , string) = false
+let b: #string = false
+let b: "A" = false
+let c: A B = false
+let c: {| a: string; b: string |} = false
+let c: string=string = false
+let c: A = false
+let c: A = false
+let c: string[,] = false
+let c: struct (string , string) = false
+let c: string string = false
+let c: string string = false
+let c: Map<string, string> = false
+let c: A.a<string> = false
+let c: string * string = false
+let c: cm^2 = false
+let c: int -> string = false
 """
