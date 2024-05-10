@@ -126,6 +126,9 @@ module ValBuilders =
                 )
             )
 
+        static member Val(identifier: string, returnType: string) =
+            Ast.Val(identifier, Ast.LongIdent(returnType))
+
 type ValNodeModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ValNode>, comments: string list) =

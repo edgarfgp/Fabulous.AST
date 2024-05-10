@@ -79,6 +79,11 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
+        static member GetterBinding(expr: WidgetBuilder<Constant>) =
+            Ast.GetterBinding(expr |> Ast.ConstantExpr)
+
+        static member GetterBinding(expr: string) = Ast.GetterBinding(Ast.Constant(expr))
+
         static member GetterBinding(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
@@ -91,6 +96,26 @@ module PropertyGetSetBindingBuilders =
                     Array.empty
                 )
             )
+
+        static member GetterBinding(parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.GetterBinding(parameters, expr)
+
+        static member GetterBinding(parameters: string list, expr: WidgetBuilder<Expr>) =
+            Ast.GetterBinding(parameters |> List.map Ast.Constant, expr)
+
+        static member GetterBinding(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>) =
+            Ast.GetterBinding(parameters, Ast.ConstantExpr(expr))
+
+        static member GetterBinding(parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.GetterBinding(parameters, expr)
+
+        static member GetterBinding(parameters: string list, expr: WidgetBuilder<Constant>) =
+            Ast.GetterBinding(parameters |> List.map Ast.Constant, expr)
+
+        static member GetterBinding(parameters: string list, expr: string) =
+            Ast.GetterBinding(parameters, Ast.Constant(expr))
 
         static member GetterBinding(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
@@ -105,6 +130,24 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
+        static member GetterBinding(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.GetterBinding(Ast.ConstantPat(parameter), expr)
+
+        static member GetterBinding(parameter: string, expr: WidgetBuilder<Expr>) =
+            Ast.GetterBinding(Ast.Constant(parameter), expr)
+
+        static member GetterBinding(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
+            Ast.GetterBinding(parameter, Ast.ConstantExpr(expr))
+
+        static member GetterBinding(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
+            Ast.GetterBinding(Ast.ConstantPat(parameter), expr)
+
+        static member GetterBinding(parameter: string, expr: WidgetBuilder<Constant>) =
+            Ast.GetterBinding(Ast.Constant(parameter), expr)
+
+        static member GetterBinding(parameter: string, expr: string) =
+            Ast.GetterBinding(parameter, Ast.Constant(expr))
+
         static member SetterBinding(expr: WidgetBuilder<Expr>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
@@ -114,6 +157,11 @@ module PropertyGetSetBindingBuilders =
                     Array.empty
                 )
             )
+
+        static member SetterBinding(expr: WidgetBuilder<Constant>) =
+            Ast.SetterBinding(expr |> Ast.ConstantExpr)
+
+        static member SetterBinding(expr: string) = Ast.SetterBinding(Ast.Constant(expr))
 
         static member SetterBinding(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
@@ -128,6 +176,26 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
+        static member SetterBinding(parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.SetterBinding(parameters, expr)
+
+        static member SetterBinding(parameters: string list, expr: WidgetBuilder<Expr>) =
+            Ast.SetterBinding(parameters |> List.map Ast.Constant, expr)
+
+        static member SetterBinding(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>) =
+            Ast.SetterBinding(parameters, Ast.ConstantExpr(expr))
+
+        static member SetterBinding(parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.SetterBinding(parameters, expr)
+
+        static member SetterBinding(parameters: string list, expr: WidgetBuilder<Constant>) =
+            Ast.SetterBinding(parameters |> List.map Ast.Constant, expr)
+
+        static member SetterBinding(parameters: string list, expr: string) =
+            Ast.SetterBinding(parameters, Ast.Constant(expr))
+
         static member SetterBinding(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
@@ -141,6 +209,24 @@ module PropertyGetSetBindingBuilders =
                     Array.empty
                 )
             )
+
+        static member SetterBinding(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.SetterBinding(Ast.ConstantPat(parameter), expr)
+
+        static member SetterBinding(parameter: string, expr: WidgetBuilder<Expr>) =
+            Ast.SetterBinding(Ast.Constant(parameter), expr)
+
+        static member SetterBinding(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
+            Ast.SetterBinding(parameter, Ast.ConstantExpr(expr))
+
+        static member SetterBinding(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
+            Ast.SetterBinding(Ast.ConstantPat(parameter), expr)
+
+        static member SetterBinding(parameter: string, expr: WidgetBuilder<Constant>) =
+            Ast.SetterBinding(Ast.Constant(parameter), expr)
+
+        static member SetterBinding(parameter: string, expr: string) =
+            Ast.SetterBinding(parameter, Ast.Constant(expr))
 
 type PropertyGetSetBindingModifiers =
     [<Extension>]

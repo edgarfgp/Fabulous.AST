@@ -23,6 +23,8 @@ module OpenTypeBuilders =
                 AttributesBundle(StackList.empty(), [| OpenType.Target.WithValue(name.Compile()) |], Array.empty)
             )
 
+        static member OpenType(name: string) = Ast.OpenType(Ast.LongIdent(name))
+
 type OpenTypeYieldExtensions =
     [<Extension>]
     static member inline Yield

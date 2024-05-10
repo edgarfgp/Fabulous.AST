@@ -16,7 +16,6 @@ module InterfaceMember =
         Widgets.register "InterfaceMember" (fun widget ->
             let tp = Widgets.getNodeFromWidget widget TypeValue
             let members = Widgets.getNodesFromWidgetCollection widget Members
-            //|> ValueOption.defaultValue []
 
             MemberDefnInterfaceNode(
                 SingleTextNode.``interface``,

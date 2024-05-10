@@ -63,6 +63,18 @@ module ExternBindingPatternNodeBuilders =
                 )
             )
 
+        static member ExternBindingPat(value: string, pat: WidgetBuilder<Pattern>) =
+            Ast.ExternBindingPat(Ast.LongIdent(value), pat)
+
+        static member ExternBindingPat(value: string, pat: WidgetBuilder<Constant>) =
+            Ast.ExternBindingPat(value, Ast.ConstantPat(pat))
+
+        static member ExternBindingPat(value: WidgetBuilder<Type>, pat: string) =
+            Ast.ExternBindingPat(value, Ast.ConstantPat(pat))
+
+        static member ExternBindingPat(value: string, pat: string) =
+            Ast.ExternBindingPat(Ast.LongIdent(value), Ast.ConstantPat(pat))
+
 type ExternBindingPatternNodeModifiers =
     [<Extension>]
     static member inline attributes

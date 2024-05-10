@@ -25,3 +25,5 @@ module InheritMemberBuilders =
                     Array.empty
                 )
             )
+
+        static member Inherit(value: string) = Ast.Inherit(Ast.LongIdent(value))

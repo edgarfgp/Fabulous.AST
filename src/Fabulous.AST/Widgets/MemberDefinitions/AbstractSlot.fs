@@ -139,6 +139,9 @@ module AbstractMemberBuilders =
                 )
             )
 
+        static member AbstractProperty(identifier: string, returnType: string) =
+            Ast.AbstractProperty(identifier, Ast.LongIdent(returnType))
+
         static member AbstractGet(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -151,6 +154,9 @@ module AbstractMemberBuilders =
                     Array.empty
                 )
             )
+
+        static member AbstractGet(identifier: string, returnType: string) =
+            Ast.AbstractGet(identifier, Ast.LongIdent(returnType))
 
         static member AbstractSet(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
@@ -165,6 +171,9 @@ module AbstractMemberBuilders =
                 )
             )
 
+        static member AbstractSet(identifier: string, returnType: string) =
+            Ast.AbstractSet(identifier, Ast.LongIdent(returnType))
+
         static member AbstractGetSet(identifier: string, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -177,6 +186,9 @@ module AbstractMemberBuilders =
                     Array.empty
                 )
             )
+
+        static member AbstractGetSet(identifier: string, returnType: string) =
+            Ast.AbstractGetSet(identifier, Ast.LongIdent(returnType))
 
         static member AbstractTupledMethod
             (identifier: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>)
@@ -194,6 +206,23 @@ module AbstractMemberBuilders =
             )
 
         static member AbstractTupledMethod
+            (identifier: string, parameters: string list, returnType: WidgetBuilder<Type>)
+            =
+            let parameters = parameters |> List.map Ast.LongIdent
+            Ast.AbstractTupledMethod(identifier, parameters, returnType)
+
+        static member AbstractTupledMethod
+            (identifier: string, parameters: WidgetBuilder<Type> list, returnType: string)
+            =
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractTupledMethod(identifier, parameters, returnType)
+
+        static member AbstractTupledMethod(identifier: string, parameters: string list, returnType: string) =
+            let parameters = parameters |> List.map Ast.LongIdent
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractTupledMethod(identifier, parameters, returnType)
+
+        static member AbstractTupledMethod
             (identifier: string, parameters: (string option * WidgetBuilder<Type>) list, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -206,6 +235,31 @@ module AbstractMemberBuilders =
                     Array.empty
                 )
             )
+
+        static member AbstractTupledMethod
+            (identifier: string, parameters: (string option * string) list, returnType: WidgetBuilder<Type>)
+            =
+            let parameters =
+                parameters
+                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
+
+            Ast.AbstractTupledMethod(identifier, parameters, returnType)
+
+        static member AbstractTupledMethod
+            (identifier: string, parameters: (string option * WidgetBuilder<Type>) list, returnType: string)
+            =
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractTupledMethod(identifier, parameters, returnType)
+
+        static member AbstractTupledMethod
+            (identifier: string, parameters: (string option * string) list, returnType: string)
+            =
+            let parameters =
+                parameters
+                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
+
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractTupledMethod(identifier, parameters, returnType)
 
         static member AbstractCurriedMethod
             (identifier: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>)
@@ -223,6 +277,23 @@ module AbstractMemberBuilders =
             )
 
         static member AbstractCurriedMethod
+            (identifier: string, parameters: string list, returnType: WidgetBuilder<Type>)
+            =
+            let parameters = parameters |> List.map Ast.LongIdent
+            Ast.AbstractCurriedMethod(identifier, parameters, returnType)
+
+        static member AbstractCurriedMethod
+            (identifier: string, parameters: WidgetBuilder<Type> list, returnType: string)
+            =
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractCurriedMethod(identifier, parameters, returnType)
+
+        static member AbstractCurriedMethod(identifier: string, parameters: string list, returnType: string) =
+            let parameters = parameters |> List.map Ast.LongIdent
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractCurriedMethod(identifier, parameters, returnType)
+
+        static member AbstractCurriedMethod
             (identifier: string, parameters: (string option * WidgetBuilder<Type>) list, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractMember.WidgetKey,
@@ -235,6 +306,31 @@ module AbstractMemberBuilders =
                     Array.empty
                 )
             )
+
+        static member AbstractCurriedMethod
+            (identifier: string, parameters: (string option * string) list, returnType: WidgetBuilder<Type>)
+            =
+            let parameters =
+                parameters
+                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
+
+            Ast.AbstractCurriedMethod(identifier, parameters, returnType)
+
+        static member AbstractCurriedMethod
+            (identifier: string, parameters: (string option * WidgetBuilder<Type>) list, returnType: string)
+            =
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractCurriedMethod(identifier, parameters, returnType)
+
+        static member AbstractCurriedMethod
+            (identifier: string, parameters: (string option * string) list, returnType: string)
+            =
+            let parameters =
+                parameters
+                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
+
+            let returnType = Ast.LongIdent(returnType)
+            Ast.AbstractCurriedMethod(identifier, parameters, returnType)
 
 type AbstractMemberModifiers =
     [<Extension>]

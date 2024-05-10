@@ -95,6 +95,21 @@ module ExplicitConstructorBuilders =
                 )
             )
 
+        static member ExplicitCtor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.ExplicitCtor(Ast.ConstantPat(pattern), expr)
+
+        static member ExplicitCtor(pattern: string, expr: WidgetBuilder<Expr>) =
+            Ast.ExplicitCtor(Ast.Constant(pattern), expr)
+
+        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
+            Ast.ExplicitCtor(pattern, Ast.ConstantExpr(expr))
+
+        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: string) =
+            Ast.ExplicitCtor(pattern, Ast.Constant(expr))
+
+        static member ExplicitCtor(pattern: string, expr: string) =
+            Ast.ExplicitCtor(Ast.ConstantPat(pattern), expr)
+
         static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, alias: string) =
             WidgetBuilder<MemberDefnExplicitCtorNode>(
                 ExplicitConstructorMember.WidgetKey,
@@ -105,6 +120,18 @@ module ExplicitConstructorBuilders =
                     Array.empty
                 )
             )
+
+        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, alias: string) =
+            Ast.ExplicitCtor(pattern, Ast.ConstantExpr(expr), alias)
+
+        static member ExplicitCtor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, alias: string) =
+            Ast.ExplicitCtor(Ast.ConstantPat(pattern), expr, alias)
+
+        static member ExplicitCtor(pattern: string, expr: WidgetBuilder<Expr>, alias: string) =
+            Ast.ExplicitCtor(Ast.Constant(pattern), expr, alias)
+
+        static member ExplicitCtor(pattern: string, expr: string, alias: string) =
+            Ast.ExplicitCtor(pattern, Ast.ConstantExpr expr, alias)
 
 type ExplicitConstructorModifiers =
     [<Extension>]

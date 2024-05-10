@@ -105,6 +105,9 @@ module ExternBindingNodeBuilders =
                 )
             )
 
+        static member ExternBinding(name: string, tp: string) =
+            Ast.ExternBinding(name, Ast.LongIdent(tp))
+
 type ExternBindingNodeModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, comments: string list) =

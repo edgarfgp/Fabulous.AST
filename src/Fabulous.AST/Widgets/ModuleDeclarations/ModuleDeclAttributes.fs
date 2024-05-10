@@ -50,6 +50,12 @@ module ModuleDeclAttributeNodeBuilders =
                 )
             )
 
+        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Constant>) =
+            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr))
+
+        static member ModuleDeclAttribute(doExpr: string) =
+            Ast.ModuleDeclAttribute(Ast.Constant(doExpr))
+
 type ModuleDeclAttributeModifiers =
     [<Extension>]
     static member inline attributes

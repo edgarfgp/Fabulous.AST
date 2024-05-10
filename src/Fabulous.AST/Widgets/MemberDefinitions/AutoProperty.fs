@@ -125,6 +125,12 @@ module AutoPropertyMemberBuilders =
                 )
             )
 
+        static member AutoProperty(identifier: string, expr: WidgetBuilder<Constant>) =
+            Ast.AutoProperty(identifier, Ast.ConstantExpr(expr))
+
+        static member AutoProperty(identifier: string, expr: string) =
+            Ast.AutoProperty(identifier, Ast.Constant(expr))
+
         static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
@@ -137,6 +143,12 @@ module AutoPropertyMemberBuilders =
                     Array.empty
                 )
             )
+
+        static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Constant>) =
+            Ast.AutoPropertyGet(identifier, Ast.ConstantExpr(expr))
+
+        static member AutoPropertyGet(identifier: string, expr: string) =
+            Ast.AutoPropertyGet(identifier, Ast.Constant(expr))
 
 type AutoPropertyMemberModifiers =
     [<Extension>]
