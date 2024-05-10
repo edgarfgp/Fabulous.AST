@@ -45,5 +45,17 @@ module AppLongIdentAndSingleParenArgBuilders =
                 )
             )
 
+        static member AppLongIdentAndSingleParenArgExpr(name: string list, expr: WidgetBuilder<Constant>) =
+            Ast.AppLongIdentAndSingleParenArgExpr(name, Ast.ConstantExpr(expr))
+
+        static member AppLongIdentAndSingleParenArgExpr(name: string list, expr: string) =
+            Ast.AppLongIdentAndSingleParenArgExpr(name, Ast.Constant(expr))
+
         static member AppLongIdentAndSingleParenArgExpr(name: string, expr: WidgetBuilder<Expr>) =
             Ast.AppLongIdentAndSingleParenArgExpr([ name ], expr)
+
+        static member AppLongIdentAndSingleParenArgExpr(name: string, expr: WidgetBuilder<Constant>) =
+            Ast.AppLongIdentAndSingleParenArgExpr(name, Ast.ConstantExpr expr)
+
+        static member AppLongIdentAndSingleParenArgExpr(name: string, expr: string) =
+            Ast.AppLongIdentAndSingleParenArgExpr(name, Ast.Constant expr)

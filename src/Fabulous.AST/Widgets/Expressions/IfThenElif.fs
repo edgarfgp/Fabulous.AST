@@ -30,8 +30,7 @@ module IfThenElif =
 [<AutoOpen>]
 module IfThenElifBuilders =
     type Ast with
-
-        static member inline IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: WidgetBuilder<Expr>) =
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: WidgetBuilder<Expr>) =
             let branches = branches |> List.map Gen.mkOak
 
             WidgetBuilder<Expr>(
@@ -43,7 +42,33 @@ module IfThenElifBuilders =
                 )
             )
 
-        static member inline IfThenElifExpr(branches: WidgetBuilder<Expr> list) =
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list, elseExpr: WidgetBuilder<Expr>) =
+            let branches = branches |> List.map Ast.ConstantExpr
+            Ast.IfThenElifExpr(branches, elseExpr)
+
+        static member IfThenElifExpr(branches: string list, elseExpr: WidgetBuilder<Expr>) =
+            let branches = branches |> List.map Ast.Constant
+            Ast.IfThenElifExpr(branches, elseExpr)
+
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElifExpr(branches, Ast.ConstantExpr(elseExpr))
+
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: string) =
+            Ast.IfThenElifExpr(branches, Ast.Constant(elseExpr))
+
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElifExpr(branches |> List.map Ast.ConstantExpr, Ast.ConstantExpr(elseExpr))
+
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list, elseExpr: string) =
+            Ast.IfThenElifExpr(branches |> List.map Ast.ConstantExpr, Ast.Constant(elseExpr))
+
+        static member IfThenElifExpr(branches: string list, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElifExpr(branches |> List.map Ast.Constant, Ast.ConstantExpr(elseExpr))
+
+        static member IfThenElifExpr(branches: string list, elseExpr: string) =
+            Ast.IfThenElifExpr(branches, Ast.Constant(elseExpr))
+
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list) =
             WidgetBuilder<Expr>(
                 IfThenElif.WidgetKey,
                 AttributesBundle(
@@ -52,3 +77,9 @@ module IfThenElifBuilders =
                     Array.empty
                 )
             )
+
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list) =
+            Ast.IfThenElifExpr(branches |> List.map Ast.ConstantExpr)
+
+        static member IfThenElifExpr(branches: string list) =
+            Ast.IfThenElifExpr(branches |> List.map Ast.Constant)

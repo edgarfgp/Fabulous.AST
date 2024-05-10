@@ -33,8 +33,20 @@ module MatchBuilders =
                 )
             )
 
+        static member MatchExpr(value: WidgetBuilder<Constant>, clauses: WidgetBuilder<MatchClauseNode> list) =
+            Ast.MatchExpr(Ast.ConstantExpr(value), clauses)
+
+        static member MatchExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> list) =
+            Ast.MatchExpr(Ast.Constant(value), clauses)
+
         static member MatchExpr(value: WidgetBuilder<Expr>, clause: WidgetBuilder<MatchClauseNode>) =
             Ast.MatchExpr(value, [ clause ])
+
+        static member MatchExpr(value: WidgetBuilder<Constant>, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.MatchExpr(Ast.ConstantExpr(value), clause)
+
+        static member MatchExpr(value: string, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.MatchExpr(Ast.Constant(value), clause)
 
 type MatchYieldExtensions =
     [<Extension>]

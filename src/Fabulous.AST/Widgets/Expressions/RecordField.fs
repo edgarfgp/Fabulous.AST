@@ -39,3 +39,9 @@ module RecordFieldBuilders =
                     Array.empty
                 )
             )
+
+        static member inline RecordFieldExpr(name: string, expr: WidgetBuilder<Constant>) =
+            Ast.RecordFieldExpr(name, Ast.ConstantExpr(expr))
+
+        static member inline RecordFieldExpr(name: string, expr: string) =
+            Ast.RecordFieldExpr(name, Ast.Constant(expr))

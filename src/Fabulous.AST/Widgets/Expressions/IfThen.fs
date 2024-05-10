@@ -20,7 +20,7 @@ module IfThen =
 module IfThenBuilders =
     type Ast with
 
-        static member inline IfThenExpr(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+        static member IfThenExpr(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
@@ -31,7 +31,22 @@ module IfThenBuilders =
                 )
             )
 
-        static member inline ElIfThenExpr(elIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+        static member IfThenExpr(ifExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>) =
+            Ast.IfThenExpr(Ast.ConstantExpr(ifExpr), thenExpr)
+
+        static member IfThenExpr(ifExpr: string, thenExpr: WidgetBuilder<Expr>) =
+            Ast.IfThenExpr(Ast.Constant(ifExpr), thenExpr)
+
+        static member IfThenExpr(ifExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenExpr(ifExpr, Ast.ConstantExpr(thenExpr))
+
+        static member IfThenExpr(ifExpr: string, thenExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenExpr(Ast.Constant(ifExpr), thenExpr)
+
+        static member IfThenExpr(ifExpr: string, thenExpr: string) =
+            Ast.IfThenExpr(ifExpr, Ast.Constant(thenExpr))
+
+        static member ElIfThenExpr(elIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
@@ -42,7 +57,22 @@ module IfThenBuilders =
                 )
             )
 
-        static member inline ElseIfThenExpr(elseIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+        static member ElIfThenExpr(elIfExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>) =
+            Ast.ElIfThenExpr(Ast.ConstantExpr(elIfExpr), thenExpr)
+
+        static member ElIfThenExpr(elIfExpr: string, thenExpr: WidgetBuilder<Expr>) =
+            Ast.ElIfThenExpr(Ast.Constant(elIfExpr), thenExpr)
+
+        static member ElIfThenExpr(elIfExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Constant>) =
+            Ast.ElIfThenExpr(elIfExpr, Ast.ConstantExpr(thenExpr))
+
+        static member ElIfThenExpr(elIfExpr: string, thenExpr: WidgetBuilder<Constant>) =
+            Ast.ElIfThenExpr(Ast.Constant(elIfExpr), thenExpr)
+
+        static member ElIfThenExpr(elIfExpr: string, thenExpr: string) =
+            Ast.ElIfThenExpr(elIfExpr, Ast.Constant(thenExpr))
+
+        static member ElseIfThenExpr(elseIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
@@ -58,3 +88,18 @@ module IfThenBuilders =
                     Array.empty
                 )
             )
+
+        static member ElseIfThenExpr(elseIfExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>) =
+            Ast.ElseIfThenExpr(Ast.ConstantExpr(elseIfExpr), thenExpr)
+
+        static member ElseIfThenExpr(elseIfExpr: string, thenExpr: WidgetBuilder<Expr>) =
+            Ast.ElseIfThenExpr(Ast.Constant(elseIfExpr), thenExpr)
+
+        static member ElseIfThenExpr(elseIfExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Constant>) =
+            Ast.ElseIfThenExpr(elseIfExpr, Ast.ConstantExpr(thenExpr))
+
+        static member ElseIfThenExpr(elseIfExpr: string, thenExpr: WidgetBuilder<Constant>) =
+            Ast.ElseIfThenExpr(Ast.Constant(elseIfExpr), thenExpr)
+
+        static member ElseIfThenExpr(elseIfExpr: string, thenExpr: string) =
+            Ast.ElseIfThenExpr(elseIfExpr, Ast.Constant(thenExpr))

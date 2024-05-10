@@ -67,6 +67,12 @@ module RecordExprBuilders =
                 fields
             )
 
+        static member RecordExpr(copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> list) =
+            Ast.RecordExpr(Ast.ConstantExpr(copyInfo), fields)
+
+        static member RecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> list) =
+            Ast.RecordExpr(Ast.Constant(copyInfo), fields)
+
         static member RecordExpr(fields: WidgetBuilder<RecordFieldNode> list) =
             Ast.BaseRecordExpr(ValueNone, SingleTextNode.leftCurlyBrace, SingleTextNode.rightCurlyBrace, fields)
 
@@ -77,6 +83,12 @@ module RecordExprBuilders =
                 SingleTextNode.rightCurlyBraceWithBar,
                 fields
             )
+
+        static member AnonRecordExpr(copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> list) =
+            Ast.AnonRecordExpr(Ast.ConstantExpr(copyInfo), fields)
+
+        static member AnonRecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> list) =
+            Ast.AnonRecordExpr(Ast.Constant(copyInfo), fields)
 
         static member AnonRecordExpr(fields: WidgetBuilder<RecordFieldNode> list) =
             Ast.BaseRecordExpr(

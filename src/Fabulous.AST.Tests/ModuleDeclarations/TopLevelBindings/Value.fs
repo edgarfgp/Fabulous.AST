@@ -411,6 +411,16 @@ let inline x<'a> = 12
                     ConstantPat(Constant("res3")),
                     AppLongIdentAndSingleParenArgExpr("conn.Open", ConstantExpr(Constant("()")))
                 )
+
+                Value(
+                    ConstantPat(Constant("res4")),
+                    AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], ConstantUnit())
+                )
+
+                Value(
+                    ConstantPat(Constant("res5")),
+                    AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], "()")
+                )
             }
         }
         |> produces
@@ -419,5 +429,6 @@ let inline x<'a> = 12
 let res = conn.Open()
 let res2 = conn.Open ()
 let res3 = conn.Open ()
-
+let res4 = conn.Open()
+let res5 = conn.Open ()
 """
