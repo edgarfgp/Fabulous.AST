@@ -120,7 +120,11 @@ type Person() =
             AnonymousModule() {
                 Interface("IMeh") {
                     Inherit("IFoo")
-                    AbstractProperty("ClientInfo", AnonRecord([ ("Name", String()); ("Version", LongIdent("string option")) ]))
+
+                    AbstractProperty(
+                        "ClientInfo",
+                        AnonRecord([ ("Name", String()); ("Version", LongIdent("string option")) ])
+                    )
                 }
             }
         }
