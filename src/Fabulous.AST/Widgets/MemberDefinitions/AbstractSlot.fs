@@ -109,7 +109,10 @@ module AbstractMember =
                 | ValueSome(false, false)
                 | ValueNone -> None
 
-            let parameters, returnType = typeFun
+            let returnType =
+                match typeFun with
+                | [], returnType -> returnType
+                | parameters, returnType -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
 
             MemberDefnAbstractSlotNode(
                 xmlDocs,
@@ -117,7 +120,7 @@ module AbstractMember =
                 MultipleTextsNode.Create([ "abstract"; "member" ]),
                 SingleTextNode(identifier, Range.Zero),
                 None,
-                Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero)),
+                returnType,
                 withGetSetText,
                 Range.Zero
             ))

@@ -18,7 +18,9 @@ module TypeAnonRecord =
                 fields
                 |> List.map(fun (name, widget) ->
                     let name = PrettyNaming.NormalizeIdentifierBackticks name
-                    (SingleTextNode.Create(name), Gen.mkOak widget))
+                    let name = SingleTextNode.Create(name)
+                    let tp = Gen.mkOak widget
+                    (name, tp))
 
             let isStructNode = Widgets.getScalarValue widget IsStructNode
 
