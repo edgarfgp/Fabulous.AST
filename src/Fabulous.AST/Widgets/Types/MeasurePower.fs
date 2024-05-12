@@ -23,7 +23,6 @@ module TypeMeasurePowerBuilders =
                 TypeMeasurePower.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-
                     [| TypeMeasurePower.TypeWidget.WithValue(value.Compile())
                        TypeMeasurePower.Rational.WithValue(rational.Compile()) |],
                     Array.empty

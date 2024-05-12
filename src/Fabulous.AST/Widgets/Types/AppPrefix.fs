@@ -57,6 +57,24 @@ module TypeAppPrefixBuilders =
                 )
             )
 
+        static member AppPrefix(t: WidgetBuilder<Type>, arguments: string list) =
+            let arguments = arguments |> List.map Ast.LongIdent
+            Ast.AppPrefix(t, arguments)
+
+        static member OptionPrefix(first: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent("option"), first)
+
+        static member OptionPrefix(first: string list) = Ast.AppPrefix("option", first)
+
+        static member VOptionPrefix(first: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent("voption"), first)
+
+        static member ListPrefix(first: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent("list"), first)
+
+        static member SeqPrefix(first: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent("seq"), first)
+
         static member AppPrefix(t: WidgetBuilder<Type>, argument: WidgetBuilder<Type>) = Ast.AppPrefix(t, [ argument ])
 
         static member AppPrefix(t: string, arguments: WidgetBuilder<Type> list) =
@@ -68,10 +86,6 @@ module TypeAppPrefixBuilders =
         static member AppPrefix(t: string, arguments: string list) =
             let arguments = arguments |> List.map Ast.LongIdent
             Ast.AppPrefix(Ast.LongIdent t, arguments)
-
-        static member AppPrefix(t: WidgetBuilder<Type>, arguments: string list) =
-            let arguments = arguments |> List.map Ast.LongIdent
-            Ast.AppPrefix(t, arguments)
 
         static member AppPrefix(t: string, argument: string) =
             Ast.AppPrefix(Ast.LongIdent t, [ Ast.LongIdent argument ])

@@ -145,10 +145,25 @@ type Meh<'other, 'another> =
                     Inherit("IFoo")
 
                     AbstractProperty("ClientInfo1", "{| Name: string; Version: string option |}")
-                    AbstractProperty("ClientInfo2", AnonRecord([ ("Name", "string"); ("Version", "string option")]))
-                    AbstractProperty("ClientInfo3", AnonRecord([ ("Name", String()); ("Version", LongIdent("string option"))]))
-                    AbstractProperty("ClientInfo4", AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option"))]))
-                    AbstractProperty("ClientInfo4", AppPostfix(AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option"))]), "option"))
+                    AbstractProperty("ClientInfo2", AnonRecord([ ("Name", "string"); ("Version", "string option") ]))
+
+                    AbstractProperty(
+                        "ClientInfo3",
+                        AnonRecord([ ("Name", String()); ("Version", LongIdent("string option")) ])
+                    )
+
+                    AbstractProperty(
+                        "ClientInfo4",
+                        AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ])
+                    )
+
+                    AbstractProperty(
+                        "ClientInfo4",
+                        AppPostfix(
+                            AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ]),
+                            "option"
+                        )
+                    )
                 }
             }
         }
@@ -180,8 +195,12 @@ type IMeh =
         Oak() {
             AnonymousModule() {
                 Interface("IMeh") {
-                    AbstractProperty("ClientInfo1", AnonRecord([ ("Name", String()); ("Version", Option(String()))]))
-                    AbstractProperty("ClientInfo2", Option(AnonRecord([ ("Name", String()); ("Version", Option(String()))])))
+                    AbstractProperty("ClientInfo1", AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ]))
+
+                    AbstractProperty(
+                        "ClientInfo2",
+                        OptionPostfix(AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ]))
+                    )
                 }
             }
         }
@@ -197,7 +216,6 @@ type IMeh =
            Version: string option |} option
 """
 
-
     [<Fact>]
     let ``Produces an inheritance of an interface with abstract member, nested anon records``() =
         Oak() {
@@ -208,15 +226,16 @@ type IMeh =
                         Array(
                             AppPrefix(
                                 "U2",
-                                [
-                                  AnonRecord([
-                                        ("Notebook", AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ]))
-                                        ("Cells", Option(Array(AnonRecord([ ("Language", String()) ]))))])
+                                [ AnonRecord(
+                                      [ ("Notebook", AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ]))
+                                        ("Cells", OptionPostfix(Array(AnonRecord([ ("Language", String()) ])))) ]
+                                  )
 
-                                  AnonRecord([
-                                      ("Notebook", Option(AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ])))
-                                      ("Cells", Array(AnonRecord([ ("Language", String()) ])))])
-                                ]
+                                  AnonRecord(
+                                      [ ("Notebook",
+                                         OptionPostfix(AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ])))
+                                        ("Cells", Array(AnonRecord([ ("Language", String()) ]))) ]
+                                  ) ]
                             )
                         )
                     )
@@ -229,9 +248,8 @@ type IMeh =
     abstract member ClientInfo1:
         U2<
             {| Notebook: U2<string, NotebookDocumentFilter>
-               Cells: {| Language: string |} array option |},
+               Cells: {| Language: string |}[] option |},
             {| Notebook: U2<string, NotebookDocumentFilter> option
-               Cells: {| Language: string |} array |}
-         > array
+               Cells: {| Language: string |}[] |}
+         >[]
 """
-
