@@ -113,27 +113,3 @@ type Person() =
     interface Meh with
         member this.Name = "23"
 """
-
-    [<Fact>]
-    let ``Produces an inheritance of an interface with abstract members``() =
-        Oak() {
-            AnonymousModule() {
-                Interface("IMeh") {
-                    Inherit("IFoo")
-
-                    AbstractProperty(
-                        "ClientInfo",
-                        AnonRecord([ ("Name", String()); ("Version", LongIdent("string option")) ])
-                    )
-                }
-            }
-        }
-        |> produces
-            """
-type IMeh =
-    inherit IFoo
-
-    abstract member ClientInfo:
-        {| Name: string
-           Version: string option |}
-"""

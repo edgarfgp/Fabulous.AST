@@ -37,3 +37,18 @@ module TypeAppPostfixBuilders =
 
         static member AppPostfix(first: string, last: string) =
             Ast.AppPostfix(Ast.LongIdent first, Ast.LongIdent last)
+
+        static member Option(first: WidgetBuilder<Type>) =
+            Ast.AppPostfix(first, Ast.LongIdent("option"))
+
+        static member VOption(first: WidgetBuilder<Type>) =
+            Ast.AppPostfix(first, Ast.LongIdent("option"))
+
+        static member List(first: WidgetBuilder<Type>) =
+            Ast.AppPostfix(first, Ast.LongIdent("list"))
+
+        static member Seq(first: WidgetBuilder<Type>) =
+            Ast.AppPostfix(first, Ast.LongIdent("seq"))
+
+        static member Array(first: WidgetBuilder<Type>) =
+            Ast.AppPostfix(first, Ast.LongIdent("array"))

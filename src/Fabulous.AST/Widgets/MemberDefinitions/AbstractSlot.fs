@@ -54,7 +54,7 @@ module AbstractMember =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let typeFun =
+            let returnType =
                 match parameters with
                 | ValueNone -> [], returnType
                 | ValueSome(UnNamed(parameters, isTupled)) ->
@@ -110,7 +110,7 @@ module AbstractMember =
                 | ValueNone -> None
 
             let returnType =
-                match typeFun with
+                match returnType with
                 | [], returnType -> returnType
                 | parameters, returnType -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
 
