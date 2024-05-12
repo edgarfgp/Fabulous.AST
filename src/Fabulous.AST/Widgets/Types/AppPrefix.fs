@@ -61,20 +61,6 @@ module TypeAppPrefixBuilders =
             let arguments = arguments |> List.map Ast.LongIdent
             Ast.AppPrefix(t, arguments)
 
-        static member OptionPrefix(first: WidgetBuilder<Type> list) =
-            Ast.AppPrefix(Ast.LongIdent("option"), first)
-
-        static member OptionPrefix(first: string list) = Ast.AppPrefix("option", first)
-
-        static member VOptionPrefix(first: WidgetBuilder<Type> list) =
-            Ast.AppPrefix(Ast.LongIdent("voption"), first)
-
-        static member ListPrefix(first: WidgetBuilder<Type> list) =
-            Ast.AppPrefix(Ast.LongIdent("list"), first)
-
-        static member SeqPrefix(first: WidgetBuilder<Type> list) =
-            Ast.AppPrefix(Ast.LongIdent("seq"), first)
-
         static member AppPrefix(t: WidgetBuilder<Type>, argument: WidgetBuilder<Type>) = Ast.AppPrefix(t, [ argument ])
 
         static member AppPrefix(t: string, arguments: WidgetBuilder<Type> list) =
@@ -127,3 +113,68 @@ module TypeAppPrefixBuilders =
 
         static member AppPrefix(t: string, postIdentifier: string, arguments: string) =
             Ast.AppPrefix(t, [ postIdentifier ], arguments)
+
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string, arguments: string) =
+            Ast.AppPrefix(t, [ postIdentifier ], [ Ast.LongIdent arguments ])
+
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, arguments: string) =
+            Ast.AppPrefix(t, postIdentifier, [ Ast.LongIdent arguments ])
+
+        static member AppPrefix(t: string, postIdentifier: string, arguments: string list) =
+            Ast.AppPrefix(Ast.LongIdent t, [ postIdentifier ], arguments |> List.map Ast.LongIdent)
+
+        static member AppPrefix(t: string, postIdentifier: string list, arguments: string list) =
+            Ast.AppPrefix(Ast.LongIdent t, postIdentifier, arguments |> List.map Ast.LongIdent)
+
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string, arguments: string list) =
+            Ast.AppPrefix(t, [ postIdentifier ], arguments |> List.map Ast.LongIdent)
+
+        static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, arguments: string list) =
+            Ast.AppPrefix(t, postIdentifier, arguments |> List.map Ast.LongIdent)
+
+        static member ListPrefix(first: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent("list"), first)
+
+        static member ListPrefix(first: string list) = Ast.AppPrefix("list", first)
+
+        static member SeqPrefix(first: WidgetBuilder<Type> list) =
+            Ast.AppPrefix(Ast.LongIdent("seq"), first)
+
+        static member SeqPrefix(first: string list) = Ast.AppPrefix("seq", first)
+
+        static member OptionPrefix(first: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("option"), [ first ])
+
+        static member OptionPrefix(first: string) = Ast.AppPrefix("option", [ first ])
+
+        static member VOptionPrefix(first: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("voption"), [ first ])
+
+        static member VOptionPrefix(first: string) = Ast.AppPrefix("voption", [ first ])
+
+        static member ArrayPrefix(first: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("array"), [ first ])
+
+        static member ArrayPrefix(first: string) = Ast.AppPrefix("array", [ first ])
+
+        static member ListPrefix(first: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("list"), [ first ])
+
+        static member ListPrefix(first: string) = Ast.AppPrefix("list", [ first ])
+
+        static member SeqPrefix(first: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("seq"), [ first ])
+
+        static member SeqPrefix(first: string) = Ast.AppPrefix("seq", [ first ])
+
+        static member ResultPrefix(first: WidgetBuilder<Type>, last: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("Result"), [ first; last ])
+
+        static member ResultPrefix(first: string, last: WidgetBuilder<Type>) =
+            Ast.AppPrefix("Result", [ Ast.LongIdent(first); last ])
+
+        static member ResultPrefix(first: WidgetBuilder<Type>, last: string) =
+            Ast.AppPrefix(Ast.LongIdent("Result"), [ first; Ast.LongIdent(last) ])
+
+        static member ResultPrefix(first: string, last: string) =
+            Ast.AppPrefix("Result", [ Ast.LongIdent(first); Ast.LongIdent(last) ])
