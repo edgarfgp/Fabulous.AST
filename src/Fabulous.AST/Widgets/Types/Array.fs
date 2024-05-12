@@ -27,4 +27,8 @@ module TypeArrayBuilders =
                 )
             )
 
+        static member Array(value: WidgetBuilder<Type>) = Ast.Array(value, 0)
+
         static member Array(value: string, rank: int) = Ast.Array(Ast.LongIdent value, rank)
+
+        static member Array(value: string) = Ast.Array(value, 0)

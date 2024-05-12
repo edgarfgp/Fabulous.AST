@@ -63,3 +63,9 @@ module LongIdentTypeBuilders =
         static member Obj() = Ast.LongIdent("obj")
 
         static member Unit() = Ast.LongIdent("unit")
+
+        static member Option() = Ast.LongIdent("option")
+
+        static member List() = Ast.LongIdent("list")
+
+        static member Seq() = Ast.LongIdent("seq")
