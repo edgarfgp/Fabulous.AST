@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre8] - 2024-05-12
+
+### Changed
+- Adds addition OS to build matrix by @TheAngryByrd in https://github.com/edgarfgp/Fabulous.AST/pull/94
+
+### Fixed
+- Fix AbstractSlot AnonRecord generation by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/95
+
 ## [1.0.0-pre7] - 2024-05-10
 
 ### Changed
@@ -168,7 +176,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre7...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre8...HEAD
+[1.0.0-pre8]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre8
 [1.0.0-pre7]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre7
 [1.0.0-pre6]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre6
 [1.0.0-pre5]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre5
