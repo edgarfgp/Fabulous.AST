@@ -195,7 +195,10 @@ type IMeh =
         Oak() {
             AnonymousModule() {
                 Interface("IMeh") {
-                    AbstractProperty("ClientInfo1", AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ]))
+                    AbstractProperty(
+                        "ClientInfo1",
+                        AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ])
+                    )
 
                     AbstractProperty(
                         "ClientInfo2",
@@ -233,7 +236,9 @@ type IMeh =
 
                                   AnonRecord(
                                       [ ("Notebook",
-                                         OptionPostfix(AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ])))
+                                         OptionPostfix(
+                                             AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ])
+                                         ))
                                         ("Cells", Array(AnonRecord([ ("Language", String()) ]))) ]
                                   ) ]
                             )
