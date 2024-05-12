@@ -136,3 +136,125 @@ type Meh<'other, 'another> =
     abstract member Add8: a: int -> b: int -> int
 
 """
+
+    [<Fact>]
+    let ``Produces an inheritance of an interface with abstract properties``() =
+        Oak() {
+            AnonymousModule() {
+                Interface("IMeh") {
+                    Inherit("IFoo")
+
+                    AbstractProperty("ClientInfo1", "{| Name: string; Version: string option |}")
+                    AbstractProperty("ClientInfo2", AnonRecord([ ("Name", "string"); ("Version", "string option") ]))
+
+                    AbstractProperty(
+                        "ClientInfo3",
+                        AnonRecord([ ("Name", String()); ("Version", LongIdent("string option")) ])
+                    )
+
+                    AbstractProperty(
+                        "ClientInfo4",
+                        AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ])
+                    )
+
+                    AbstractProperty(
+                        "ClientInfo4",
+                        AppPostfix(
+                            AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ]),
+                            "option"
+                        )
+                    )
+                }
+            }
+        }
+        |> produces
+            """
+type IMeh =
+    inherit IFoo
+    abstract member ClientInfo1: {| Name: string; Version: string option |}
+
+    abstract member ClientInfo2:
+        {| Name: string
+           Version: string option |}
+
+    abstract member ClientInfo3:
+        {| Name: string
+           Version: string option |}
+
+    abstract member ClientInfo4:
+        {| Name: string
+           Version: string option |}
+
+    abstract member ClientInfo4:
+        {| Name: string
+           Version: string option |} option
+"""
+
+    [<Fact>]
+    let ``Produces an inheritance of an interface with abstract  option widget``() =
+        Oak() {
+            AnonymousModule() {
+                Interface("IMeh") {
+                    AbstractProperty(
+                        "ClientInfo1",
+                        AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ])
+                    )
+
+                    AbstractProperty(
+                        "ClientInfo2",
+                        OptionPostfix(AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ]))
+                    )
+                }
+            }
+        }
+        |> produces
+            """
+type IMeh =
+    abstract member ClientInfo1:
+        {| Name: string
+           Version: string option |}
+
+    abstract member ClientInfo2:
+        {| Name: string
+           Version: string option |} option
+"""
+
+    [<Fact>]
+    let ``Produces an inheritance of an interface with abstract member, nested anon records``() =
+        Oak() {
+            AnonymousModule() {
+                Interface("IMeh") {
+                    AbstractProperty(
+                        "ClientInfo1",
+                        Array(
+                            AppPrefix(
+                                "U2",
+                                [ AnonRecord(
+                                      [ ("Notebook", AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ]))
+                                        ("Cells", OptionPostfix(Array(AnonRecord([ ("Language", String()) ])))) ]
+                                  )
+
+                                  AnonRecord(
+                                      [ ("Notebook",
+                                         OptionPostfix(
+                                             AppPrefix("U2", [ String(); LongIdent("NotebookDocumentFilter") ])
+                                         ))
+                                        ("Cells", Array(AnonRecord([ ("Language", String()) ]))) ]
+                                  ) ]
+                            )
+                        )
+                    )
+                }
+            }
+        }
+        |> produces
+            """
+type IMeh =
+    abstract member ClientInfo1:
+        U2<
+            {| Notebook: U2<string, NotebookDocumentFilter>
+               Cells: {| Language: string |}[] option |},
+            {| Notebook: U2<string, NotebookDocumentFilter> option
+               Cells: {| Language: string |}[] |}
+         >[]
+"""

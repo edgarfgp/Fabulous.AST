@@ -84,3 +84,4 @@ module SingleTextNode =
     let ``and`` = SingleTextNode.Create "and"
     let ``inherit`` = SingleTextNode.Create "inherit"
     let power = SingleTextNode.Create "^"
+    let dot = SingleTextNode.Create(".")

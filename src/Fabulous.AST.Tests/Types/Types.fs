@@ -177,3 +177,174 @@ let c: string * string = false
 let c: cm^2 = false
 let c: int -> string = false
 """
+
+    [<Fact>]
+    let ``Value with AppPostfix widget``() =
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix(String(), Option()))
+
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix("string", "option"))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix(String(), "option"))
+
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
+                    .returnType(AppPostfix("string", Option()))
+
+                Value(ConstantPat(Constant("e")), ConstantExpr(Bool(false)))
+                    .returnType(OptionPostfix(String()))
+
+                Value(ConstantPat(Constant("f")), ConstantExpr(Bool(false)))
+                    .returnType(OptionPostfix("string"))
+
+                Value(ConstantPat(Constant("g")), ConstantExpr(Bool(false)))
+                    .returnType(VOptionPostfix(String()))
+
+                Value(ConstantPat(Constant("h")), ConstantExpr(Bool(false)))
+                    .returnType(VOptionPostfix("string"))
+
+                Value(ConstantPat(Constant("i")), ConstantExpr(Bool(false)))
+                    .returnType(ListPostfix(String()))
+
+                Value(ConstantPat(Constant("j")), ConstantExpr(Bool(false)))
+                    .returnType(ListPostfix("string"))
+
+                Value(ConstantPat(Constant("k")), ConstantExpr(Bool(false)))
+                    .returnType(SeqPostfix(String()))
+
+                Value(ConstantPat(Constant("l")), ConstantExpr(Bool(false)))
+                    .returnType(SeqPostfix("string"))
+
+                Value(ConstantPat(Constant("m")), ConstantExpr(Bool(false)))
+                    .returnType(Array(String()))
+
+                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)))
+                    .returnType(Array(Array(String())))
+
+            }
+        }
+        |> produces
+            """
+let a: string option = false
+let b: string option = false
+let c: string option = false
+let d: string option = false
+let e: string option = false
+let f: string option = false
+let g: string voption = false
+let h: string voption = false
+let i: string list = false
+let j: string list = false
+let k: string seq = false
+let l: string seq = false
+let m: string[] = false
+let n: string[][] = false
+"""
+
+    [<Fact>]
+    let ``Value with AppPrefix widget``() =
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix(Option(), [ String() ]))
+
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("option", [ String() ]))
+
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix(List(), [ String() ]))
+
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("list", [ String() ]))
+
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("list", [ "string" ]))
+
+                Value(ConstantPat(Constant("e")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix(Seq(), [ String(); String() ]))
+
+                Value(ConstantPat(Constant("f")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix(Option(), String()))
+
+                Value(ConstantPat(Constant("g")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix("option", String()))
+
+                Value(ConstantPat(Constant("h")), ConstantExpr(Bool(false)))
+                    .returnType(AppPrefix(List(), String()))
+
+                Value(ConstantPat(Constant("i")), ConstantExpr(Bool(false)))
+                    .returnType(OptionPrefix(String()))
+
+                Value(ConstantPat(Constant("j")), ConstantExpr(Bool(false)))
+                    .returnType(OptionPrefix("string"))
+
+                Value(ConstantPat(Constant("k")), ConstantExpr(Bool(false)))
+                    .returnType(VOptionPrefix(String()))
+
+                Value(ConstantPat(Constant("l")), ConstantExpr(Bool(false)))
+                    .returnType(VOptionPrefix("string"))
+
+                Value(ConstantPat(Constant("m")), ConstantExpr(Bool(false)))
+                    .returnType(ListPrefix(String()))
+
+                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)))
+                    .returnType(ListPrefix("string"))
+
+                Value(ConstantPat(Constant("o")), ConstantExpr(Bool(false)))
+                    .returnType(SeqPrefix(String()))
+
+                Value(ConstantPat(Constant("p")), ConstantExpr(Bool(false)))
+                    .returnType(SeqPrefix("string"))
+
+                Value(ConstantPat(Constant("q")), ConstantExpr(Bool(false)))
+                    .returnType(ResultPrefix(String(), String()))
+
+                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)))
+                    .returnType(ResultPrefix("string", "string"))
+
+                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)))
+                    .returnType(ResultPrefix("string", String()))
+
+                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)))
+                    .returnType(ResultPrefix(String(), "string"))
+
+                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)))
+                    .returnType(ArrayPrefix(String()))
+
+                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)))
+                    .returnType(ArrayPrefix("string"))
+
+                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)))
+                    .returnType(ArrayPrefix(ArrayPrefix(String())))
+            }
+        }
+        |> produces
+            """
+let a: option<string> = false
+let b: option<string> = false
+let c: list<string> = false
+let d: list<string> = false
+let d: list<string> = false
+let e: seq<string, string> = false
+let f: option<string> = false
+let g: option<string> = false
+let h: list<string> = false
+let i: option<string> = false
+let j: option<string> = false
+let k: voption<string> = false
+let l: voption<string> = false
+let m: list<string> = false
+let n: list<string> = false
+let o: seq<string> = false
+let p: seq<string> = false
+let q: Result<string, string> = false
+let r: Result<string, string> = false
+let s: Result<string, string> = false
+let t: Result<string, string> = false
+let r: array<string> = false
+let s: array<string> = false
+let t: array<array<string>> = false
+"""
