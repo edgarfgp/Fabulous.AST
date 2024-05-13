@@ -76,7 +76,7 @@ type Colors =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 }
-                |> _.typeParams([ "'other" ])
+                |> _.typeParams(PostfixList([ "'other" ]))
             }
         }
 
@@ -100,7 +100,7 @@ type Colors<'other> =
                     Field("Yellow", LongIdent("int"))
                 })
                     .attribute(Attribute "Struct")
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
             }
         }
 
@@ -123,7 +123,7 @@ type Colors<'other> =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .attributes([ Attribute "Struct"; Attribute "Obsolete" ])
 
             }

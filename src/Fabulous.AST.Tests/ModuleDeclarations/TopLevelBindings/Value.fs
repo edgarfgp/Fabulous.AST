@@ -147,10 +147,11 @@ let x = 12
     let ``Simple Let binding with type params Postfix``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .typeParams(PostfixList(TyparDecl("'T")))
 
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .typeParams([ "'a"; "'b"; "'c" ])
+                    .typeParams(PostfixList([ TyparDecl("'a"); TyparDecl("'b"); TyparDecl("'c") ]))
             }
         }
         |> produces
@@ -165,31 +166,21 @@ let x<'a, 'b, 'c> = 12
     let ``Simple Let binding with type params Prefix``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .typeParams(PostfixList(TyparDecl("'T")))
 
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .typeParams([ "'a"; "'b"; "'c" ])
+                    .typeParams(PostfixList([ TyparDecl("'a"); TyparDecl("'b"); TyparDecl("'c") ]))
+
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                    .typeParams(PostfixList([ "'a"; "'b"; "'c" ]))
             }
         }
         |> produces
             """
 let x<'T> = 12
 let x<'a, 'b, 'c> = 12
-"""
-
-    [<Fact>]
-    let ``Simple Let binding with type params SinglePrefix``() =
-        Oak() {
-            AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
-
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams([ "'T" ])
-            }
-        }
-        |> produces
-            """
-let x<'T> = 12
-let x<'T> = 12
+let x<'a, 'b, 'c> = 12
 """
 
     [<Fact>]
@@ -233,7 +224,6 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-
                     .xmlDocs(
                         [ "This is a fist comment"
                           "This is a second comment"
@@ -383,7 +373,7 @@ let mutable x = 12
             AnonymousModule() {
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
                     .toInlined()
-                    .typeParams([ "'a" ])
+                    .typeParams(PostfixList(TyparDecl("'a")))
             }
         }
         |> produces

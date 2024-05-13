@@ -81,7 +81,7 @@ Oak() {
             UnionCase("Blue")
             UnionCase("Yellow")
         })
-            .typeParams([ "'other" ])
+            .typeParams(PostfixList([ "'other" ]))
             .members () {
             Property("Name", ConstantExpr("name")).toStatic ()
         }

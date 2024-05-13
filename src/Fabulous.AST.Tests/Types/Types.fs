@@ -85,7 +85,7 @@ let c: sbyte = 1y
 let d: int16 = 1s
 let e: uint16 = 1us
 let f: int = 1
-let g: uint = 1u
+let g: uint32 = 1u
 let h: int64 = 1L
 let i: uint64 = 1UL
 let j: nativeint = nativeint 1
@@ -347,4 +347,211 @@ let t: Result<string, string> = false
 let r: array<string> = false
 let s: array<string> = false
 let t: array<array<string>> = false
+"""
+
+    [<Fact>]
+    let ``Value with Type Constraint widgets``() =
+        Oak() {
+            AnonymousModule() {
+                // Base Type Constraint
+                ClassEnd("Class1").typeParams(PostfixList("'T when 'T :> System.Exception"))
+
+                ClassEnd("Class11")
+                    .typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.Exception"))))
+
+                ClassEnd("Class2")
+                    .typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.IComparable"))))
+
+                ClassEnd("Class3")
+                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "null")))
+
+                ClassEnd("Class5")
+                    .typeParams(
+                        PostfixList(
+                            TyparDecl("'T"),
+                            SupportsMember("'T", SigMember(ValField("member", "Method1", LongIdent("'T -> int"))))
+                        )
+                    )
+
+                ClassEnd("Class6")
+                    .typeParams(
+                        PostfixList(
+                            TyparDecl("'T"),
+                            SupportsMember("'T", SigMember(ValField("member", "Property1", Int())))
+                        )
+                    )
+
+                Class("Class7") { AutoProperty("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
+                |> _.typeParams(
+                    PostfixList(
+                        TyparDecl("'T"),
+                        SupportsMember("'T", SigMember(ValField("new", "", Funs("'T", [ "unit" ]))))
+                    )
+                )
+
+                ClassEnd("Class8")
+                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "not struct")))
+
+                // Enumeration constraint with underlying value specified
+                ClassEnd("Class9")
+                    .typeParams(PostfixList(TyparDecl("'T"), EnumOrDelegate("'T", "enum", UInt32())))
+
+                // 'T must implement IComparable, or be an array type with comparable
+                // elements, or be System.IntPtr or System.UIntPtr. Also, 'T must not have
+                // the NoComparison attribute.
+                ClassEnd("Class10")
+                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "comparison")))
+
+                // 'T must support equality. This is true for any type that does not
+                // have the NoEquality attribute.
+                ClassEnd("Class11")
+                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
+
+                ClassEnd("Class12")
+                    .typeParams(
+                        PostfixList(
+                            TyparDecl("'T"),
+                            EnumOrDelegate("'T", "delegate", [ "obj * System.EventArgs"; "unit" ])
+                        )
+                    )
+
+                ClassEnd("Class122")
+                    .typeParams(
+                        PostfixList(
+                            TyparDecl("'T"),
+                            EnumOrDelegate("'T", "delegate", [ Tuple([ "obj"; "System.EventArgs" ]); Unit() ])
+                        )
+                    )
+
+                ClassEnd("Class13")
+                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "unmanaged")))
+
+                // Member constraints with two type parameters
+                // Most often used with static type parameters in inline functions
+                Function(
+                    "add",
+                    ParenPat(
+                        TuplePat(
+                            [ ParameterPat(
+                                  NamedPat("value1"),
+                                  WithGlobalConstraints(
+                                      "^T",
+                                      SupportsMember(
+                                          "^T",
+                                          SigMember(ValField([ "static"; "member" ], "(+)", LongIdent("^T * ^T -> ^T")))
+                                      )
+                                  )
+                              )
+
+                              ParameterPat(NamedPat("value2"), "^T") ]
+                        )
+                    ),
+                    InfixAppExpr("value1", "+", "value2")
+                )
+                    .toInlined()
+
+                // ^T and ^U must support operator +
+                Function(
+                    "heterogenousAdd",
+                    ParenPat(
+                        TuplePat(
+                            [ ParameterPat(
+                                  NamedPat("value1"),
+                                  WithGlobalConstraints(
+                                      "^T",
+                                      SupportsMember(
+                                          ParenType(OrType("^T", "or", "^U")),
+                                          SigMember(ValField([ "static"; "member" ], "(+)", LongIdent("^T * ^U -> ^T")))
+                                      )
+                                  )
+                              )
+
+                              ParameterPat(NamedPat("value2"), "^U") ]
+                        )
+                    ),
+                    InfixAppExpr("value1", "+", "value2")
+                )
+                    .toInlined()
+
+                // If there are multiple constraints, use the and keyword to separate them.
+                ClassEnd("Class14")
+                    .typeParams(
+                        PostfixList(
+                            [ TyparDecl("'T"); TyparDecl("'U") ],
+                            [ ConstraintSingle("'T", "equality"); ConstraintSingle("'U", "equality") ]
+                        )
+                    )
+            }
+        }
+        |> produces
+            """
+type Class1<'T when 'T :> System.Exception> = class end
+type Class11<'T when 'T :> System.Exception> = class end
+type Class2<'T when 'T :> System.IComparable> = class end
+type Class3<'T when 'T: null> = class end
+type Class5<'T when 'T: (member Method1: 'T -> int)> = class end
+type Class6<'T when 'T: (member Property1: int)> = class end
+
+type Class7<'T when 'T: (new : unit -> 'T)>() =
+    member val Field = new 'T ()
+
+type Class8<'T when 'T: not struct> = class end
+type Class9<'T when 'T: enum<uint32>> = class end
+type Class10<'T when 'T: comparison> = class end
+type Class11<'T when 'T: equality> = class end
+type Class12<'T when 'T: delegate<obj * System.EventArgs, unit>> = class end
+type Class122<'T when 'T: delegate<obj * System.EventArgs, unit>> = class end
+type Class13<'T when 'T: unmanaged> = class end
+let inline add (value1: ^T when ^T: (static member (+): ^T * ^T -> ^T), value2: ^T) = value1 + value2
+
+let inline heterogenousAdd (value1: ^T when (^T or ^U): (static member (+): ^T * ^U -> ^T), value2: ^U) =
+    value1 + value2
+
+type Class14<'T, 'U when 'T: equality and 'U: equality> = class end
+"""
+
+    [<Fact>]
+    let ``Intersection type widgets``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "test",
+                    ParenPat(
+                        ParameterPat(
+                            NamedPat("env"),
+                            Intersection(
+                                [ LongIdent("'t")
+                                  HashConstraint("System.Numerics.INumber<'t>")
+                                  HashConstraint("IEquatable<'t>") ]
+                            )
+                        )
+                    ),
+                    ConstantExpr(ConstantUnit())
+                )
+            }
+        }
+        |> produces
+            """
+let test (env: 't & #System.Numerics.INumber<'t> & #IEquatable<'t>) = ()
+"""
+
+    [<Fact>]
+    let ``TypeHashConstraint type widgets``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "test",
+                    ParenPat(
+                        ParameterPat(
+                            ParameterPat(NamedPat("env"), HashConstraint("ILogger1")),
+                            HashConstraint("ILogger2")
+                        )
+                    ),
+                    ConstantExpr(ConstantUnit())
+                )
+            }
+        }
+        |> produces
+            """
+let test (env: #ILogger1: #ILogger2) = ()
 """

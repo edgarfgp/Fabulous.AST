@@ -36,7 +36,7 @@ module LongIdentTypeBuilders =
 
         static member Int() = Ast.LongIdent("int")
 
-        static member UInt32() = Ast.LongIdent("uint")
+        static member UInt32() = Ast.LongIdent("uint32")
 
         static member Int64() = Ast.LongIdent("int64")
 

@@ -4,7 +4,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
-module Paren =
+module ParenExpr =
     let Value = Attributes.defineWidget "Value"
 
     let WidgetKey =
@@ -21,8 +21,8 @@ module ParenBuilders =
 
         static member ParenExpr(value: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
-                Paren.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Paren.Value.WithValue(value.Compile()) |], Array.empty)
+                ParenExpr.WidgetKey,
+                AttributesBundle(StackList.empty(), [| ParenExpr.Value.WithValue(value.Compile()) |], Array.empty)
             )
 
         static member ParenExpr(value: WidgetBuilder<Constant>) = Ast.ParenExpr(Ast.ConstantExpr(value))

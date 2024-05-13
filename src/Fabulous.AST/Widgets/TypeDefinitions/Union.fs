@@ -20,7 +20,7 @@ module Union =
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
-    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let TypeParams = Attributes.defineWidget "TypeParams"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -63,22 +63,10 @@ module Union =
                     )
                 | ValueNone -> None
 
-            let typeParams = Widgets.tryGetScalarValue widget TypeParams
-
             let typeParams =
-                match typeParams with
-                | ValueSome values ->
-                    TyparDeclsPostfixListNode(
-                        SingleTextNode.lessThan,
-                        [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
-                        [],
-                        SingleTextNode.greaterThan,
-                        Range.Zero
-                    )
-                    |> TyparDecls.PostfixList
-                    |> Some
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -129,8 +117,8 @@ type UnionModifiers =
         AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
 
     [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<TypeDefnUnionNode>, value: string list) =
-        this.AddScalar(Union.TypeParams.WithValue(value))
+    static member inline typeParams(this: WidgetBuilder<TypeDefnUnionNode>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(Union.TypeParams.WithValue(typeParams.Compile()))
 
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: string list) =

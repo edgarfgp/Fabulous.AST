@@ -112,7 +112,7 @@ type Meh =
                     )
 
                 }
-                |> _.typeParams([ "'other"; "'another" ])
+                |> _.typeParams(PostfixList([ "'other"; "'another" ]))
             }
         }
         |> produces

@@ -111,19 +111,23 @@ module AutoPropertyMember =
 [<AutoOpen>]
 module AutoPropertyMemberBuilders =
     type Ast with
-
-        static member AutoProperty(identifier: string, expr: WidgetBuilder<Expr>) =
+        static member private BaseAutoProperty
+            (identifier: string, expr: WidgetBuilder<Expr>, hasGetter: bool, hasSetter: bool)
+            =
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
                     StackList.two(
                         AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(true, true)
+                        AutoPropertyMember.HasGetterSetter.WithValue(hasGetter, hasSetter)
                     ),
                     [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member AutoProperty(identifier: string, expr: WidgetBuilder<Expr>) =
+            Ast.BaseAutoProperty(identifier, expr, false, false)
 
         static member AutoProperty(identifier: string, expr: WidgetBuilder<Constant>) =
             Ast.AutoProperty(identifier, Ast.ConstantExpr(expr))
@@ -132,23 +136,31 @@ module AutoPropertyMemberBuilders =
             Ast.AutoProperty(identifier, Ast.Constant(expr))
 
         static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<MemberDefnAutoPropertyNode>(
-                AutoPropertyMember.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(true, false)
-                    ),
-                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.BaseAutoProperty(identifier, expr, true, false)
 
         static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Constant>) =
             Ast.AutoPropertyGet(identifier, Ast.ConstantExpr(expr))
 
         static member AutoPropertyGet(identifier: string, expr: string) =
             Ast.AutoPropertyGet(identifier, Ast.Constant(expr))
+
+        static member AutoPropertySet(identifier: string, expr: WidgetBuilder<Expr>) =
+            Ast.BaseAutoProperty(identifier, expr, false, true)
+
+        static member AutoPropertySet(identifier: string, expr: WidgetBuilder<Constant>) =
+            Ast.AutoPropertySet(identifier, Ast.ConstantExpr(expr))
+
+        static member AutoPropertySet(identifier: string, expr: string) =
+            Ast.AutoPropertySet(identifier, Ast.Constant(expr))
+
+        static member AutoPropertyGetSet(identifier: string, expr: WidgetBuilder<Expr>) =
+            Ast.BaseAutoProperty(identifier, expr, true, true)
+
+        static member AutoPropertyGetSet(identifier: string, expr: WidgetBuilder<Constant>) =
+            Ast.AutoPropertyGetSet(identifier, Ast.ConstantExpr(expr))
+
+        static member AutoPropertyGetSet(identifier: string, expr: string) =
+            Ast.AutoPropertyGetSet(identifier, Ast.Constant(expr))
 
 type AutoPropertyMemberModifiers =
     [<Extension>]

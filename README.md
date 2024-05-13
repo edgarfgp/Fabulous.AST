@@ -54,7 +54,7 @@ open type Fabulous.AST.Ast
 
 Oak() { 
     AnonymousModule() { 
-        Value("y", Unquoted "12") 
+        Value("y", "12") 
     }
 }
 |> Gen.mkOak

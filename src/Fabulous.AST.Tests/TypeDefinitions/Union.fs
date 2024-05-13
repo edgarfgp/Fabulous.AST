@@ -201,7 +201,7 @@ module GenericUnion =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 }
-                |> _.typeParams([ "'other" ])
+                |> _.typeParams(PostfixList([ "'other" ]))
             }
         }
         |> produces
@@ -228,7 +228,7 @@ type Colors<'other> =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     InterfaceMember(LongIdent "IMyInterface") {
                         Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
@@ -264,7 +264,7 @@ type Colors<'other> =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .attribute(Attribute "Struct")
 
             }

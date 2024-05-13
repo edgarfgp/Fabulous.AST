@@ -176,7 +176,7 @@ module GenericClass =
         Oak() {
             AnonymousModule() {
                 Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
-                |> _.typeParams([ "'a"; "'b" ])
+                |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
             }
         }
@@ -193,7 +193,7 @@ type Person<'a, 'b>() =
         Oak() {
             AnonymousModule() {
                 Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
-                |> _.typeParams([ "'a"; "'b" ])
+                |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
             }
         }
@@ -209,7 +209,7 @@ type Person<'a, 'b>() =
         Oak() {
             AnonymousModule() {
                 Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
-                |> _.typeParams([ "'a"; "'b" ])
+                |> _.typeParams(PostfixList([ "'a"; "'b" ]))
                 |> _.attribute(Attribute("Struct"))
 
             }

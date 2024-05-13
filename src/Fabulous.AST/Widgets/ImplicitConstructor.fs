@@ -14,8 +14,6 @@ module ImplicitConstructor =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
-
     let Patterns = Attributes.defineWidget "Pattern"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"

@@ -18,7 +18,7 @@ module TopLevelBinding =
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Return = Attributes.defineWidget "Return"
-    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let TypeParams = Attributes.defineWidget "TypeParams"
     let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
 
 type TopLevelBindingModifiers =
@@ -68,8 +68,8 @@ type TopLevelBindingModifiers =
         this.AddScalar(TopLevelBinding.IsStatic.WithValue(true))
 
     [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<BindingNode>, typeParams: string list) =
-        this.AddScalar(TopLevelBinding.TypeParams.WithValue(typeParams))
+    static member inline typeParams(this: WidgetBuilder<BindingNode>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(TopLevelBinding.TypeParams.WithValue(typeParams.Compile()))
 
 type ValueYieldExtensions =
     [<Extension>]
