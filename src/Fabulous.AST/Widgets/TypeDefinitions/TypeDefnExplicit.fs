@@ -95,7 +95,7 @@ module TypeDefnExplicit =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let TypeDefn =
+            let typeDefn =
                 match Widgets.getScalarValue widget TypeDefn with
                 | Class -> SingleTextNode.``class``
                 | Interface -> SingleTextNode.``interface``
@@ -115,7 +115,7 @@ module TypeDefnExplicit =
                     None,
                     Range.Zero
                 ),
-                TypeDefnExplicitBodyNode(TypeDefn, [], SingleTextNode.``end``, Range.Zero),
+                TypeDefnExplicitBodyNode(typeDefn, [], SingleTextNode.``end``, Range.Zero),
                 [],
                 Range.Zero
             ))
