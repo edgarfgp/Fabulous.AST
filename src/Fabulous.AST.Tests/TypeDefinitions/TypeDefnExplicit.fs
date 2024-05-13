@@ -6,7 +6,7 @@ open Xunit
 open Fabulous.AST
 open type Ast
 
-module ClassEnd =
+module TypeDefnExplicit =
     [<Fact>]
     let ``Produces a class end``() =
         Oak() { AnonymousModule() { ClassEnd("MyClass") } }
@@ -89,3 +89,29 @@ type MyClass<'a, 'b> = class end
             """
 type MyClass<'a, 'b>() = class end
             """
+
+module StructEnd =
+    [<Fact>]
+    let ``Produces a struct end empty constructor``() =
+        Oak() { AnonymousModule() { StructEnd("MyClass", ImplicitConstructor()) } }
+        |> produces
+            """
+    type MyClass() = struct end
+            """
+
+    [<Fact>]
+    let ``Produces a struct end non empty constructor``() =
+        Oak() { AnonymousModule() { StructEnd("MyClass", ImplicitConstructor(ParenPat(ParameterPat("a", String())))) } }
+        |> produces
+            """
+type MyClass(a: string) = struct end
+            """
+
+module InterfaceEnd =
+    [<Fact>]
+    let ``Produces an interface end``() =
+        Oak() { AnonymousModule() { InterfaceEnd("IFoo") } }
+        |> produces
+            """
+type IFoo = interface end
+                    """

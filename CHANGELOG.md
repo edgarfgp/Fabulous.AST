@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre10] - 2024-05-13
+
+### Added
+- Support `InterfaceEnd` and `StructEnd` widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/98
+
+### Fixed
+- Fix `EmptyInterfaceMember` widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/98
+
 ## [1.0.0-pre9] - 2024-05-13
 
 ### Added
@@ -181,7 +189,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre9...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre10...HEAD
+[1.0.0-pre10]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre10
 [1.0.0-pre9]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre9
 [1.0.0-pre8]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre8
 [1.0.0-pre7]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre7

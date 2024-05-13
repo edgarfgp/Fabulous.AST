@@ -142,7 +142,7 @@
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />
-        <Compile Include="Widgets\TypeDefinitions\ClassEnd.fs" />
+        <Compile Include="Widgets\TypeDefinitions\TypeDefnExplicit.fs" />
         <Compile Include="Widgets\TypeDefinitions\Augment.fs" />
     </ItemGroup>
 

@@ -20,13 +20,13 @@ module InterfaceMember =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
                 |> Option.defaultValue []
 
-            MemberDefnInterfaceNode(
-                SingleTextNode.``interface``,
-                tp,
-                Some(SingleTextNode.``with``),
-                members,
-                Range.Zero
-            ))
+            let withNode =
+                if members.IsEmpty then
+                    None
+                else
+                    Some(SingleTextNode.``with``)
+
+            MemberDefnInterfaceNode(SingleTextNode.``interface``, tp, withNode, members, Range.Zero))
 
 [<AutoOpen>]
 module InterfaceMemberBuilders =
