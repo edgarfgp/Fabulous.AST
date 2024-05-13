@@ -96,7 +96,7 @@ module StructEnd =
         Oak() { AnonymousModule() { StructEnd("MyClass", ImplicitConstructor()) } }
         |> produces
             """
-    type MyClass() = struct end
+type MyClass() = struct end
             """
 
     [<Fact>]
