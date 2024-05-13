@@ -26,9 +26,7 @@ module InterfaceMembers =
                         Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
 
-                    InterfaceMember("IMyInterface2") {
-                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
-                    }
+                    EmptyInterfaceMember("IMyInterface2")
                 }
 
             }
@@ -51,7 +49,6 @@ type Colors<'other> =
         member x.GetValue() = x.MyField2
 
     interface IMyInterface2 with
-        member x.GetValue() = x.MyField2
 
 """
 
