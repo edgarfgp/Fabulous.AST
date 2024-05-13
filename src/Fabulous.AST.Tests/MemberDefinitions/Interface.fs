@@ -48,7 +48,7 @@ type Colors<'other> =
     interface IMyInterface with
         member x.GetValue() = x.MyField2
 
-    interface IMyInterface2 with
+    interface IMyInterface2
 
 """
 
@@ -109,4 +109,56 @@ type Meh =
 type Person() =
     interface Meh with
         member this.Name = "23"
+"""
+
+    [<Fact>]
+    let ``Produces a class implementing interfaces``() =
+        Oak() {
+
+            AnonymousModule() {
+                Interface("IFoo") { AbstractProperty("Name", String()) }
+
+                InterfaceEnd("IFoo2")
+
+                Interface("IFoo3") { AbstractProperty("Name", String()) }
+
+                InterfaceEnd("IFoo4")
+
+                Class("Person") {
+                    InterfaceMember(LongIdent "IFoo") {
+                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                    }
+
+                    EmptyInterfaceMember("IFoo2")
+
+                    InterfaceMember(LongIdent "IFoo3") {
+                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                    }
+
+                    EmptyInterfaceMember("IFoo4")
+                }
+            }
+        }
+        |> produces
+            """
+type IFoo =
+    abstract member Name: string
+
+type IFoo2 = interface end
+
+type IFoo3 =
+    abstract member Name: string
+
+type IFoo4 = interface end
+
+type Person() =
+    interface IFoo with
+        member this.Name = "23"
+
+    interface IFoo2
+
+    interface IFoo3 with
+        member this.Name = "23"
+
+    interface IFoo4
 """

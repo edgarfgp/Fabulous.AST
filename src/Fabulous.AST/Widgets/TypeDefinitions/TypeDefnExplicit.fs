@@ -8,7 +8,12 @@ open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
-module ClassEnd =
+type TypeDefn =
+    | Class
+    | Interface
+    | Struct
+
+module TypeDefnExplicit =
     let Name = Attributes.defineScalar<string> "Name"
 
     let MultipleAttributes =
@@ -18,6 +23,8 @@ module ClassEnd =
     let Constructor = Attributes.defineWidget "Constructor"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
+    let TypeDefn = Attributes.defineScalar<TypeDefn> "TypeDefn"
 
     let WidgetKey =
         Widgets.register "ClassEnd" (fun widget ->
@@ -88,6 +95,12 @@ module ClassEnd =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
+            let typeDefn =
+                match Widgets.getScalarValue widget TypeDefn with
+                | Class -> SingleTextNode.``class``
+                | Interface -> SingleTextNode.``interface``
+                | Struct -> SingleTextNode.``struct``
+
             TypeDefnExplicitNode(
                 TypeNameNode(
                     xmlDocs,
@@ -102,7 +115,7 @@ module ClassEnd =
                     None,
                     Range.Zero
                 ),
-                TypeDefnExplicitBodyNode(SingleTextNode.``class``, [], SingleTextNode.``end``, Range.Zero),
+                TypeDefnExplicitBodyNode(typeDefn, [], SingleTextNode.``end``, Range.Zero),
                 [],
                 Range.Zero
             ))
@@ -113,16 +126,52 @@ module ClassEndBuilders =
 
         static member ClassEnd(name: string) =
             WidgetBuilder<TypeDefnExplicitNode>(
-                ClassEnd.WidgetKey,
-                AttributesBundle(StackList.one(ClassEnd.Name.WithValue(name)), Array.empty, Array.empty)
+                TypeDefnExplicit.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        TypeDefnExplicit.Name.WithValue(name),
+                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Class)
+                    ),
+                    Array.empty,
+                    Array.empty
+                )
             )
 
         static member ClassEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             WidgetBuilder<TypeDefnExplicitNode>(
-                ClassEnd.WidgetKey,
+                TypeDefnExplicit.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ClassEnd.Name.WithValue(name)),
-                    [| ClassEnd.Constructor.WithValue(constructor.Compile()) |],
+                    StackList.two(
+                        TypeDefnExplicit.Name.WithValue(name),
+                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Class)
+                    ),
+                    [| TypeDefnExplicit.Constructor.WithValue(constructor.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member StructEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
+            WidgetBuilder<TypeDefnExplicitNode>(
+                TypeDefnExplicit.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        TypeDefnExplicit.Name.WithValue(name),
+                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Struct)
+                    ),
+                    [| TypeDefnExplicit.Constructor.WithValue(constructor.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member InterfaceEnd(name: string) =
+            WidgetBuilder<TypeDefnExplicitNode>(
+                TypeDefnExplicit.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        TypeDefnExplicit.Name.WithValue(name),
+                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Interface)
+                    ),
+                    Array.empty,
                     Array.empty
                 )
             )
@@ -130,14 +179,14 @@ module ClassEndBuilders =
 type ClassEndModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
-        this.AddScalar(ClassEnd.XmlDocs.WithValue(xmlDocs))
+        this.AddScalar(TypeDefnExplicit.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnExplicitNode>, values: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
-            ClassEnd.MultipleAttributes.WithValue(
+            TypeDefnExplicit.MultipleAttributes.WithValue(
                 [ for vals in values do
                       Gen.mkOak vals ]
             )
@@ -149,19 +198,19 @@ type ClassEndModifiers =
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: string list) =
-        this.AddScalar(ClassEnd.TypeParams.WithValue(typeParams))
+        this.AddScalar(TypeDefnExplicit.TypeParams.WithValue(typeParams))
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnExplicitNode>) =
-        this.AddScalar(ClassEnd.Accessibility.WithValue(AccessControl.Private))
+        this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Private))
 
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<TypeDefnExplicitNode>) =
-        this.AddScalar(ClassEnd.Accessibility.WithValue(AccessControl.Public))
+        this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Public))
 
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnExplicitNode>) =
-        this.AddScalar(ClassEnd.Accessibility.WithValue(AccessControl.Internal))
+        this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Internal))
 
 type ClassEndYieldExtensions =
     [<Extension>]
