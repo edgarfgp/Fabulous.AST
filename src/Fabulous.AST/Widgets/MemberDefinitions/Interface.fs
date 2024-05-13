@@ -15,7 +15,10 @@ module InterfaceMember =
     let WidgetKey =
         Widgets.register "InterfaceMember" (fun widget ->
             let tp = Widgets.getNodeFromWidget widget TypeValue
-            let members = Widgets.getNodesFromWidgetCollection widget Members
+
+            let members =
+                Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+                |> Option.defaultValue []
 
             MemberDefnInterfaceNode(
                 SingleTextNode.``interface``,
@@ -43,6 +46,20 @@ module InterfaceMemberBuilders =
         static member InterfaceMember(name: string) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.InterfaceMember(Ast.LongIdent name)
+
+        static member EmptyInterfaceMember(name: WidgetBuilder<Type>) =
+            WidgetBuilder<MemberDefnInterfaceNode>(
+                InterfaceMember.WidgetKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| InterfaceMember.TypeValue.WithValue(name.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member EmptyInterfaceMember(name: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.EmptyInterfaceMember(Ast.LongIdent name)
 
 type InterfaceMemberYieldExtensions =
     [<Extension>]
