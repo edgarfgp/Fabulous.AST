@@ -31,23 +31,10 @@ module UnionCase =
                 | ValueSome fields -> fields
                 | ValueNone -> []
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -58,7 +45,7 @@ module UnionCase =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            UnionCaseNode(xmlDocs, multipleAttributes, None, name, fields, Range.Zero))
+            UnionCaseNode(xmlDocs, attributes, None, name, fields, Range.Zero))
 
 [<AutoOpen>]
 module UnionCaseBuilders =

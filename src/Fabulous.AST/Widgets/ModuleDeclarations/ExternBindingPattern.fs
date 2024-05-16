@@ -17,7 +17,10 @@ module ExternBindingPattern =
         Widgets.register "ExternBindingPattern" (fun widget ->
             let pat = Widgets.tryGetNodeFromWidget widget PatternVal
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let tp = Widgets.tryGetNodeFromWidget widget TypeValue
 
@@ -26,28 +29,12 @@ module ExternBindingPattern =
                 | ValueSome tp -> Some tp
                 | ValueNone -> None
 
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
-
             let pat =
                 match pat with
                 | ValueSome value -> Some value
                 | ValueNone -> None
 
-            ExternBindingPatternNode(multipleAttributes, tp, pat, Range.Zero))
+            ExternBindingPatternNode(attributes, tp, pat, Range.Zero))
 
 [<AutoOpen>]
 module ExternBindingPatternNodeBuilders =

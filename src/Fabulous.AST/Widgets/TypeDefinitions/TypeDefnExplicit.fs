@@ -32,23 +32,10 @@ module TypeDefnExplicit =
             let name =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -92,7 +79,7 @@ module TypeDefnExplicit =
             TypeDefnExplicitNode(
                 TypeNameNode(
                     xmlDocs,
-                    multipleAttributes,
+                    attributes,
                     SingleTextNode.``type``,
                     accessControl,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),

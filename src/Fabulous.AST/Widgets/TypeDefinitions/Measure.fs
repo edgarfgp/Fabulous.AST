@@ -7,7 +7,7 @@ open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 
-module TypeDefnAbbrevNode =
+module TypeNameNode =
 
     let Name = Attributes.defineScalar<string> "Name"
 
@@ -30,19 +30,13 @@ module TypeDefnAbbrevNode =
             TypeNameNode(
                 xmlDocs,
                 Some(
-                    MultipleAttributeListNode(
-                        [ AttributeListNode(
-                              SingleTextNode.leftAttribute,
-                              [ AttributeNode(
-                                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
-                                    None,
-                                    None,
-                                    Range.Zero
-                                ) ],
-                              SingleTextNode.rightAttribute,
+                    MultipleAttributeListNode.Create(
+                        [ AttributeNode(
+                              IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
+                              None,
+                              None,
                               Range.Zero
-                          ) ],
-                        Range.Zero
+                          ) ]
                     )
                 ),
                 SingleTextNode.``type``,
@@ -56,91 +50,22 @@ module TypeDefnAbbrevNode =
                 Range.Zero
             ))
 
-    let WidgetAbbrevKey =
-        Widgets.register "TypeDefnAbbrevNode" (fun widget ->
-            let name = Widgets.getScalarValue widget Name
-            let powerType = Widgets.getNodeFromWidget widget PowerType
-
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
-            let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
-
-            TypeDefnAbbrevNode(
-                TypeNameNode(
-                    xmlDocs,
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  [ AttributeNode(
-                                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
-                                        None,
-                                        None,
-                                        Range.Zero
-                                    ) ],
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    ),
-                    SingleTextNode.``type``,
-                    Some(SingleTextNode.Create(name)),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
-                    None,
-                    [],
-                    None,
-                    None,
-                    None,
-                    Range.Zero
-                ),
-                powerType,
-                [],
-                Range.Zero
-            ))
-
 [<AutoOpen>]
-module TypeDefnAbbrevNodeBuilders =
+module TypeNameNodeBuilders =
     type Ast with
 
         static member Measure(name: string) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
 
             WidgetBuilder<TypeNameNode>(
-                TypeDefnAbbrevNode.WidgetKey,
-                AttributesBundle(StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)), Array.empty, Array.empty)
+                TypeNameNode.WidgetKey,
+                AttributesBundle(StackList.one(TypeNameNode.Name.WithValue(name)), Array.empty, Array.empty)
             )
-
-        static member Measure(name: string, powerType: WidgetBuilder<Type>) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
-
-            WidgetBuilder<TypeDefnAbbrevNode>(
-                TypeDefnAbbrevNode.WidgetAbbrevKey,
-                AttributesBundle(
-                    StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)),
-                    [| TypeDefnAbbrevNode.PowerType.WithValue(powerType.Compile()) |],
-                    Array.empty
-                )
-            )
-
-        static member Measure(name: string, powerType: string) =
-            Ast.Measure(name, Ast.LongIdent(powerType))
 
 type TypeNameNodeModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeNameNode>, comments: string list) =
-        this.AddScalar(TypeDefnAbbrevNode.XmlDocs.WithValue(comments))
-
-type UnitsOfTypeDefnAbbrevNodeAbbrevModifiers =
-
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, comments: string list) =
-        this.AddScalar(TypeDefnAbbrevNode.XmlDocs.WithValue(comments))
+        this.AddScalar(TypeNameNode.XmlDocs.WithValue(comments))
 
 type TypeDefnAbbrevNodeYieldExtensions =
     [<Extension>]
