@@ -31,23 +31,10 @@ module ImplicitConstructor =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let pattern =
                 Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
@@ -75,7 +62,7 @@ module ImplicitConstructor =
                     let value = PrettyNaming.NormalizeIdentifierBackticks value
                     Some(AsSelfIdentifierNode(SingleTextNode.``as``, SingleTextNode.Create(value), Range.Zero))
 
-            ImplicitConstructorNode(xmlDocs, multipleAttributes, accessControl, pattern, alias, Range.Zero))
+            ImplicitConstructorNode(xmlDocs, attributes, accessControl, pattern, alias, Range.Zero))
 
 [<AutoOpen>]
 module ImplicitConstructorBuilders =

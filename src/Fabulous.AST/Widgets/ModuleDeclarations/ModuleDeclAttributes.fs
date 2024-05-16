@@ -16,25 +16,12 @@ module ModuleDeclAttributes =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
             let doExpression = Widgets.getNodeFromWidget<Expr> widget DoExpression
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
-
-            ModuleDeclAttributesNode(multipleAttributes, doExpression, Range.Zero))
+            ModuleDeclAttributesNode(attributes, doExpression, Range.Zero))
 
 [<AutoOpen>]
 module ModuleDeclAttributeNodeBuilders =

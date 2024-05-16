@@ -35,6 +35,13 @@ module CommonExtensions =
             |> Array.ofList
             |> fun v -> XmlDocNode(v, Range.Zero)
 
+    type MultipleAttributeListNode with
+        static member Create(values: AttributeNode list) =
+            MultipleAttributeListNode(
+                [ AttributeListNode(SingleTextNode.leftAttribute, values, SingleTextNode.rightAttribute, Range.Zero) ],
+                Range.Zero
+            )
+
 [<RequireQualifiedAccess>]
 module List =
     let intersperse separator (source: List<'T>) =

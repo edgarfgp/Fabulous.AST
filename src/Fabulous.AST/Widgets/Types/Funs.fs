@@ -39,6 +39,15 @@ module FunsBuilders =
         static member Funs(returnType: string, parameters: WidgetBuilder<Type> list) =
             Ast.Funs(Ast.LongIdent returnType, parameters)
 
+        static member Funs(returnType: WidgetBuilder<Type>, parameter: WidgetBuilder<Type>) =
+            Ast.Funs(returnType, [ parameter ])
+
+        static member Funs(returnType: string, parameter: WidgetBuilder<Type>) =
+            Ast.Funs(Ast.LongIdent returnType, [ parameter ])
+
+        static member Funs(returnType: string, parameter: string) =
+            Ast.Funs(Ast.LongIdent returnType, [ Ast.LongIdent parameter ])
+
         static member Funs(returnType: WidgetBuilder<Type>, parameters: string list) =
             Ast.Funs(returnType, parameters |> List.map Ast.LongIdent)
 

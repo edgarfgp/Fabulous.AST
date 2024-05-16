@@ -29,23 +29,10 @@ module Field =
 
             let fieldType = Widgets.getNodeFromWidget widget FieldType
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let xmlDocs =
                 match lines with
@@ -63,7 +50,7 @@ module Field =
                 else
                     None
 
-            FieldNode(xmlDocs, multipleAttributes, None, mutableKeyword, None, name, fieldType, Range.Zero))
+            FieldNode(xmlDocs, attributes, None, mutableKeyword, None, name, fieldType, Range.Zero))
 
 [<AutoOpen>]
 module FieldBuilders =

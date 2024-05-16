@@ -47,23 +47,10 @@ module BindingMethodNode =
                 | ValueNone -> None
                 | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
-            let attributes = Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let inlineNode =
                 match isInlined with
@@ -85,7 +72,7 @@ module BindingMethodNode =
 
             BindingNode(
                 xmlDocs,
-                multipleAttributes,
+                attributes,
                 MultipleTextsNode(multipleTextsNode, Range.Zero),
                 false,
                 inlineNode,

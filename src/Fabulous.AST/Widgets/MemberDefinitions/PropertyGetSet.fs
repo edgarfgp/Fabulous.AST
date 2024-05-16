@@ -37,26 +37,13 @@ module PropertyGetSetMember =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let isStatic =
                 Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -97,7 +84,7 @@ module PropertyGetSetMember =
 
             MemberDefnPropertyGetSetNode(
                 xmlDocs,
-                multipleAttributes,
+                attributes,
                 multipleTextsNode,
                 inlinedNode,
                 accessControl,

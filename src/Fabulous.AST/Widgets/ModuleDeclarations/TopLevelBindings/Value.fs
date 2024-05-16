@@ -39,23 +39,10 @@ module BindingValue =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes = Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let isMutable =
                 Widgets.tryGetScalarValue widget TopLevelBinding.IsMutable
@@ -79,7 +66,7 @@ module BindingValue =
 
             BindingNode(
                 xmlDocs,
-                multipleAttributes,
+                attributes,
                 MultipleTextsNode([ leadingKeyword ], Range.Zero),
                 isMutable,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),

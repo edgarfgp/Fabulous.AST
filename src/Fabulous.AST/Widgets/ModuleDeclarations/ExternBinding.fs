@@ -30,23 +30,10 @@ module ExternBinding =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let attributesOfType =
                 Widgets.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
@@ -80,7 +67,7 @@ module ExternBinding =
 
             ExternBindingNode(
                 xmlDocs,
-                multipleAttributes,
+                attributes,
                 SingleTextNode.``extern``,
                 multipleAttributesOfType,
                 tp,

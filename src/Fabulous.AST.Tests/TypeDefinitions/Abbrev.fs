@@ -23,6 +23,64 @@ type MyInt = int
 """
 
     [<Fact>]
+    let ``Produces multiple type Abbrev``() =
+        Oak() {
+            AnonymousModule() {
+                Abbrev("SizeType", UInt32())
+                Abbrev("Transform", Funs("'a", "'a")).typeParams(PostfixList("'a"))
+            }
+        }
+
+        |> produces
+            """
+
+type SizeType = uint32
+type Transform<'a> = 'a -> 'a
+
+"""
+
+    [<Fact>]
+    let ``Produces type Abbrev with an Obsolete attribute``() =
+        Oak() {
+            AnonymousModule() {
+                Open("System")
+
+                Abbrev("MyInt", Int())
+                    .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(String("This is obsolete")))))
+            }
+        }
+
+        |> produces
+            """
+open System
+
+[<Obsolete("This is obsolete")>]
+type MyInt = int
+
+    """
+
+    [<Fact>]
+    let ``Produces type Abbrev with xml comments``() =
+        Oak() { AnonymousModule() { Abbrev("MyInt", Int()).xmlDocs([ "hello world" ]) } }
+        |> produces
+            """
+/// hello world
+type MyInt = int
+
+"""
+
+    [<Fact>]
+    let ``Produces type Abbrev with multiple xml comments``() =
+        Oak() { AnonymousModule() { Abbrev("MyInt", Int()).xmlDocs([ "First comment"; "Second comment" ]) } }
+        |> produces
+            """
+/// First comment
+/// Second comment
+type MyInt = int
+
+    """
+
+    [<Fact>]
     let ``Produces type Abbrev using an escape hatch``() =
         let alias =
             TypeDefnAbbrevNode(

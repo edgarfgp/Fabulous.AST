@@ -27,23 +27,10 @@ module AbstractMember =
             let parameters = Widgets.tryGetScalarValue widget Parameters
             let hasGetterSetter = Widgets.tryGetScalarValue widget HasGetterSetter
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -116,7 +103,7 @@ module AbstractMember =
 
             MemberDefnAbstractSlotNode(
                 xmlDocs,
-                multipleAttributes,
+                attributes,
                 MultipleTextsNode.Create([ "abstract"; "member" ]),
                 SingleTextNode(identifier, Range.Zero),
                 None,

@@ -19,30 +19,17 @@ module TyparDeclNode =
         Widgets.register "TyparDeclNode" (fun widget ->
             let tyPar = Widgets.getScalarValue widget TyPar
 
-            let attributes = Widgets.tryGetScalarValue widget MultipleAttributes
-
-            let multipleAttributes =
-                match attributes with
-                | ValueSome values ->
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode.leftAttribute,
-                                  values,
-                                  SingleTextNode.rightAttribute,
-                                  Range.Zero
-                              ) ],
-                            Range.Zero
-                        )
-                    )
-                | ValueNone -> None
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             let intersectionConstrains =
                 Widgets.getScalarValue widget IntersectionConstrains
                 |> List.map(Choice1Of2)
                 |> List.intersperse(Choice2Of2 SingleTextNode.comma)
 
-            TyparDeclNode(multipleAttributes, SingleTextNode.Create(tyPar), intersectionConstrains, Range.Zero))
+            TyparDeclNode(attributes, SingleTextNode.Create(tyPar), intersectionConstrains, Range.Zero))
 
 type TyparDeclNodeModifiers =
     [<Extension>]
