@@ -73,14 +73,22 @@ module Widgets =
         | ValueNone -> failwith $"Could not find widget collection attribute {def.Name} on widget {widget}"
         | ValueSome value ->
             let struct (count, elements) = value
-            elements |> Array.take(int count) |> List.ofArray
+
+            if count = uint16 0 then
+                List.empty
+            else
+                elements |> Array.take(int count) |> List.ofArray
 
     let tryGetWidgetsFromWidgetCollection (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match tryGetWidgetCollectionValue widget def with
         | ValueNone -> ValueNone
         | ValueSome value ->
             let struct (count, elements) = value
-            elements |> Array.take(int count) |> List.ofArray |> ValueSome
+
+            if count = uint16 0 then
+                ValueSome List.empty
+            else
+                elements |> Array.take(int count) |> List.ofArray |> ValueSome
 
     let getNodesFromWidgetCollection<'T> (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         getWidgetsFromWidgetCollection widget def |> List.map createValueForWidget<'T>
