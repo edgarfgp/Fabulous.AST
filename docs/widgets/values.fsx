@@ -82,11 +82,12 @@ Oak() {
 
         Value(NamedPat("value6"), "12")
 
-        Value("value7", String "12").typeParams ([ "'a" ])
+        Value("value7", String "12").typeParams (PostfixList([ "'a" ]))
 
-        Value("value8", ConstantExpr(String "12")).typeParams ([ "'a" ])
+        Value("value8", ConstantExpr(String "12")).typeParams (PostfixList([ "'a" ]))
 
-        Value(NamedPat("value9"), ConstantExpr(String "12")).typeParams ([ "'a" ])
+        Value(NamedPat("value9"), ConstantExpr(String "12"))
+            .typeParams (PostfixList([ "'a" ]))
 
         Value("value10", "12").returnType (Int())
 

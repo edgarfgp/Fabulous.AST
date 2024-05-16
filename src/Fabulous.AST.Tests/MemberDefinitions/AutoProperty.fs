@@ -23,21 +23,21 @@ module AutoProperty =
                         )
                     )
                 ) {
-                    AutoProperty("Name", ConstantExpr(Constant("name")))
-                    AutoProperty("Age", ConstantExpr(Constant("age")))
+                    AutoPropertyGetSet("Name", ConstantExpr(Constant("name")))
+                    AutoPropertyGetSet("Age", ConstantExpr(Constant("age")))
                     AutoPropertyGet("A", ConstantExpr(String("")))
                     AutoPropertyGet("B", ConstantExpr(String(""))).toStatic()
 
-                    AutoProperty("C", ConstantExpr(String("")))
+                    AutoPropertyGetSet("C", ConstantExpr(String("")))
                         .toPrivate()
                         .xmlDocs([ "Im a private property" ])
 
-                    AutoProperty("D", ConstantExpr(String("")))
+                    AutoPropertyGetSet("D", ConstantExpr(String("")))
                         .toInternal()
                         .returnType(String())
                         .xmlDocs([ "Im an internal property with a return type" ])
 
-                    AutoProperty("E", ConstantExpr(String("")))
+                    AutoPropertyGetSet("E", ConstantExpr(String("")))
                         .toPublic()
                         .attribute(Attribute("System.Obsolete"))
                         .xmlDocs([ "Im a public property with an attribute" ])

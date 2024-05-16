@@ -67,7 +67,7 @@ Oak() {
             .attribute (Attribute("Struct"))
 
         (Class("Person5") { Property("this.Name", ConstantExpr(String(""))) })
-            .typeParams ([ "'a"; "'b" ])
+            .typeParams (PostfixList([ "'a"; "'b" ]))
     }
 }
 |> Gen.mkOak

@@ -20,7 +20,7 @@ module InterfaceMembers =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     InterfaceMember(LongIdent "IMyInterface") {
                         Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))

@@ -71,22 +71,10 @@ module BindingMethodNode =
                 | ValueSome false -> None
                 | ValueNone -> None
 
-            let typeParams = Widgets.tryGetScalarValue widget TopLevelBinding.TypeParams
-
             let typeParams =
-                match typeParams with
-                | ValueSome values ->
-                    TyparDeclsPostfixListNode(
-                        SingleTextNode.lessThan,
-                        [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
-                        [],
-                        SingleTextNode.greaterThan,
-                        Range.Zero
-                    )
-                    |> TyparDecls.PostfixList
-                    |> Some
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget TopLevelBinding.TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
 
             let multipleTextsNode =
                 [ if isStatic then

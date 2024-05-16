@@ -12,7 +12,7 @@ module Val =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let LeadingKeyword = Attributes.defineScalar<string list> "LeadingKeyword"
+    let LeadingKeyword = Attributes.defineScalar<SingleTextNode list> "LeadingKeyword"
 
     let IsInlined = Attributes.defineScalar<bool> "Inlined"
 
@@ -24,7 +24,7 @@ module Val =
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
-    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let TypeParams = Attributes.defineWidget "TypeParams"
 
     let WidgetKey =
         Widgets.register "ValNode" (fun widget ->
@@ -81,27 +81,23 @@ module Val =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let typeParams = Widgets.tryGetScalarValue widget TypeParams
-
             let typeParams =
-                match typeParams with
-                | ValueSome values ->
-                    TyparDeclsPostfixListNode(
-                        SingleTextNode.lessThan,
-                        [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
-                        [],
-                        SingleTextNode.greaterThan,
-                        Range.Zero
-                    )
-                    |> TyparDecls.PostfixList
-                    |> Some
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
+
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget LeadingKeyword
+                |> ValueOption.map(fun x ->
+                    match x with
+                    | [] -> None
+                    | nodes -> Some(MultipleTextsNode(nodes, Range.Zero)))
+                |> ValueOption.defaultValue None
 
             ValNode(
                 xmlDocs,
                 multipleAttributes,
-                Some(MultipleTextsNode([ SingleTextNode.``val`` ], Range.Zero)),
+                leadingKeyword,
                 inlined,
                 isMutable,
                 accessControl,
@@ -116,18 +112,39 @@ module Val =
 [<AutoOpen>]
 module ValBuilders =
     type Ast with
-        static member Val(identifier: string, returnType: WidgetBuilder<Type>) =
+        static member private BaseValField
+            (leadingKeyword: SingleTextNode list, identifier: string, returnType: WidgetBuilder<Type>)
+            =
             WidgetBuilder<ValNode>(
                 Val.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Val.Identifier.WithValue(identifier)),
+                    StackList.two(Val.Identifier.WithValue(identifier), Val.LeadingKeyword.WithValue(leadingKeyword)),
                     [| Val.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member Val(identifier: string, returnType: string) =
-            Ast.Val(identifier, Ast.LongIdent(returnType))
+        static member ValField(identifier: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseValField([ SingleTextNode.``val`` ], identifier, returnType)
+
+        static member ValField(identifier: string, returnType: string) =
+            Ast.ValField(identifier, Ast.LongIdent(returnType))
+
+        static member ValField(leadingKeyword: string list, identifier: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseValField([ for kw in leadingKeyword -> SingleTextNode.Create(kw) ], identifier, returnType)
+
+        static member ValField(leadingKeyword: string list, identifier: string, returnType: string) =
+            Ast.BaseValField(
+                [ for kw in leadingKeyword -> SingleTextNode.Create(kw) ],
+                identifier,
+                Ast.LongIdent(returnType)
+            )
+
+        static member ValField(leadingKeyword: string, identifier: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseValField([ SingleTextNode.Create(leadingKeyword) ], identifier, returnType)
+
+        static member ValField(leadingKeyword: string, identifier: string, returnType: string) =
+            Ast.BaseValField([ SingleTextNode.Create(leadingKeyword) ], identifier, Ast.LongIdent(returnType))
 
 type ValNodeModifiers =
     [<Extension>]
@@ -168,8 +185,8 @@ type ValNodeModifiers =
         this.AddScalar(Val.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<ValNode>, typeParams: string list) =
-        this.AddScalar(Val.TypeParams.WithValue(typeParams))
+    static member inline typeParams(this: WidgetBuilder<ValNode>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(Val.TypeParams.WithValue(typeParams.Compile()))
 
 type ValYieldExtensions =
     [<Extension>]

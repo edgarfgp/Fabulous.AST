@@ -65,7 +65,7 @@ type MyClass(name: string) = class end
                     ImplicitConstructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))
                 )
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
-                    .typeParams([ "'a" ])
+                    .typeParams(PostfixList([ "'a" ]))
             }
         }
         |> produces
@@ -76,7 +76,7 @@ type MyClass<'a>(name: string) = class end
 
     [<Fact>]
     let ``Produces a class end with type params``() =
-        Oak() { AnonymousModule() { ClassEnd("MyClass") |> _.typeParams([ "'a"; "'b" ]) } }
+        Oak() { AnonymousModule() { ClassEnd("MyClass") |> _.typeParams(PostfixList([ "'a"; "'b" ])) } }
         |> produces
             """
 type MyClass<'a, 'b> = class end
@@ -84,7 +84,12 @@ type MyClass<'a, 'b> = class end
 
     [<Fact>]
     let ``Produces a class end with constructor and  type params``() =
-        Oak() { AnonymousModule() { ClassEnd("MyClass", ImplicitConstructor()).typeParams([ "'a"; "'b" ]) } }
+        Oak() {
+            AnonymousModule() {
+                ClassEnd("MyClass", ImplicitConstructor())
+                    .typeParams(PostfixList([ "'a"; "'b" ]))
+            }
+        }
         |> produces
             """
 type MyClass<'a, 'b>() = class end

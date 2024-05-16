@@ -81,7 +81,7 @@ Oak() {
             Field("Age", "int")
             Field("Address", "string")
         })
-            .typeParams([ "'T" ])
+            .typeParams(PostfixList([ "'T" ]))
             .xmlDocs ([ "Generic record" ])
     }
 }

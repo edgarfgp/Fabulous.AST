@@ -125,7 +125,7 @@ type Colors =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Method(
                         "this.A",
@@ -156,7 +156,7 @@ type Colors<'other> =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Method("A", ParenPat(ParameterPat(ConstantPat(Constant("p")), String())), ConstantExpr(String ""))
                         .toStatic()
@@ -723,7 +723,10 @@ type Person() =
     let ``Produces an method member with type parameters``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Int 23)).typeParams([ "'other" ]) }
+                Class("Person") {
+                    Method("this.Name", UnitPat(), ConstantExpr(Int 23))
+                        .typeParams(PostfixList(TyparDecl("'other")))
+                }
             }
         }
         |> produces
@@ -761,7 +764,7 @@ type Person =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Method("this.Name", UnitPat(), ConstantExpr(String "name"))
                 }

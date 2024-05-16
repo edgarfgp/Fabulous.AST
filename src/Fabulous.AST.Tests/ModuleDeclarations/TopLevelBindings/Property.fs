@@ -154,7 +154,7 @@ type Colors =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Property(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
                 }
@@ -182,7 +182,7 @@ type Colors<'other> =
                     Field("Blue", LongIdent("'other"))
                     Field("Yellow", LongIdent("int"))
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Property(ConstantPat(Constant("A")), ConstantExpr(String "")).toStatic()
                 }
@@ -229,7 +229,7 @@ type Person() =
                     Property(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
                     Property(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
                 }
-                |> _.typeParams([ "'other" ])
+                |> _.typeParams(PostfixList([ "'other" ]))
             }
         }
         |> produces
@@ -367,7 +367,7 @@ type Person =
         Oak() {
             AnonymousModule() {
                 (Record("Person") { Field("Name", LongIdent("'other")) })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                 }
@@ -434,7 +434,7 @@ type Person =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                 }
@@ -464,7 +464,7 @@ type Colors<'other> =
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 })
-                    .typeParams([ "'other" ])
+                    .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     Property(ConstantPat(Constant("Name")), ConstantExpr(String "name")).toStatic()
                 }

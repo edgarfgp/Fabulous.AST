@@ -21,7 +21,7 @@ module Record =
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
 
-    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let TypeParams = Attributes.defineWidget "TypeParams"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -62,22 +62,10 @@ module Record =
                     )
                 | ValueNone -> None
 
-            let typeParams = Widgets.tryGetScalarValue widget TypeParams
-
             let typeParams =
-                match typeParams with
-                | ValueSome values ->
-                    TyparDeclsPostfixListNode(
-                        SingleTextNode.lessThan,
-                        [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
-                        [],
-                        SingleTextNode.greaterThan,
-                        Range.Zero
-                    )
-                    |> TyparDecls.PostfixList
-                    |> Some
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -149,8 +137,8 @@ type RecordModifiers =
         RecordModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<TypeDefnRecordNode>, value: string list) =
-        this.AddScalar(Record.TypeParams.WithValue(value))
+    static member inline typeParams(this: WidgetBuilder<TypeDefnRecordNode>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(Record.TypeParams.WithValue(typeParams.Compile()))
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnRecordNode>) =

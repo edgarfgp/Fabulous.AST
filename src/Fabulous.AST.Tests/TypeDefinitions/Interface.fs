@@ -38,7 +38,7 @@ module GenericInterface =
                     AbstractProperty("Pi", Float())
                     AbstractGetSet("Area", Float())
                 }
-                |> _.typeParams([ "'other"; "'another" ])
+                |> _.typeParams(PostfixList([ "'other"; "'another" ]))
 
             }
         }

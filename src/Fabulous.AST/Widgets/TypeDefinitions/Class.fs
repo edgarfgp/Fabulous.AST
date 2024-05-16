@@ -17,7 +17,7 @@ module Class =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
-    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let TypeParams = Attributes.defineWidget "TypeParams"
 
     let IsClass = Attributes.defineScalar<bool> "IsClass"
 
@@ -32,23 +32,13 @@ module Class =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget ImplicitConstructor
 
             let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
-            let typeParams = Widgets.tryGetScalarValue widget TypeParams
-            let isClass = Widgets.getScalarValue widget IsClass
 
             let typeParams =
-                match typeParams with
-                | ValueSome values ->
-                    TyparDeclsPostfixListNode(
-                        SingleTextNode.lessThan,
-                        [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
-                        [],
-                        SingleTextNode.greaterThan,
-                        Range.Zero
-                    )
-                    |> TyparDecls.PostfixList
-                    |> Some
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
+
+            let isClass = Widgets.getScalarValue widget IsClass
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -163,8 +153,8 @@ type ClassModifiers =
         this.AddScalar(Class.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: string list) =
-        this.AddScalar(Class.TypeParams.WithValue(typeParams))
+    static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(Class.TypeParams.WithValue(typeParams.Compile()))
 
     [<Extension>]
     static member inline attributes

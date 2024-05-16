@@ -19,7 +19,8 @@ module TypeDefnExplicit =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let TypeParams = Attributes.defineScalar<string list> "TypeParams"
+    let TypeParams = Attributes.defineWidget "TypeParams"
+
     let Constructor = Attributes.defineWidget "Constructor"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
@@ -58,7 +59,10 @@ module TypeDefnExplicit =
                     Some xmlDocNode
                 | ValueNone -> None
 
-            let typeParams = Widgets.tryGetScalarValue widget TypeParams
+            let typeParams =
+                Widgets.tryGetNodeFromWidget widget TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
 
             let implicitConstructor =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget Constructor
@@ -67,22 +71,6 @@ module TypeDefnExplicit =
                 match implicitConstructor with
                 | ValueNone -> None
                 | ValueSome implicitConstructor -> Some implicitConstructor
-
-            let typeParams =
-                match typeParams with
-                | ValueSome values when values.IsEmpty -> None
-                | ValueNone -> None
-                | ValueSome values ->
-                    TyparDeclsPostfixListNode(
-                        SingleTextNode.lessThan,
-                        [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create(v), [], Range.Zero) ],
-                        [],
-                        SingleTextNode.greaterThan,
-                        Range.Zero
-                    )
-                    |> TyparDecls.PostfixList
-                    |> Some
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -197,8 +185,8 @@ type ClassEndModifiers =
         ClassEndModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: string list) =
-        this.AddScalar(TypeDefnExplicit.TypeParams.WithValue(typeParams))
+    static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(TypeDefnExplicit.TypeParams.WithValue(typeParams.Compile()))
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnExplicitNode>) =
