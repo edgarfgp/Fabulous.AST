@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre11] - 2024-05-16
+
+### Changed
+- TyparDecl Widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/96
+- Use `voption` by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/99
+- Attributes clean up by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/101
+
+### Fixed
+- Abbrev (type alias) doesn't output XML Docs by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/101
+
 ## [1.0.0-pre10] - 2024-05-13
 
 ### Added
@@ -189,7 +199,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre10...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre11...HEAD
+[1.0.0-pre11]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre11
 [1.0.0-pre10]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre10
 [1.0.0-pre9]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre9
 [1.0.0-pre8]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre8
