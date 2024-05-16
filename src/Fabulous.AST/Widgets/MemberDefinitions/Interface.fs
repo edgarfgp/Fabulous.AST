@@ -18,7 +18,7 @@ module InterfaceMember =
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
-                |> Option.defaultValue []
+                |> ValueOption.defaultValue []
 
             let withNode =
                 if members.IsEmpty then

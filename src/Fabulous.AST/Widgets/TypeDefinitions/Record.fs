@@ -33,7 +33,8 @@ module Record =
             let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
 
             let members =
-                Widgets.tryGetNodesFromWidgetCollection widget Members |> Option.defaultValue []
+                Widgets.tryGetNodesFromWidgetCollection widget Members
+                |> ValueOption.defaultValue []
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 

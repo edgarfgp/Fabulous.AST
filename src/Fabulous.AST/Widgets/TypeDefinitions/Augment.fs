@@ -17,12 +17,9 @@ module Augmentation =
             let name =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
-            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
-
             let members =
-                match members with
-                | Some members -> members
-                | None -> []
+                Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+                |> ValueOption.defaultValue []
 
             TypeDefnAugmentationNode(
                 TypeNameNode(

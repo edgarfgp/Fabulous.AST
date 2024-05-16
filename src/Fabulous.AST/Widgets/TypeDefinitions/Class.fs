@@ -31,7 +31,9 @@ module Class =
             let constructor =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget ImplicitConstructor
 
-            let members = Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+            let members =
+                Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
+                |> ValueOption.defaultValue []
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeParams
@@ -66,11 +68,6 @@ module Class =
                         )
                     )
                 | ValueNone -> None
-
-            let members =
-                match members with
-                | None -> []
-                | Some members -> members
 
             let constructor =
                 match constructor with

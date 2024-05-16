@@ -21,10 +21,11 @@ module ObjExpr =
         Widgets.register "CompExprBody" (fun widget ->
             let bindings =
                 Widgets.tryGetNodesFromWidgetCollection widget Bindings
-                |> Option.defaultValue []
+                |> ValueOption.defaultValue []
 
             let members =
-                Widgets.tryGetNodesFromWidgetCollection widget Members |> Option.defaultValue []
+                Widgets.tryGetNodesFromWidgetCollection widget Members
+                |> ValueOption.defaultValue []
 
             let interfaces =
                 Widgets.tryGetScalarValue widget Interfaces |> ValueOption.defaultValue []
