@@ -34,7 +34,7 @@ module Union =
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
-                |> Option.defaultValue []
+                |> ValueOption.defaultValue []
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 

@@ -77,18 +77,18 @@ module Widgets =
 
     let tryGetWidgetsFromWidgetCollection (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match tryGetWidgetCollectionValue widget def with
-        | ValueNone -> None
+        | ValueNone -> ValueNone
         | ValueSome value ->
             let struct (count, elements) = value
-            elements |> Array.take(int count) |> List.ofArray |> Some
+            elements |> Array.take(int count) |> List.ofArray |> ValueSome
 
     let getNodesFromWidgetCollection<'T> (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         getWidgetsFromWidgetCollection widget def |> List.map createValueForWidget<'T>
 
     let tryGetNodesFromWidgetCollection<'T> (widget: Widget) (def: WidgetCollectionAttributeDefinition) =
         match tryGetWidgetsFromWidgetCollection widget def with
-        | None -> None
-        | Some widgets -> Some(widgets |> List.map createValueForWidget<'T>)
+        | ValueNone -> ValueNone
+        | ValueSome widgets -> ValueSome(widgets |> List.map createValueForWidget<'T>)
 
     let createNodeFromBuilder(builder: WidgetBuilder<'T>) : 'U =
         builder.Compile() |> createValueForWidget<'U>
