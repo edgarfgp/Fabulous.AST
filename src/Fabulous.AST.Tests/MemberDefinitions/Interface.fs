@@ -26,7 +26,7 @@ module InterfaceMembers =
                         Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
 
-                    EmptyInterfaceMember("IMyInterface2")
+                    InterfaceMember("IMyInterface2") { () }
                 }
 
             }
@@ -129,13 +129,13 @@ type Person() =
                         Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
-                    EmptyInterfaceMember("IFoo2")
+                    InterfaceMember("IFoo2") { () }
 
                     InterfaceMember(LongIdent "IFoo3") {
                         Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
-                    EmptyInterfaceMember("IFoo4")
+                    InterfaceMember("IFoo4") { () }
                 }
             }
         }
