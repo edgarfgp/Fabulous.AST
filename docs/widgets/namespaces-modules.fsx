@@ -48,33 +48,31 @@ open type Fabulous.AST.Ast
 
 Oak() {
     Namespace("MyNamespace") { Record("Person") { Field("name", "string") } }
-    (*
-    namespace MyNamespace
-
-    type Person = { name: string }
-    *)
-
-    TopLevelModule("MyModule") { Record("Person") { Field("name", "string") } }
-
-    (*
-    module MyModule
-
-    // type Person = { name: string }
-    *)
-    AnonymousModule() { Record("Person") { Field("name", "string") } }
-
-    // type Person = { name: string }
-
+    TopLevelModule("MyModule") { Record("Person1") { Field("name", "string") } }
+    AnonymousModule() { Record("Person2") { Field("name", "string") } }
     Namespace("MyNamespace") { NestedModule("MyModule") { Record("Person") { Field("name", "string") } } }
-
-(*
-    namespace MyNamespace
-
-    module MyModule =
-        type Person = { name: string }
-    *)
 }
 |> Gen.mkOak
 |> CodeFormatter.FormatOakAsync
 |> Async.RunSynchronously
 |> printfn "%s"
+
+(**
+Will output the following code:
+*)
+
+(**
+
+namespace MyNamespace
+
+type Person = { name: string }
+module MyModule
+
+type Person1 = { name: string }
+type Person2 = { name: string }
+namespace MyNamespace
+
+module MyModule =
+    type Person = { name: string }
+
+*)

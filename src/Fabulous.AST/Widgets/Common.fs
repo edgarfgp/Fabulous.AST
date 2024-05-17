@@ -12,8 +12,8 @@ type AccessControl =
 
 [<RequireQualifiedAccess>]
 type ModuleOrNamespaceDecl =
-    | TopLevelModule of string
-    | Namespace of string
+    | TopLevelModule
+    | Namespace
     | AnonymousModule
 
 [<AutoOpen>]

@@ -120,11 +120,8 @@
         <Compile Include="Widgets\SingleNode.fs" />
         <Compile Include="Widgets\ImplicitConstructor.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ParsedHashDirective.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\Oak.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\ModuleDeclarations\NestedModule.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Open.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\OpenType.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Val.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ExternBindingPattern.fs" />
@@ -154,6 +151,10 @@
         <Compile Include="Widgets\TypeDefinitions\Class.fs" />
         <Compile Include="Widgets\TypeDefinitions\TypeDefnExplicit.fs" />
         <Compile Include="Widgets\TypeDefinitions\Augment.fs" />
+        <Compile Include="Widgets\Namespace.fs" />
+        <Compile Include="Widgets\AnonymousModule.fs" />
+        <Compile Include="Widgets\TopLevelModule.fs" />
+        <Compile Include="Widgets\Oak.fs" />
     </ItemGroup>
 
     <ItemGroup>
