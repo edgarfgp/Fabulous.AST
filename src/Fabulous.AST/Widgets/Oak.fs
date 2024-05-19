@@ -25,24 +25,40 @@ module Oak =
             Oak(hashDirectives, decls, Range.Zero))
 
 [<AutoOpen>]
-module AnonymousModuleBuilders =
+module SyntaxOakBuilders =
     type Ast with
         static member Oak() =
-            CollectionBuilder<Oak, ModuleOrNamespaceNode>(Oak.WidgetKey, Oak.Decls)
+            CollectionBuilder<Oak, 'marker>(Oak.WidgetKey, Oak.Decls)
 
-type AnonymousModuleModifiers =
+type SyntaxOakModifiers =
     [<Extension>]
     static member inline hashDirectives(this: WidgetBuilder<Oak>, values: WidgetBuilder<ParsedHashDirectiveNode> list) =
         this.AddScalar(Oak.ParsedHashDirectives.WithValue([ for value in values -> Gen.mkOak value ]))
 
     [<Extension>]
     static member inline hashDirective(this: WidgetBuilder<Oak>, value: WidgetBuilder<ParsedHashDirectiveNode>) =
-        AnonymousModuleModifiers.hashDirectives(this, [ value ])
+        SyntaxOakModifiers.hashDirectives(this, [ value ])
 
-type AnonymousModuleExtensions =
+type SyntaxOakExtensions =
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<ModuleOrNamespaceNode>)
+        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<NamespaceNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        let widget = Ast.EscapeHatch(node).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<AnonymousModuleNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        let widget = Ast.EscapeHatch(node).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<TopLevelModuleNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         let widget = Ast.EscapeHatch(node).Compile()

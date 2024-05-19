@@ -16,7 +16,9 @@
         <Compile Include="Constant.fs" />
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
+        <Compile Include="ModuleDeclarations\Oak.fs" />
         <Compile Include="ModuleDeclarations\AnonymousModule.fs" />
+        <Compile Include="ModuleDeclarations\OpenList.fs" />
         <Compile Include="ModuleDeclarations\HashDirectives.fs" />
         <Compile Include="ModuleDeclarations\Namespace.fs" />
         <Compile Include="ModuleDeclarations\Module.fs" />
@@ -29,8 +31,6 @@
         <Compile Include="ModuleDeclarations\TopLevelBindings\Function.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Property.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Method.fs" />
-        <Compile Include="OpenDirectives\Open.fs" />
-        <Compile Include="OpenDirectives\OpenType.fs" />
         <Compile Include="MemberDefinitions\Interface.fs" />
         <Compile Include="MemberDefinitions\AbstractSlot.fs" />
         <Compile Include="MemberDefinitions\AutoProperty.fs" />
