@@ -10,12 +10,6 @@ type AccessControl =
     | Internal
     | Unknown
 
-[<RequireQualifiedAccess>]
-type ModuleOrNamespaceDecl =
-    | TopLevelModule
-    | Namespace
-    | AnonymousModule
-
 [<AutoOpen>]
 module CommonExtensions =
     type MultipleTextsNode with
