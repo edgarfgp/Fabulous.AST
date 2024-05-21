@@ -16,6 +16,11 @@ module NestedModule =
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Decls = Attributes.defineWidgetCollection "Decls"
 
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+
+    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+
     let WidgetKey =
         Widgets.register "NestedModule" (fun widget ->
             let name = Widgets.getScalarValue widget Name
@@ -39,9 +44,23 @@ module NestedModule =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
+            let lines = Widgets.tryGetScalarValue widget XmlDocs
+
+            let xmlDocs =
+                match lines with
+                | ValueSome values ->
+                    let xmlDocNode = XmlDocNode.Create(values)
+                    Some xmlDocNode
+                | ValueNone -> None
+
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
+
             NestedModuleNode(
-                None,
-                None,
+                xmlDocs,
+                attributes,
                 SingleTextNode.``module``,
                 accessControl,
                 isRecursive,
@@ -77,6 +96,25 @@ type NestedModuleModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<NestedModuleNode>) =
         this.AddScalar(NestedModule.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<NestedModuleNode>, xmlDocs: string list) =
+        this.AddScalar(NestedModule.XmlDocs.WithValue(xmlDocs))
+
+    [<Extension>]
+    static member inline attributes
+        (this: WidgetBuilder<NestedModuleNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            NestedModule.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
+        )
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<NestedModuleNode>, attribute: WidgetBuilder<AttributeNode>) =
+        NestedModuleModifiers.attributes(this, [ attribute ])
 
 type NestedModuleYieldExtensions =
     [<Extension>]
