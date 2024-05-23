@@ -24,6 +24,42 @@ module A =
 """
 
     [<Fact>]
+    let ``Produces a NestedModule with xml comments``() =
+        Oak() {
+            AnonymousModule() {
+                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                |> _.xmlDocs([ "I'm a xml comment" ])
+            }
+        }
+
+        |> produces
+            """
+
+/// I'm a xml comment
+module A =
+    let x = 12
+
+"""
+
+    [<Fact>]
+    let ``Produces a NestedModule with an attribute``() =
+        Oak() {
+            AnonymousModule() {
+                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                |> _.attribute(Attribute("AutoOpen"))
+            }
+        }
+
+        |> produces
+            """
+
+[<AutoOpen>]
+module A =
+    let x = 12
+
+"""
+
+    [<Fact>]
     let ``Produces a NestedModule using escape hatch``() =
         Oak() {
             AnonymousModule() {
