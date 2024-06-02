@@ -1,7 +1,6 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList

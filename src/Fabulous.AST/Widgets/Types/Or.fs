@@ -2,7 +2,6 @@ namespace Fabulous.AST
 
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
-open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module OrType =
