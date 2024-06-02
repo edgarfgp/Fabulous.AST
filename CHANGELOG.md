@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre13] - 2024-06-02
+
+### Added
+- ModuleAbbrev widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/104
+
+### Changed
+- Update Fantomas.Core by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/105
+
 ## [1.0.0-pre12] - 2024-05-20
 ### Changed
 - Allow `Unit` as empty widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/102
@@ -204,7 +212,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre12...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre13...HEAD
+[1.0.0-pre13]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre13
 [1.0.0-pre12]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre12
 [1.0.0-pre11]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre11
 [1.0.0-pre10]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre10
