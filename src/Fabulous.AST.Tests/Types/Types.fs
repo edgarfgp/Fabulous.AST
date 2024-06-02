@@ -382,12 +382,10 @@ let t: array<array<string>> = false
                     )
 
                 Class("Class7") { AutoProperty("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
-                |> _.typeParams(
-                    PostfixList(
-                        TyparDecl("'T"),
-                        SupportsMember("'T", SigMember(ValField("new", "", Funs("'T", [ "unit" ]))))
-                    )
-                )
+                |> _.typeParams(PostfixList(
+                    TyparDecl("'T"),
+                    SupportsMember("'T", SigMember(ValField("new", "", Funs("'T", [ "unit" ]))))
+                ))
 
                 ClassEnd("Class8")
                     .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "not struct")))

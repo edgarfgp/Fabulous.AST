@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre13] - 2024-06-02
+### Added
+- ModuleAbbrev widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/104
+
 ## [1.0.0-pre12] - 2024-05-20
 ### Changed
 - Allow `Unit` as empty widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/102
