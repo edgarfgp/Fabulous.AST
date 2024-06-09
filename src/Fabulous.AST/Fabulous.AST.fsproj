@@ -100,6 +100,7 @@
         <Compile Include="Widgets\Expressions\NamedComputation.fs" />
         <Compile Include="Widgets\Expressions\New.fs" />
         <Compile Include="Widgets\Expressions\IndexRange.fs" />
+        <Compile Include="Widgets\Expressions\For.fs" />
         <Compile Include="Widgets\Expressions\ForEach.fs" />
         <Compile Include="Widgets\Expressions\While.fs" />
         <Compile Include="Widgets\Expressions\Tuple.fs" />
