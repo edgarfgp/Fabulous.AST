@@ -50,6 +50,7 @@
         <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="TypeDefinitions\Augmentation.fs" />
         <Compile Include="Expressions\Lazy.fs" />
+        <Compile Include="Expressions\DotLambda.fs" />
         <Compile Include="Expressions\Quoted.fs" />
         <Compile Include="Expressions\Paren.fs" />
         <Compile Include="Expressions\Typed.fs" />
