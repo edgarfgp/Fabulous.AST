@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+### Added
+- `For` and `DotLambda` widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/106
+
+### Changed
+- Update `Fantomas.Core` by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/105
+
 ## [1.0.0-pre13] - 2024-06-02
 
 ### Added
@@ -212,7 +218,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre13...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre14...HEAD
+[1.0.0-pre14]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre14
 [1.0.0-pre13]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre13
 [1.0.0-pre12]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre12
 [1.0.0-pre11]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre11
