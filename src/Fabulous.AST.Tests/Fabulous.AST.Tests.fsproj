@@ -50,6 +50,7 @@
         <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="TypeDefinitions\Augmentation.fs" />
         <Compile Include="Expressions\Lazy.fs" />
+        <Compile Include="Expressions\DotLambda.fs" />
         <Compile Include="Expressions\Quoted.fs" />
         <Compile Include="Expressions\Paren.fs" />
         <Compile Include="Expressions\Typed.fs" />
@@ -57,6 +58,7 @@
         <Compile Include="Expressions\New.fs" />
         <Compile Include="Expressions\IndexRange.fs" />
         <Compile Include="Expressions\ForEach.fs" />
+        <Compile Include="Expressions\For.fs" />
         <Compile Include="Expressions\While.fs" />
         <Compile Include="Expressions\Tuple.fs" />
         <Compile Include="Expressions\StructTuple.fs" />
