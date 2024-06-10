@@ -25,3 +25,15 @@ module CompExprBodyBuilders =
                 CompExprBody.WidgetKey,
                 AttributesBundle(StackList.one(CompExprBody.Statements.WithValue(statements)), Array.empty, Array.empty)
             )
+
+        static member CompExprBodyExpr(values: WidgetBuilder<Expr> list) =
+            let values = values |> List.map(fun e -> Ast.OtherExpr(e))
+            Ast.CompExprBodyExpr(values)
+
+        static member CompExprBodyExpr(values: string list) =
+            let values = values |> List.map(fun e -> Ast.OtherExpr(e))
+            Ast.CompExprBodyExpr(values)
+
+        static member CompExprBodyExpr(values: WidgetBuilder<BindingNode> list) =
+            let values = values |> List.map(fun e -> Ast.LetOrUseExpr(e))
+            Ast.CompExprBodyExpr(values)

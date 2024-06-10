@@ -68,6 +68,10 @@ module ComputationExpressionStatementBuilders =
                 )
             )
 
+        static member OtherExpr(value: WidgetBuilder<Constant>) = Ast.OtherExpr(Ast.ConstantExpr(value))
+
+        static member OtherExpr(value: string) = Ast.OtherExpr(Ast.ConstantExpr(value))
+
         static member LetOrUseBangExpr(pat: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<ComputationExpressionStatement>(
                 ComputationExpressionStatement.WidgetLetOrUseBangStatementKey,
