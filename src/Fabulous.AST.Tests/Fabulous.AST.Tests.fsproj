@@ -76,6 +76,7 @@
         <Compile Include="Expressions\InfixApp.fs" />
         <Compile Include="Expressions\InheritRecord.fs" />
         <Compile Include="Expressions\Record.fs" />
+        <Compile Include="Expressions\AnonStructRecord.fs" />
         <Compile Include="Expressions\Conditionals.fs" />
         <Compile Include="Patterns\Or.fs" />
         <Compile Include="Patterns\As.fs" />
