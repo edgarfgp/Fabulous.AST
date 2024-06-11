@@ -52,6 +52,9 @@
         <Compile Include="Expressions\Lazy.fs" />
         <Compile Include="Expressions\Chain.fs" />
         <Compile Include="Expressions\AppSingleParenArg.fs" />
+        <Compile Include="Expressions\Lambda.fs" />
+        <Compile Include="Expressions\ParenLambda.fs" />
+        <Compile Include="Expressions\MatchLambda.fs" />
         <Compile Include="Expressions\ExprBeginEnd.fs" />
         <Compile Include="Expressions\ExplicitConstructorThen.fs" />
         <Compile Include="Expressions\DotLambda.fs" />

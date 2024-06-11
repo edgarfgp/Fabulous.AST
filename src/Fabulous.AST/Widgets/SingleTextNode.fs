@@ -87,3 +87,5 @@ module SingleTextNode =
     let dot = SingleTextNode.Create(".")
     let ampersand = SingleTextNode.Create "&"
     let ``begin`` = SingleTextNode.Create("begin")
+    let ``fun`` = SingleTextNode.Create("fun")
+    let ``function`` = SingleTextNode.Create("function")
