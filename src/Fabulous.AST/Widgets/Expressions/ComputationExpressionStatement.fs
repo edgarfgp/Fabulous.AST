@@ -16,7 +16,7 @@ module ComputationExpressionStatement =
 
             let inKeyword =
                 match Widgets.tryGetScalarValue widget InKeyword with
-                | ValueSome true -> Some(SingleTextNode.inKeyword)
+                | ValueSome true -> Some(SingleTextNode.``in``)
                 | _ -> None
 
             ComputationExpressionStatement.LetOrUseStatement(ExprLetOrUseNode(binding, inKeyword, Range.Zero)))
