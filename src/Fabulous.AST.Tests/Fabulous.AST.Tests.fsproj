@@ -55,6 +55,7 @@
         <Compile Include="Expressions\Lambda.fs" />
         <Compile Include="Expressions\ParenLambda.fs" />
         <Compile Include="Expressions\MatchLambda.fs" />
+        <Compile Include="Expressions\TraitCall.fs" />
         <Compile Include="Expressions\ExprBeginEnd.fs" />
         <Compile Include="Expressions\ExplicitConstructorThen.fs" />
         <Compile Include="Expressions\DotLambda.fs" />
