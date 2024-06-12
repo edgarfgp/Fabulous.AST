@@ -15,7 +15,7 @@ module TraitCall =
             AnonymousModule() {
                 ParenExpr(
                     TraitCallExpr(
-                        ParenType("^N"),
+                        Paren("^N"),
                         SigMember(ValField([ "static"; "member" ], "Bar", Funs("_", "_"))),
                         ConstantExpr("source")
                     )
@@ -39,4 +39,22 @@ module TraitCall =
 ((^N): (static member Bar: _ -> _) source)
 ((^N): (static member Bar: _ -> _) source)
 ((^N): (static member Bar: _ -> _) source)
+"""
+
+    [<Fact>]
+    let ``let value with a TraitCall expression OrType``() =
+        Oak() {
+            AnonymousModule() {
+                ParenExpr(
+                    TraitCallExpr(
+                        Paren(Or("^I", "^R")),
+                        SigMember(ValField([ "static"; "member" ], "Map", Funs("^R", Tuple([ "^I"; "^F" ])))),
+                        TupleExpr([ "source"; "mapping" ])
+                    )
+                )
+            }
+        }
+        |> produces
+            """
+((^I or ^R): (static member Map: ^I * ^F -> ^R) source, mapping)
 """

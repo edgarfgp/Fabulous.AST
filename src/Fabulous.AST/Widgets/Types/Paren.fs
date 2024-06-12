@@ -18,10 +18,10 @@ module ParenType =
 [<AutoOpen>]
 module ParenTypeBuilders =
     type Ast with
-        static member ParenType(value: WidgetBuilder<Type>) =
+        static member Paren(value: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 ParenType.WidgetKey,
                 AttributesBundle(StackList.empty(), [| ParenType.Identifier.WithValue(value.Compile()) |], Array.empty)
             )
 
-        static member ParenType(value: string) = Ast.ParenType(Ast.LongIdent(value))
+        static member Paren(value: string) = Ast.Paren(Ast.LongIdent(value))
