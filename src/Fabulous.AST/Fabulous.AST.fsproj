@@ -85,6 +85,8 @@
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
+        <Compile Include="Widgets\Expressions\IndexFromEnd.fs" />
+        <Compile Include="Widgets\Expressions\TripleNumberIndexRange.fs" />
         <Compile Include="Widgets\Expressions\TraitCall.fs" />
         <Compile Include="Widgets\Expressions\ParenLambda.fs" />
         <Compile Include="Widgets\Expressions\MatchLambda.fs" />

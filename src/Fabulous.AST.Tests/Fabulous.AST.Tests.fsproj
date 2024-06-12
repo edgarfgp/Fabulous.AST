@@ -65,6 +65,8 @@
         <Compile Include="Expressions\Single.fs" />
         <Compile Include="Expressions\New.fs" />
         <Compile Include="Expressions\IndexRange.fs" />
+        <Compile Include="Expressions\IndexFromEnd.fs" />
+        <Compile Include="Expressions\TripleNumberIndexRange.fs" />
         <Compile Include="Expressions\ForEach.fs" />
         <Compile Include="Expressions\For.fs" />
         <Compile Include="Expressions\While.fs" />
