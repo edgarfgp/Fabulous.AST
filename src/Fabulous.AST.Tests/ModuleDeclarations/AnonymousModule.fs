@@ -54,3 +54,11 @@ printfn "%s" 1
 printfn "%s" 2
 
 """
+
+    [<Fact>]
+    let ``AnonymousModule inside of top level module``() =
+        Oak() { TopLevelModule("MyModule") { AnonymousModule() { () } } }
+        |> produces
+            """
+module MyModule
+"""
