@@ -10,6 +10,7 @@ _No unreleased changes_
 
 ### Added
 - `For` and `DotLambda` widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/106
+- More `Expr` widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/107
 
 ### Changed
 - Update `Fantomas.Core` by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/105
