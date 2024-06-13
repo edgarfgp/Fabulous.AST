@@ -458,7 +458,7 @@ let t: array<array<string>> = false
                                   WithGlobalConstraints(
                                       "^T",
                                       SupportsMember(
-                                          ParenType(OrType("^T", "or", "^U")),
+                                          Paren(Or("^T", "^U")),
                                           SigMember(ValField([ "static"; "member" ], "(+)", LongIdent("^T * ^U -> ^T")))
                                       )
                                   )

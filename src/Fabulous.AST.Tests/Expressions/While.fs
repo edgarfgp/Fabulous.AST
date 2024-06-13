@@ -55,3 +55,18 @@ while true do
     printfn ""
     0 |> ignore
 """
+
+    [<Fact>]
+    let ``let value with a WhileExpr comp body string expression using do ignore``() =
+        Oak() {
+            AnonymousModule() {
+                WhileExpr(ConstantExpr(Bool(true)), CompExprBodyExpr([ "printfn \"\""; "printfn \"\""; "0 |> ignore" ]))
+            }
+        }
+        |> produces
+            """
+while true do
+    printfn ""
+    printfn ""
+    0 |> ignore
+"""

@@ -13,7 +13,7 @@ module RecordExpr =
     let CloseBrace = Attributes.defineScalar<SingleTextNode> "CloseBrace"
 
     let WidgetKey =
-        Widgets.register "Match" (fun widget ->
+        Widgets.register "RecordExpr" (fun widget ->
             let openBrace = Widgets.getScalarValue widget OpenBrace
             let closeBrace = Widgets.getScalarValue widget CloseBrace
             let copyInfo = Widgets.tryGetNodeFromWidget<Expr> widget CopyInfo

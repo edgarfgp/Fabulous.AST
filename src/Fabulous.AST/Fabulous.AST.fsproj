@@ -85,6 +85,19 @@
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
+        <Compile Include="Widgets\Expressions\IndexFromEnd.fs" />
+        <Compile Include="Widgets\Expressions\TripleNumberIndexRange.fs" />
+        <Compile Include="Widgets\Expressions\TraitCall.fs" />
+        <Compile Include="Widgets\Expressions\ParenLambda.fs" />
+        <Compile Include="Widgets\Expressions\MatchLambda.fs" />
+        <Compile Include="Widgets\Expressions\Lambda.fs" />
+        <Compile Include="Widgets\Expressions\Typar.fs" />
+        <Compile Include="Widgets\Expressions\JoinIn.fs" />
+        <Compile Include="Widgets\Expressions\ChainLink.fs" />
+        <Compile Include="Widgets\Expressions\Chain.fs" />
+        <Compile Include="Widgets\Expressions\AppSingleParenArg.fs" />
+        <Compile Include="Widgets\Expressions\ExprBeginEnd.fs" />
+        <Compile Include="Widgets\Expressions\ExplicitConstructorThen.fs" />
         <Compile Include="Widgets\Expressions\DotLambda.fs" />
         <Compile Include="Widgets\Expressions\Set.fs" />
         <Compile Include="Widgets\Expressions\IndexWithoutDot.fs" />
@@ -114,6 +127,7 @@
         <Compile Include="Widgets\Expressions\InfixApp.fs" />
         <Compile Include="Widgets\Expressions\RecordField.fs" />
         <Compile Include="Widgets\Expressions\Record.fs" />
+        <Compile Include="Widgets\Expressions\AnonStructRecord.fs" />
         <Compile Include="Widgets\Expressions\IfThen.fs" />
         <Compile Include="Widgets\Expressions\IfThenElif.fs" />
         <Compile Include="Widgets\Expressions\IfThenElse.fs" />

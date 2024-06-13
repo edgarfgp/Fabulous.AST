@@ -5,31 +5,29 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.FCS.Text
 
 module OrType =
-    let Identifier = Attributes.defineScalar<struct (Type * string * Type)> "Identifier"
+    let Identifier = Attributes.defineScalar<struct (Type * Type)> "Identifier"
 
     let WidgetKey =
         Widgets.register "OrType" (fun widget ->
-            let struct (lhs, node, rhs) = Widgets.getScalarValue widget Identifier
-            Type.Or(TypeOrNode(lhs, SingleTextNode.Create(node), rhs, Range.Zero)))
+            let struct (lhs, rhs) = Widgets.getScalarValue widget Identifier
+            Type.Or(TypeOrNode(lhs, SingleTextNode.``or``, rhs, Range.Zero)))
 
 [<AutoOpen>]
 module OrTypeBuilders =
     type Ast with
-        static member OrType(lhs: WidgetBuilder<Type>, node: string, rhs: WidgetBuilder<Type>) =
+        static member Or(lhs: WidgetBuilder<Type>, rhs: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 OrType.WidgetKey,
                 AttributesBundle(
-                    StackList.one(OrType.Identifier.WithValue(Gen.mkOak lhs, node, Gen.mkOak rhs)),
+                    StackList.one(OrType.Identifier.WithValue(Gen.mkOak lhs, Gen.mkOak rhs)),
                     Array.empty,
                     Array.empty
                 )
             )
 
-        static member OrType(lhs: string, node: string, rhs: WidgetBuilder<Type>) =
-            Ast.OrType(Ast.LongIdent(lhs), node, rhs)
+        static member Or(lhs: string, rhs: WidgetBuilder<Type>) = Ast.Or(Ast.LongIdent(lhs), rhs)
 
-        static member OrType(lhs: WidgetBuilder<Type>, node: string, rhs: string) =
-            Ast.OrType(lhs, node, Ast.LongIdent(rhs))
+        static member Or(lhs: WidgetBuilder<Type>, rhs: string) = Ast.Or(lhs, Ast.LongIdent(rhs))
 
-        static member OrType(lhs: string, node: string, rhs: string) =
-            Ast.OrType(Ast.LongIdent(lhs), node, Ast.LongIdent(rhs))
+        static member Or(lhs: string, rhs: string) =
+            Ast.Or(Ast.LongIdent(lhs), Ast.LongIdent(rhs))

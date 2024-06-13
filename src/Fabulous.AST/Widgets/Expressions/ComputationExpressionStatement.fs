@@ -16,7 +16,7 @@ module ComputationExpressionStatement =
 
             let inKeyword =
                 match Widgets.tryGetScalarValue widget InKeyword with
-                | ValueSome true -> Some(SingleTextNode.inKeyword)
+                | ValueSome true -> Some(SingleTextNode.``in``)
                 | _ -> None
 
             ComputationExpressionStatement.LetOrUseStatement(ExprLetOrUseNode(binding, inKeyword, Range.Zero)))
@@ -67,6 +67,10 @@ module ComputationExpressionStatementBuilders =
                     Array.empty
                 )
             )
+
+        static member OtherExpr(value: WidgetBuilder<Constant>) = Ast.OtherExpr(Ast.ConstantExpr(value))
+
+        static member OtherExpr(value: string) = Ast.OtherExpr(Ast.ConstantExpr(value))
 
         static member LetOrUseBangExpr(pat: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<ComputationExpressionStatement>(

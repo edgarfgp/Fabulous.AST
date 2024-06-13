@@ -50,6 +50,14 @@
         <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="TypeDefinitions\Augmentation.fs" />
         <Compile Include="Expressions\Lazy.fs" />
+        <Compile Include="Expressions\Chain.fs" />
+        <Compile Include="Expressions\AppSingleParenArg.fs" />
+        <Compile Include="Expressions\Lambda.fs" />
+        <Compile Include="Expressions\ParenLambda.fs" />
+        <Compile Include="Expressions\MatchLambda.fs" />
+        <Compile Include="Expressions\TraitCall.fs" />
+        <Compile Include="Expressions\ExprBeginEnd.fs" />
+        <Compile Include="Expressions\ExplicitConstructorThen.fs" />
         <Compile Include="Expressions\DotLambda.fs" />
         <Compile Include="Expressions\Quoted.fs" />
         <Compile Include="Expressions\Paren.fs" />
@@ -57,6 +65,8 @@
         <Compile Include="Expressions\Single.fs" />
         <Compile Include="Expressions\New.fs" />
         <Compile Include="Expressions\IndexRange.fs" />
+        <Compile Include="Expressions\IndexFromEnd.fs" />
+        <Compile Include="Expressions\TripleNumberIndexRange.fs" />
         <Compile Include="Expressions\ForEach.fs" />
         <Compile Include="Expressions\For.fs" />
         <Compile Include="Expressions\While.fs" />
@@ -72,6 +82,7 @@
         <Compile Include="Expressions\InfixApp.fs" />
         <Compile Include="Expressions\InheritRecord.fs" />
         <Compile Include="Expressions\Record.fs" />
+        <Compile Include="Expressions\AnonStructRecord.fs" />
         <Compile Include="Expressions\Conditionals.fs" />
         <Compile Include="Patterns\Or.fs" />
         <Compile Include="Patterns\As.fs" />
