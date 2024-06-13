@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre14] - 2024-06-13
+
 ### Added
 - `For` and `DotLambda` widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/106
 - More `Expr` widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/107
