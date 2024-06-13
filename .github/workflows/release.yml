@@ -16,7 +16,7 @@ jobs:
     environment: nuget
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Extract version from tag
         uses: damienaicheh/extract-version-from-tag-action@v1.0.0
       - name: Set release version
@@ -36,7 +36,7 @@ jobs:
           version: '${{ env.RELEASE_VERSION }}'
           path: ./CHANGELOG.md
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
       - name: Restore
