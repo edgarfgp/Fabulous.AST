@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <IsPackable>true</IsPackable>
-        <LangVersion>preview</LangVersion>
     </PropertyGroup>
     <!-- NuGet Package -->
     <PropertyGroup>
@@ -63,6 +62,9 @@
         <Compile Include="Widgets\Expressions\Single.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
         <Compile Include="Widgets\Expressions\TryWith.fs" />
+        <Compile Include="Widgets\Expressions\TryFinally.fs" />
+        <Compile Include="Widgets\Expressions\Dynamic.fs" />
+        <Compile Include="Widgets\Expressions\TryWithSingleClause.fs" />
         <Compile Include="Widgets\Expressions\IndexFromEnd.fs" />
         <Compile Include="Widgets\Expressions\TripleNumberIndexRange.fs" />
         <Compile Include="Widgets\Expressions\TraitCall.fs" />

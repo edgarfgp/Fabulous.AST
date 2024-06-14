@@ -12,10 +12,18 @@ module TryWith =
     let ``TryWith expression``() =
         Oak() {
             AnonymousModule() {
-                TryWithExpr(ConstantExpr(Int(12)), MatchClauseExpr("_", AppExpr("failwith", String("Not implemented"))))
-                TryWithExpr(Int(12), MatchClauseExpr(WildPat(), FailWithExpr(String("Not implemented"))))
-                TryWithExpr("12", MatchClauseExpr("_", FailWithExpr(String("Not implemented"))))
                 TryWithExpr(Int(12), [])
+
+                TryWithExpr(
+                    ConstantExpr(Int(12)),
+                    [ MatchClauseExpr("a", AppExpr("failwith", String("Not implemented"))) ]
+                )
+
+                TryWithExpr(
+                    Int(12),
+                    [ MatchClauseExpr("b", FailWithExpr(String("Not implemented")))
+                      MatchClauseExpr(WildPat(), FailWithExpr(String("Not implemented"))) ]
+                )
             }
         }
         |> produces
@@ -23,19 +31,16 @@ module TryWith =
 try
     12
 with
-| _ -> failwith "Not implemented"
+
 
 try
     12
 with
-| _ -> failwith "Not implemented"
+| a -> failwith "Not implemented"
 
 try
     12
 with
+| b -> failwith "Not implemented"
 | _ -> failwith "Not implemented"
-
-try
-    12
-with
 """

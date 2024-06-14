@@ -36,12 +36,3 @@ module TryWithBuilders =
 
         static member TryWithExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> list) =
             Ast.TryWithExpr(Ast.ConstantExpr(value), clauses)
-
-        static member TryWithExpr(value: WidgetBuilder<Expr>, clause: WidgetBuilder<MatchClauseNode>) =
-            Ast.TryWithExpr(value, [ clause ])
-
-        static member TryWithExpr(value: WidgetBuilder<Constant>, clause: WidgetBuilder<MatchClauseNode>) =
-            Ast.TryWithExpr(Ast.ConstantExpr(value), [ clause ])
-
-        static member TryWithExpr(value: string, clause: WidgetBuilder<MatchClauseNode>) =
-            Ast.TryWithExpr(Ast.ConstantExpr(value), [ clause ])
