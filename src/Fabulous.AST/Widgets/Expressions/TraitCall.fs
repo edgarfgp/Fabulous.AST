@@ -40,14 +40,14 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<InheritConstructor>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<InheritConstructor>, expr: WidgetBuilder<Constant>) =
             Ast.TraitCallExpr(t, memberDef, Ast.ConstantExpr(expr))
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<InheritConstructor>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.Constant expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.Constant expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnInheritNode>, expr: WidgetBuilder<Expr>) =
@@ -66,15 +66,15 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnInheritNode>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnInheritNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnInheritNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<FieldNode>, expr: WidgetBuilder<Expr>)
@@ -92,13 +92,13 @@ module TraitCallBuilders =
             )
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<FieldNode>, expr: WidgetBuilder<Expr>) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<FieldNode>, expr: WidgetBuilder<Constant>) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<FieldNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<BindingNode>, expr: WidgetBuilder<Expr>)
@@ -116,13 +116,13 @@ module TraitCallBuilders =
             )
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<BindingNode>, expr: WidgetBuilder<Expr>) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<BindingNode>, expr: WidgetBuilder<Constant>) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<BindingNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<ExternBindingNode>, expr: WidgetBuilder<Expr>)
@@ -140,15 +140,15 @@ module TraitCallBuilders =
             )
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<ExternBindingNode>, expr: WidgetBuilder<Expr>) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<ExternBindingNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<ExternBindingNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<ExprSingleNode>, expr: WidgetBuilder<Expr>)
@@ -166,15 +166,15 @@ module TraitCallBuilders =
             )
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<ExprSingleNode>, expr: WidgetBuilder<Expr>) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<ExprSingleNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<ExprSingleNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<BindingListNode>, expr: WidgetBuilder<Expr>)
@@ -192,15 +192,15 @@ module TraitCallBuilders =
             )
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<BindingListNode>, expr: WidgetBuilder<Expr>) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<BindingListNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<BindingListNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnExplicitCtorNode>, expr: WidgetBuilder<Expr>) =
@@ -219,15 +219,15 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnExplicitCtorNode>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnExplicitCtorNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnExplicitCtorNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnInterfaceNode>, expr: WidgetBuilder<Expr>) =
@@ -246,15 +246,15 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnInterfaceNode>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnInterfaceNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnInterfaceNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnAutoPropertyNode>, expr: WidgetBuilder<Expr>) =
@@ -273,15 +273,15 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnAutoPropertyNode>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnAutoPropertyNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnAutoPropertyNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnAbstractSlotNode>, expr: WidgetBuilder<Expr>) =
@@ -300,15 +300,15 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnAbstractSlotNode>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnAbstractSlotNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnAbstractSlotNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnPropertyGetSetNode>, expr: WidgetBuilder<Expr>) =
@@ -327,15 +327,15 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnPropertyGetSetNode>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnPropertyGetSetNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnPropertyGetSetNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
             (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnSigMemberNode>, expr: WidgetBuilder<Expr>) =
@@ -354,12 +354,12 @@ module TraitCallBuilders =
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnSigMemberNode>, expr: WidgetBuilder<Expr>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
             (t: string, memberDef: WidgetBuilder<MemberDefnSigMemberNode>, expr: WidgetBuilder<Constant>)
             =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnSigMemberNode>, expr: string) =
-            Ast.TraitCallExpr(Ast.LongIdent t, memberDef, Ast.ConstantExpr expr)
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)

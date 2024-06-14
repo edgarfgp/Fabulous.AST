@@ -29,13 +29,16 @@ module NewBuilders =
                 )
             )
 
-        static member NewExpr(t: string, value: WidgetBuilder<Expr>) = Ast.NewExpr(Ast.LongIdent(t), value)
+        static member NewExpr(t: string, value: WidgetBuilder<Expr>) =
+            Ast.NewExpr(Ast.EscapeHatch(Type.Create(t)), value)
 
         static member NewExpr(t: WidgetBuilder<Type>, value: WidgetBuilder<Constant>) =
             Ast.NewExpr(t, Ast.ConstantExpr(value))
 
-        static member NewExpr(t: string, value: WidgetBuilder<Constant>) = Ast.NewExpr(Ast.LongIdent(t), value)
+        static member NewExpr(t: string, value: WidgetBuilder<Constant>) =
+            Ast.NewExpr(Ast.EscapeHatch(Type.Create(t)), value)
 
         static member NewExpr(t: WidgetBuilder<Type>, value: string) = Ast.NewExpr(t, Ast.Constant(value))
 
-        static member NewExpr(t: string, value: string) = Ast.NewExpr(Ast.LongIdent(t), value)
+        static member NewExpr(t: string, value: string) =
+            Ast.NewExpr(Ast.EscapeHatch(Type.Create(t)), value)

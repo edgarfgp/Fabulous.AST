@@ -64,7 +64,8 @@ module ObjExprBuilders =
                 AttributesBundle(StackList.empty(), [| ObjExpr.Name.WithValue(name.Compile()) |], Array.empty)
             )
 
-        static member ObjExpr(name: string) = Ast.ObjExpr(Ast.LongIdent(name))
+        static member ObjExpr(name: string) =
+            Ast.ObjExpr(Ast.EscapeHatch(Type.Create(name)))
 
         static member ObjExpr(name: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
             CollectionBuilder<Expr, BindingNode>(
@@ -79,7 +80,7 @@ module ObjExprBuilders =
             )
 
         static member ObjExpr(name: string, expr: string) =
-            Ast.ObjExpr(Ast.LongIdent(name), Ast.ConstantExpr(expr))
+            Ast.ObjExpr(Ast.EscapeHatch(Type.Create(name)), Ast.ConstantExpr(expr))
 
 type ObjExprModifiers =
 

@@ -36,10 +36,10 @@ module TypedBuilders =
             Ast.TypedExpr(Ast.ConstantExpr(value), operator, t)
 
         static member TypedExpr(value: WidgetBuilder<Constant>, operator: string, t: string) =
-            Ast.TypedExpr(value, operator, Ast.LongIdent(t))
+            Ast.TypedExpr(value, operator, Ast.EscapeHatch(Type.Create(t)))
 
         static member TypedExpr(value: string, operator: string, t: WidgetBuilder<Type>) =
             Ast.TypedExpr(Ast.Constant(value), operator, t)
 
         static member TypedExpr(value: string, operator: string, t: string) =
-            Ast.TypedExpr(value, operator, Ast.LongIdent(t))
+            Ast.TypedExpr(value, operator, Ast.EscapeHatch(Type.Create(t)))

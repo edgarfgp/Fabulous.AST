@@ -29,6 +29,10 @@ module CommonExtensions =
             |> Array.ofList
             |> fun v -> XmlDocNode(v, Range.Zero)
 
+    type Type with
+        static member Create(name: string) =
+            Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))
+
     type MultipleAttributeListNode with
         static member Create(values: AttributeNode list) =
             MultipleAttributeListNode(
