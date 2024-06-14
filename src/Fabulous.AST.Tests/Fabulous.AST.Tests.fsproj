@@ -61,6 +61,7 @@
         <Compile Include="Expressions\DotLambda.fs" />
         <Compile Include="Expressions\Quoted.fs" />
         <Compile Include="Expressions\Paren.fs" />
+        <Compile Include="Expressions\TryWith.fs" />
         <Compile Include="Expressions\Typed.fs" />
         <Compile Include="Expressions\Single.fs" />
         <Compile Include="Expressions\New.fs" />

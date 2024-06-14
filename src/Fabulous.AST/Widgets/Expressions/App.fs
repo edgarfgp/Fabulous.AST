@@ -76,3 +76,19 @@ module AppBuilders =
 
         static member AppExpr(name: string, item: string) =
             Ast.AppExpr(name, [ Ast.Constant(item) ])
+
+        static member FailWithExpr(items: WidgetBuilder<Expr> list) =
+            Ast.AppExpr(Ast.Constant("failwith"), items)
+
+        static member FailWithExpr(items: WidgetBuilder<Constant> list) =
+            Ast.AppExpr(Ast.Constant("failwith"), items |> List.map Ast.ConstantExpr)
+
+        static member FailWithExpr(items: string list) =
+            Ast.AppExpr(Ast.Constant("failwith"), items |> List.map Ast.Constant)
+
+        static member FailWithExpr(item: WidgetBuilder<Expr>) = Ast.FailWithExpr([ item ])
+
+        static member FailWithExpr(item: WidgetBuilder<Constant>) = Ast.FailWithExpr([ item ])
+
+        static member FailWithExpr(item: string) =
+            Ast.FailWithExpr([ Ast.Constant(item) ])

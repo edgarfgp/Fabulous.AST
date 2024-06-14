@@ -91,3 +91,4 @@ module SingleTextNode =
     let ``function`` = SingleTextNode.Create("function")
     let ``or`` = SingleTextNode.Create("or")
     let ``..`` = SingleTextNode.Create("..")
+    let ``try`` = SingleTextNode.Create("try")
