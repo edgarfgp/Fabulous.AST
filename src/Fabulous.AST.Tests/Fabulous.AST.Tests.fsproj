@@ -64,6 +64,7 @@
         <Compile Include="Expressions\TryWith.fs" />
         <Compile Include="Expressions\TryFinally.fs" />
         <Compile Include="Expressions\Dynamic.fs" />
+        <Compile Include="Expressions\InterpolatedString.fs" />
         <Compile Include="Expressions\TryWithSingleClause.fs" />
         <Compile Include="Expressions\Typed.fs" />
         <Compile Include="Expressions\Single.fs" />

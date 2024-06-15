@@ -93,3 +93,5 @@ module SingleTextNode =
     let ``..`` = SingleTextNode.Create("..")
     let ``try`` = SingleTextNode.Create("try")
     let ``finally`` = SingleTextNode.Create("finally")
+    let ``$`` = SingleTextNode.Create("$")
+    let doubleQuote = SingleTextNode.Create "\""
