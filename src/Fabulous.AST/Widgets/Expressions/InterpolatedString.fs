@@ -6,33 +6,44 @@ open Fantomas.FCS.Text
 
 module InterpolatedString =
     let Dollars = Attributes.defineScalar<string> "Dollars"
-    let Value = Attributes.defineScalar<string> "First"
-    let ExprVal = Attributes.defineWidget "Value"
+    let Quotes = Attributes.defineScalar<SingleTextNode> "Quotes"
+    let Parts = Attributes.defineScalar<(string list * Expr list)> "Parts"
 
     let WidgetKey =
         Widgets.register "InterpolatedString" (fun widget ->
-            let dollars =
-                Widgets.tryGetScalarValue widget Dollars |> ValueOption.defaultValue "$"
-
-            let value = Widgets.tryGetScalarValue widget Value |> ValueOption.defaultValue ""
-
-            let expr = Widgets.tryGetNodeFromWidget<Expr> widget ExprVal
+            let dollars = Widgets.getScalarValue widget Dollars
+            let quotes = Widgets.getScalarValue widget Quotes
+            let parts = Widgets.tryGetScalarValue widget Parts
 
             let parts =
-                [ match expr with
-                  | ValueNone ->
-                      Choice1Of2(SingleTextNode.Create(dollars))
-                      Choice1Of2(SingleTextNode.doubleQuote)
-                      Choice1Of2(SingleTextNode.Create(value))
-                      Choice1Of2(SingleTextNode.doubleQuote)
-                  | ValueSome expr ->
-                      Choice1Of2(SingleTextNode.Create(dollars))
-                      Choice1Of2(SingleTextNode.doubleQuote)
-                      Choice1Of2(SingleTextNode.Create(value))
-                      Choice1Of2(SingleTextNode.leftCurlyBrace)
-                      Choice2Of2(FillExprNode(expr, None, Range.Zero))
-                      Choice1Of2(SingleTextNode.rightCurlyBrace)
-                      Choice1Of2(SingleTextNode.doubleQuote) ]
+                parts
+                |> ValueOption.map(fun exprs ->
+                    exprs
+                    |> (fun (values, exprs) ->
+                        [ yield Choice1Of2(SingleTextNode.Create(dollars))
+                          yield Choice1Of2(quotes)
+
+                          match values, exprs with
+                          | [], [] -> ()
+                          | values, [] ->
+                              for value in values do
+                                  yield Choice1Of2(SingleTextNode.Create(value))
+
+                          | [], exprs ->
+                              for expr in exprs do
+                                  yield Choice1Of2(SingleTextNode.leftCurlyBrace)
+                                  yield Choice2Of2(FillExprNode(expr, None, Range.Zero))
+                                  yield Choice1Of2(SingleTextNode.rightCurlyBrace)
+
+                          | values, exprs ->
+                              for i in 0 .. values.Length - 1 do
+                                  yield Choice1Of2(SingleTextNode.Create(values.[i]))
+                                  yield Choice1Of2(SingleTextNode.leftCurlyBrace)
+                                  yield Choice2Of2(FillExprNode(exprs.[i], None, Range.Zero))
+                                  yield Choice1Of2(SingleTextNode.rightCurlyBrace)
+
+                          yield Choice1Of2(quotes) ]))
+                |> ValueOption.defaultValue []
 
             Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(parts, Range.Zero)))
 
@@ -41,53 +52,134 @@ module InterpolatedStringBuilders =
     type Ast with
 
         static member private BaseInterpolatedStringExpr
-            (dollars: string voption, value: string voption, expr: WidgetBuilder<Expr> voption)
+            (values: string list, parts: WidgetBuilder<Expr> list, ?dollars: string, ?quote: SingleTextNode)
             =
-            let scalars =
-                match dollars, value with
-                | ValueSome dollars, ValueSome value ->
-                    StackList.two(
-                        InterpolatedString.Dollars.WithValue(dollars),
-                        InterpolatedString.Value.WithValue(value)
-                    )
-                | ValueSome dollars, ValueNone -> StackList.one(InterpolatedString.Dollars.WithValue(dollars))
-                | ValueNone, ValueSome value -> StackList.one(InterpolatedString.Value.WithValue(value))
-                | ValueNone, ValueNone -> StackList.empty()
+            let dollars = defaultArg dollars "$"
+            let quote = defaultArg quote SingleTextNode.doubleQuote
+            let parts = parts |> List.map(Gen.mkOak)
 
             WidgetBuilder<Expr>(
                 InterpolatedString.WidgetKey,
                 AttributesBundle(
-                    scalars,
-                    [| match expr with
-                       | ValueNone -> ()
-                       | ValueSome expr -> InterpolatedString.ExprVal.WithValue(expr.Compile()) |],
+                    StackList.three(
+                        InterpolatedString.Dollars.WithValue(dollars),
+                        InterpolatedString.Quotes.WithValue(quote),
+                        InterpolatedString.Parts.WithValue((values, parts))
+                    ),
+                    Array.empty,
                     Array.empty
                 )
             )
 
         static member InterpolatedStringExpr(expr: WidgetBuilder<Expr>) =
-            Ast.BaseInterpolatedStringExpr(ValueNone, ValueNone, ValueSome expr)
+            Ast.BaseInterpolatedStringExpr(List.empty, [ expr ])
 
         static member InterpolatedStringExpr(expr: WidgetBuilder<Constant>) =
-            Ast.BaseInterpolatedStringExpr(ValueNone, ValueNone, ValueSome(Ast.ConstantExpr(expr)))
+            Ast.InterpolatedStringExpr(Ast.ConstantExpr(expr))
 
         static member InterpolatedStringExpr(expr: string) =
-            Ast.BaseInterpolatedStringExpr(ValueNone, ValueNone, ValueSome(Ast.ConstantExpr(expr)))
+            Ast.InterpolatedStringExpr(Ast.ConstantExpr(expr))
+
+        static member InterpolatedStringExpr(exprs: WidgetBuilder<Expr> list) =
+            Ast.BaseInterpolatedStringExpr(List.empty, exprs)
+
+        static member InterpolatedStringExpr(exprs: WidgetBuilder<Constant> list) =
+            let exprs = exprs |> List.map Ast.ConstantExpr
+            Ast.BaseInterpolatedStringExpr(List.empty, exprs)
+
+        static member InterpolatedStringExpr(exprs: string list) =
+            let exprs = exprs |> List.map Ast.ConstantExpr
+            Ast.BaseInterpolatedStringExpr(List.empty, exprs)
+
+        static member InterpolatedRawStringExpr(expr: WidgetBuilder<Expr>) =
+            Ast.BaseInterpolatedStringExpr(List.empty, [ expr ], quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr(expr: WidgetBuilder<Constant>) =
+            Ast.InterpolatedRawStringExpr(Ast.ConstantExpr(expr))
+
+        static member InterpolatedRawStringExpr(expr: string) =
+            Ast.InterpolatedRawStringExpr(Ast.ConstantExpr(expr))
+
+        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<Expr> list) =
+            Ast.BaseInterpolatedStringExpr(List.empty, exprs, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<Constant> list) =
+            let exprs = exprs |> List.map Ast.ConstantExpr
+            Ast.InterpolatedRawStringExpr(exprs)
+
+        static member InterpolatedRawStringExpr(exprs: string list) =
+            let exprs = exprs |> List.map Ast.Constant
+            Ast.InterpolatedRawStringExpr(exprs)
+
+        static member InterpolatedRawStringExpr(dollars: string, expr: WidgetBuilder<Expr>) =
+            Ast.BaseInterpolatedStringExpr(List.empty, [ expr ], dollars = dollars, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr(dollars: string, expr: WidgetBuilder<Constant>) =
+            Ast.InterpolatedRawStringExpr(dollars, Ast.ConstantExpr(expr))
+
+        static member InterpolatedRawStringExpr(dollars: string, expr: string) =
+            Ast.InterpolatedRawStringExpr(dollars, Ast.Constant(expr))
+
+        static member InterpolatedRawStringExpr(dollars: string, exprs: WidgetBuilder<Expr> list) =
+            Ast.BaseInterpolatedStringExpr(List.empty, exprs, dollars = dollars, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr(dollars: string, exprs: WidgetBuilder<Constant> list) =
+            let exprs = exprs |> List.map Ast.ConstantExpr
+            Ast.InterpolatedRawStringExpr(dollars, exprs)
+
+        static member InterpolatedRawStringExpr(dollars: string, exprs: string list) =
+            let exprs = exprs |> List.map Ast.Constant
+            Ast.InterpolatedRawStringExpr(dollars, exprs)
 
         static member InterpolatedStringExpr(value: string, expr: WidgetBuilder<Expr>) =
-            Ast.BaseInterpolatedStringExpr(ValueNone, ValueSome value, ValueSome expr)
+            Ast.BaseInterpolatedStringExpr([ value ], [ expr ])
 
         static member InterpolatedStringExpr(value: string, expr: WidgetBuilder<Constant>) =
-            Ast.BaseInterpolatedStringExpr(ValueNone, ValueSome value, ValueSome(Ast.ConstantExpr(expr)))
+            Ast.InterpolatedStringExpr(value, Ast.ConstantExpr(expr))
 
         static member InterpolatedStringExpr(value: string, expr: string) =
-            Ast.BaseInterpolatedStringExpr(ValueNone, ValueSome value, ValueSome(Ast.ConstantExpr(expr)))
+            Ast.InterpolatedStringExpr(value, Ast.Constant(expr))
 
-        static member InterpolatedStringExpr(dollars: string, value: string, expr: WidgetBuilder<Expr>) =
-            Ast.BaseInterpolatedStringExpr(ValueSome dollars, ValueSome value, ValueSome expr)
+        static member InterpolatedStringExpr(value: string list, expr: WidgetBuilder<Expr> list) =
+            Ast.BaseInterpolatedStringExpr(value, expr)
 
-        static member InterpolatedStringExpr(dollars: string, value: string, expr: WidgetBuilder<Constant>) =
-            Ast.BaseInterpolatedStringExpr(ValueSome dollars, ValueSome value, ValueSome(Ast.ConstantExpr(expr)))
+        static member InterpolatedStringExpr(value: string list, exprs: WidgetBuilder<Constant> list) =
+            let exprs = exprs |> List.map Ast.ConstantExpr
+            Ast.InterpolatedStringExpr(value, exprs)
 
-        static member InterpolatedStringExpr(dollars: string, value: string, expr: string) =
-            Ast.BaseInterpolatedStringExpr(ValueSome dollars, ValueSome value, ValueSome(Ast.ConstantExpr(expr)))
+        static member InterpolatedStringExpr(value: string list, exprs: string list) =
+            let exprs = exprs |> List.map Ast.Constant
+            Ast.InterpolatedStringExpr(value, exprs)
+
+        static member InterpolatedRawStringExpr(value: string list, exprs: WidgetBuilder<Expr> list) =
+            Ast.BaseInterpolatedStringExpr(value, exprs, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr(value: string list, exprs: WidgetBuilder<Constant> list) =
+            let exprs = exprs |> List.map Ast.ConstantExpr
+            Ast.InterpolatedRawStringExpr(value, exprs)
+
+        static member InterpolatedRawStringExpr(value: string list, exprs: string list) =
+            let exprs = exprs |> List.map Ast.Constant
+            Ast.InterpolatedRawStringExpr(value, exprs)
+
+        static member InterpolatedRawStringExpr(dollars: string, value: string, exprs: WidgetBuilder<Expr>) =
+            Ast.BaseInterpolatedStringExpr([ value ], [ exprs ], dollars = dollars, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr(dollars: string, value: string, exprs: WidgetBuilder<Constant>) =
+            Ast.InterpolatedRawStringExpr(dollars, value, Ast.ConstantExpr(exprs))
+
+        static member InterpolatedRawStringExpr(dollars: string, value: string, exprs: string) =
+            Ast.InterpolatedRawStringExpr(dollars, value, Ast.Constant(exprs))
+
+        static member InterpolatedRawStringExpr(dollars: string, value: string list, exprs: WidgetBuilder<Expr> list) =
+            Ast.BaseInterpolatedStringExpr(value, exprs, dollars = dollars, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr
+            (dollars: string, value: string list, exprs: WidgetBuilder<Constant> list)
+            =
+            let exprs = exprs |> List.map Ast.ConstantExpr
+            Ast.InterpolatedRawStringExpr(dollars, value, exprs)
+
+        static member InterpolatedRawStringExpr(dollars: string, value: string list, exprs: string list) =
+            let exprs = exprs |> List.map Ast.Constant
+            Ast.InterpolatedRawStringExpr(dollars, value, exprs)
