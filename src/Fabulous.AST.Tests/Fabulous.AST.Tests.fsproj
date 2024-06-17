@@ -53,6 +53,7 @@
         <Compile Include="Expressions\Chain.fs" />
         <Compile Include="Expressions\AppSingleParenArg.fs" />
         <Compile Include="Expressions\Lambda.fs" />
+        <Compile Include="Expressions\AppWithLambda.fs" />
         <Compile Include="Expressions\ParenLambda.fs" />
         <Compile Include="Expressions\MatchLambda.fs" />
         <Compile Include="Expressions\TraitCall.fs" />

@@ -73,6 +73,7 @@
         <Compile Include="Widgets\Expressions\ParenLambda.fs" />
         <Compile Include="Widgets\Expressions\MatchLambda.fs" />
         <Compile Include="Widgets\Expressions\Lambda.fs" />
+        <Compile Include="Widgets\Expressions\AppWithLambda.fs" />
         <Compile Include="Widgets\Expressions\Typar.fs" />
         <Compile Include="Widgets\Expressions\JoinIn.fs" />
         <Compile Include="Widgets\Expressions\ChainLink.fs" />
