@@ -62,6 +62,7 @@
         <Compile Include="Widgets\Expressions\Single.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
         <Compile Include="Widgets\Expressions\TryWith.fs" />
+        <Compile Include="Widgets\Expressions\FillExprNode.fs" />
         <Compile Include="Widgets\Expressions\InterpolatedString.fs" />
         <Compile Include="Widgets\Expressions\TryFinally.fs" />
         <Compile Include="Widgets\Expressions\Dynamic.fs" />

@@ -22,25 +22,27 @@ module InterpolatedString =
                 InterpolatedStringExpr([ Int(12); Int(12); Int(12) ])
                 InterpolatedStringExpr([ "12"; "12"; "12" ])
 
-                // $"""{12}"""
-                //InterpolatedRawStringExpr(ConstantExpr("12"))
-                //InterpolatedRawStringExpr(Int(12))
-                //InterpolatedRawStringExpr("12")
+                (*
+                //$"""{12}"""
+                InterpolatedRawStringExpr(ConstantExpr("12"))
+                InterpolatedRawStringExpr(Int(12))
+                InterpolatedRawStringExpr("12")
 
                 // $"""{12}{12}{12}"""
-                //InterpolatedRawStringExpr([ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12")])
-                //InterpolatedRawStringExpr([Int(12); Int(12); Int(12)])
-                //InterpolatedRawStringExpr(["12"; "12"; "12"])
+                InterpolatedRawStringExpr([ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12")])
+                InterpolatedRawStringExpr([Int(12); Int(12); Int(12)])
+                InterpolatedRawStringExpr(["12"; "12"; "12"])
 
                 // $$"""{12}"""
-                //InterpolatedRawStringExpr("$$", ConstantExpr("12"))
-                //InterpolatedRawStringExpr("$$", Int(12))
-                //InterpolatedRawStringExpr("$$", "12")
+                InterpolatedRawStringExpr("$$", ConstantExpr("12"))
+                InterpolatedRawStringExpr("$$", Int(12))
+                InterpolatedRawStringExpr("$$", "12")
 
                 // $$"""{12}{12}{12}"""
-                //InterpolatedRawStringExpr("$$", [ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12")])
-                //InterpolatedRawStringExpr("$$", [Int(12); Int(12); Int(12)])
-                //InterpolatedRawStringExpr("$$", ["12"; "12"; "12"])
+                InterpolatedRawStringExpr("$$", [ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12")])
+                InterpolatedRawStringExpr("$$", [Int(12); Int(12); Int(12)])
+                InterpolatedRawStringExpr("$$", ["12"; "12"; "12"])
+            *)
 
                 // $"This is a test: {12}"
                 InterpolatedStringExpr("This is a test: ", ConstantExpr("12"))
@@ -59,15 +61,23 @@ module InterpolatedString =
                 InterpolatedStringExpr([ "This is a test: "; " This is a test: " ], [ Int(12); Int(12) ])
                 InterpolatedStringExpr([ "This is a test: "; " This is a test: " ], [ "12"; "12" ])
 
-            // $"""This is a test: {12} This is a test: {12}"""
-            //InterpolatedRawStringExpr(["This is a test: "; " This is a test: " ], [ ConstantExpr("12"); ConstantExpr("12")])
-            //InterpolatedRawStringExpr(["This is a test: "; " This is a test: " ], [ Int(12); Int(12) ])
-            //InterpolatedRawStringExpr(["This is a test: "; " This is a test: " ], [ "12"; "12" ])
+                // $"{System.Math.PI:N4}"
+                InterpolatedStringExpr(FillExpr(ConstantExpr("System.Math.PI"), "N4"))
 
-            // $$"""This is a test: {12} This is a test: {12}"""
-            //InterpolatedRawStringExpr("$$", ["This is a test: "; " This is a test: " ], [ ConstantExpr("12"); ConstantExpr("12")])
-            //InterpolatedRawStringExpr("$$", ["This is a test: "; " This is a test: " ], [ Int(12); Int(12) ])
-            //InterpolatedRawStringExpr("$$", ["This is a test: "; " This is a test: " ], [ "12"; "12" ])
+                // $"{System.DateTime.UtcNow:``yyyyMMdd``}"
+                InterpolatedStringExpr(FillExpr(ConstantExpr("System.DateTime.UtcNow"), "``yyyyMMdd``"))
+
+            (*
+                // $"""This is a test: {12} This is a test: {12}"""
+                InterpolatedRawStringExpr(["This is a test: "; " This is a test: " ], [ ConstantExpr("12"); ConstantExpr("12")])
+                InterpolatedRawStringExpr(["This is a test: "; " This is a test: " ], [ Int(12); Int(12) ])
+                InterpolatedRawStringExpr(["This is a test: "; " This is a test: " ], [ "12"; "12" ])
+
+                // $$"""This is a test: {12} This is a test: {12}"""
+                InterpolatedRawStringExpr("$$", ["This is a test: "; " This is a test: " ], [ ConstantExpr("12"); ConstantExpr("12")])
+                InterpolatedRawStringExpr("$$", ["This is a test: "; " This is a test: " ], [ Int(12); Int(12) ])
+                InterpolatedRawStringExpr("$$", ["This is a test: "; " This is a test: " ], [ "12"; "12" ])
+            *)
             }
         }
         |> produces
@@ -84,4 +94,6 @@ $"This is a test: {12}"
 $"This is a test: {12} This is a test: {12}"
 $"This is a test: {12} This is a test: {12}"
 $"This is a test: {12} This is a test: {12}"
+$"{System.Math.PI:N4}"
+$"{System.DateTime.UtcNow:``yyyyMMdd``}"
 """
