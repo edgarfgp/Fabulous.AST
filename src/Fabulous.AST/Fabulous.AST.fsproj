@@ -60,7 +60,18 @@
         <Compile Include="Widgets\Expressions\Expr.fs" />
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />
+        <Compile Include="Widgets\Expressions\LongIdentSet.fs" />
+        <Compile Include="Widgets\Expressions\Ident.fs" />
+        <Compile Include="Widgets\Expressions\ParenILEmbedded.fs" />
+        <Compile Include="Widgets\Expressions\StaticOptimizationConstraint.fs" />
+        <Compile Include="Widgets\Expressions\LibraryOnlyStaticOptimization.fs" />
+        <Compile Include="Widgets\Expressions\DotNamedIndexedPropertySet.fs" />
+        <Compile Include="Widgets\Expressions\DotIndexedSet.fs" />
+        <Compile Include="Widgets\Expressions\NamedIndexedPropertySet.fs" />
+        <Compile Include="Widgets\Expressions\NestedIndexWithoutDot.fs" />
+        <Compile Include="Widgets\Expressions\DotIndexedGet.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
+        <Compile Include="Widgets\Expressions\PrefixApp.fs" />
         <Compile Include="Widgets\Expressions\TryWith.fs" />
         <Compile Include="Widgets\Expressions\FillExprNode.fs" />
         <Compile Include="Widgets\Expressions\InterpolatedString.fs" />
@@ -71,6 +82,7 @@
         <Compile Include="Widgets\Expressions\TripleNumberIndexRange.fs" />
         <Compile Include="Widgets\Expressions\TraitCall.fs" />
         <Compile Include="Widgets\Expressions\ParenLambda.fs" />
+        <Compile Include="Widgets\Expressions\ParenFunctionNameWithStar.fs" />
         <Compile Include="Widgets\Expressions\MatchLambda.fs" />
         <Compile Include="Widgets\Expressions\Lambda.fs" />
         <Compile Include="Widgets\Expressions\AppWithLambda.fs" />

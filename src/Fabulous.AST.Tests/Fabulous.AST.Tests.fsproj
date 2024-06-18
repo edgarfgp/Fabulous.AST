@@ -86,6 +86,15 @@
         <Compile Include="Expressions\Constant.fs" />
         <Compile Include="Expressions\Match.fs" />
         <Compile Include="Expressions\InfixApp.fs" />
+        <Compile Include="Expressions\Idents.fs" />
+        <Compile Include="Expressions\PrefixApp.fs" />
+        <Compile Include="Expressions\DotNamedIndexedPropertySet.fs" />
+        <Compile Include="Expressions\DotIndexedSet.fs" />
+        <Compile Include="Expressions\DotIndexedGet.fs" />
+        <Compile Include="Expressions\ParenFunctionNameWithStar.fs" />
+        <Compile Include="Expressions\NamedIndexedPropertySet.fs" />
+        <Compile Include="Expressions\NestedIndexWithoutDot.fs" />
+        <Compile Include="Expressions\LibraryOnlyStaticOptimization.fs" />
         <Compile Include="Expressions\InheritRecord.fs" />
         <Compile Include="Expressions\Record.fs" />
         <Compile Include="Expressions\AnonStructRecord.fs" />
