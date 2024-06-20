@@ -22,7 +22,7 @@ module TryWith =
                 TryWithExpr(
                     Int(12),
                     [ MatchClauseExpr("b", FailWithExpr(String("Not implemented")))
-                      MatchClauseExpr(WildPat(), FailWithExpr(String("Not implemented"))) ]
+                      MatchClauseExpr(WildPat(), FailWithExpr("Not implemented")) ]
                 )
             }
         }

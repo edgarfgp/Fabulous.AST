@@ -6,7 +6,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 
 module TypeLongIdent =
 
-    let Value = Attributes.defineScalar<string> "Return"
+    let Value = Attributes.defineScalar<string> "Value"
 
     let WidgetKey =
         Widgets.register "LongIdentType" (fun widget ->

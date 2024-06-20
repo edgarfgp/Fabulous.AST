@@ -28,3 +28,38 @@ task { "a" }
 task { "a" }
 task { a }
 """
+
+    [<Fact>]
+    let ``let value with a Seq expression``() =
+        Oak() {
+            AnonymousModule() {
+                SeqExpr(CompExprBodyExpr([ String("a"); String("b") ]))
+
+                SeqExpr([ IdentExpr("1"); IdentExpr("2") ])
+
+                SeqExpr([ String("a"); String("b") ])
+                SeqExpr([ "1"; "2" ])
+            }
+        }
+        |> produces
+            """
+seq {
+    "a"
+    "b"
+}
+
+seq {
+    1
+    2
+}
+
+seq {
+    "a"
+    "b"
+}
+
+seq {
+    1
+    2
+}
+"""

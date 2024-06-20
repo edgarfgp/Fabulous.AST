@@ -31,6 +31,9 @@ module LambdaBuilders =
                 )
             )
 
+        static member LambdaExpr(parameter: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>) =
+            Ast.LambdaExpr([ parameter ], Ast.ConstantExpr(value))
+
         static member LambdaExpr(parameters: WidgetBuilder<Pattern> list, value: WidgetBuilder<Constant>) =
             Ast.LambdaExpr(parameters, Ast.ConstantExpr(value))
 

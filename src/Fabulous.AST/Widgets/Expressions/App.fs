@@ -90,5 +90,4 @@ module AppBuilders =
 
         static member FailWithExpr(item: WidgetBuilder<Constant>) = Ast.FailWithExpr([ item ])
 
-        static member FailWithExpr(item: string) =
-            Ast.FailWithExpr([ Ast.Constant(item) ])
+        static member FailWithExpr(item: string) = Ast.FailWithExpr([ Ast.String(item) ])
