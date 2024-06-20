@@ -40,7 +40,7 @@ module CompExprBodyBuilders =
         static member CompExprBodyExpr(value: WidgetBuilder<Expr>) = Ast.CompExprBodyExpr([ value ])
 
         static member CompExprBodyExpr(values: string list) =
-            let values = values |> List.map(fun e -> Ast.OtherExpr(e))
+            let values = values |> List.map(Ast.OtherExpr)
             Ast.CompExprBodyExpr(values)
 
         static member CompExprBodyExpr(value: string) = Ast.CompExprBodyExpr([ value ])
