@@ -73,15 +73,6 @@ module ExceptionDefnBuilders =
                     Array.empty
                 )
             )
-        // CollectionBuilder<ExceptionDefnNode, MemberDefn>(
-        //     ExceptionDefn.WidgetKey,
-        //     ExceptionDefn.MemberDefs,
-        //     AttributesBundle(
-        //         StackList.empty(),
-        //         [| ExceptionDefn.UnionCase.WithValue(value.Compile()) |],
-        //         Array.empty
-        //     )
-        // )
 
         static member ExceptionDefn(value: string) = Ast.ExceptionDefn(Ast.UnionCase(value))
 

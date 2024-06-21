@@ -54,6 +54,17 @@ Oak() {
                   ExternBindingPat(Int(), ConstantPat(Constant "y")) ]
             )
 
+        ExceptionDefn("Error")
+
+        ExceptionDefn("Error1", Field("string"))
+
+        ExceptionDefn("Error2", Field("msg", String())).members() {
+            Property(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
+        }
+
+        NestedModule("Values") { Value("myValue", Int(12)) }
+
+        NestedModule("Functions") { Function("myFunctionValue", "p", Int(12)) }
     }
 }
 |> Gen.mkOak
@@ -66,13 +77,10 @@ Will output the following code:
 *)
 
 open Fabulous.AST.StackAllocatedCollections
-
 open System
-
 open type Fabulous.AST.Ast
 
 #nowarn "0044"
-
 #if !DEBUG
 let str = "Not debugging!"
 #else
@@ -89,5 +97,15 @@ type HEX =
 do printfn "Executing..."
 
 extern void HelloWorld()
-
 extern void HelloWorld2(string x, int y)
+exception Error
+exception Error1 of string
+
+exception Error2 of msg: string with
+    static member Message = ""
+
+module Values =
+    let myValue = 12
+
+module Functions =
+    let myFunctionValue p = 12

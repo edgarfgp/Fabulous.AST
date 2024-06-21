@@ -19,7 +19,9 @@ module ExceptionDefn =
 
                 ExceptionDefn("Error2", [ Field(String()); Field(Int()) ])
 
-                ExceptionDefn("Error3", Field("msg", String()))
+                ExceptionDefn("Error3", Field("msg", String())).members() {
+                    Property(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
+                }
             }
         }
         |> produces
@@ -27,5 +29,7 @@ module ExceptionDefn =
 exception Error
 exception Error1 of string
 exception Error2 of string * int
-exception Error3 of msg: string
+
+exception Error3 of msg: string with
+    static member Message = ""
 """

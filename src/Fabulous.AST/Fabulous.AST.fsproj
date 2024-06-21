@@ -183,7 +183,7 @@
         <Compile Include="Widgets\ModuleDeclarations\ExternBindingPattern.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ExternBinding.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Exception.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\TopLevelBinding.fs" />
+        <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\_TopLevelBinding.fs" />
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Value.fs" />
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Function.fs" />
         <Compile Include="Widgets\ModuleDeclarations\TopLevelBindings\Property.fs" />
