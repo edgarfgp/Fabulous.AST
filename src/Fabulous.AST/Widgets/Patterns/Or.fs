@@ -33,7 +33,17 @@ module OrBuilders =
                 )
             )
 
+        static member OrPat(lhs: string, rhs: WidgetBuilder<Pattern>) = Ast.OrPat(Ast.ConstantPat(lhs), rhs)
+
+        static member OrPat(lhs: WidgetBuilder<Pattern>, rhs: string) = Ast.OrPat(lhs, Ast.ConstantPat(rhs))
+
         static member OrPat(lhs: WidgetBuilder<Constant>, rhs: WidgetBuilder<Constant>) =
+            Ast.OrPat(Ast.ConstantPat(lhs), Ast.ConstantPat(rhs))
+
+        static member OrPat(lhs: string, rhs: WidgetBuilder<Constant>) =
+            Ast.OrPat(Ast.ConstantPat(lhs), Ast.ConstantPat(rhs))
+
+        static member OrPat(lhs: WidgetBuilder<Constant>, rhs: string) =
             Ast.OrPat(Ast.ConstantPat(lhs), Ast.ConstantPat(rhs))
 
         static member OrPat(lhs: string, rhs: string) =

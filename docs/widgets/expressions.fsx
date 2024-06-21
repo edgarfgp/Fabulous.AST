@@ -128,10 +128,15 @@ Will output the following code:
 *)
 
 1
+
 $"{12}"
+
 $"""{12}"""
+
 lazy 12
+
 [ "a"; "b"; "c" ]
+
 [| "a"; "b"; "c" |]
 
 seq {
@@ -140,13 +145,21 @@ seq {
 }
 
 1 + 2
+
 struct (1, 2, 3)
+
 1, 2, 3
+
 open System
+
 "string".Length
+
 printfn "Hello, World!"
+
 fun () -> 1
+
 (fun a -> a)
+
 (fun a b -> a)
 
 match 1 with
