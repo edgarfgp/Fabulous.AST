@@ -10,7 +10,7 @@ module Open =
     let IdentList = Attributes.defineScalar<string list> "IdentList"
 
     let WidgetModuleOrNamespaceKey =
-        Widgets.register "OpenModuleOrNamespace" (fun widget ->
+        Widgets.register "Open" (fun widget ->
             let identList =
                 Widgets.getScalarValue widget IdentList
                 |> List.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))

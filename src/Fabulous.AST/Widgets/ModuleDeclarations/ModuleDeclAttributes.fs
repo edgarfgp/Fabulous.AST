@@ -9,15 +9,14 @@ open Fantomas.Core.SyntaxOak
 module ModuleDeclAttributes =
     let DoExpression = Attributes.defineWidget "DoExpression"
 
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+    let Attributes = Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
             let doExpression = Widgets.getNodeFromWidget<Expr> widget DoExpression
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget Attributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -27,39 +26,34 @@ module ModuleDeclAttributes =
 module ModuleDeclAttributeNodeBuilders =
     type Ast with
 
-        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Expr>) =
+        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Expr>, attributes: WidgetBuilder<AttributeNode> list) =
+            let attributes = attributes |> List.map(Gen.mkOak)
+
             WidgetBuilder<ModuleDeclAttributesNode>(
                 ModuleDeclAttributes.WidgetKey,
                 AttributesBundle(
-                    StackList.empty(),
+                    StackList.one(ModuleDeclAttributes.Attributes.WithValue(attributes)),
                     [| ModuleDeclAttributes.DoExpression.WithValue(doExpr.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Constant>) =
-            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr))
+        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Expr>, attribute: WidgetBuilder<AttributeNode>) =
+            Ast.ModuleDeclAttribute(doExpr, [ attribute ])
 
-        static member ModuleDeclAttribute(doExpr: string) =
-            Ast.ModuleDeclAttribute(Ast.Constant(doExpr))
+        static member ModuleDeclAttribute
+            (doExpr: WidgetBuilder<Constant>, attributes: WidgetBuilder<AttributeNode> list)
+            =
+            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr), attributes)
 
-type ModuleDeclAttributeModifiers =
-    [<Extension>]
-    static member inline attributes
-        (this: WidgetBuilder<ModuleDeclAttributesNode>, attributes: WidgetBuilder<AttributeNode> list)
-        =
-        this.AddScalar(
-            ModuleDeclAttributes.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
+        static member ModuleDeclAttribute(doExpr: string, attributes: WidgetBuilder<AttributeNode> list) =
+            Ast.ModuleDeclAttribute(Ast.Constant(doExpr), attributes)
 
-    [<Extension>]
-    static member inline attribute
-        (this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: WidgetBuilder<AttributeNode>)
-        =
-        ModuleDeclAttributeModifiers.attributes(this, [ attribute ])
+        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Constant>, attribute: WidgetBuilder<AttributeNode>) =
+            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr), [ attribute ])
+
+        static member ModuleDeclAttribute(doExpr: string, attribute: WidgetBuilder<AttributeNode>) =
+            Ast.ModuleDeclAttribute(Ast.Constant(doExpr), [ attribute ])
 
 type ModuleDeclAttributesYieldExtensions =
     [<Extension>]

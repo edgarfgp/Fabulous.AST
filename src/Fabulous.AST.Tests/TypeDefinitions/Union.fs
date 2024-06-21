@@ -98,7 +98,7 @@ type Colors =
                 Union("Colors") {
                     UnionCase("Red", [ Field("a", String()); Field("b", LongIdent "int") ])
 
-                    UnionCase("Green")
+                    UnionCase("Green", [ Field(String()); Field(Int()) ])
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 }
@@ -109,7 +109,7 @@ type Colors =
 
 type Colors =
     | Red of a: string * b: int
-    | Green
+    | Green of string * int
     | Blue
     | Yellow
 

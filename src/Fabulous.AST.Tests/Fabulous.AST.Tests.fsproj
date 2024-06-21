@@ -25,6 +25,7 @@
         <Compile Include="ModuleDeclarations\NestedModule.fs" />
         <Compile Include="ModuleDeclarations\ModuleAbbrev.fs" />
         <Compile Include="ModuleDeclarations\Val.fs" />
+        <Compile Include="ModuleDeclarations\Exception.fs" />
         <Compile Include="ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="ModuleDeclarations\ExternalFunctions.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Value.fs" />
