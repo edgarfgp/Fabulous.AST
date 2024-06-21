@@ -12,7 +12,7 @@ let nupkgs = __SOURCE_DIRECTORY__ </> "nupkgs"
 let nightlyVersion =
     Environment.GetEnvironmentVariable("NIGHTLY_VERSION")
     |> Option.ofObj
-    |> Option.bind (fun nv -> if String.IsNullOrWhiteSpace(nv) then None else Some nv)
+    |> Option.bind(fun nv -> if String.IsNullOrWhiteSpace(nv) then None else Some nv)
 
 let versionProperty =
     match nightlyVersion with
@@ -50,4 +50,4 @@ pipeline "docs" {
     runIfOnlySpecified true
 }
 
-tryPrintPipelineCommandHelp ()
+tryPrintPipelineCommandHelp()

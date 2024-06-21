@@ -59,6 +59,7 @@
         <Compile Include="Widgets\Patterns\ListCons.fs" />
         <Compile Include="Widgets\Expressions\Expr.fs" />
         <Compile Include="Widgets\Expressions\Paren.fs" />
+        <Compile Include="Widgets\Expressions\SingleNode.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />
         <Compile Include="Widgets\Expressions\LongIdentSet.fs" />
         <Compile Include="Widgets\Expressions\Ident.fs" />
@@ -152,7 +153,6 @@
         <Compile Include="Widgets\Types\Funs.fs" />
         <Compile Include="Widgets\AttributeNode.fs" />
         <Compile Include="Widgets\InheritConstructor.fs" />
-        <Compile Include="Widgets\SingleNode.fs" />
         <Compile Include="Widgets\ImplicitConstructor.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ParsedHashDirective.fs" />
         <Compile Include="Widgets\ModuleDeclarations\NestedModule.fs" />

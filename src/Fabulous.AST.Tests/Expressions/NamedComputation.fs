@@ -14,8 +14,13 @@ module NamedComputation =
         Oak() {
             AnonymousModule() {
                 NamedComputationExpr(ConstantExpr(Constant "task"), ConstantExpr(String("a")))
-                NamedComputationExpr((Constant "task"), ConstantExpr(String("a")))
-                NamedComputationExpr("task", ConstantExpr(String("a")))
+
+                NamedComputationExpr(
+                    (Constant "task"),
+                    SingleExpr(SingleNode("return", String("a")).supportsStroustrup(true))
+                )
+
+                NamedComputationExpr("task", SingleExpr(SingleNode("return", String("a")).addSpace(true)))
                 NamedComputationExpr("task", String("a"))
                 NamedComputationExpr("task", "a")
             }
@@ -23,8 +28,8 @@ module NamedComputation =
         |> produces
             """
 task { "a" }
-task { "a" }
-task { "a" }
+task { return"a" }
+task { return "a" }
 task { "a" }
 task { a }
 """

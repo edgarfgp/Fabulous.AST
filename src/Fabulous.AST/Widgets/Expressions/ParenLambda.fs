@@ -53,6 +53,24 @@ module ParenLambdaBuilders =
             let parameter = parameters |> List.map Ast.ConstantPat
             Ast.ParenLambdaExpr(parameter, Ast.Constant(value))
 
+        static member ParenLambdaExpr(parameter: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.ParenLambdaExpr([ parameter ], value)
+
+        static member ParenLambdaExpr(parameter: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>) =
+            Ast.ParenLambdaExpr([ parameter ], Ast.ConstantExpr(value))
+
+        static member ParenLambdaExpr(parameter: WidgetBuilder<Constant>, value: WidgetBuilder<Constant>) =
+            Ast.ParenLambdaExpr([ Ast.ConstantPat(parameter) ], Ast.ConstantExpr(value))
+
+        static member ParenLambdaExpr(parameter: WidgetBuilder<Pattern>, value: string) =
+            Ast.ParenLambdaExpr([ parameter ], Ast.Constant(value))
+
+        static member ParenLambdaExpr(parameter: WidgetBuilder<Constant>, value: string) =
+            Ast.ParenLambdaExpr([ Ast.ConstantPat(parameter) ], Ast.Constant(value))
+
+        static member ParenLambdaExpr(parameter: string, value: WidgetBuilder<Expr>) =
+            Ast.ParenLambdaExpr([ Ast.ConstantPat(parameter) ], value)
+
         static member ParenLambdaExpr(parameters: string list, value: WidgetBuilder<Expr>) =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.ParenLambdaExpr(parameters, value)

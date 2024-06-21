@@ -17,8 +17,14 @@ module SingleNode =
     let WidgetKey =
         Widgets.register "SingleNode" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
-            let supportsStroustrup = Widgets.getScalarValue widget SupportsStroustrup
-            let addSpace = Widgets.getScalarValue widget AddSpace
+
+            let supportsStroustrup =
+                Widgets.tryGetScalarValue widget SupportsStroustrup
+                |> ValueOption.defaultValue false
+
+            let addSpace =
+                Widgets.tryGetScalarValue widget AddSpace |> ValueOption.defaultValue false
+
             let leading = Widgets.getScalarValue widget Leading
             ExprSingleNode(SingleTextNode.Create(leading), addSpace, supportsStroustrup, expr, Range.Zero))
 
