@@ -46,6 +46,38 @@ module IfThenElseBuilders =
             )
 
         static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>, elseExpr: string)
+            =
+            Ast.IfThenElseExpr(ifExpr, thenExpr, Ast.ConstantExpr(elseExpr))
+
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Expr>, thenExpr: string, elseExpr: WidgetBuilder<Expr>)
+            =
+            Ast.IfThenElseExpr(ifExpr, Ast.ConstantExpr(thenExpr), elseExpr)
+
+        static member inline IfThenElseExpr(ifExpr: WidgetBuilder<Expr>, thenExpr: string, elseExpr: string) =
+            Ast.IfThenElseExpr(ifExpr, Ast.ConstantExpr(thenExpr), Ast.ConstantExpr(elseExpr))
+
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Constant>, elseExpr: WidgetBuilder<Expr>)
+            =
+            Ast.IfThenElseExpr(ifExpr, Ast.ConstantExpr(thenExpr), elseExpr)
+
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Constant>, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElseExpr(ifExpr, Ast.ConstantExpr(thenExpr), Ast.ConstantExpr(elseExpr))
+
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Constant>, elseExpr: string)
+            =
+            Ast.IfThenElseExpr(ifExpr, thenExpr, Ast.Constant(elseExpr))
+
+        static member inline IfThenElseExpr
+            (ifExpr: WidgetBuilder<Expr>, thenExpr: string, elseExpr: WidgetBuilder<Constant>)
+            =
+            Ast.IfThenElseExpr(ifExpr, Ast.Constant(thenExpr), elseExpr)
+
+        static member inline IfThenElseExpr
             (ifExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>, elseExpr: WidgetBuilder<Expr>)
             =
             Ast.IfThenElseExpr(Ast.ConstantExpr(ifExpr), thenExpr, elseExpr)

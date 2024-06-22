@@ -69,7 +69,20 @@ module UnionCaseBuilders =
                 )
             )
 
+        static member UnionCase(name: string, parameters: WidgetBuilder<Type> list) =
+            let parameters = parameters |> List.map Ast.Field
+            Ast.UnionCase(name, parameters)
+
+        static member UnionCase(name: string, parameter: WidgetBuilder<Type>) =
+            Ast.UnionCase(name, [ Ast.Field parameter ])
+
+        static member UnionCase(name: string, parameters: string list) =
+            Ast.UnionCase(name, parameters |> List.map Ast.Field)
+
         static member UnionCase(name: string, parameter: WidgetBuilder<FieldNode>) = Ast.UnionCase(name, [ parameter ])
+
+        static member UnionCase(name: string, parameter: string) =
+            Ast.UnionCase(name, Ast.Field(parameter))
 
         static member UnionCase(name: string, parameters: (string * string) list) =
             Ast.UnionCase(name, parameters |> List.map(Ast.Field))

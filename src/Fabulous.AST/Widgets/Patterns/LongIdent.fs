@@ -57,11 +57,17 @@ module LongIdentPatternBuilders =
                 )
             )
 
+        static member LongIdentPat(pair: WidgetBuilder<Pattern>) = Ast.LongIdentPat([ pair ])
+
         static member LongIdentPat(pairs: WidgetBuilder<Constant> list) =
             Ast.LongIdentPat(pairs |> List.map Ast.ConstantPat)
 
+        static member LongIdentPat(pair: WidgetBuilder<Constant>) = Ast.LongIdentPat([ pair ])
+
         static member LongIdentPat(pairs: string list) =
             Ast.LongIdentPat(pairs |> List.map Ast.Constant)
+
+        static member LongIdentPat(pair: string) = Ast.LongIdentPat([ pair ])
 
         static member LongIdentPat(ident: string, pairs: WidgetBuilder<Pattern> list) =
             WidgetBuilder<Pattern>(
@@ -76,8 +82,14 @@ module LongIdentPatternBuilders =
                 )
             )
 
+        static member LongIdentPat(ident: string, pair: WidgetBuilder<Pattern>) = Ast.LongIdentPat(ident, [ pair ])
+
         static member LongIdentPat(ident: string, pairs: WidgetBuilder<Constant> list) =
             Ast.LongIdentPat(ident, pairs |> List.map Ast.ConstantPat)
 
+        static member LongIdentPat(ident: string, pair: WidgetBuilder<Constant>) = Ast.LongIdentPat(ident, [ pair ])
+
         static member LongIdentPat(ident: string, pairs: string list) =
             Ast.LongIdentPat(ident, pairs |> List.map Ast.Constant)
+
+        static member LongIdentPat(ident: string, pair: string) = Ast.LongIdentPat(ident, [ pair ])

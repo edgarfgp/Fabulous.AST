@@ -53,6 +53,26 @@ type Colors =
 """
 
     [<Fact>]
+    let ``Produces a generic union``() =
+        Oak() {
+            AnonymousModule() {
+                Union("Option") {
+                    UnionCase("Some", "'a")
+                    UnionCase("None")
+                }
+                |> _.typeParams(PostfixList("'a"))
+            }
+        }
+
+        |> produces
+            """
+type Option<'a> =
+    | Some of 'a
+    | None
+
+"""
+
+    [<Fact>]
     let ``Produces an union with interface member``() =
         Oak() {
             AnonymousModule() {
