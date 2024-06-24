@@ -164,8 +164,8 @@
         <Compile Include="Widgets\ExternBindingPattern.fs" />
         <Compile Include="Widgets\ExternBinding.fs" />
         <Compile Include="Widgets\BindingList.fs" />
-        <Compile Include="Widgets\ExplicitCtor.fs" />
-        <Compile Include="Widgets\Interface.fs" />
+        <Compile Include="Widgets\ExplicitConstructor.fs" />
+        <Compile Include="Widgets\InterfaceMember.fs" />
         <Compile Include="Widgets\AutoProperty.fs" />
         <Compile Include="Widgets\AbstractSlot.fs" />
         <Compile Include="Widgets\SigMember.fs" />

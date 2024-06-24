@@ -6,14 +6,14 @@ open Xunit
 
 open type Ast
 
-module ExplicitCtor =
+module ExplicitConstructor =
 
     [<Fact>]
     let ``Produces a classes ExplicitCtor``() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    ExplicitCtor(
+                    ExplicitConstructor(
                         ParenPat(
                             TuplePat(
                                 [ (ConstantPat(Constant "x"))
@@ -29,7 +29,7 @@ module ExplicitCtor =
                         "this"
                     )
 
-                    ExplicitCtor(
+                    ExplicitConstructor(
                         ParenPat(TuplePat([ Constant "x"; Constant "y"; Constant "z" ])),
                         RecordExpr(
                             [ RecordFieldExpr("X", ConstantExpr(Constant "x"))

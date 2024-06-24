@@ -71,7 +71,7 @@ module ExplicitConstructorMember =
 module ExplicitConstructorBuilders =
     type Ast with
 
-        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
+        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<MemberDefnExplicitCtorNode>(
                 ExplicitConstructorMember.WidgetKey,
                 AttributesBundle(
@@ -82,22 +82,22 @@ module ExplicitConstructorBuilders =
                 )
             )
 
-        static member ExplicitCtor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
-            Ast.ExplicitCtor(Ast.ConstantPat(pattern), expr)
+        static member ExplicitConstructor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.ExplicitConstructor(Ast.ConstantPat(pattern), expr)
 
-        static member ExplicitCtor(pattern: string, expr: WidgetBuilder<Expr>) =
-            Ast.ExplicitCtor(Ast.Constant(pattern), expr)
+        static member ExplicitConstructor(pattern: string, expr: WidgetBuilder<Expr>) =
+            Ast.ExplicitConstructor(Ast.Constant(pattern), expr)
 
-        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
-            Ast.ExplicitCtor(pattern, Ast.ConstantExpr(expr))
+        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
+            Ast.ExplicitConstructor(pattern, Ast.ConstantExpr(expr))
 
-        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: string) =
-            Ast.ExplicitCtor(pattern, Ast.Constant(expr))
+        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: string) =
+            Ast.ExplicitConstructor(pattern, Ast.Constant(expr))
 
-        static member ExplicitCtor(pattern: string, expr: string) =
-            Ast.ExplicitCtor(Ast.ConstantPat(pattern), expr)
+        static member ExplicitConstructor(pattern: string, expr: string) =
+            Ast.ExplicitConstructor(Ast.ConstantPat(pattern), expr)
 
-        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, alias: string) =
+        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, alias: string) =
             WidgetBuilder<MemberDefnExplicitCtorNode>(
                 ExplicitConstructorMember.WidgetKey,
                 AttributesBundle(
@@ -108,17 +108,19 @@ module ExplicitConstructorBuilders =
                 )
             )
 
-        static member ExplicitCtor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, alias: string) =
-            Ast.ExplicitCtor(pattern, Ast.ConstantExpr(expr), alias)
+        static member ExplicitConstructor
+            (pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, alias: string)
+            =
+            Ast.ExplicitConstructor(pattern, Ast.ConstantExpr(expr), alias)
 
-        static member ExplicitCtor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, alias: string) =
-            Ast.ExplicitCtor(Ast.ConstantPat(pattern), expr, alias)
+        static member ExplicitConstructor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, alias: string) =
+            Ast.ExplicitConstructor(Ast.ConstantPat(pattern), expr, alias)
 
-        static member ExplicitCtor(pattern: string, expr: WidgetBuilder<Expr>, alias: string) =
-            Ast.ExplicitCtor(Ast.Constant(pattern), expr, alias)
+        static member ExplicitConstructor(pattern: string, expr: WidgetBuilder<Expr>, alias: string) =
+            Ast.ExplicitConstructor(Ast.Constant(pattern), expr, alias)
 
-        static member ExplicitCtor(pattern: string, expr: string, alias: string) =
-            Ast.ExplicitCtor(pattern, Ast.ConstantExpr expr, alias)
+        static member ExplicitConstructor(pattern: string, expr: string, alias: string) =
+            Ast.ExplicitConstructor(pattern, Ast.ConstantExpr expr, alias)
 
 type ExplicitConstructorModifiers =
     [<Extension>]
