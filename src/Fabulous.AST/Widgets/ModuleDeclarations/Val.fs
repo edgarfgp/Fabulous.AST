@@ -184,3 +184,9 @@ type ValYieldExtensions =
         let moduleDecl = ModuleDecl.Val node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, node: ValNode) : CollectionContent =
+        let moduleDecl = ModuleDecl.Val node
+        let widget = Ast.EscapeHatch(moduleDecl).Compile()
+        { Widgets = MutStackArray1.One(widget) }

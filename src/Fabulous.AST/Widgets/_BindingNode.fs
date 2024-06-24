@@ -21,7 +21,7 @@ module BindingNode =
     let TypeParams = Attributes.defineWidget "TypeParams"
     let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
 
-type TopLevelBindingModifiers =
+type BindingNodeModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
@@ -37,7 +37,7 @@ type TopLevelBindingModifiers =
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<BindingNode>, attribute: WidgetBuilder<AttributeNode>) =
-        TopLevelBindingModifiers.attributes(this, [ attribute ])
+        BindingNodeModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<BindingNode>) =

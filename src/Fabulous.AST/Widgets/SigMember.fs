@@ -9,9 +9,6 @@ module SigMember =
     let Identifier = Attributes.defineWidget "Val"
     let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
 
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
-
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
             let identifier = Widgets.getNodeFromWidget<ValNode> widget Identifier
@@ -31,7 +28,10 @@ module SigMember =
 module SigMemberBuilders =
     type Ast with
 
-        static member private BaseSigMember(identifier: WidgetBuilder<ValNode>, hasGetter: bool, hasSetter: bool) =
+        static member SigMember(identifier: WidgetBuilder<ValNode>, ?hasGetter: bool, ?hasSetter: bool) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+
             WidgetBuilder<MemberDefnSigMemberNode>(
                 SigMember.WidgetKey,
                 AttributesBundle(
@@ -40,15 +40,3 @@ module SigMemberBuilders =
                     Array.empty
                 )
             )
-
-        static member SigMember(identifier: WidgetBuilder<ValNode>) =
-            Ast.BaseSigMember(identifier, false, false)
-
-        static member SigMemberGet(identifier: WidgetBuilder<ValNode>) =
-            Ast.BaseSigMember(identifier, true, false)
-
-        static member SigMemberSet(identifier: WidgetBuilder<ValNode>) =
-            Ast.BaseSigMember(identifier, false, true)
-
-        static member SigMemberGetSet(identifier: WidgetBuilder<ValNode>) =
-            Ast.BaseSigMember(identifier, true, true)

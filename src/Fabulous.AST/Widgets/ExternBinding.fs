@@ -82,18 +82,40 @@ module ExternBinding =
 [<AutoOpen>]
 module ExternBindingNodeBuilders =
     type Ast with
-        static member ExternBinding(name: string, tp: WidgetBuilder<Type>) =
+        static member ExternBinding
+            (tp: WidgetBuilder<Type>, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> list)
+            =
+            let parameters = parameters |> List.map Gen.mkOak
+
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
                 AttributesBundle(
-                    StackList.one(ExternBinding.Identifier.WithValue(name)),
+                    StackList.two(
+                        ExternBinding.Identifier.WithValue(name),
+                        ExternBinding.Parameters.WithValue(parameters)
+                    ),
                     [| ExternBinding.TypeVal.WithValue(tp.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member ExternBinding(name: string, tp: string) =
-            Ast.ExternBinding(name, Ast.LongIdent(tp))
+        static member ExternBinding
+            (tp: string, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> list)
+            =
+            Ast.ExternBinding(Ast.LongIdent(tp), name, parameters)
+
+        static member ExternBinding(tp: WidgetBuilder<Type>, name: string) = Ast.ExternBinding(tp, name, [])
+
+        static member ExternBinding(tp: string, name: string) =
+            Ast.ExternBinding(Ast.LongIdent(tp), name, [])
+
+        static member ExternBinding
+            (tp: WidgetBuilder<Type>, name: string, parameter: WidgetBuilder<ExternBindingPatternNode>)
+            =
+            Ast.ExternBinding(tp, name, [ parameter ])
+
+        static member ExternBinding(tp: string, name: string, parameter: WidgetBuilder<ExternBindingPatternNode>) =
+            Ast.ExternBinding(Ast.LongIdent(tp), name, [ parameter ])
 
 type ExternBindingNodeModifiers =
     [<Extension>]
@@ -126,23 +148,6 @@ type ExternBindingNodeModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<ExternBindingNode>) =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Internal))
-
-    [<Extension>]
-    static member inline parameters
-        (this: WidgetBuilder<ExternBindingNode>, values: WidgetBuilder<ExternBindingPatternNode> list)
-        =
-        this.AddScalar(
-            ExternBinding.Parameters.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
-            )
-        )
-
-    [<Extension>]
-    static member inline parameter
-        (this: WidgetBuilder<ExternBindingNode>, value: WidgetBuilder<ExternBindingPatternNode>)
-        =
-        ExternBindingNodeModifiers.parameters(this, [ value ])
 
 type ExternBindingNodeYieldExtensions =
     [<Extension>]

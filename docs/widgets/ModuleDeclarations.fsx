@@ -46,13 +46,14 @@ Oak() {
 
         ModuleDeclAttribute(ConstantExpr(Constant "do printfn \"Executing...\""), Attribute("Obsolete"))
 
-        ExternBinding("HelloWorld", LongIdent "void")
+        ExternBinding(LongIdent "void", "HelloWorld")
 
-        ExternBinding("HelloWorld2", LongIdent "void")
-            .parameters(
-                [ ExternBindingPat(LongIdent "string", ConstantPat(Constant "x"))
-                  ExternBindingPat(Int(), ConstantPat(Constant "y")) ]
-            )
+        ExternBinding(
+            LongIdent "void",
+            "HelloWorld2",
+            [ ExternBindingPat(LongIdent "string", ConstantPat(Constant "x"))
+              ExternBindingPat(Int(), ConstantPat(Constant "y")) ]
+        )
 
         ExceptionDefn("Error")
 

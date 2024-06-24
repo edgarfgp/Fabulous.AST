@@ -125,3 +125,15 @@ type NestedModuleYieldExtensions =
         let moduleDecl = ModuleDecl.NestedModule node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ValNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(ModuleDecl.Val(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ValNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        NestedModuleYieldExtensions.Yield(this, node)
