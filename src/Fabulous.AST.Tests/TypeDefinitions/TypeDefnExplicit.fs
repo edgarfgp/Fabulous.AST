@@ -17,7 +17,7 @@ type MyClass = class end
 
     [<Fact>]
     let ``Produces a class end with constructor``() =
-        Oak() { AnonymousModule() { ClassEnd("MyClass", ImplicitConstructor()) } }
+        Oak() { AnonymousModule() { ClassEnd("MyClass", ImplicitConstructor(ParenPat())) } }
         |> produces
             """
 type MyClass() = class end
@@ -27,7 +27,7 @@ type MyClass() = class end
     let ``Produces a class end with constructor and attributes``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", ImplicitConstructor())
+                ClassEnd("MyClass", ImplicitConstructor(ParenPat()))
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
@@ -86,7 +86,7 @@ type MyClass<'a, 'b> = class end
     let ``Produces a class end with constructor and  type params``() =
         Oak() {
             AnonymousModule() {
-                ClassEnd("MyClass", ImplicitConstructor())
+                ClassEnd("MyClass", ImplicitConstructor(ParenPat()))
                     .typeParams(PostfixList([ "'a"; "'b" ]))
             }
         }
@@ -98,10 +98,10 @@ type MyClass<'a, 'b>() = class end
 module StructEnd =
     [<Fact>]
     let ``Produces a struct end empty constructor``() =
-        Oak() { AnonymousModule() { StructEnd("MyClass", ImplicitConstructor()) } }
+        Oak() { AnonymousModule() { StructEnd("MyClass", ImplicitConstructor(ParenPat(ParameterPat("x", Int())))) } }
         |> produces
             """
-type MyClass() = struct end
+type MyClass(x: int) = struct end
             """
 
     [<Fact>]

@@ -79,7 +79,7 @@ type Option<'a> =
 
                 Interface("IMyInterface") {
                     let parameters = [ Unit() ]
-                    AbstractCurriedMethod("GetValue", parameters, String())
+                    AbstractSlot("GetValue", parameters, String())
                 }
 
                 (Union("Colors") {
@@ -239,7 +239,7 @@ type Colors<'other> =
     let ``Produces an union with TypeParams and interface member``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
+                Interface("IMyInterface") { AbstractSlot("GetValue", [ Unit() ], String()) }
 
                 (Union("Colors") {
                     UnionCase("Red", [ Field("a", String()); Field(LongIdent("'other")) ])

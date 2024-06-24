@@ -23,26 +23,25 @@ module AutoProperty =
                         )
                     )
                 ) {
-                    AutoPropertyGetSet("Name", ConstantExpr(Constant("name")))
-                    AutoPropertyGetSet("Age", ConstantExpr(Constant("age")))
-                    AutoPropertyGet("A", ConstantExpr(String("")))
-                    AutoPropertyGet("B", ConstantExpr(String(""))).toStatic()
+                    AutoProperty("Name", ConstantExpr(Constant("name")), true, true)
+                    AutoProperty("Age", ConstantExpr(Constant("age")), true, true)
+                    AutoProperty("A", ConstantExpr(String("")), true)
+                    AutoProperty("B", ConstantExpr(String("")), true).toStatic()
 
-                    AutoPropertyGetSet("C", ConstantExpr(String("")))
+                    AutoProperty("C", ConstantExpr(String("")), true, true)
                         .toPrivate()
                         .xmlDocs([ "Im a private property" ])
 
-                    AutoPropertyGetSet("D", ConstantExpr(String("")))
+                    AutoProperty("D", ConstantExpr(String("")), true, true)
                         .toInternal()
                         .returnType(String())
                         .xmlDocs([ "Im an internal property with a return type" ])
 
-                    AutoPropertyGetSet("E", ConstantExpr(String("")))
+                    AutoProperty("E", ConstantExpr(String("")), true, true)
                         .toPublic()
                         .attribute(Attribute("System.Obsolete"))
                         .xmlDocs([ "Im a public property with an attribute" ])
                 }
-
             }
         }
         |> produces
@@ -61,3 +60,6 @@ type Person(name: string, age: int) =
     [<System.Obsolete>]
     member val public E = "" with get, set
 """
+
+type Person(name: string, age: int) =
+    member val Name = name with get, set

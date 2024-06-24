@@ -12,18 +12,18 @@ module BindingMethodNode =
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let parameters = Widgets.getScalarValue widget TopLevelBinding.Parameters
-            let bodyExpr = Widgets.getNodeFromWidget widget TopLevelBinding.BodyExpr
-            let isInlined = Widgets.tryGetScalarValue widget TopLevelBinding.IsInlined
+            let parameters = Widgets.getScalarValue widget BindingNode.Parameters
+            let bodyExpr = Widgets.getNodeFromWidget widget BindingNode.BodyExpr
+            let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
 
             let isStatic =
-                Widgets.tryGetScalarValue widget TopLevelBinding.IsStatic
+                Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget TopLevelBinding.Return
+            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
 
             let accessControl =
-                Widgets.tryGetScalarValue widget TopLevelBinding.Accessibility
+                Widgets.tryGetScalarValue widget BindingNode.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -33,7 +33,7 @@ module BindingMethodNode =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget TopLevelBinding.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -48,7 +48,7 @@ module BindingMethodNode =
                 | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
             let attributes =
-                Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
+                Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -59,7 +59,7 @@ module BindingMethodNode =
                 | ValueNone -> None
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TopLevelBinding.TypeParams
+                Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
@@ -96,11 +96,8 @@ module BindingMethodBuilders =
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        BindingMethodNode.Name.WithValue(name),
-                        TopLevelBinding.Parameters.WithValue(parameters)
-                    ),
-                    [| TopLevelBinding.BodyExpr.WithValue(body.Compile()) |],
+                    StackList.two(BindingMethodNode.Name.WithValue(name), BindingNode.Parameters.WithValue(parameters)),
+                    [| BindingNode.BodyExpr.WithValue(body.Compile()) |],
                     Array.empty
                 )
             )

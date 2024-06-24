@@ -30,6 +30,18 @@ module Class =
 
             let constructor =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget ImplicitConstructor
+                |> ValueOption.defaultValue(
+                    ImplicitConstructorNode(
+                        None,
+                        None,
+                        None,
+                        Pattern.Unit(
+                            UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)
+                        ),
+                        None,
+                        Range.Zero
+                    )
+                )
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
@@ -56,19 +68,7 @@ module Class =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let constructor =
-                match constructor with
-                | ValueNone when not isClass -> None
-                | ValueNone ->
-                    let unitNode =
-                        UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)
-
-                    let constructor =
-                        ImplicitConstructorNode(None, None, None, Pattern.Unit(unitNode), None, Range.Zero)
-
-                    Some constructor
-
-                | ValueSome constructor -> Some constructor
+            let constructor = if not isClass then None else Some constructor
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility

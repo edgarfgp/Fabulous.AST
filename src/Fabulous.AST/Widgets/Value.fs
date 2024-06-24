@@ -17,10 +17,10 @@ module BindingValue =
         Widgets.register "Value" (fun widget ->
             let name = Widgets.getScalarValue widget Name
             let leadingKeyword = Widgets.getScalarValue widget LeadingKeyword
-            let bodyExpr = Widgets.getNodeFromWidget widget TopLevelBinding.BodyExpr
+            let bodyExpr = Widgets.getNodeFromWidget widget BindingNode.BodyExpr
 
             let accessControl =
-                Widgets.tryGetScalarValue widget TopLevelBinding.Accessibility
+                Widgets.tryGetScalarValue widget BindingNode.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -30,7 +30,7 @@ module BindingValue =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget TopLevelBinding.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -40,19 +40,19 @@ module BindingValue =
                 | ValueNone -> None
 
             let attributes =
-                Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
+                Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
             let isMutable =
-                Widgets.tryGetScalarValue widget TopLevelBinding.IsMutable
+                Widgets.tryGetScalarValue widget BindingNode.IsMutable
                 |> ValueOption.defaultValue false
 
             let isInlined =
-                Widgets.tryGetScalarValue widget TopLevelBinding.IsInlined
+                Widgets.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget TopLevelBinding.Return
+            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
 
             let returnType =
                 match returnType with
@@ -60,7 +60,7 @@ module BindingValue =
                 | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TopLevelBinding.TypeParams
+                Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
@@ -93,7 +93,7 @@ module BindingValueBuilders =
                         BindingValue.Name.WithValue(Gen.mkOak name),
                         BindingValue.LeadingKeyword.WithValue(leadingKeyword)
                     ),
-                    [| TopLevelBinding.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     Array.empty
                 )
             )

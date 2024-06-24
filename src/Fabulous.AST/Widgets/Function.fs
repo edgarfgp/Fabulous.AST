@@ -13,11 +13,11 @@ module BindingFunction =
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget TopLevelBinding.BodyExpr
-            let parameters = Widgets.getScalarValue widget TopLevelBinding.Parameters
+            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let parameters = Widgets.getScalarValue widget BindingNode.Parameters
 
             let accessControl =
-                Widgets.tryGetScalarValue widget TopLevelBinding.Accessibility
+                Widgets.tryGetScalarValue widget BindingNode.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -27,7 +27,7 @@ module BindingFunction =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget TopLevelBinding.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -37,15 +37,15 @@ module BindingFunction =
                 | ValueNone -> None
 
             let attributes =
-                Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
+                Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
             let isInlined =
-                Widgets.tryGetScalarValue widget TopLevelBinding.IsInlined
+                Widgets.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget TopLevelBinding.Return
+            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
 
             let returnType =
                 match returnType with
@@ -53,7 +53,7 @@ module BindingFunction =
                 | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TopLevelBinding.TypeParams
+                Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
@@ -83,11 +83,8 @@ module BindingFunctionBuilders =
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        BindingFunction.Name.WithValue(name),
-                        TopLevelBinding.Parameters.WithValue(parameters)
-                    ),
-                    [| TopLevelBinding.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    StackList.two(BindingFunction.Name.WithValue(name), BindingNode.Parameters.WithValue(parameters)),
+                    [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     Array.empty
                 )
             )

@@ -221,11 +221,7 @@ type Colors =
 
     [<Fact>]
     let ``Produces a classes with a method member``() =
-        Oak() {
-            AnonymousModule() {
-                Class("Person", ImplicitConstructor()) { Method("this.Name", UnitPat(), ConstantExpr(Int 23)) }
-            }
-        }
+        Oak() { AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Int 23)) } } }
         |> produces
             """
 type Person() =

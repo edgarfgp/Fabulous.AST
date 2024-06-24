@@ -4,7 +4,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
-module LetBindingMember =
+module BindingList =
     let Bindings = Attributes.defineScalar<BindingNode list> "Type"
 
     let WidgetKey =
@@ -18,9 +18,9 @@ module LetBindingMemberBuilders =
 
         static member LetBindings(bindings: WidgetBuilder<BindingNode> list) =
             WidgetBuilder<BindingListNode>(
-                LetBindingMember.WidgetKey,
+                BindingList.WidgetKey,
                 AttributesBundle(
-                    StackList.one(LetBindingMember.Bindings.WithValue(bindings |> List.map Gen.mkOak)),
+                    StackList.one(BindingList.Bindings.WithValue(bindings |> List.map Gen.mkOak)),
                     Array.empty,
                     Array.empty
                 )
@@ -28,9 +28,9 @@ module LetBindingMemberBuilders =
 
         static member LetBinding(binding: WidgetBuilder<BindingNode>) =
             WidgetBuilder<BindingListNode>(
-                LetBindingMember.WidgetKey,
+                BindingList.WidgetKey,
                 AttributesBundle(
-                    StackList.one(LetBindingMember.Bindings.WithValue([ binding ] |> List.map Gen.mkOak)),
+                    StackList.one(BindingList.Bindings.WithValue([ binding ] |> List.map Gen.mkOak)),
                     Array.empty,
                     Array.empty
                 )

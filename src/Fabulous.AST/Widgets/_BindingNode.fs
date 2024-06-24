@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 
 open type Fabulous.AST.Ast
 
-module TopLevelBinding =
+module BindingNode =
     let BodyExpr = Attributes.defineWidget "BindingBodyExpr"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
@@ -24,12 +24,12 @@ module TopLevelBinding =
 type TopLevelBindingModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
-        this.AddScalar(TopLevelBinding.XmlDocs.WithValue(xmlDocs))
+        this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
-            TopLevelBinding.MultipleAttributes.WithValue(
+            BindingNode.MultipleAttributes.WithValue(
                 [ for attr in attributes do
                       Gen.mkOak attr ]
             )
@@ -41,35 +41,35 @@ type TopLevelBindingModifiers =
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(TopLevelBinding.Accessibility.WithValue(AccessControl.Private))
+        this.AddScalar(BindingNode.Accessibility.WithValue(AccessControl.Private))
 
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(TopLevelBinding.Accessibility.WithValue(AccessControl.Public))
+        this.AddScalar(BindingNode.Accessibility.WithValue(AccessControl.Public))
 
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(TopLevelBinding.Accessibility.WithValue(AccessControl.Internal))
+        this.AddScalar(BindingNode.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) =
-        this.AddWidget(TopLevelBinding.Return.WithValue(returnType.Compile()))
+        this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
 
     [<Extension>]
     static member inline toMutable(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(TopLevelBinding.IsMutable.WithValue(true))
+        this.AddScalar(BindingNode.IsMutable.WithValue(true))
 
     [<Extension>]
     static member inline toInlined(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(TopLevelBinding.IsInlined.WithValue(true))
+        this.AddScalar(BindingNode.IsInlined.WithValue(true))
 
     [<Extension>]
     static member inline toStatic(this: WidgetBuilder<BindingNode>) =
-        this.AddScalar(TopLevelBinding.IsStatic.WithValue(true))
+        this.AddScalar(BindingNode.IsStatic.WithValue(true))
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<BindingNode>, typeParams: WidgetBuilder<TyparDecls>) =
-        this.AddWidget(TopLevelBinding.TypeParams.WithValue(typeParams.Compile()))
+        this.AddWidget(BindingNode.TypeParams.WithValue(typeParams.Compile()))
 
 type ValueYieldExtensions =
     [<Extension>]

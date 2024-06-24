@@ -4,6 +4,10 @@ open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Microsoft.FSharp.Core.CompilerServices
 
+type MethodParamsType =
+    | UnNamed of parameters: WidgetBuilder<Type> list * isTupled: bool
+    | Named of types: (string option * WidgetBuilder<Type>) list * isTupled: bool
+
 type AccessControl =
     | Public
     | Private

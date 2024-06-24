@@ -14,14 +14,14 @@ module BindingProperty =
         Widgets.register "PropertyMember" (fun widget ->
             let name = Widgets.getScalarValue widget Name
 
-            let bodyExpr = Widgets.getNodeFromWidget widget TopLevelBinding.BodyExpr
-            let isInlined = Widgets.tryGetScalarValue widget TopLevelBinding.IsInlined
+            let bodyExpr = Widgets.getNodeFromWidget widget BindingNode.BodyExpr
+            let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
 
             let isStatic =
-                Widgets.tryGetScalarValue widget TopLevelBinding.IsStatic
+                Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget TopLevelBinding.Return
+            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
 
             let returnType =
                 match returnType with
@@ -29,7 +29,7 @@ module BindingProperty =
                 | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
             let accessControl =
-                Widgets.tryGetScalarValue widget TopLevelBinding.Accessibility
+                Widgets.tryGetScalarValue widget BindingNode.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -39,7 +39,7 @@ module BindingProperty =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget TopLevelBinding.XmlDocs
+            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
 
             let xmlDocs =
                 match lines with
@@ -49,7 +49,7 @@ module BindingProperty =
                 | ValueNone -> None
 
             let attributes =
-                Widgets.tryGetScalarValue widget TopLevelBinding.MultipleAttributes
+                Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -60,7 +60,7 @@ module BindingProperty =
                 | ValueNone -> None
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TopLevelBinding.TypeParams
+                Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
@@ -95,7 +95,7 @@ module BindingPropertyBuilders =
                 BindingProperty.WidgetKey,
                 AttributesBundle(
                     StackList.one(BindingProperty.Name.WithValue(Gen.mkOak name)),
-                    [| TopLevelBinding.BodyExpr.WithValue(body.Compile()) |],
+                    [| BindingNode.BodyExpr.WithValue(body.Compile()) |],
                     Array.empty
                 )
             )

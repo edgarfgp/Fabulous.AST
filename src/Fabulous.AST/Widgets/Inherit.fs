@@ -4,7 +4,7 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
-module InheritMember =
+module Inherit =
     let TypeValue = Attributes.defineWidget "Type"
 
     let WidgetKey =
@@ -18,12 +18,8 @@ module InheritMemberBuilders =
 
         static member Inherit(value: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnInheritNode>(
-                InheritMember.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| InheritMember.TypeValue.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                Inherit.WidgetKey,
+                AttributesBundle(StackList.empty(), [| Inherit.TypeValue.WithValue(value.Compile()) |], Array.empty)
             )
 
         static member Inherit(value: string) = Ast.Inherit(Ast.LongIdent(value))

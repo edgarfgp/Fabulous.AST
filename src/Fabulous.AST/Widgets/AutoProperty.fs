@@ -98,9 +98,10 @@ module AutoPropertyMember =
 [<AutoOpen>]
 module AutoPropertyMemberBuilders =
     type Ast with
-        static member private BaseAutoProperty
-            (identifier: string, expr: WidgetBuilder<Expr>, hasGetter: bool, hasSetter: bool)
-            =
+        static member AutoProperty(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
@@ -113,41 +114,41 @@ module AutoPropertyMemberBuilders =
                 )
             )
 
-        static member AutoProperty(identifier: string, expr: WidgetBuilder<Expr>) =
-            Ast.BaseAutoProperty(identifier, expr, false, false)
+        static member AutoProperty
+            (identifier: string, expr: WidgetBuilder<Constant>, ?hasGetter: bool, ?hasSetter: bool)
+            =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            let expr = expr |> Ast.ConstantExpr
 
-        static member AutoProperty(identifier: string, expr: WidgetBuilder<Constant>) =
-            Ast.AutoProperty(identifier, Ast.ConstantExpr(expr))
+            WidgetBuilder<MemberDefnAutoPropertyNode>(
+                AutoPropertyMember.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        AutoPropertyMember.Identifier.WithValue(identifier),
+                        AutoPropertyMember.HasGetterSetter.WithValue(hasGetter, hasSetter)
+                    ),
+                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
+                    Array.empty
+                )
+            )
 
-        static member AutoProperty(identifier: string, expr: string) =
-            Ast.AutoProperty(identifier, Ast.Constant(expr))
+        static member AutoProperty(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            let expr = expr |> Ast.Constant
 
-        static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Expr>) =
-            Ast.BaseAutoProperty(identifier, expr, true, false)
-
-        static member AutoPropertyGet(identifier: string, expr: WidgetBuilder<Constant>) =
-            Ast.AutoPropertyGet(identifier, Ast.ConstantExpr(expr))
-
-        static member AutoPropertyGet(identifier: string, expr: string) =
-            Ast.AutoPropertyGet(identifier, Ast.Constant(expr))
-
-        static member AutoPropertySet(identifier: string, expr: WidgetBuilder<Expr>) =
-            Ast.BaseAutoProperty(identifier, expr, false, true)
-
-        static member AutoPropertySet(identifier: string, expr: WidgetBuilder<Constant>) =
-            Ast.AutoPropertySet(identifier, Ast.ConstantExpr(expr))
-
-        static member AutoPropertySet(identifier: string, expr: string) =
-            Ast.AutoPropertySet(identifier, Ast.Constant(expr))
-
-        static member AutoPropertyGetSet(identifier: string, expr: WidgetBuilder<Expr>) =
-            Ast.BaseAutoProperty(identifier, expr, true, true)
-
-        static member AutoPropertyGetSet(identifier: string, expr: WidgetBuilder<Constant>) =
-            Ast.AutoPropertyGetSet(identifier, Ast.ConstantExpr(expr))
-
-        static member AutoPropertyGetSet(identifier: string, expr: string) =
-            Ast.AutoPropertyGetSet(identifier, Ast.Constant(expr))
+            WidgetBuilder<MemberDefnAutoPropertyNode>(
+                AutoPropertyMember.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        AutoPropertyMember.Identifier.WithValue(identifier),
+                        AutoPropertyMember.HasGetterSetter.WithValue(hasGetter, hasSetter)
+                    ),
+                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
+                    Array.empty
+                )
+            )
 
 type AutoPropertyMemberModifiers =
     [<Extension>]
