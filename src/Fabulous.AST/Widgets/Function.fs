@@ -10,11 +10,17 @@ open type Fabulous.AST.Ast
 module BindingFunction =
     let Name = Attributes.defineScalar<string> "Name"
 
+    let Leading = Attributes.defineScalar<SingleTextNode> "Leading"
+
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
             let name = Widgets.getScalarValue widget Name
             let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
             let parameters = Widgets.getScalarValue widget BindingNode.Parameters
+
+            let leading =
+                Widgets.tryGetScalarValue widget Leading
+                |> ValueOption.defaultValue(SingleTextNode.``let``)
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -60,7 +66,7 @@ module BindingFunction =
             BindingNode(
                 xmlDocs,
                 attributes,
-                MultipleTextsNode([ SingleTextNode.``let`` ], Range.Zero),
+                MultipleTextsNode([ leading ], Range.Zero),
                 false,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
@@ -133,3 +139,64 @@ module BindingFunctionBuilders =
 
         static member Function(name: string, parameters: string, bodyExpr: string) =
             Ast.Function(name, [ parameters ], bodyExpr)
+
+        static member Default(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>) =
+            let parameters = parameters |> List.map Gen.mkOak
+
+            WidgetBuilder<BindingNode>(
+                BindingFunction.WidgetKey,
+                AttributesBundle(
+                    StackList.three(
+                        BindingFunction.Name.WithValue(name),
+                        BindingNode.Parameters.WithValue(parameters),
+                        BindingFunction.Leading.WithValue(SingleTextNode.``default``)
+                    ),
+                    [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member Default
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>)
+            =
+            Ast.Default(name, parameters, Ast.ConstantExpr(bodyExpr))
+
+        static member Default(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
+            Ast.Default(name, parameters, Ast.Constant(bodyExpr))
+
+        static member Default(name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>) =
+            let parameters =
+                parameters
+                |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
+
+            Ast.Default(name, parameters, bodyExpr)
+
+        static member Default(name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Default(name, parameters, bodyExpr)
+
+        static member Default(name: string, parameters: string list, bodyExpr: string) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Default(name, parameters, bodyExpr)
+
+        static member Default(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.Default(name, [ parameters ], bodyExpr)
+
+        static member Default(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Default(name, [ parameters ], bodyExpr)
+
+        static member Default(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string) =
+            Ast.Default(name, [ parameters ], bodyExpr)
+
+        static member Default(name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.Default(name, [ parameters ], bodyExpr)
+
+        static member Default(name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Default(name, [ parameters ], bodyExpr)
+
+        static member Default(name: string, parameters: string, bodyExpr: string) =
+            Ast.Default(name, [ parameters ], bodyExpr)

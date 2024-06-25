@@ -96,3 +96,4 @@ module SingleTextNode =
     let ``$`` = SingleTextNode.Create("$")
     let doubleQuote = SingleTextNode.Create "\""
     let tripleQuote = SingleTextNode.Create "\"\"\""
+    let ``default`` = SingleTextNode.Create "default"

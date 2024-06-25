@@ -119,36 +119,12 @@ module AutoPropertyMemberBuilders =
             =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let expr = expr |> Ast.ConstantExpr
-
-            WidgetBuilder<MemberDefnAutoPropertyNode>(
-                AutoPropertyMember.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(hasGetter, hasSetter)
-                    ),
-                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.AutoProperty(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
 
         static member AutoProperty(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let expr = expr |> Ast.Constant
-
-            WidgetBuilder<MemberDefnAutoPropertyNode>(
-                AutoPropertyMember.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(hasGetter, hasSetter)
-                    ),
-                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.AutoProperty(identifier, Ast.Constant(expr), hasGetter, hasSetter)
 
 type AutoPropertyMemberModifiers =
     [<Extension>]

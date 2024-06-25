@@ -123,7 +123,7 @@ module BindingMethodBuilders =
 
             Ast.Method(name, parameters, bodyExpr)
 
-        static member Function(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
+        static member Method(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
             Ast.Method(name, [ parameters ], bodyExpr)
 
         static member Method(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string) =
