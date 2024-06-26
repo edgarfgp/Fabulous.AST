@@ -20,8 +20,8 @@ module Inherit =
 
                     Property(
                         "this.Name",
-                        GetterBinding(ConstantExpr(Constant "name")),
-                        SetterBinding(NamedPat("value"), ConstantExpr(Constant "()"))
+                        Getter(ConstantExpr(Constant "name")),
+                        Setter(NamedPat("value"), ConstantExpr(Constant "()"))
                     )
 
                 }

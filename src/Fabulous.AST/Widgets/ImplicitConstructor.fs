@@ -14,7 +14,7 @@ module ImplicitConstructor =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let Patterns = Attributes.defineWidget "Pattern"
+    let Pattern = Attributes.defineWidget "Pattern"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -36,13 +36,7 @@ module ImplicitConstructor =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let pattern =
-                Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
-
-            let pattern =
-                match Widgets.tryGetNodeFromWidget<Pattern> widget Patterns with
-                | ValueSome pattern -> pattern
-                | ValueNone -> pattern
+            let pattern = Widgets.getNodeFromWidget<Pattern> widget Pattern
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -72,7 +66,7 @@ module ImplicitConstructorBuilders =
                 ImplicitConstructor.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    [| ImplicitConstructor.Patterns.WithValue(pattern.Compile()) |],
+                    [| ImplicitConstructor.Pattern.WithValue(pattern.Compile()) |],
                     Array.empty
                 )
             )
@@ -88,7 +82,7 @@ module ImplicitConstructorBuilders =
                 ImplicitConstructor.WidgetKey,
                 AttributesBundle(
                     StackList.one(ImplicitConstructor.Alias.WithValue(alias)),
-                    [| ImplicitConstructor.Patterns.WithValue(pattern.Compile()) |],
+                    [| ImplicitConstructor.Pattern.WithValue(pattern.Compile()) |],
                     Array.empty
                 )
             )
@@ -98,12 +92,6 @@ module ImplicitConstructorBuilders =
 
         static member ImplicitConstructorAlias(pattern: string, alias: string) =
             Ast.ImplicitConstructorAlias(Ast.Constant(pattern), alias)
-
-        static member ImplicitConstructor() =
-            WidgetBuilder<ImplicitConstructorNode>(
-                ImplicitConstructor.WidgetKey,
-                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
-            )
 
         static member ImplicitConstructorAlias(alias: string) =
             WidgetBuilder<ImplicitConstructorNode>(

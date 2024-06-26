@@ -50,3 +50,11 @@ module SameInfixAppsBuilders =
         static member SameInfixAppsExpr(leading: WidgetBuilder<Constant>, items: (string * string) list) =
             let items = items |> List.map(fun (op, expr) -> op, Ast.Constant(expr))
             Ast.SameInfixAppsExpr(leading, items)
+
+        static member SameInfixAppsExpr(leading: string, items: (string * WidgetBuilder<Constant>) list) =
+            let items = items |> List.map(fun (op, expr) -> op, Ast.ConstantExpr(expr))
+            Ast.SameInfixAppsExpr(Ast.Constant(leading), items)
+
+        static member SameInfixAppsExpr(leading: string, items: (string * string) list) =
+            let items = items |> List.map(fun (op, expr) -> op, Ast.Constant(expr))
+            Ast.SameInfixAppsExpr(Ast.Constant(leading), items)

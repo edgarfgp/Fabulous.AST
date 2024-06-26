@@ -297,3 +297,20 @@ let private y i = ()
 let internal z i = ()
 
 """
+
+    [<Fact>]
+    let ``Produces a default member``() =
+        Oak() {
+            AnonymousModule() {
+                Class("Person") {
+                    AbstractSlot("GetValue", [ Unit() ], String())
+                    Default("this.GetValue", UnitPat(), ConstantExpr(String("")))
+                }
+            }
+        }
+        |> produces
+            """
+type Person() =
+    abstract member GetValue: unit -> string
+    default this.GetValue() = ""
+"""

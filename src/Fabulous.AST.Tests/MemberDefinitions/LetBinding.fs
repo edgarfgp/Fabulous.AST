@@ -24,8 +24,8 @@ module LetBinding =
 
                     Property(
                         "this.Name",
-                        GetterBinding(ConstantExpr(Constant "_name")),
-                        SetterBinding(NamedPat("value"), ConstantExpr(Constant "_name <- value"))
+                        Getter(ConstantExpr(Constant "_name")),
+                        Setter(NamedPat("value"), ConstantExpr(Constant "_name <- value"))
                     )
 
                 }

@@ -14,7 +14,7 @@ module ExplicitConstructorThen =
         Oak() {
             AnonymousModule() {
                 Class("MyClass", ImplicitConstructor(ParenPat(TuplePat([ "x0"; "y0"; "z0" ])))) {
-                    ExplicitCtor(
+                    ExplicitConstructor(
                         ParenPat(""),
                         CompExprBodyExpr(
                             [ AppSingleParenArgExpr("MyClass", ParenExpr(TupleExpr([ "0"; "0"; "0" ])))

@@ -20,3 +20,12 @@ module SingleBuilders =
                 Single.WidgetKey,
                 AttributesBundle(StackList.empty(), [| Single.SingleNode.WithValue(value.Compile()) |], Array.empty)
             )
+
+        static member SingleExpr(leading: string, value: WidgetBuilder<Expr>) =
+            Ast.SingleExpr(Ast.SingleNode(leading, value))
+
+        static member SingleExpr(leading: string, value: WidgetBuilder<Constant>) =
+            Ast.SingleExpr(leading, Ast.ConstantExpr(value))
+
+        static member SingleExpr(leading: string, value: string) =
+            Ast.SingleExpr(leading, Ast.Constant(value))

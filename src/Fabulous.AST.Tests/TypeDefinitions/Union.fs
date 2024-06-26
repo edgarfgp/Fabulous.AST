@@ -53,13 +53,33 @@ type Colors =
 """
 
     [<Fact>]
+    let ``Produces a generic union``() =
+        Oak() {
+            AnonymousModule() {
+                Union("Option") {
+                    UnionCase("Some", "'a")
+                    UnionCase("None")
+                }
+                |> _.typeParams(PostfixList("'a"))
+            }
+        }
+
+        |> produces
+            """
+type Option<'a> =
+    | Some of 'a
+    | None
+
+"""
+
+    [<Fact>]
     let ``Produces an union with interface member``() =
         Oak() {
             AnonymousModule() {
 
                 Interface("IMyInterface") {
                     let parameters = [ Unit() ]
-                    AbstractCurriedMethod("GetValue", parameters, String())
+                    AbstractSlot("GetValue", parameters, String())
                 }
 
                 (Union("Colors") {
@@ -98,7 +118,7 @@ type Colors =
                 Union("Colors") {
                     UnionCase("Red", [ Field("a", String()); Field("b", LongIdent "int") ])
 
-                    UnionCase("Green")
+                    UnionCase("Green", [ Field(String()); Field(Int()) ])
                     UnionCase("Blue")
                     UnionCase("Yellow")
                 }
@@ -109,7 +129,7 @@ type Colors =
 
 type Colors =
     | Red of a: string * b: int
-    | Green
+    | Green of string * int
     | Blue
     | Yellow
 
@@ -219,7 +239,7 @@ type Colors<'other> =
     let ``Produces an union with TypeParams and interface member``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
+                Interface("IMyInterface") { AbstractSlot("GetValue", [ Unit() ], String()) }
 
                 (Union("Colors") {
                     UnionCase("Red", [ Field("a", String()); Field(LongIdent("'other")) ])

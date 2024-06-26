@@ -13,39 +13,36 @@ module AbstractMembers =
         Oak() {
             AnonymousModule() {
                 Interface("Meh") {
-                    AbstractGet("Area", Float())
-                    AbstractGet("Area1", LongIdent "float")
+                    AbstractSlot("Area", Float(), true)
+                    AbstractSlot("Area1", LongIdent "float", true)
 
-                    AbstractSet("Area2", Float())
-                    AbstractSet("Area3", LongIdent "float")
+                    AbstractSlot("Area2", Float(), hasSetter = true)
+                    AbstractSlot("Area3", LongIdent "float", hasSetter = true)
 
-                    AbstractGetSet("Area4", Float())
-                    AbstractGetSet("Area5", LongIdent "float")
+                    AbstractSlot("Area4", Float(), true, true)
+                    AbstractSlot("Area5", LongIdent "float", true, true)
 
-                    AbstractProperty("Pi", Float())
-                    AbstractProperty("Pi2", LongIdent "float")
+                    AbstractSlot("Pi", Float())
+                    AbstractSlot("Pi2", LongIdent "float")
 
-                    AbstractTupledMethod("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
-                    AbstractTupledMethod("Add2", [ Int(); Int() ], Int())
+                    AbstractSlot("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
+                    AbstractSlot("Add2", [ Int(); Int() ], Int(), true)
 
-                    AbstractTupledMethod("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractSlot("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
 
-                    AbstractTupledMethod(
+                    AbstractSlot(
                         "Add4",
                         [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int"
+                        LongIdent "int",
+                        true
                     )
 
-                    AbstractCurriedMethod("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
-                    AbstractCurriedMethod("Add6", [ Int(); Int() ], Int())
+                    AbstractSlot("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractSlot("Add6", [ Int(); Int() ], Int())
 
-                    AbstractCurriedMethod("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractSlot("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractCurriedMethod(
-                        "Add8",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int"
-                    )
+                    AbstractSlot("Add8", [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ], LongIdent "int")
 
                 }
             }
@@ -77,39 +74,36 @@ type Meh =
         Oak() {
             AnonymousModule() {
                 Interface("Meh") {
-                    AbstractGet("Area", Float())
-                    AbstractGet("Area1", LongIdent "float")
+                    AbstractSlot("Area", Float(), true)
+                    AbstractSlot("Area1", LongIdent "float", true)
 
-                    AbstractSet("Area2", Float())
-                    AbstractSet("Area3", LongIdent "float")
+                    AbstractSlot("Area2", Float(), hasSetter = true)
+                    AbstractSlot("Area3", LongIdent "float", hasSetter = true)
 
-                    AbstractGetSet("Area4", Float())
-                    AbstractGetSet("Area5", LongIdent "float")
+                    AbstractSlot("Area4", Float(), true, true)
+                    AbstractSlot("Area5", LongIdent "float", true, true)
 
-                    AbstractProperty("Pi", Float())
-                    AbstractProperty("Pi2", LongIdent "float")
+                    AbstractSlot("Pi", Float())
+                    AbstractSlot("Pi2", LongIdent "float")
 
-                    AbstractTupledMethod("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
-                    AbstractTupledMethod("Add2", [ Int(); Int() ], Int())
+                    AbstractSlot("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
+                    AbstractSlot("Add2", [ Int(); Int() ], Int(), true)
 
-                    AbstractTupledMethod("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractSlot("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
 
-                    AbstractTupledMethod(
+                    AbstractSlot(
                         "Add4",
                         [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int"
+                        LongIdent "int",
+                        true
                     )
 
-                    AbstractCurriedMethod("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
-                    AbstractCurriedMethod("Add6", [ Int(); Int() ], Int())
+                    AbstractSlot("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractSlot("Add6", [ Int(); Int() ], Int())
 
-                    AbstractCurriedMethod("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractSlot("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractCurriedMethod(
-                        "Add8",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int"
-                    )
+                    AbstractSlot("Add8", [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ], LongIdent "int")
 
                 }
                 |> _.typeParams(PostfixList([ "'other"; "'another" ]))
@@ -144,20 +138,20 @@ type Meh<'other, 'another> =
                 Interface("IMeh") {
                     Inherit("IFoo")
 
-                    AbstractProperty("ClientInfo1", "{| Name: string; Version: string option |}")
-                    AbstractProperty("ClientInfo2", AnonRecord([ ("Name", "string"); ("Version", "string option") ]))
+                    AbstractSlot("ClientInfo1", "{| Name: string; Version: string option |}")
+                    AbstractSlot("ClientInfo2", AnonRecord([ ("Name", "string"); ("Version", "string option") ]))
 
-                    AbstractProperty(
+                    AbstractSlot(
                         "ClientInfo3",
                         AnonRecord([ ("Name", String()); ("Version", LongIdent("string option")) ])
                     )
 
-                    AbstractProperty(
+                    AbstractSlot(
                         "ClientInfo4",
                         AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ])
                     )
 
-                    AbstractProperty(
+                    AbstractSlot(
                         "ClientInfo4",
                         AppPostfix(
                             AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ]),
@@ -195,12 +189,12 @@ type IMeh =
         Oak() {
             AnonymousModule() {
                 Interface("IMeh") {
-                    AbstractProperty(
+                    AbstractSlot(
                         "ClientInfo1",
                         AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ])
                     )
 
-                    AbstractProperty(
+                    AbstractSlot(
                         "ClientInfo2",
                         OptionPostfix(AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ]))
                     )
@@ -224,7 +218,7 @@ type IMeh =
         Oak() {
             AnonymousModule() {
                 Interface("IMeh") {
-                    AbstractProperty(
+                    AbstractSlot(
                         "ClientInfo1",
                         Array(
                             AppPrefix(

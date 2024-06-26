@@ -10,15 +10,22 @@ module ParenPat =
 
     let WidgetKey =
         Widgets.register "Paren" (fun widget ->
-            let pat = Widgets.getNodeFromWidget widget Pat
+            let pat = Widgets.tryGetNodeFromWidget widget Pat
 
-            Pattern.Paren(
-                PatParenNode(SingleTextNode.leftParenthesis, pat, SingleTextNode.rightParenthesis, Range.Zero)
-            ))
+            match pat with
+            | ValueNone ->
+                Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
+            | ValueSome pat ->
+                Pattern.Paren(
+                    PatParenNode(SingleTextNode.leftParenthesis, pat, SingleTextNode.rightParenthesis, Range.Zero)
+                ))
 
 [<AutoOpen>]
 module ParenPatBuilders =
     type Ast with
+
+        static member ParenPat() =
+            WidgetBuilder<Pattern>(ParenPat.WidgetKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
 
         static member ParenPat(pat: WidgetBuilder<Pattern>) =
             WidgetBuilder<Pattern>(

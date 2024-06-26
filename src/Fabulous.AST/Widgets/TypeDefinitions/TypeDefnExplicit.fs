@@ -197,10 +197,3 @@ type ClassEndYieldExtensions =
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<TypeDefnExplicitNode, MemberDefn>, x: MemberDefn)
-        : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
-        { Widgets = MutStackArray1.One(widget) }

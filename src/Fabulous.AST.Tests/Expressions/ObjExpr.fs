@@ -48,10 +48,31 @@ module ObjExpr =
                         )
                     )
                 }
+
+                ObjExpr(LongIdent("System.IFormattable")) {
+                    Method(
+                        "x.ToString",
+                        ParenPat(
+                            TuplePat(
+                                [ ParameterPat(ConstantPat(Constant("format")), String())
+                                  ParameterPat(ConstantPat(Constant("provider")), LongIdent("System.IFormatProvider")) ]
+                            )
+                        ),
+                        IfThenElseExpr(
+                            InfixAppExpr(ConstantExpr(Constant("format")), "=", ConstantExpr(String("D"))),
+                            SameInfixAppsExpr("delim1", [ ("+", "value"); ("+", "delim2") ]),
+                            "value"
+                        )
+                    )
+                }
             }
         }
         |> produces
             """
+{ new System.IFormattable with
+    member x.ToString(format: string, provider: System.IFormatProvider) =
+        if format = "D" then delim1 + value + delim2 else value }
+
 { new System.IFormattable with
     member x.ToString(format: string, provider: System.IFormatProvider) =
         if format = "D" then delim1 + value + delim2 else value }

@@ -33,8 +33,24 @@ module AsBuilders =
                 )
             )
 
+        static member AsPat(lhs: WidgetBuilder<Constant>, rhs: WidgetBuilder<Pattern>) =
+            Ast.AsPat(Ast.ConstantPat(lhs), rhs)
+
+        static member AsPat(lhs: WidgetBuilder<Pattern>, rhs: string) = Ast.AsPat(lhs, Ast.ConstantPat(rhs))
+
+        static member AsPat(lhs: string, rhs: WidgetBuilder<Pattern>) = Ast.AsPat(Ast.Constant(lhs), rhs)
+
+        static member AsPat(lhs: WidgetBuilder<Pattern>, rhs: WidgetBuilder<Constant>) =
+            Ast.AsPat(lhs, Ast.ConstantPat(rhs))
+
         static member AsPat(lhs: WidgetBuilder<Constant>, rhs: WidgetBuilder<Constant>) =
             Ast.AsPat(Ast.ConstantPat(lhs), Ast.ConstantPat(rhs))
+
+        static member AsPat(lhs: string, rhs: WidgetBuilder<Constant>) =
+            Ast.AsPat(Ast.Constant(lhs), Ast.ConstantPat(rhs))
+
+        static member AsPat(lhs: WidgetBuilder<Constant>, rhs: string) =
+            Ast.AsPat(Ast.ConstantPat(lhs), Ast.Constant(rhs))
 
         static member AsPat(lhs: string, rhs: string) =
             Ast.AsPat(Ast.Constant(lhs), Ast.Constant(rhs))

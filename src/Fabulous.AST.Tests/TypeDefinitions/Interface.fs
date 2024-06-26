@@ -11,9 +11,9 @@ module Interface =
     let ``Produces an interface abstract method``() =
         Oak() {
             AnonymousModule() {
-                Interface("INumericFSharp") { AbstractCurriedMethod("Add", [ Int(); Int() ], Int()) }
+                Interface("INumericFSharp") { AbstractSlot("Add", [ Int(); Int() ], Int()) }
 
-                Interface("INumericDotNet") { AbstractTupledMethod("Add", [ Int(); Int() ], Int()) }
+                Interface("INumericDotNet") { AbstractSlot("Add", [ Int(); Int() ], Int(), true) }
             }
         }
         |> produces
@@ -34,9 +34,9 @@ module GenericInterface =
             AnonymousModule() {
                 Interface("MyInterface") {
                     let parameters = [ Int(); Int(); String() ]
-                    AbstractCurriedMethod("Add", parameters, Int())
-                    AbstractProperty("Pi", Float())
-                    AbstractGetSet("Area", Float())
+                    AbstractSlot("Add", parameters, Int())
+                    AbstractSlot("Pi", Float())
+                    AbstractSlot("Area", Float(), true, true)
                 }
                 |> _.typeParams(PostfixList([ "'other"; "'another" ]))
 

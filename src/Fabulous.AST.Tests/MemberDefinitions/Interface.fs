@@ -12,8 +12,8 @@ module InterfaceMembers =
     let ``Produces a record with TypeParams and interface member``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMyInterface") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
-                Interface("IMyInterface2") { AbstractCurriedMethod("GetValue", [ Unit() ], String()) }
+                Interface("IMyInterface") { AbstractSlot("GetValue", [ Unit() ], String()) }
+                Interface("IMyInterface2") { AbstractSlot("GetValue", [ Unit() ], String()) }
 
                 (Record("Colors") {
                     Field("Green", LongIdent("string"))
@@ -59,7 +59,7 @@ type Colors<'other> =
             AnonymousModule() {
                 Interface("IMyInterface") {
                     let parameters = [ Unit() ]
-                    AbstractCurriedMethod("GetValue", parameters, String())
+                    AbstractSlot("GetValue", parameters, String())
                 }
 
                 (Record("MyRecord") {
@@ -92,7 +92,7 @@ type MyRecord =
         Oak() {
 
             AnonymousModule() {
-                Interface("Meh") { AbstractProperty("Name", String()) }
+                Interface("Meh") { AbstractSlot("Name", String()) }
 
                 Class("Person") {
                     InterfaceMember(LongIdent "Meh") {
@@ -116,11 +116,11 @@ type Person() =
         Oak() {
 
             AnonymousModule() {
-                Interface("IFoo") { AbstractProperty("Name", String()) }
+                Interface("IFoo") { AbstractSlot("Name", String()) }
 
                 InterfaceEnd("IFoo2")
 
-                Interface("IFoo3") { AbstractProperty("Name", String()) }
+                Interface("IFoo3") { AbstractSlot("Name", String()) }
 
                 InterfaceEnd("IFoo4")
 
