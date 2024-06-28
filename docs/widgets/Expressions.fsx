@@ -202,11 +202,11 @@ with _ ->
 
 <@ 1 + 2 @>
 
-function
-| a -> 3
+// function
+// | a -> 3
 
-task { "a" }
-task { return "a" }
+// task { "a" }
+// task { return "a" }
 
 {| A = 1
    B = 2 |}
