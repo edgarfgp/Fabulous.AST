@@ -185,7 +185,7 @@ while true do
     0
 
 try
-    let result = 1 / 0
+    let result = 1 / 2
     printfn "%i" result
 with e ->
     printfn "%s" "e.Message"
