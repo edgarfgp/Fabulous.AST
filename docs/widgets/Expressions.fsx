@@ -127,7 +127,7 @@ Oak() {
 Will output the following code:
 *)
 
-1
+(* 1
 
 $"{12}"
 
@@ -218,3 +218,4 @@ struct {| A = 1
     member x.ToString() = "F#" }
 
 printfn "a"
+*)
