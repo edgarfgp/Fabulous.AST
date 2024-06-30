@@ -102,10 +102,6 @@ Oak() {
 
         MatchLambdaExpr([ MatchClauseExpr("a", Int(3)) ])
 
-        NamedComputationExpr(ConstantExpr(Constant "task"), String("a"))
-
-        NamedComputationExpr(Constant("task"), SingleExpr(SingleNode("return", String("a")).addSpace(true)))
-
         AnonRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
 
         AnonStructRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
@@ -129,54 +125,51 @@ Oak() {
 
 1
 
-$"{12}" |> ignore
+$"{12}"
 
-$"""{12}""" |> ignore
+$"""{12}"""
 
-lazy 12 |> ignore
+lazy 12
 
-[ "a"; "b"; "c" ] |> ignore
+[ "a"; "b"; "c" ]
 
-[| "a"; "b"; "c" |] |> ignore
+[| "a"; "b"; "c" |]
 
 seq {
     "a"
     "b"
 }
-|> ignore
 
-1 + 2 |> ignore
+1 + 2
 
-struct (1, 2, 3) |> ignore
+struct (1, 2, 3)
 
-1, 2, 3 |> ignore
+1, 2, 3
 
 open System
 
-"string".Length |> ignore
+"string".Length
 
-printfn "Hello, World!" |> ignore
+printfn "Hello, World!"
 
-fun () -> 1 |> ignore
+fun () -> 1
 
-(fun a -> a) |> ignore
+(fun a -> a)
 
-(fun a b -> a) |> ignore
+(fun a b -> a)
 
 match 1 with
 | 1 -> "a"
 | _ -> "b"
-|> ignore
 
 if true then "a" else "b"
-|> ignore
 
 if 1 = 12 then ()
 elif 1 = 11 then ()
 else ()
 
 for i in [ 1; 2; 3 ] do
-    printf "%i" |> ignore
+    printf "%i"
 
 for i = 1 to 10 do
     ()
@@ -185,7 +178,7 @@ for i = 1 downto 10 do
     ()
 
 while true do
-    0 |> ignore
+    0
 
 try
     let result = 1 / 2
@@ -196,25 +189,20 @@ with e ->
 try
     12
 finally
-    12 |> ignore
+    12
 
 try
     12
 with _ ->
     failwith "Not implemented"
 
-<@ 1 + 2 @> |> ignore
+<@ 1 + 2 @>
 
 function
 | a -> 3
-|> ignore
-
-task { "a" |> ignore } |> ignore
-task { return "a" } |> ignore
 
 {| A = 1
    B = 2 |}
-|> ignore
 
 struct {| A = 1
           B = 2 |}
