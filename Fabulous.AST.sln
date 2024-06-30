@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST", "src\Fabulous.AST\Fabulous.AST.fsproj", "{2369F951-2B98-4FBC-B62F-9B6B696B4602}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Tests", "src\Fabulous.AST.Tests\Fabulous.AST.Tests.fsproj", "{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution items", "_Solution items", "{C816B161-0A41-44E3-A3D3-3EFD8B82DC96}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		CHANGELOG.md = CHANGELOG.md
+		build.fsx = build.fsx
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\pull_request.yml = .github\workflows\pull_request.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2369F951-2B98-4FBC-B62F-9B6B696B4602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2369F951-2B98-4FBC-B62F-9B6B696B4602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2369F951-2B98-4FBC-B62F-9B6B696B4602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2369F951-2B98-4FBC-B62F-9B6B696B4602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

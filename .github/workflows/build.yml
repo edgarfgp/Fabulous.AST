@@ -1,0 +1,58 @@
+name: Build
+on:
+  push:
+    branches: [ 'main' ]
+#    paths-ignore: [ 'docs/**' ]
+
+permissions: write-all
+
+env:
+  CONFIG: Release
+  SLN_FILE: Fabulous.AST.sln
+  NUPKG_FOLDER: nupkgs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Read last version from CHANGELOG.md
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          validation_level: warn
+          path: ./CHANGELOG.md
+      - name: Set nightly version
+        run: |
+          NIGHTLY_VERSION=${{ steps.changelog_reader.outputs.version }}-nightly-${GITHUB_RUN_ID}
+          echo "Nightly version is $NIGHTLY_VERSION"
+          echo "NIGHTLY_VERSION=$NIGHTLY_VERSION" >> "$GITHUB_ENV"
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build
+        run: dotnet fsi build.fsx
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Packages
+          path: nupkgs/
+      - name: Upload docs
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: output/
+      - name: Push
+        run: dotnet nuget push "nupkgs/*" -s https://nuget.pkg.github.com/edgarfgp/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

@@ -1,0 +1,28 @@
+<Project>
+
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/edgarfgp/Fabulous.AST</RepositoryUrl>
+    <PackageProjectUrl>https://edgarfgp.github.io/Fabulous.AST/</PackageProjectUrl>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <DisableImplicitSystemValueTupleReference>true</DisableImplicitSystemValueTupleReference>
+    <!-- Example ultra-simple styling and generation settings for FsDocs default template-->
+    <FsDocsLogoLink>https://github.com/edgarfgp/Fabulous.AST</FsDocsLogoLink>
+    <FsDocsLicenseLink>https://github.com/edgarfgp/Fabulous.AST/blob/main/LICENSE</FsDocsLicenseLink>
+    <FsDocsReleaseNotesLink>https://github.com/edgarfgp/Fabulous.AST/blob/main/CHANGELOG.md</FsDocsReleaseNotesLink>
+  </PropertyGroup>
+
+  <!-- Shared NuGet Package info -->
+  <PropertyGroup>
+    <Authors>Edgar Gonzalez, Timothé Larivière</Authors>
+    <PackageTags>F#;Declarative;AST;Fantomas</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OtherFlags>$(OtherFlags) --test:GraphBasedChecking --test:ParallelOptimization --test:ParallelIlxGen</OtherFlags>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+</Project>

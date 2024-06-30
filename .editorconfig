@@ -1,0 +1,19 @@
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{fs,fsx}]
+max_line_length=120
+fsharp_space_before_parameter = false
+fsharp_space_before_lowercase_invocation = false
+fsharp_keep_max_number_of_blank_lines = 1
+fsharp_record_multiline_formatter = number_of_items
+fsharp_space_before_lowercase_invocation = false
+

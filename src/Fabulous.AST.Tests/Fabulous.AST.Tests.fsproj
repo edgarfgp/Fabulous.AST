@@ -1,0 +1,140 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <IsPackable>false</IsPackable>
+        <GenerateProgramFile>false</GenerateProgramFile>
+        <WarnOn>3390;$(WarnOn)</WarnOn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NoWarn>FS3186;NETSDK1206;NU1507</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="TestHelpers.fs" />
+        <Compile Include="WidgetTests.fs" />
+        <Compile Include="Constant.fs" />
+        <Compile Include="Core\APISketchTests.fs" />
+        <Compile Include="Core\ArrayTests.fs" />
+        <Compile Include="ModuleDeclarations\Oak.fs" />
+        <Compile Include="ModuleDeclarations\AnonymousModule.fs" />
+        <Compile Include="ModuleDeclarations\OpenList.fs" />
+        <Compile Include="ModuleDeclarations\HashDirectives.fs" />
+        <Compile Include="ModuleDeclarations\Namespace.fs" />
+        <Compile Include="ModuleDeclarations\Module.fs" />
+        <Compile Include="ModuleDeclarations\NestedModule.fs" />
+        <Compile Include="ModuleDeclarations\ModuleAbbrev.fs" />
+        <Compile Include="ModuleDeclarations\Val.fs" />
+        <Compile Include="ModuleDeclarations\Exception.fs" />
+        <Compile Include="ModuleDeclarations\ModuleDeclAttributes.fs" />
+        <Compile Include="ModuleDeclarations\ExternalFunctions.fs" />
+        <Compile Include="ModuleDeclarations\TopLevelBindings\Value.fs" />
+        <Compile Include="ModuleDeclarations\TopLevelBindings\Literal.fs" />
+        <Compile Include="ModuleDeclarations\TopLevelBindings\Function.fs" />
+        <Compile Include="ModuleDeclarations\TopLevelBindings\Property.fs" />
+        <Compile Include="ModuleDeclarations\TopLevelBindings\Method.fs" />
+        <Compile Include="MemberDefinitions\Interface.fs" />
+        <Compile Include="MemberDefinitions\AbstractSlot.fs" />
+        <Compile Include="MemberDefinitions\AutoProperty.fs" />
+        <Compile Include="MemberDefinitions\PropertyGetSet.fs" />
+        <Compile Include="MemberDefinitions\InheritConstructor.fs" />
+        <Compile Include="MemberDefinitions\Inherit.fs" />
+        <Compile Include="MemberDefinitions\ExplicitConstructor.fs" />
+        <Compile Include="MemberDefinitions\LetBinding.fs" />
+        <Compile Include="TypeDefinitions\Union.fs" />
+        <Compile Include="TypeDefinitions\Abbrev.fs" />
+        <Compile Include="TypeDefinitions\Measure.fs" />
+        <Compile Include="TypeDefinitions\Enum.fs" />
+        <Compile Include="TypeDefinitions\Record.fs" />
+        <Compile Include="TypeDefinitions\Class.fs" />
+        <Compile Include="TypeDefinitions\TypeDefnExplicit.fs" />
+        <Compile Include="TypeDefinitions\Interface.fs" />
+        <Compile Include="TypeDefinitions\Augmentation.fs" />
+        <Compile Include="Expressions\Lazy.fs" />
+        <Compile Include="Expressions\Chain.fs" />
+        <Compile Include="Expressions\AppSingleParenArg.fs" />
+        <Compile Include="Expressions\Lambda.fs" />
+        <Compile Include="Expressions\AppWithLambda.fs" />
+        <Compile Include="Expressions\ParenLambda.fs" />
+        <Compile Include="Expressions\MatchLambda.fs" />
+        <Compile Include="Expressions\TraitCall.fs" />
+        <Compile Include="Expressions\ExprBeginEnd.fs" />
+        <Compile Include="Expressions\ExplicitConstructorThen.fs" />
+        <Compile Include="Expressions\DotLambda.fs" />
+        <Compile Include="Expressions\Quoted.fs" />
+        <Compile Include="Expressions\Paren.fs" />
+        <Compile Include="Expressions\TryWith.fs" />
+        <Compile Include="Expressions\TryFinally.fs" />
+        <Compile Include="Expressions\Dynamic.fs" />
+        <Compile Include="Expressions\InterpolatedString.fs" />
+        <Compile Include="Expressions\TryWithSingleClause.fs" />
+        <Compile Include="Expressions\Typed.fs" />
+        <Compile Include="Expressions\Single.fs" />
+        <Compile Include="Expressions\New.fs" />
+        <Compile Include="Expressions\IndexRange.fs" />
+        <Compile Include="Expressions\IndexFromEnd.fs" />
+        <Compile Include="Expressions\TripleNumberIndexRange.fs" />
+        <Compile Include="Expressions\ForEach.fs" />
+        <Compile Include="Expressions\For.fs" />
+        <Compile Include="Expressions\While.fs" />
+        <Compile Include="Expressions\Tuple.fs" />
+        <Compile Include="Expressions\StructTuple.fs" />
+        <Compile Include="Expressions\ArrayOrList.fs" />
+        <Compile Include="Expressions\App.fs" />
+        <Compile Include="Expressions\Computation.fs" />
+        <Compile Include="Expressions\ObjExpr.fs" />
+        <Compile Include="Expressions\NamedComputation.fs" />
+        <Compile Include="Expressions\Constant.fs" />
+        <Compile Include="Expressions\Match.fs" />
+        <Compile Include="Expressions\InfixApp.fs" />
+        <Compile Include="Expressions\Idents.fs" />
+        <Compile Include="Expressions\PrefixApp.fs" />
+        <Compile Include="Expressions\DotNamedIndexedPropertySet.fs" />
+        <Compile Include="Expressions\DotIndexedSet.fs" />
+        <Compile Include="Expressions\DotIndexedGet.fs" />
+        <Compile Include="Expressions\ParenFunctionNameWithStar.fs" />
+        <Compile Include="Expressions\NamedIndexedPropertySet.fs" />
+        <Compile Include="Expressions\NestedIndexWithoutDot.fs" />
+        <Compile Include="Expressions\LibraryOnlyStaticOptimization.fs" />
+        <Compile Include="Expressions\InheritRecord.fs" />
+        <Compile Include="Expressions\Record.fs" />
+        <Compile Include="Expressions\AnonStructRecord.fs" />
+        <Compile Include="Expressions\Conditionals.fs" />
+        <Compile Include="Patterns\Or.fs" />
+        <Compile Include="Patterns\As.fs" />
+        <Compile Include="Patterns\OptionalVal.fs" />
+        <Compile Include="Patterns\Paren.fs" />
+        <Compile Include="Patterns\Ands.fs" />
+        <Compile Include="Patterns\Tuple.fs" />
+        <Compile Include="Patterns\Record.fs" />
+        <Compile Include="Patterns\ArrayOrListPat.fs" />
+        <Compile Include="Patterns\StructTuple.fs" />
+        <Compile Include="Patterns\NamePatPairs.fs" />
+        <Compile Include="Patterns\LongIdent.fs" />
+        <Compile Include="Patterns\Parameter.fs" />
+        <Compile Include="Patterns\NamedParenStarIdent.fs" />
+        <Compile Include="Patterns\IsInstPat.fs" />
+        <Compile Include="Patterns\QuoteExpr.fs" />
+        <Compile Include="Patterns\ListCons.fs" />
+        <Compile Include="Attributes\Attributes.fs" />
+        <Compile Include="Types\Types.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FsCheck.Xunit" />
+        <PackageReference Include="FsUnit.xUnit" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Update="FSharp.Core" />
+        <PackageReference Include="xunit.runner.console" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Fabulous.AST\Fabulous.AST.fsproj" />
+    </ItemGroup>
+
+</Project>
