@@ -124,10 +124,10 @@ Oak() {
 |> printfn "%s"
 
 (**
-Will output the following code:
+# Generated code:
 *)
 
-(* 1
+1
 
 $"{12}"
 
@@ -202,11 +202,11 @@ with _ ->
 
 <@ 1 + 2 @>
 
-// function
-// | a -> 3
+function
+| a -> 3
 
-// task { "a" }
-// task { return "a" }
+task { "a" }
+task { return "a" }
 
 {| A = 1
    B = 2 |}
@@ -218,4 +218,3 @@ struct {| A = 1
     member x.ToString() = "F#" }
 
 printfn "a"
-*)

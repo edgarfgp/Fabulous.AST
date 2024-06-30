@@ -7,7 +7,7 @@ index: 4
 *)
 
 (**
-# F# module declarations
+# Module declarations
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -18,10 +18,6 @@ index: 4
 open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
-
-(**
-# Types
-*)
 
 Oak() {
     AnonymousModule() {
@@ -74,7 +70,7 @@ Oak() {
 |> printfn "%s"
 
 (**
-Will output the following code:
+# Generated code:
 *)
 
 open Fabulous.AST.StackAllocatedCollections

@@ -59,7 +59,7 @@ Oak() {
 |> printfn "%s"
 
 (**
-Will output the following code:
+# Generated code:
 *)
 
 type Union =

@@ -7,12 +7,7 @@ index: 1
 *)
 
 (**
-# F# Types
-*)
-
-(**
-Describes the types that are used in F# and how F# types are named and described.
-Documentation: View [F# Types](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-types)
+# Types
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -23,10 +18,6 @@ Documentation: View [F# Types](https://learn.microsoft.com/en-us/dotnet/fsharp/l
 open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
-
-(**
-# Types
-*)
 
 Oak() {
     AnonymousModule() {
@@ -93,7 +84,7 @@ Oak() {
 |> printfn "%s"
 
 (**
-Will output the following code:
+# Generated code:
 *)
 
 let a: bool = false
