@@ -63,6 +63,10 @@ module OpenBuilders =
             let values = values |> List.map(Ast.OpenTypeNode)
             Ast.OpenListNode(values)
 
+        static member OpenType(values: string list) =
+            let values = values |> List.map(Ast.LongIdent)
+            Ast.OpenType(values)
+
         static member OpenType(value: WidgetBuilder<Type>) =
             Ast.OpenListNode([ Ast.OpenTypeNode(value) ])
 

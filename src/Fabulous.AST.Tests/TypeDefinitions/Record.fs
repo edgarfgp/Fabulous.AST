@@ -138,3 +138,25 @@ type Colors<'other> =
       Yellow: int }
 
 """
+
+    [<Fact>]
+    let ``yield! multiple records``() =
+        let genRecord(identifier: string) =
+            Record(identifier) { Field("X", Float()) }
+
+        let generateModel identifiers =
+            Oak() {
+                AnonymousModule() {
+                    genRecord("R")
+                    yield! identifiers |> List.map(fun ident -> AnyModuleDecl(genRecord(ident)))
+                }
+            }
+
+        [ "G"; "B" ]
+        |> generateModel
+        |> produces
+            """
+type R = { X: float }
+type G = { X: float }
+type B = { X: float }
+"""

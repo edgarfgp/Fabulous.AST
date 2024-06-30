@@ -72,3 +72,23 @@ open type DFE
 open type string
 
 """
+
+    [<Fact>]
+    let ``yield! a list of opens``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ AnyModuleDecl(Open("Fabulous.AST"))
+                      AnyModuleDecl(OpenType([ (LongIdent "ABC"); LongIdent("DFE"); String() ])) ]
+            }
+        }
+        |> produces
+            """
+
+open Fabulous.AST
+
+open type ABC
+open type DFE
+open type string
+
+"""
