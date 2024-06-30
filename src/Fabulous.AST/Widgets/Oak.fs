@@ -50,7 +50,7 @@ type SyntaxOakExtensions =
 
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<AnonymousModuleNode>)
+        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<ModuleOrNamespaceNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         let widget = Ast.EscapeHatch(node).Compile()
