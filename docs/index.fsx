@@ -92,7 +92,6 @@ let topLevelBinding: ModuleDecl =
         leadingKeyword = MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
         isMutable = false,
         inlineNode = None,
-        // We cannot define private yet using Fabulous.AST
         accessibility = Some(SingleTextNode("private", Range.Zero)),
         functionName = Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
         genericTypeParameters = None,

@@ -102,6 +102,10 @@ Oak() {
 
         MatchLambdaExpr([ MatchClauseExpr("a", Int(3)) ])
 
+        NamedComputationExpr(ConstantExpr(Constant "task"), String("a"))
+
+        NamedComputationExpr(Constant("task"), SingleExpr(SingleNode("return", String("a")).addSpace(true)))
+
         AnonRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
 
         AnonStructRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
@@ -119,96 +123,5 @@ Oak() {
 |> Async.RunSynchronously
 |> printfn "%s"
 
-(**
-# Generated code:
-*)
-
-1
-
-$"{12}"
-
-$"""{12}"""
-
-lazy 12
-
-[ "a"; "b"; "c" ]
-
-[| "a"; "b"; "c" |]
-
-seq {
-    "a"
-    "b"
-}
-
-1 + 2
-
-struct (1, 2, 3)
-
-1, 2, 3
-
-open System
-
-"string".Length
-
-printfn "Hello, World!"
-
-fun () -> 1
-
-(fun a -> a)
-
-(fun a b -> a)
-
-match 1 with
-| 1 -> "a"
-| _ -> "b"
-
-if true then "a" else "b"
-
-if 1 = 12 then ()
-elif 1 = 11 then ()
-else ()
-
-for i in [ 1; 2; 3 ] do
-    printf "%i"
-
-for i = 1 to 10 do
-    ()
-
-for i = 1 downto 10 do
-    ()
-
-while true do
-    0
-
-try
-    let result = 1 / 2
-    printfn "%i" result
-with e ->
-    printfn "%s" "e.Message"
-
-try
-    12
-finally
-    12
-
-try
-    12
-with _ ->
-    failwith "Not implemented"
-
-<@ 1 + 2 @>
-
-function
-| a -> 3
-
-{| A = 1
-   B = 2 |}
-
-struct {| A = 1
-          B = 2 |}
-|> ignore
-
-{ new System.Object() with
-    member x.ToString() = "F#" }
-
-printfn "a"
+// produces the following code:
+(*** include-output ***)
