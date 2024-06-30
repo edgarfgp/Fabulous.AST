@@ -129,51 +129,54 @@ Oak() {
 
 1
 
-$"{12}"
+$"{12}" |> ignore
 
-$"""{12}"""
+$"""{12}""" |> ignore
 
-lazy 12
+lazy 12 |> ignore
 
-[ "a"; "b"; "c" ]
+[ "a"; "b"; "c" ] |> ignore
 
-[| "a"; "b"; "c" |]
+[| "a"; "b"; "c" |] |> ignore
 
 seq {
     "a"
     "b"
 }
+|> ignore
 
-1 + 2
+1 + 2 |> ignore
 
-struct (1, 2, 3)
+struct (1, 2, 3) |> ignore
 
-1, 2, 3
+1, 2, 3 |> ignore
 
 open System
 
-"string".Length
+"string".Length |> ignore
 
-printfn "Hello, World!"
+printfn "Hello, World!" |> ignore
 
-fun () -> 1
+fun () -> 1 |> ignore
 
-(fun a -> a)
+(fun a -> a) |> ignore
 
-(fun a b -> a)
+(fun a b -> a) |> ignore
 
 match 1 with
 | 1 -> "a"
 | _ -> "b"
+|> ignore
 
 if true then "a" else "b"
+|> ignore
 
 if 1 = 12 then ()
 elif 1 = 11 then ()
 else ()
 
 for i in [ 1; 2; 3 ] do
-    printf "%i"
+    printf "%i" |> ignore
 
 for i = 1 to 10 do
     ()
@@ -182,7 +185,7 @@ for i = 1 downto 10 do
     ()
 
 while true do
-    0
+    0 |> ignore
 
 try
     let result = 1 / 2
@@ -193,26 +196,29 @@ with e ->
 try
     12
 finally
-    12
+    12 |> ignore
 
 try
     12
 with _ ->
     failwith "Not implemented"
 
-<@ 1 + 2 @>
+<@ 1 + 2 @> |> ignore
 
 function
 | a -> 3
+|> ignore
 
-task { "a" }
-task { return "a" }
+task { "a" |> ignore } |> ignore
+task { return "a" } |> ignore
 
 {| A = 1
    B = 2 |}
+|> ignore
 
 struct {| A = 1
           B = 2 |}
+|> ignore
 
 { new System.Object() with
     member x.ToString() = "F#" }
