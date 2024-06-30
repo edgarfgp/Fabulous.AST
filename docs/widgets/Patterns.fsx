@@ -58,32 +58,5 @@ Oak() {
 |> Async.RunSynchronously
 |> printfn "%s"
 
-(**
-Will output the following code:
-*)
-
-type Union =
-    | A
-    | B
-    | C
-
-type Record = { A: int }
-
-let A | B = C
-
-let A as B = C
-
-let A & B = C
-
-let a, b = 1, 2
-
-let { A = 3 } = { A = 5 }
-
-let [ c; d ] = [ "a"; "b" ]
-
-let struct (e, f) = struct (1, 2)
-
-match System.Object() with
-| :? string -> 12
-
-let g :: h = [ 1 ]
+// produces the following code:
+(*** include-output ***)

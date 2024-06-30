@@ -7,7 +7,7 @@ index: 4
 *)
 
 (**
-# F# module declarations
+# Module declarations
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -18,10 +18,6 @@ index: 4
 open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
-
-(**
-# Types
-*)
 
 Oak() {
     AnonymousModule() {
@@ -73,40 +69,5 @@ Oak() {
 |> Async.RunSynchronously
 |> printfn "%s"
 
-(**
-Will output the following code:
-*)
-
-open Fabulous.AST.StackAllocatedCollections
-open System
-open type Fabulous.AST.Ast
-
-#nowarn "0044"
-#if !DEBUG
-let str = "Not debugging!"
-#else
-let str = "Debugging!"
-#endif
-
-[<Obsolete>]
-type HEX =
-    { R: int
-      G: int
-      B: int }
-
-[<Obsolete>]
-do printfn "Executing..."
-
-extern void HelloWorld()
-extern void HelloWorld2(string x, int y)
-exception Error
-exception Error1 of string
-
-exception Error2 of msg: string with
-    static member Message = ""
-
-module Values =
-    let myValue = 12
-
-module Functions =
-    let myFunctionValue p = 12
+// produces the following code:
+(*** include-output ***)

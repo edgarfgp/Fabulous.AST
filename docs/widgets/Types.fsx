@@ -7,12 +7,7 @@ index: 1
 *)
 
 (**
-# F# Types
-*)
-
-(**
-Describes the types that are used in F# and how F# types are named and described.
-Documentation: View [F# Types](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/fsharp-types)
+# Types
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -23,10 +18,6 @@ Documentation: View [F# Types](https://learn.microsoft.com/en-us/dotnet/fsharp/l
 open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
-
-(**
-# Types
-*)
 
 Oak() {
     AnonymousModule() {
@@ -92,67 +83,5 @@ Oak() {
 |> Async.RunSynchronously
 |> printfn "%s"
 
-(**
-Will output the following code:
-*)
-
-let a: bool = false
-
-let b: byte = 0uy
-
-let c: sbyte = 1y
-
-let d: int16 = 1s
-
-let e: uint16 = 1us
-
-let f: int = 1
-
-let g: uint32 = 1u
-
-let h: int64 = 1L
-
-let i: uint64 = 1UL
-
-let j: nativeint = nativeint 1
-
-let k: unativeint = unativeint 1
-
-let l: decimal = 1.0m
-
-let m: double = 1.0
-
-let n: single = 1.0f
-
-let o: char = 'c'
-
-let p: string = "str"
-
-let q: unit = ()
-
-let r: float = 1.0
-
-let s: float32 = 1.0f
-
-let t: obj = System.Object()
-
-let u: int array = [| 1; 2 |]
-
-let v: int list = [ 1; 2 ]
-
-let w: int seq =
-    seq {
-        1
-        2
-        3
-    }
-
-let x: int * int = 1, 2
-
-let y: int option = Some 1
-
-let z: struct (int * string) = struct (1, "")
-
-let funs: unit -> unit = fun () -> ()
-
-let anonRecord: {| A: int |} = {| A = 1 |}
+// produces the following code:
+(*** include-output ***)

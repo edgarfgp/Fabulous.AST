@@ -7,7 +7,7 @@ index: 5
 *)
 
 (**
-# F# Member Definitions
+# Member Definitions
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -18,10 +18,6 @@ index: 5
 open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
-
-(**
-# Member Definitions
-*)
 
 Oak() {
     AnonymousModule() {
@@ -86,28 +82,5 @@ Oak() {
 |> Async.RunSynchronously
 |> printfn "%s"
 
-(**
-Will output the following code:
-*)
-
-open System
-
-type Person(name: string, middle: string, ?lastName: string, ?age: int) =
-    let mutable _age: int = defaultArg age 18
-    let Create name middle = new Person(name, middle)
-
-    new(name, middle) = new Person(name, middle)
-    static member Create2(name, middle) = new Person(name, middle)
-    member this.Name = name
-    member val Middle = middle with get
-    member val LastName = lastName with get, set
-
-    member this.Age
-        with get () = _age
-        and set (value) = _age <- value
-
-    abstract member GetValue: unit -> string
-    default this.GetValue() = "Hello World"
-
-    interface IDisposable with
-        member this.Dispose() = ()
+// produces the following code:
+(*** include-output ***)

@@ -163,16 +163,3 @@ type RecordYieldExtensions =
     static member inline Yield(_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: FieldNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-// [<Extension>]
-// static member inline Yield
-//     (_: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: MemberDefnInterfaceNode)
-//     : CollectionContent =
-//     let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
-//     { Widgets = MutStackArray1.One(widget) }
-//
-// [<Extension>]
-// static member inline Yield
-//     (this: AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>) : CollectionContent =
-//     let node = Gen.mkOak x
-//     RecordYieldExtensions.Yield(this, node)

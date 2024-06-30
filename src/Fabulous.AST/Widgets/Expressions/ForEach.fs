@@ -60,6 +60,9 @@ module ForEachBuilders =
         static member ForEachDoExpr(pattern: string, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Expr>) =
             Ast.ForEachDoExpr(Ast.Constant(pattern), enumExpr, bodyExpr)
 
+        static member ForEachDoExpr(pattern: string, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.ForEachDoExpr(pattern, enumExpr, Ast.ConstantExpr(bodyExpr))
+
         static member ForEachDoExpr
             (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
             Ast.ForEachDoExpr(pattern, Ast.ConstantExpr(enumExpr), bodyExpr)

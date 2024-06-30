@@ -7,7 +7,7 @@ index: 5
 *)
 
 (**
-# F# Type Definitions
+# Type Definitions
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -18,10 +18,6 @@ index: 5
 open Fabulous.AST
 open Fantomas.Core
 open type Fabulous.AST.Ast
-
-(**
-# Type Definitions
-*)
 
 Oak() {
     AnonymousModule() {
@@ -151,85 +147,5 @@ Oak() {
 |> Async.RunSynchronously
 |> printfn "%s"
 
-(**
-Will output the following code:
-*)
-
-type Option<'a> =
-    | Some of 'a
-    | None
-
-type Shape =
-    | Line
-    | Rectangle of width: float * length: float
-    | Circle of radius: float
-    | Prism of width: float * float * height: float
-
-    member this.Area() =
-        match this with
-        | Line -> 0.0
-        | Rectangle(width, length) -> width * length
-        | Circle(radius) -> System.Math.PI * radius * radius
-        | Prism(width, length, height) -> width * length * height
-
-type Color =
-    | Red = 0
-    | Green = 1
-    | Blue = 2
-    | Yellow = 3
-
-type SizeType = uint32
-type Transform<'a> = 'a -> 'a
-
-[<Measure>]
-type cm
-
-[<Measure>]
-type ml = cm^3
-
-[<Measure>]
-type m
-
-[<Measure>]
-type s
-
-[<Measure>]
-type kg
-
-[<Measure>]
-type N = kg m / s^2
-
-type Point =
-    { X: float
-      Y: float
-      Z: float }
-
-[<Struct>]
-type StructPoint =
-    { X: float
-      Y: float
-      Z: float }
-
-type Person<'other> =
-    { Name: 'other }
-
-    member this.GetName = "name"
-
-type Person2(name: string, lastName: string, ?age: int) =
-    member this.Name = name
-
-type Person3<'a, 'b>() =
-    member this.Name = ""
-
-type Variant =
-    | Num of int
-    | Str of string
-
-module Variant =
-    let print v =
-        match v with
-        | Num n -> printf "Num %d" n
-        | Str s -> printf "Num %s" s
-
-type Variant with
-    member x.Print() = Variant.print x
+// produces the following code:
+(*** include-output ***)
