@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre15] - 2024-07-01
+  
+### Added
+- More widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/109
+- Add AnyModuleDecl widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/111
+
+### Changed
+- Improve docs by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/110
+
 ## [1.0.0-pre14] - 2024-06-13
 
 ### Added
@@ -221,7 +230,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre14...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre15...HEAD
+[1.0.0-pre15]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre15
 [1.0.0-pre14]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre14
 [1.0.0-pre13]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre13
 [1.0.0-pre12]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre12
