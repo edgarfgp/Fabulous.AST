@@ -63,6 +63,38 @@ module ModuleDeclBuilders =
             let value = ModuleDecl.OpenList(Gen.mkOak value)
             Ast.BaseAny(value)
 
+        static member AnyModuleDecl(value: WidgetBuilder<HashDirectiveListNode>) =
+            let value = ModuleDecl.HashDirectiveList(Gen.mkOak value)
+            Ast.BaseAny(value)
+
+        static member AnyModuleDecl(value: WidgetBuilder<ModuleDeclAttributesNode>) =
+            let value = ModuleDecl.Attributes(Gen.mkOak value)
+            Ast.BaseAny(value)
+
+        static member AnyModuleDecl(value: WidgetBuilder<ExceptionDefnNode>) =
+            let value = ModuleDecl.Exception(Gen.mkOak value)
+            Ast.BaseAny(value)
+
+        static member AnyModuleDecl(value: WidgetBuilder<ExternBindingNode>) =
+            let value = ModuleDecl.ExternBinding(Gen.mkOak value)
+            Ast.BaseAny(value)
+
+        static member AnyModuleDecl(value: WidgetBuilder<BindingNode>) =
+            let value = ModuleDecl.TopLevelBinding(Gen.mkOak value)
+            Ast.BaseAny(value)
+
+        static member AnyModuleDecl(value: WidgetBuilder<ModuleAbbrevNode>) =
+            let value = ModuleDecl.ModuleAbbrev(Gen.mkOak value)
+            Ast.BaseAny(value)
+
+        static member AnyModuleDecl(value: WidgetBuilder<NestedModuleNode>) =
+            let value = ModuleDecl.NestedModule(Gen.mkOak value)
+            Ast.BaseAny(value)
+
+        static member AnyModuleDecl(value: WidgetBuilder<ValNode>) =
+            let value = ModuleDecl.Val(Gen.mkOak value)
+            Ast.BaseAny(value)
+
 type ModuleDeclCollectionBuilderExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, MemberDefn>, x: BindingNode) : CollectionContent =
