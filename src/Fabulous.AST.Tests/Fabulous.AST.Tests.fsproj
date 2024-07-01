@@ -34,6 +34,7 @@
         <Compile Include="ModuleDeclarations\TopLevelBindings\Property.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Method.fs" />
         <Compile Include="MemberDefinitions\Interface.fs" />
+        <Compile Include="MemberDefinitions\MemberDefn.fs" />
         <Compile Include="MemberDefinitions\AbstractSlot.fs" />
         <Compile Include="MemberDefinitions\AutoProperty.fs" />
         <Compile Include="MemberDefinitions\PropertyGetSet.fs" />
@@ -51,6 +52,7 @@
         <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="TypeDefinitions\Augmentation.fs" />
         <Compile Include="Expressions\Lazy.fs" />
+        <Compile Include="Expressions\Expr.fs" />
         <Compile Include="Expressions\Chain.fs" />
         <Compile Include="Expressions\AppSingleParenArg.fs" />
         <Compile Include="Expressions\Lambda.fs" />

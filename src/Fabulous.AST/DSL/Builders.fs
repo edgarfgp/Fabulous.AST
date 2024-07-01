@@ -245,4 +245,14 @@ type AttributeCollectionBuilder<'marker, 'itemMarker> =
                 res <- x.Combine(res, f t)
 
             res
+
+        member inline _.Yield(widget: WidgetBuilder<'itemMarker>) : CollectionContent =
+            { Widgets = MutStackArray1.One(widget.Compile()) }
+
+        member inline _.YieldFrom(widgets: WidgetBuilder<'itemMarker> seq) : CollectionContent =
+            { Widgets =
+                widgets
+                |> Seq.map(fun widget -> widget.Compile())
+                |> Seq.toArray
+                |> MutStackArray1.fromArray }
     end
