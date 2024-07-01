@@ -171,6 +171,7 @@
         <Compile Include="Widgets\SigMember.fs" />
         <Compile Include="Widgets\PropertyGetSetBinding.fs" />
         <Compile Include="Widgets\PropertyGetSet.fs" />
+        <Compile Include="Widgets\MemberDefn.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\EnumCase.fs" />

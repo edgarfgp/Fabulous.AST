@@ -241,6 +241,19 @@ type ModuleDeclCollectionBuilderExtensions =
         ModuleDeclCollectionBuilderExtensions.Yield(this, node)
 
 type ModuleDeclAttributeCollectionBuilderExtensions =
+
+    [<Extension>]
+    static member inline Yield(_: AttributeCollectionBuilder<'parent, MemberDefn>, x: MemberDefn) : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: AttributeCollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefn>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ModuleDeclAttributeCollectionBuilderExtensions.Yield(this, node)
+
     [<Extension>]
     static member inline Yield(_: AttributeCollectionBuilder<'parent, MemberDefn>, x: BindingNode) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
