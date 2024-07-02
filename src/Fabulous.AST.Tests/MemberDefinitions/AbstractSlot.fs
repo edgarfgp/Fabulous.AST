@@ -12,7 +12,7 @@ module AbstractMembers =
     let ``Produces a classes with a abstract members``() =
         Oak() {
             AnonymousModule() {
-                Interface("Meh") {
+                TypeDefn("Meh") {
                     AbstractSlot("Area", Float(), true)
                     AbstractSlot("Area1", LongIdent "float", true)
 
@@ -73,7 +73,7 @@ type Meh =
     let ``Produces a genetic interface with multiple abstract members types``() =
         Oak() {
             AnonymousModule() {
-                Interface("Meh") {
+                TypeDefn("Meh") {
                     AbstractSlot("Area", Float(), true)
                     AbstractSlot("Area1", LongIdent "float", true)
 
@@ -135,7 +135,7 @@ type Meh<'other, 'another> =
     let ``Produces an inheritance of an interface with abstract properties``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMeh") {
+                TypeDefn("IMeh") {
                     Inherit("IFoo")
 
                     AbstractSlot("ClientInfo1", "{| Name: string; Version: string option |}")
@@ -188,7 +188,7 @@ type IMeh =
     let ``Produces an inheritance of an interface with abstract  option widget``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMeh") {
+                TypeDefn("IMeh") {
                     AbstractSlot(
                         "ClientInfo1",
                         AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ])
@@ -217,7 +217,7 @@ type IMeh =
     let ``Produces an inheritance of an interface with abstract member, nested anon records``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMeh") {
+                TypeDefn("IMeh") {
                     AbstractSlot(
                         "ClientInfo1",
                         Array(

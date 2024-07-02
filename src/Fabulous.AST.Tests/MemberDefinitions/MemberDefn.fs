@@ -12,9 +12,9 @@ module MemberDefn =
     let ``yield! multiple MemberDefns``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMyInterface") { AbstractSlot("GetValue", [ Unit() ], String()) }
-                Interface("IMyInterface1") { AbstractSlot("GetValue", [ Unit() ], String()) }
-                Interface("IMyInterface2") { AbstractSlot("GetValue", [ Unit() ], String()) }
+                TypeDefn("IMyInterface") { AbstractSlot("GetValue", [ Unit() ], String()) }
+                TypeDefn("IMyInterface1") { AbstractSlot("GetValue", [ Unit() ], String()) }
+                TypeDefn("IMyInterface2") { AbstractSlot("GetValue", [ Unit() ], String()) }
 
                 (Record("Colors") {
                     Field("Green", LongIdent("string"))

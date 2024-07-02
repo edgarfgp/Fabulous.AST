@@ -171,7 +171,6 @@
         <Compile Include="Widgets\SigMember.fs" />
         <Compile Include="Widgets\PropertyGetSetBinding.fs" />
         <Compile Include="Widgets\PropertyGetSet.fs" />
-        <Compile Include="Widgets\MemberDefn.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
         <Compile Include="Widgets\TypeDefinitions\EnumCase.fs" />
@@ -179,7 +178,7 @@
         <Compile Include="Widgets\TypeDefinitions\Abbrev.fs" />
         <Compile Include="Widgets\TypeDefinitions\Measure.fs" />
         <Compile Include="Widgets\TypeDefinitions\Record.fs" />
-        <Compile Include="Widgets\TypeDefinitions\Class.fs" />
+        <Compile Include="Widgets\TypeDefinitions\TypeDefnRegular.fs" />
         <Compile Include="Widgets\TypeDefinitions\TypeDefnExplicit.fs" />
         <Compile Include="Widgets\TypeDefinitions\Augment.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ParsedHashDirective.fs" />
@@ -189,6 +188,7 @@
         <Compile Include="Widgets\ModuleDeclarations\Val.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Exception.fs" />
+        <Compile Include="Widgets\MemberDefn.fs" />
         <Compile Include="Widgets\ModuleDecl.fs" />
         <Compile Include="Widgets\Namespace.fs" />
         <Compile Include="Widgets\AnonymousModule.fs" />

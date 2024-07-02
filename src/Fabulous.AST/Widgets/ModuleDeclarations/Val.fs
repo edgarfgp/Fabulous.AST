@@ -99,7 +99,7 @@ module Val =
 [<AutoOpen>]
 module ValBuilders =
     type Ast with
-        static member private BaseValField
+        static member private BaseVal
             (leadingKeyword: SingleTextNode list, identifier: string, returnType: WidgetBuilder<Type>)
             =
             WidgetBuilder<ValNode>(
@@ -111,27 +111,27 @@ module ValBuilders =
                 )
             )
 
-        static member ValField(identifier: string, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValField([ SingleTextNode.``val`` ], identifier, returnType)
+        static member Val(identifier: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseVal([ SingleTextNode.``val`` ], identifier, returnType)
 
-        static member ValField(identifier: string, returnType: string) =
-            Ast.ValField(identifier, Ast.LongIdent(returnType))
+        static member Val(identifier: string, returnType: string) =
+            Ast.Val(identifier, Ast.LongIdent(returnType))
 
-        static member ValField(leadingKeyword: string list, identifier: string, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValField([ for kw in leadingKeyword -> SingleTextNode.Create(kw) ], identifier, returnType)
+        static member Val(leadingKeyword: string list, identifier: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseVal([ for kw in leadingKeyword -> SingleTextNode.Create(kw) ], identifier, returnType)
 
-        static member ValField(leadingKeyword: string list, identifier: string, returnType: string) =
-            Ast.BaseValField(
+        static member Val(leadingKeyword: string list, identifier: string, returnType: string) =
+            Ast.BaseVal(
                 [ for kw in leadingKeyword -> SingleTextNode.Create(kw) ],
                 identifier,
                 Ast.LongIdent(returnType)
             )
 
-        static member ValField(leadingKeyword: string, identifier: string, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValField([ SingleTextNode.Create(leadingKeyword) ], identifier, returnType)
+        static member Val(leadingKeyword: string, identifier: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseVal([ SingleTextNode.Create(leadingKeyword) ], identifier, returnType)
 
-        static member ValField(leadingKeyword: string, identifier: string, returnType: string) =
-            Ast.BaseValField([ SingleTextNode.Create(leadingKeyword) ], identifier, Ast.LongIdent(returnType))
+        static member Val(leadingKeyword: string, identifier: string, returnType: string) =
+            Ast.BaseVal([ SingleTextNode.Create(leadingKeyword) ], identifier, Ast.LongIdent(returnType))
 
 type ValNodeModifiers =
     [<Extension>]

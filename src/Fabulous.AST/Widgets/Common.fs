@@ -25,6 +25,8 @@ module CommonExtensions =
                 Range.Zero
             )
 
+        static member Create(texts: SingleTextNode list) = MultipleTextsNode(texts, Range.Zero)
+
     type XmlDocNode with
 
         static member Create(content: string list) =

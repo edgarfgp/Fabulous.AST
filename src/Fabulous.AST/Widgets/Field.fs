@@ -18,6 +18,8 @@ module Field =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
+    let LeadingKeyword = Attributes.defineScalar<SingleTextNode> "LeadingKeyword"
+
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
             let lines = Widgets.tryGetScalarValue widget XmlDocs
@@ -50,12 +52,16 @@ module Field =
                 else
                     None
 
-            FieldNode(xmlDocs, attributes, None, mutableKeyword, None, name, fieldType, Range.Zero))
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget LeadingKeyword
+                |> ValueOption.map(fun x -> Some(MultipleTextsNode.Create([ x ])))
+                |> ValueOption.defaultValue None
+
+            FieldNode(xmlDocs, attributes, leadingKeyword, mutableKeyword, None, name, fieldType, Range.Zero))
 
 [<AutoOpen>]
 module FieldBuilders =
     type Ast with
-
         static member Field(filedType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
@@ -73,6 +79,19 @@ module FieldBuilders =
                     Array.empty
                 )
             )
+
+        static member ValField(name: string, filedType: WidgetBuilder<Type>) =
+            WidgetBuilder<FieldNode>(
+                Field.WidgetKey,
+                AttributesBundle(
+                    StackList.two(Field.Name.WithValue(name), Field.LeadingKeyword.WithValue(SingleTextNode.``val``)),
+                    [| Field.FieldType.WithValue(filedType.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member ValField(name: string, filedType: string) =
+            Ast.ValField(name, Ast.LongIdent(filedType))
 
         static member Field(name: string, filedType: string) =
             Ast.Field(name, Ast.LongIdent(filedType))
