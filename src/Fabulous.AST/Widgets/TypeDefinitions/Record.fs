@@ -150,16 +150,3 @@ type RecordYieldExtensions =
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
-
-// [<Extension>]
-// static member inline Yield
-//     (_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: WidgetBuilder<FieldNode>)
-//     : CollectionContent =
-//     let node = Gen.mkOak x
-//     let widget = Ast.EscapeHatch(node).Compile()
-//     { Widgets = MutStackArray1.One(widget) }
-//
-// [<Extension>]
-// static member inline Yield(_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: FieldNode) : CollectionContent =
-//     let widget = Ast.EscapeHatch(x).Compile()
-//     { Widgets = MutStackArray1.One(widget) }

@@ -11,8 +11,6 @@ open type Ast
 module Struct =
     [<Fact>]
     let ``Produces a verbose struct``() =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
-
         Oak() {
             AnonymousModule() {
                 StructEnd("X").members() {
@@ -45,8 +43,6 @@ type X() =
 
     [<Fact>]
     let ``Produces a struct definition``() =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
-
         Oak() {
             AnonymousModule() {
                 TypeDefn("X") {

@@ -181,6 +181,7 @@
         <Compile Include="Widgets\TypeDefinitions\TypeDefnRegular.fs" />
         <Compile Include="Widgets\TypeDefinitions\TypeDefnExplicit.fs" />
         <Compile Include="Widgets\TypeDefinitions\Augment.fs" />
+        <Compile Include="Widgets\TypeDefinitions\Delegate.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ParsedHashDirective.fs" />
         <Compile Include="Widgets\ModuleDeclarations\NestedModule.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ModuleAbbrev.fs" />

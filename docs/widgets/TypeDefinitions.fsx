@@ -140,6 +140,17 @@ Oak() {
         }
 
         Augmentation("Variant") { Method("x.Print", UnitPat(), AppExpr("Variant.print", "x")) }
+
+        TypeDefn("IFoo") {
+            AbstractSlot("Area", Float(), true)
+            AbstractSlot("Area1", LongIdent "float", true)
+        }
+
+        TypeDefn("X") {
+            ValField("x", Int()).toMutable()
+            ExplicitConstructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
+        }
+        |> _.attribute(Attribute("Struct"))
     }
 }
 |> Gen.mkOak
