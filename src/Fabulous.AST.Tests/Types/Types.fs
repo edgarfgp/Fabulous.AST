@@ -369,22 +369,19 @@ let t: array<array<string>> = false
                     .typeParams(
                         PostfixList(
                             TyparDecl("'T"),
-                            SupportsMember("'T", SigMember(ValField("member", "Method1", LongIdent("'T -> int"))))
+                            SupportsMember("'T", SigMember(Val("member", "Method1", LongIdent("'T -> int"))))
                         )
                     )
 
                 ClassEnd("Class6")
                     .typeParams(
-                        PostfixList(
-                            TyparDecl("'T"),
-                            SupportsMember("'T", SigMember(ValField("member", "Property1", Int())))
-                        )
+                        PostfixList(TyparDecl("'T"), SupportsMember("'T", SigMember(Val("member", "Property1", Int()))))
                     )
 
                 Class("Class7") { AutoProperty("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
                 |> _.typeParams(PostfixList(
                     TyparDecl("'T"),
-                    SupportsMember("'T", SigMember(ValField("new", "", Funs("'T", [ "unit" ]))))
+                    SupportsMember("'T", SigMember(Val("new", "", Funs("'T", [ "unit" ]))))
                 ))
 
                 ClassEnd("Class8")
@@ -436,7 +433,7 @@ let t: array<array<string>> = false
                                       "^T",
                                       SupportsMember(
                                           "^T",
-                                          SigMember(ValField([ "static"; "member" ], "(+)", LongIdent("^T * ^T -> ^T")))
+                                          SigMember(Val([ "static"; "member" ], "(+)", LongIdent("^T * ^T -> ^T")))
                                       )
                                   )
                               )
@@ -459,7 +456,7 @@ let t: array<array<string>> = false
                                       "^T",
                                       SupportsMember(
                                           Paren(Or("^T", "^U")),
-                                          SigMember(ValField([ "static"; "member" ], "(+)", LongIdent("^T * ^U -> ^T")))
+                                          SigMember(Val([ "static"; "member" ], "(+)", LongIdent("^T * ^U -> ^T")))
                                       )
                                   )
                               )

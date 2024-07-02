@@ -4,98 +4,91 @@ open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Microsoft.FSharp.Collections
 
-module ModuleDecl =
-    let ModuleDecl = Attributes.defineScalar<ModuleDecl> "ModuleDecl"
+module MemberDefn =
+    let MemberDefn = Attributes.defineScalar<MemberDefn> "MemberDefn"
 
     let WidgetKey =
-        Widgets.register "ModuleDecl" (fun widget ->
-            let modeDecl = Widgets.getScalarValue widget ModuleDecl
+        Widgets.register "MemberDefn" (fun widget ->
+            let modeDecl = Widgets.getScalarValue widget MemberDefn
             modeDecl)
 
 [<AutoOpen>]
-module ModuleDeclBuilders =
+module MemberDefnBuilders =
     type Ast with
 
-        static member private BaseAny(value: ModuleDecl) =
-            WidgetBuilder<ModuleDecl>(
-                ModuleDecl.WidgetKey,
-                AttributesBundle(StackList.one(ModuleDecl.ModuleDecl.WithValue(value)), Array.empty, Array.empty)
+        static member private BaseAny(value: MemberDefn) =
+            WidgetBuilder<MemberDefn>(
+                MemberDefn.WidgetKey,
+                AttributesBundle(StackList.one(MemberDefn.MemberDefn.WithValue(value)), Array.empty, Array.empty)
             )
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnRecordNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Record(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<InheritConstructor>) =
+            let memberDefn = MemberDefn.ImplicitInherit(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnRegularNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Regular(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnInterfaceNode>) =
+            let memberDefn = MemberDefn.Interface(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnEnumNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Enum(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnInheritNode>) =
+            let memberDefn = MemberDefn.Inherit(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnUnionNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Union(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<FieldNode>) =
+            let memberDefn = MemberDefn.ValField(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnAbbrevNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Abbrev(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<BindingNode>) =
+            let memberDefn = MemberDefn.Member(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnExplicitNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Explicit(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<ExternBindingNode>) =
+            let memberDefn = MemberDefn.ExternBinding(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnAugmentationNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Augmentation(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<ExprSingleNode>) =
+            let memberDefn = MemberDefn.DoExpr(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnDelegateNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Delegate(Gen.mkOak value))
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<BindingListNode>) =
+            let memberDefn = MemberDefn.LetBinding(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<Expr>) =
-            let value = ModuleDecl.DeclExpr(Gen.mkOak value)
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnExplicitCtorNode>) =
+            let memberDefn = MemberDefn.ExplicitCtor(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<OpenListNode>) =
-            let value = ModuleDecl.OpenList(Gen.mkOak value)
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnAutoPropertyNode>) =
+            let memberDefn = MemberDefn.AutoProperty(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<HashDirectiveListNode>) =
-            let value = ModuleDecl.HashDirectiveList(Gen.mkOak value)
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnAbstractSlotNode>) =
+            let memberDefn = MemberDefn.AbstractSlot(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<ModuleDeclAttributesNode>) =
-            let value = ModuleDecl.Attributes(Gen.mkOak value)
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnSigMemberNode>) =
+            let memberDefn = MemberDefn.SigMember(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<ExceptionDefnNode>) =
-            let value = ModuleDecl.Exception(Gen.mkOak value)
-            Ast.BaseAny(value)
+        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
+            let memberDefn = MemberDefn.PropertyGetSet(Gen.mkOak value)
+            Ast.BaseAny(memberDefn)
 
-        static member AnyModuleDecl(value: WidgetBuilder<ExternBindingNode>) =
-            let value = ModuleDecl.ExternBinding(Gen.mkOak value)
-            Ast.BaseAny(value)
+type MemberDefnCollectionBuilderExtensions =
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, MemberDefn>, x: FieldNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.ValField(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
 
-        static member AnyModuleDecl(value: WidgetBuilder<BindingNode>) =
-            let value = ModuleDecl.TopLevelBinding(Gen.mkOak value)
-            Ast.BaseAny(value)
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<FieldNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
-        static member AnyModuleDecl(value: WidgetBuilder<ModuleAbbrevNode>) =
-            let value = ModuleDecl.ModuleAbbrev(Gen.mkOak value)
-            Ast.BaseAny(value)
-
-        static member AnyModuleDecl(value: WidgetBuilder<NestedModuleNode>) =
-            let value = ModuleDecl.NestedModule(Gen.mkOak value)
-            Ast.BaseAny(value)
-
-        static member AnyModuleDecl(value: WidgetBuilder<ValNode>) =
-            let value = ModuleDecl.Val(Gen.mkOak value)
-            Ast.BaseAny(value)
-
-type ModuleDeclCollectionBuilderExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, MemberDefn>, x: BindingNode) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x)).Compile()
@@ -106,7 +99,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<BindingNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
@@ -120,7 +113,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnAbstractSlotNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
@@ -134,7 +127,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
@@ -148,7 +141,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnAutoPropertyNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
@@ -162,7 +155,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnPropertyGetSetNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, MemberDefn>, x: InheritConstructor) : CollectionContent =
@@ -174,7 +167,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<InheritConstructor>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
@@ -188,7 +181,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnInheritNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, MemberDefn>, x: BindingListNode) : CollectionContent =
@@ -200,7 +193,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<BindingListNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, MemberDefn>, x: ExternBindingNode) : CollectionContent =
@@ -212,7 +205,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<ExternBindingNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, MemberDefn>, x: ExprSingleNode) : CollectionContent =
@@ -224,7 +217,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<ExprSingleNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline Yield
@@ -238,7 +231,7 @@ type ModuleDeclCollectionBuilderExtensions =
         (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnExplicitCtorNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+        MemberDefnCollectionBuilderExtensions.Yield(this, node)
 
 type ModuleDeclAttributeCollectionBuilderExtensions =
 
@@ -401,6 +394,18 @@ type ModuleDeclAttributeCollectionBuilderExtensions =
     [<Extension>]
     static member inline Yield
         (this: AttributeCollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnExplicitCtorNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ModuleDeclAttributeCollectionBuilderExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield(_: AttributeCollectionBuilder<'parent, MemberDefn>, x: FieldNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.ValField(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: AttributeCollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<FieldNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         ModuleDeclAttributeCollectionBuilderExtensions.Yield(this, node)

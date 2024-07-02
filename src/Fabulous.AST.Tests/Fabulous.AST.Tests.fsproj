@@ -48,6 +48,8 @@
         <Compile Include="TypeDefinitions\Enum.fs" />
         <Compile Include="TypeDefinitions\Record.fs" />
         <Compile Include="TypeDefinitions\Class.fs" />
+        <Compile Include="TypeDefinitions\Struct.fs" />
+        <Compile Include="TypeDefinitions\Delegate.fs" />
         <Compile Include="TypeDefinitions\TypeDefnExplicit.fs" />
         <Compile Include="TypeDefinitions\Interface.fs" />
         <Compile Include="TypeDefinitions\Augmentation.fs" />

@@ -8,11 +8,6 @@ open Fantomas.Core.SyntaxOak
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Microsoft.FSharp.Collections
 
-type TypeDefn =
-    | Class
-    | Interface
-    | Struct
-
 module TypeDefnExplicit =
     let Name = Attributes.defineScalar<string> "Name"
 
@@ -25,10 +20,12 @@ module TypeDefnExplicit =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
-    let TypeDefn = Attributes.defineScalar<TypeDefn> "TypeDefn"
+    let Kind = Attributes.defineScalar<SingleTextNode> "Kind"
+
+    let Members = Attributes.defineWidgetCollection "Members"
 
     let WidgetKey =
-        Widgets.register "ClassEnd" (fun widget ->
+        Widgets.register "TypeDefnExplicit" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
@@ -70,11 +67,11 @@ module TypeDefnExplicit =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let typeDefn =
-                match Widgets.getScalarValue widget TypeDefn with
-                | Class -> SingleTextNode.``class``
-                | Interface -> SingleTextNode.``interface``
-                | Struct -> SingleTextNode.``struct``
+            let kind = Widgets.getScalarValue widget Kind
+
+            let memDefns =
+                Widgets.tryGetNodesFromWidgetCollection widget Members
+                |> ValueOption.defaultValue []
 
             TypeDefnExplicitNode(
                 TypeNameNode(
@@ -90,68 +87,45 @@ module TypeDefnExplicit =
                     None,
                     Range.Zero
                 ),
-                TypeDefnExplicitBodyNode(typeDefn, [], SingleTextNode.``end``, Range.Zero),
+                TypeDefnExplicitBodyNode(kind, memDefns, SingleTextNode.``end``, Range.Zero),
                 [],
                 Range.Zero
             ))
 
 [<AutoOpen>]
-module ClassEndBuilders =
+module TypeDefnExplicitBuilders =
     type Ast with
 
-        static member ClassEnd(name: string) =
+        static member private BaseClassEnd
+            (name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption, kind: SingleTextNode)
+            =
             WidgetBuilder<TypeDefnExplicitNode>(
                 TypeDefnExplicit.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        TypeDefnExplicit.Name.WithValue(name),
-                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Class)
-                    ),
-                    Array.empty,
+                    StackList.two(TypeDefnExplicit.Name.WithValue(name), TypeDefnExplicit.Kind.WithValue(kind)),
+                    [| match constructor with
+                       | ValueNone -> ()
+                       | ValueSome value -> TypeDefnExplicit.Constructor.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member ClassEnd(name: string) =
+            Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``class``)
 
         static member ClassEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
-            WidgetBuilder<TypeDefnExplicitNode>(
-                TypeDefnExplicit.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeDefnExplicit.Name.WithValue(name),
-                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Class)
-                    ),
-                    [| TypeDefnExplicit.Constructor.WithValue(constructor.Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``class``)
+
+        static member StructEnd(name: string) =
+            Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``struct``)
 
         static member StructEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
-            WidgetBuilder<TypeDefnExplicitNode>(
-                TypeDefnExplicit.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeDefnExplicit.Name.WithValue(name),
-                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Struct)
-                    ),
-                    [| TypeDefnExplicit.Constructor.WithValue(constructor.Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``struct``)
 
         static member InterfaceEnd(name: string) =
-            WidgetBuilder<TypeDefnExplicitNode>(
-                TypeDefnExplicit.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeDefnExplicit.Name.WithValue(name),
-                        TypeDefnExplicit.TypeDefn.WithValue(TypeDefn.Interface)
-                    ),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``interface``)
 
-type ClassEndModifiers =
+type TypeDefnExplicitModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
         this.AddScalar(TypeDefnExplicit.XmlDocs.WithValue(xmlDocs))
@@ -169,7 +143,7 @@ type ClassEndModifiers =
 
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: WidgetBuilder<AttributeNode>) =
-        ClassEndModifiers.attributes(this, [ attribute ])
+        TypeDefnExplicitModifiers.attributes(this, [ attribute ])
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: WidgetBuilder<TyparDecls>) =
@@ -187,6 +161,10 @@ type ClassEndModifiers =
     static member inline toInternal(this: WidgetBuilder<TypeDefnExplicitNode>) =
         this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Internal))
 
+    [<Extension>]
+    static member inline members(this: WidgetBuilder<TypeDefnExplicitNode>) =
+        AttributeCollectionBuilder<TypeDefnExplicitNode, MemberDefn>(this, TypeDefnExplicit.Members)
+
 type ClassEndYieldExtensions =
     [<Extension>]
     static member inline Yield
@@ -196,4 +174,10 @@ type ClassEndYieldExtensions =
         let typeDefn = TypeDefn.Explicit(node)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnExplicitNode) =
+        let moduleDecl = ModuleDecl.TypeDefn(TypeDefn.Explicit(x))
+        let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }

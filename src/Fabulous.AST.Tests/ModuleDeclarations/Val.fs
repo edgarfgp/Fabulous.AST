@@ -11,7 +11,7 @@ module ValTests =
 
     [<Fact>]
     let ``Produces a Val``() =
-        Oak() { AnonymousModule() { ValField("x", LongIdent("string")) } }
+        Oak() { AnonymousModule() { Val("x", LongIdent("string")) } }
         |> produces
             """
 val x: string
@@ -19,7 +19,7 @@ val x: string
 
     [<Fact>]
     let ``Produces a MutableVal``() =
-        Oak() { AnonymousModule() { ValField("x", String()).toMutable() } }
+        Oak() { AnonymousModule() { Val("x", String()).toMutable() } }
 
         |> produces
             """
@@ -28,7 +28,7 @@ val mutable x: string
 
     [<Fact>]
     let ``Produces a InlinedVal``() =
-        Oak() { AnonymousModule() { ValField("x", LongIdent("string")).toInlined() } }
+        Oak() { AnonymousModule() { Val("x", LongIdent("string")).toInlined() } }
 
         |> produces
             """
@@ -37,7 +37,7 @@ val inline x: string
 
     [<Fact>]
     let ``Produces a Val with attribute``() =
-        Oak() { AnonymousModule() { ValField("x", String()).attribute(Attribute "DefaultValue") } }
+        Oak() { AnonymousModule() { Val("x", String()).attribute(Attribute "DefaultValue") } }
 
         |> produces
             """
@@ -49,7 +49,7 @@ val x: string
     let ``Produces a Val with attributes``() =
         Oak() {
             AnonymousModule() {
-                ValField("x", String())
+                Val("x", String())
                     .attributes(
                         [ Attribute "DefaultValue"
                           Attribute "OtherAttribute"
@@ -68,11 +68,11 @@ val x: string
     let ``Produces a Val with accessControl``() =
         Oak() {
             AnonymousModule() {
-                ValField("x", String()).attribute(Attribute "DefaultValue").toInternal()
+                Val("x", String()).attribute(Attribute "DefaultValue").toInternal()
 
-                ValField("y", String()).attribute(Attribute "DefaultValue").toPrivate()
+                Val("y", String()).attribute(Attribute "DefaultValue").toPrivate()
 
-                ValField("z", String()).attribute(Attribute "DefaultValue").toPublic()
+                Val("z", String()).attribute(Attribute "DefaultValue").toPublic()
             }
         }
 
@@ -90,7 +90,7 @@ val public z: string
 
     [<Fact>]
     let ``Produces a Val with type parameters``() =
-        Oak() { AnonymousModule() { ValField("x", String()).typeParams(PostfixList([ "'a"; "'b" ])) } }
+        Oak() { AnonymousModule() { Val("x", String()).typeParams(PostfixList([ "'a"; "'b" ])) } }
 
         |> produces
             """

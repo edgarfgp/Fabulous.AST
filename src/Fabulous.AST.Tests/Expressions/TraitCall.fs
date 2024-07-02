@@ -16,7 +16,7 @@ module TraitCall =
                 ParenExpr(
                     TraitCallExpr(
                         Paren("^N"),
-                        SigMember(ValField([ "static"; "member" ], "Bar", Funs("_", "_"))),
+                        SigMember(Val([ "static"; "member" ], "Bar", Funs("_", "_"))),
                         ConstantExpr("source")
                     )
                 )
@@ -24,13 +24,13 @@ module TraitCall =
                 ParenExpr(
                     TraitCallExpr(
                         "(^N)",
-                        SigMember(ValField([ "static"; "member" ], "Bar", Funs("_", "_"))),
+                        SigMember(Val([ "static"; "member" ], "Bar", Funs("_", "_"))),
                         ConstantExpr("source")
                     )
                 )
 
                 ParenExpr(
-                    TraitCallExpr("(^N)", SigMember(ValField([ "static"; "member" ], "Bar", Funs("_", "_"))), "source")
+                    TraitCallExpr("(^N)", SigMember(Val([ "static"; "member" ], "Bar", Funs("_", "_"))), "source")
                 )
             }
         }
@@ -48,7 +48,7 @@ module TraitCall =
                 ParenExpr(
                     TraitCallExpr(
                         Paren(Or("^I", "^R")),
-                        SigMember(ValField([ "static"; "member" ], "Map", Funs("^R", Tuple([ "^I"; "^F" ])))),
+                        SigMember(Val([ "static"; "member" ], "Map", Funs("^R", Tuple([ "^I"; "^F" ])))),
                         TupleExpr([ "source"; "mapping" ])
                     )
                 )

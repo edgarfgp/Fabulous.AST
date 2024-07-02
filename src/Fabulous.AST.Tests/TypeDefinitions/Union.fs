@@ -77,7 +77,7 @@ type Option<'a> =
         Oak() {
             AnonymousModule() {
 
-                Interface("IMyInterface") {
+                TypeDefn("IMyInterface") {
                     let parameters = [ Unit() ]
                     AbstractSlot("GetValue", parameters, String())
                 }
@@ -239,7 +239,7 @@ type Colors<'other> =
     let ``Produces an union with TypeParams and interface member``() =
         Oak() {
             AnonymousModule() {
-                Interface("IMyInterface") { AbstractSlot("GetValue", [ Unit() ], String()) }
+                TypeDefn("IMyInterface") { AbstractSlot("GetValue", [ Unit() ], String()) }
 
                 (Union("Colors") {
                     UnionCase("Red", [ Field("a", String()); Field(LongIdent("'other")) ])
