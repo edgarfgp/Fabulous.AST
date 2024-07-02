@@ -25,7 +25,7 @@ module TypeDefnExplicit =
     let Members = Attributes.defineWidgetCollection "Members"
 
     let WidgetKey =
-        Widgets.register "ClassEnd" (fun widget ->
+        Widgets.register "TypeDefnExplicit" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
