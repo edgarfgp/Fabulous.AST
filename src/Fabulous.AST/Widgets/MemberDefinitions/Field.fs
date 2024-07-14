@@ -62,39 +62,39 @@ module Field =
 [<AutoOpen>]
 module FieldBuilders =
     type Ast with
-        static member Field(filedType: WidgetBuilder<Type>) =
+        static member Field(fieldType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(filedType.Compile()) |], Array.empty)
+                AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(fieldType.Compile()) |], Array.empty)
             )
 
-        static member Field(filedType: string) = Ast.Field(Ast.LongIdent(filedType))
+        static member Field(fieldType: string) = Ast.Field(Ast.LongIdent(fieldType))
 
-        static member Field(name: string, filedType: WidgetBuilder<Type>) =
+        static member Field(name: string, fieldType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
                 AttributesBundle(
                     StackList.one(Field.Name.WithValue(name)),
-                    [| Field.FieldType.WithValue(filedType.Compile()) |],
+                    [| Field.FieldType.WithValue(fieldType.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member ValField(name: string, filedType: WidgetBuilder<Type>) =
+        static member ValField(name: string, fieldType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
                 AttributesBundle(
                     StackList.two(Field.Name.WithValue(name), Field.LeadingKeyword.WithValue(SingleTextNode.``val``)),
-                    [| Field.FieldType.WithValue(filedType.Compile()) |],
+                    [| Field.FieldType.WithValue(fieldType.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member ValField(name: string, filedType: string) =
-            Ast.ValField(name, Ast.LongIdent(filedType))
+        static member ValField(name: string, fieldType: string) =
+            Ast.ValField(name, Ast.LongIdent(fieldType))
 
-        static member Field(name: string, filedType: string) =
-            Ast.Field(name, Ast.LongIdent(filedType))
+        static member Field(name: string, fieldType: string) =
+            Ast.Field(name, Ast.LongIdent(fieldType))
 
 type FieldModifiers =
     [<Extension>]
