@@ -2,55 +2,71 @@ namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
 
-module HashDirective =
+module ParsedHashDirectives =
     let Ident = Attributes.defineScalar<string> "Ident"
-    let Args = Attributes.defineScalar<string list> "Args"
-
-    let HasDirective = Attributes.defineScalar<bool> "HasDirective"
+    let Arguments = Attributes.defineScalar<string list> "Args"
 
     let WidgetKey =
         Widgets.register "HashDirective" (fun widget ->
             let ident = Widgets.getScalarValue widget Ident
 
-            let hasDirective =
-                Widgets.tryGetScalarValue widget HasDirective |> ValueOption.defaultValue false
+            let arguments =
+                Widgets.getScalarValue widget Arguments
+                |> List.map(fun arg ->
+                    Choice2Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create arg) ], Range.Zero)))
 
-            let args =
-                Widgets.getScalarValue widget Args
-                |> List.map(fun value -> if hasDirective then value else $"\"{value}\"")
-                |> List.map(SingleTextNode.Create)
-
-            ParsedHashDirectiveNode(ident, args, Range.Zero))
+            ParsedHashDirectiveNode(ident, arguments, Range.Zero))
 
 [<AutoOpen>]
 module HashDirectiveBuilders =
     type Ast with
 
-        static member private BaseHashDirective(ident: string, args: string list, hasDirective: bool) =
+        static member private BaseHashDirective(ident: string, arguments: WidgetBuilder<Constant> list) =
+            let arguments =
+                arguments
+                |> List.choose(fun arg ->
+                    match Gen.mkOak arg with
+                    | Constant.FromText node -> Some node.Text
+                    | Constant.Unit _ -> None
+                    | Constant.Measure _ -> None)
+
             WidgetBuilder<ParsedHashDirectiveNode>(
-                HashDirective.WidgetKey,
-                HashDirective.Ident.WithValue(ident),
-                HashDirective.Args.WithValue(args),
-                HashDirective.HasDirective.WithValue(hasDirective)
+                ParsedHashDirectives.WidgetKey,
+                ParsedHashDirectives.Ident.WithValue(ident),
+                ParsedHashDirectives.Arguments.WithValue(arguments)
             )
 
-        static member NoWarn(value: string) =
-            Ast.BaseHashDirective("nowarn", [ value ], false)
+        static member NoWarn(args: WidgetBuilder<Constant> list) = Ast.BaseHashDirective("nowarn", args)
 
         static member NoWarn(args: string list) =
-            Ast.BaseHashDirective("nowarn", args, false)
+            Ast.NoWarn(args |> List.map(Ast.Constant))
 
-        static member HashDirective(ident: string, value: string) =
-            Ast.BaseHashDirective(ident, [ value ], true)
+        static member NoWarn(value: WidgetBuilder<Constant>) = Ast.NoWarn([ value ])
 
-        static member HashDirective(ident: string) = Ast.BaseHashDirective(ident, [], true)
+        static member NoWarn(value: string) = Ast.NoWarn(Ast.Constant(value))
+
+        static member Help(value: WidgetBuilder<Constant>) =
+            Ast.BaseHashDirective("help", [ value ])
+
+        static member Help(value: string) = Ast.Help(Ast.Constant(value))
+
+        static member HashDirective(ident: string, args: WidgetBuilder<Constant> list) =
+            Ast.BaseHashDirective(ident, args)
 
         static member HashDirective(ident: string, args: string list) =
-            Ast.BaseHashDirective(ident, args, true)
+            Ast.HashDirective(ident, args |> List.map(Ast.Constant))
+
+        static member HashDirective(ident: string, value: WidgetBuilder<Constant>) = Ast.HashDirective(ident, [ value ])
+
+        static member HashDirective(ident: string, value: string) =
+            Ast.HashDirective(ident, Ast.Constant(value))
+
+        static member HashDirective(ident: string) = Ast.HashDirective(ident, [])
 
 type HashDirectiveNodeExtensions =
 
