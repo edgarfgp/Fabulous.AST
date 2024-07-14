@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre16] - 2024-07-14
+
+### Added
+- Delegate widget by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/112
+- Allow ParsedHashDirectives to take non string arguments by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/116
+
+### Changed
+* Update target frameworks by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/114
+* Correct typo by @sashang in https://github.com/edgarfgp/Fabulous.AST/pull/115
+
 ## [1.0.0-pre15] - 2024-07-01
   
 ### Added
@@ -230,7 +240,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre15...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre16...HEAD
+[1.0.0-pre16]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre16
 [1.0.0-pre15]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre15
 [1.0.0-pre14]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre14
 [1.0.0-pre13]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre13
