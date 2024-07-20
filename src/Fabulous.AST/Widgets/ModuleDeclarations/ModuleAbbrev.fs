@@ -41,10 +41,14 @@ module ModuleAbbrevBuilders =
 
 type ModuleAbbrevYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ModuleAbbrevNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.ModuleAbbrev node
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ModuleAbbrevNode) : CollectionContent =
+        let moduleDecl = ModuleDecl.ModuleAbbrev x
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ModuleAbbrevNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ModuleAbbrevYieldExtensions.Yield(this, node)

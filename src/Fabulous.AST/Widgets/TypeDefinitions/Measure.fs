@@ -69,17 +69,15 @@ type TypeNameNodeModifiers =
 
 type TypeDefnAbbrevNodeYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeNameNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let typeDefn = TypeDefn.None(node)
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeNameNode) : CollectionContent =
+        let typeDefn = TypeDefn.None(x)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeNameNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.TypeDefn(TypeDefn.None(x))
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeNameNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        TypeDefnAbbrevNodeYieldExtensions.Yield(this, node)

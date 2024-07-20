@@ -41,25 +41,37 @@ type SyntaxOakModifiers =
 
 type SyntaxOakExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<NamespaceNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let widget = Ast.EscapeHatch(node).Compile()
+    static member inline Yield(_: CollectionBuilder<'parent, Oak>, x: NamespaceNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<ModuleOrNamespaceNode>)
+        (this: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<NamespaceNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        let widget = Ast.EscapeHatch(node).Compile()
+        SyntaxOakExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, Oak>, x: ModuleOrNamespaceNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<TopLevelModuleNode>)
+        (this: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<ModuleOrNamespaceNode>)
         : CollectionContent =
         let node = Gen.mkOak x
-        let widget = Ast.EscapeHatch(node).Compile()
+        SyntaxOakExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, Oak>, x: TopLevelModuleNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<TopLevelModuleNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        SyntaxOakExtensions.Yield(this, node)

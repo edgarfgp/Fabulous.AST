@@ -151,10 +151,14 @@ type ExternBindingNodeModifiers =
 
 type ExternBindingNodeYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExternBindingNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.ExternBinding node
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ExternBindingNode) : CollectionContent =
+        let moduleDecl = ModuleDecl.ExternBinding x
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExternBindingNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ExternBindingNodeYieldExtensions.Yield(this, node)

@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -107,3 +108,18 @@ type UnionCaseModifiers =
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<UnionCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
         UnionCaseModifiers.attributes(this, [ attribute ])
+
+type UnionCaseYieldExtensions =
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: UnionCaseNode)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        UnionCaseYieldExtensions.Yield(this, node)

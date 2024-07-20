@@ -163,17 +163,15 @@ type TypeDefnAbbrevNodeModifiers =
 
 type AbbrevYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnAbbrevNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let typeDefn = TypeDefn.Abbrev(node)
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnAbbrevNode) : CollectionContent =
+        let typeDefn = TypeDefn.Abbrev(x)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnAbbrevNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.TypeDefn(TypeDefn.Abbrev(x))
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnAbbrevNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        AbbrevYieldExtensions.Yield(this, node)

@@ -140,18 +140,15 @@ type UnionModifiers =
 
 type UnionYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnUnionNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let typeDefn = TypeDefn.Union(node)
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnUnionNode) : CollectionContent =
+        let typeDefn = TypeDefn.Union(x)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
-type UnionParameterizedCaseYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode>)
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnUnionNode>)
         : CollectionContent =
-        { Widgets = MutStackArray1.One(x.Compile()) }
+        let node = Gen.mkOak x
+        UnionYieldExtensions.Yield(this, node)

@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fabulous.AST.StackAllocatedCollections
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -83,3 +84,18 @@ type EnumCaseModifiers =
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<EnumCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
         EnumCaseModifiers.attributes(this, [ attribute ])
+
+type EnumCaseNodeYieldExtensions =
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: EnumCaseNode)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        EnumCaseNodeYieldExtensions.Yield(this, node)
