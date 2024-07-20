@@ -53,10 +53,16 @@ module AugmentBuilders =
 type AugmentYieldExtensions =
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnAugmentationNode>)
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnAugmentationNode)
         : CollectionContent =
-        let node = Gen.mkOak x
-        let typeDefn = TypeDefn.Augmentation(node)
+        let typeDefn = TypeDefn.Augmentation(x)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnAugmentationNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        AugmentYieldExtensions.Yield(this, node)

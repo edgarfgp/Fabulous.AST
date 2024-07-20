@@ -2,7 +2,6 @@ namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
 open Fabulous.AST.StackAllocatedCollections
-open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open type Fabulous.AST.Ast
@@ -72,9 +71,15 @@ type HashDirectiveNodeExtensions =
 
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ParsedHashDirectiveNode>)
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: ParsedHashDirectiveNode)
         : CollectionContent =
-        let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ]))
+        let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ x ]))
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ParsedHashDirectiveNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        HashDirectiveNodeExtensions.Yield(this, node)

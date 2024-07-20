@@ -89,17 +89,15 @@ module DelegateBuilders =
 
 type DelegateYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnDelegateNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let typeDefn = TypeDefn.Delegate(node)
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnDelegateNode) : CollectionContent =
+        let typeDefn = TypeDefn.Delegate(x)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnDelegateNode) =
-        let moduleDecl = ModuleDecl.TypeDefn(TypeDefn.Delegate(x))
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnDelegateNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        DelegateYieldExtensions.Yield(this, node)

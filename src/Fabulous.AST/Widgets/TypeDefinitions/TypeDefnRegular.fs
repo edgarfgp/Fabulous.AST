@@ -169,18 +169,16 @@ type TypeDefnRegularModifiers =
 
 type TypeDefnRegularYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnRegularNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let typeDefn = TypeDefn.Regular(node)
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnRegularNode) : CollectionContent =
+        let typeDefn = TypeDefn.Regular(x)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
 
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnRegularNode) =
-        let moduleDecl = ModuleDecl.TypeDefn(TypeDefn.Regular(x))
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnRegularNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        TypeDefnRegularYieldExtensions.Yield(this, node)

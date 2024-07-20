@@ -74,10 +74,14 @@ module OpenBuilders =
 
 type OpenYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenListNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.OpenList(node)
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: OpenListNode) : CollectionContent =
+        let moduleDecl = ModuleDecl.OpenList(x)
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenListNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        OpenYieldExtensions.Yield(this, node)

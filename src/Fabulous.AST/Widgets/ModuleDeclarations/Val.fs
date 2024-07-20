@@ -177,16 +177,14 @@ type ValNodeModifiers =
 
 type ValYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ValNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.Val node
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ValNode) : CollectionContent =
+        let moduleDecl = ModuleDecl.Val x
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, node: ValNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.Val node
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ValNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ValYieldExtensions.Yield(this, node)

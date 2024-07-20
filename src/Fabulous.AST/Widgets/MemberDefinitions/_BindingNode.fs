@@ -73,16 +73,14 @@ type BindingNodeModifiers =
 
 type ValueYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.TopLevelBinding node
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: BindingNode) : CollectionContent =
+        let moduleDecl = ModuleDecl.TopLevelBinding x
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, node: BindingNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.TopLevelBinding node
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ValueYieldExtensions.Yield(this, node)

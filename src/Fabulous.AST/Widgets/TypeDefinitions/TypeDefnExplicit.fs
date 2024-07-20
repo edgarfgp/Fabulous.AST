@@ -165,19 +165,17 @@ type TypeDefnExplicitModifiers =
     static member inline members(this: WidgetBuilder<TypeDefnExplicitNode>) =
         AttributeCollectionBuilder<TypeDefnExplicitNode, MemberDefn>(this, TypeDefnExplicit.Members)
 
-type ClassEndYieldExtensions =
+type TypeDefnExplicitYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnExplicitNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let typeDefn = TypeDefn.Explicit(node)
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnExplicitNode) : CollectionContent =
+        let typeDefn = TypeDefn.Explicit(x)
         let typeDefn = ModuleDecl.TypeDefn(typeDefn)
         let widget = Ast.EscapeHatch(typeDefn).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnExplicitNode) =
-        let moduleDecl = ModuleDecl.TypeDefn(TypeDefn.Explicit(x))
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnExplicitNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        TypeDefnExplicitYieldExtensions.Yield(this, node)

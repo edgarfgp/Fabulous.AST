@@ -126,10 +126,14 @@ type ExceptionDefnModifiers =
 
 type ExceptionDefnNodeYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExceptionDefnNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        let moduleDecl = ModuleDecl.Exception node
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ExceptionDefnNode) : CollectionContent =
+        let moduleDecl = ModuleDecl.Exception x
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExceptionDefnNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ExceptionDefnNodeYieldExtensions.Yield(this, node)

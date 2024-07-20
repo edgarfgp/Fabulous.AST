@@ -5,9 +5,9 @@
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>
         <GenerateProgramFile>false</GenerateProgramFile>
-        <WarnOn>3390;$(WarnOn)</WarnOn>
+        <WarnOn>$(WarnOn);3390</WarnOn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>FS3186;NETSDK1206;NU1507</NoWarn>
+        <NoWarn>$(NoWarn);FS3186;NETSDK1206;NU1507;NU1903</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
