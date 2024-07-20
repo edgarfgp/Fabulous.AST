@@ -1,10 +1,10 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections
-open Fantomas.FCS.Text
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
-open type Fabulous.AST.Ast
+open Fantomas.FCS.Text
 
 module ParsedHashDirectives =
     let Ident = Attributes.defineScalar<string> "Ident"

@@ -2,8 +2,9 @@ namespace Fabulous.AST.Tests
 
 open Fabulous.AST
 
-open type Ast
 open Xunit
+
+open type Ast
 
 module Constant =
     [<Fact>]

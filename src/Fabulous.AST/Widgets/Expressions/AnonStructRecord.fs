@@ -1,8 +1,9 @@
 namespace Fabulous.AST
 
-open Fantomas.FCS.Text
-open Fabulous.AST.StackAllocatedCollections.StackList
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
 
 module AnonStructRecord =
     let Fields = Attributes.defineScalar<RecordFieldNode list> "Fields"

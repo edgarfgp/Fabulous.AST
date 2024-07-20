@@ -1,10 +1,9 @@
 namespace Fabulous.AST
 
-open Fabulous.AST.StackAllocatedCollections.StackList
-open Fantomas.FCS.Text
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-
-open type Fabulous.AST.Ast
+open Fantomas.FCS.Text
 
 module BindingMethodNode =
     let Name = Attributes.defineScalar<string> "Name"

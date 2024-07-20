@@ -1,7 +1,7 @@
 namespace Fabulous.AST.Tests.Core
 
 open System
-open Fabulous.AST.StackAllocatedCollections
+open Fabulous.Builders.StackAllocatedCollections
 open Xunit
 
 open type Fabulous.AST.Ast

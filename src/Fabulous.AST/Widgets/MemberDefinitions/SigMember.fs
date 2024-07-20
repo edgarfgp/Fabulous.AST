@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
-open Fabulous.AST.StackAllocatedCollections.StackList
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
-open Microsoft.FSharp.Collections
 
 module SigMember =
     let Identifier = Attributes.defineWidget "Val"

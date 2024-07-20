@@ -24,14 +24,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="DSL\Array.fs" />
-        <Compile Include="DSL\Primitives.fs" />
-        <Compile Include="DSL\AttributeDefinitions.fs" />
-        <Compile Include="DSL\Builders.fs" />
-        <Compile Include="DSL\WidgetDefinitions.fs" />
-        <Compile Include="DSL\Widgets.fs" />
-        <Compile Include="DSL\Attributes.fs" />
-        <Compile Include="DSL\Gen.fs" />
         <Compile Include="Widgets\SingleTextNode.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
@@ -198,6 +190,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Fabulous.Builders" />
         <PackageReference Include="Fantomas.Core" />
     </ItemGroup>
 

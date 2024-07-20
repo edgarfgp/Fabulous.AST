@@ -1,11 +1,10 @@
 namespace Fabulous.AST
 
-open Fabulous.AST.StackAllocatedCollections.StackList
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
-open Fantomas.Core.SyntaxOak
-
-open type Fabulous.AST.Ast
 
 module BindingValue =
 

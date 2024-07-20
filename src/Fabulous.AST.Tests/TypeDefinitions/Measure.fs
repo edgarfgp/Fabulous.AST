@@ -1,12 +1,10 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
+open Fabulous.AST
 open Fabulous.AST.Tests
 open Xunit
 
-open Fabulous.AST
-
 open type Fabulous.AST.Ast
-open type Fantomas.Core.SyntaxOak.Type
 
 module UnitsOfMeasure =
 

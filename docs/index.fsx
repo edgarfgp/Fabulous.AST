@@ -64,6 +64,7 @@ Now let's take a look at same example using Fabulous.AST:
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
+#r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
 open type Fabulous.AST.Ast

@@ -1,9 +1,10 @@
 namespace Fabulous.AST
 
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
-open Fabulous.AST.StackAllocatedCollections.StackList
-open Fantomas.Core.SyntaxOak
 
 module RecordField =
     let RecordExpr = Attributes.defineWidget "RecordExpr"

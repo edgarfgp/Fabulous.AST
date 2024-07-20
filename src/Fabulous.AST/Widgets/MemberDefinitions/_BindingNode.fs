@@ -1,10 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
-
-open type Fabulous.AST.Ast
 
 module BindingNode =
     let BodyExpr = Attributes.defineWidget "BindingBodyExpr"

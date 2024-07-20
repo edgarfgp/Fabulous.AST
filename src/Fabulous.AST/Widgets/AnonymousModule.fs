@@ -1,9 +1,10 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections
-open Fantomas.FCS.Text
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
 
 module AnonymousModule =
     let Decls = Attributes.defineWidgetCollection "Decls"

@@ -1,10 +1,10 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.AST.StackAllocatedCollections.StackList
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
-open Microsoft.FSharp.Collections
 
 module PropertyGetSetMember =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"

@@ -1,10 +1,11 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
-open Fantomas.Core.SyntaxOak
-open Fabulous.AST.StackAllocatedCollections.StackList
 
 module Field =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
