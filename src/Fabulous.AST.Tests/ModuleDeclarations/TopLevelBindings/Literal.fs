@@ -1,8 +1,8 @@
 namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 
 open Fantomas.Core
-open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
 open Xunit
 open Fabulous.AST.Tests
 open Fabulous.AST

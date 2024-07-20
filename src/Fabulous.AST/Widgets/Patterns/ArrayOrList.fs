@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open Fabulous.Builders
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 

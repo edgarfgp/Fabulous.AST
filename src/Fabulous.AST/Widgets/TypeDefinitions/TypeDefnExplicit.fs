@@ -1,12 +1,12 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections
+open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
-open Fabulous.AST.StackAllocatedCollections
-open Fantomas.Core.SyntaxOak
-open Fabulous.AST.StackAllocatedCollections.StackList
-open Microsoft.FSharp.Collections
 
 module TypeDefnExplicit =
     let Name = Attributes.defineScalar<string> "Name"

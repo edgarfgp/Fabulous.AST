@@ -1,8 +1,7 @@
 namespace Fabulous.AST.Tests.Core
 
-open Fantomas.Core
-
 open Fabulous.AST
+open Fantomas.Core
 
 open type Fabulous.AST.Ast
 open Xunit

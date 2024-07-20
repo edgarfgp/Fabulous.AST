@@ -1,11 +1,10 @@
 namespace Fabulous.AST.Tests.TypeDefinitions
 
-open Fabulous.AST.Tests
-open Fantomas.FCS.Text
-open Fantomas.Core.SyntaxOak
-open Xunit
-
 open Fabulous.AST
+open Fabulous.AST.Tests
+open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
+open Xunit
 
 open type Fabulous.AST.Ast
 

@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
-open Fantomas.FCS.Text
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fabulous.AST.StackAllocatedCollections.StackList
-open type Fantomas.Core.SyntaxOak.Type
+open Fantomas.FCS.Text
 
 module TypeFuns =
 

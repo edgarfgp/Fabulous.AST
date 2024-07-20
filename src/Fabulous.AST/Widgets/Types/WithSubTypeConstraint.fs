@@ -1,7 +1,8 @@
 namespace Fabulous.AST
 
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fabulous.AST.StackAllocatedCollections.StackList
 
 module WithSubTypeConstraint =
     let ConstraintValue = Attributes.defineWidget "ConstraintValue"

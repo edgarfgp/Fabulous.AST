@@ -4,8 +4,8 @@ open System.Runtime.CompilerServices
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open Fabulous.AST.StackAllocatedCollections.StackList
-open Microsoft.FSharp.Collections
+open Fabulous.Builders
+open Fabulous.Builders.StackAllocatedCollections.StackList
 
 module ImplicitConstructor =
 
