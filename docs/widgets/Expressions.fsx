@@ -120,8 +120,7 @@ Oak() {
     }
 }
 |> Gen.mkOak
-|> CodeFormatter.FormatOakAsync
-|> Async.RunSynchronously
+|> Gen.run
 |> printfn "%s"
 
 // produces the following code:

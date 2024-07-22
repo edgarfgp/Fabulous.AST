@@ -9,10 +9,5 @@ open Xunit
 [<AutoOpen>]
 module TestHelpers =
     let produces (expected: string) (source: WidgetBuilder<#Oak>) =
-        let oak = Gen.mkOak source
-
-        let res =
-            CodeFormatter.FormatOakAsync(oak, FormatConfig.Default)
-            |> Async.RunSynchronously
-
+        let res = Gen.mkOak source |> Gen.run
         Assert.Equal(expected.Trim(), res.Trim())
