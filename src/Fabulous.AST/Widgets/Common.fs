@@ -67,9 +67,18 @@ module List =
 
         coll.Close()
 
+open Fantomas.Core
+
 /// It takes the root of the widget tree and create the corresponding Fantomas node, and recursively creating all children nodes
 module Gen =
     let mkOak(root: WidgetBuilder<'node>) : 'node =
         let widget = root.Compile()
         let definition = WidgetDefinitionStore.get widget.Key
         definition.CreateView widget |> unbox
+
+    let run oak =
+        CodeFormatter.FormatOakAsync(oak, FormatConfig.Default)
+        |> Async.RunSynchronously
+
+    let runWith config oak =
+        CodeFormatter.FormatOakAsync(oak, config) |> Async.RunSynchronously

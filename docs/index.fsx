@@ -71,8 +71,7 @@ open type Fabulous.AST.Ast
 
 Oak() { AnonymousModule() { Value("y", "12") } }
 |> Gen.mkOak
-|> CodeFormatter.FormatOakAsync
-|> Async.RunSynchronously
+|> Gen.run
 |> printfn "%s"
 // produces the following code:
 (*** include-output ***)
@@ -112,10 +111,7 @@ let sourceWithEscapeHatch =
         }
     }
 
-Gen.mkOak sourceWithEscapeHatch
-|> CodeFormatter.FormatOakAsync
-|> Async.RunSynchronously
-|> printfn "%s"
+Gen.mkOak sourceWithEscapeHatch |> Gen.run |> printfn "%s"
 
 // produces the following code:
 (*** include-output ***)
