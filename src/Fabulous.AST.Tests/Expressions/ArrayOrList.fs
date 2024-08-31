@@ -40,3 +40,18 @@ let x = [| 1; 2; 3 |]
 
 let x = [ 1; 2; 3 ]
 """
+
+    [<Fact>]
+    let ``let value with a List expression range operator``() =
+        Oak() {
+            AnonymousModule() {
+                ArrayExpr([ TripleNumberIndexRangeExpr("-24.0", "-1.0", "-30.0") ])
+                ListExpr([ TripleNumberIndexRangeExpr("-24.0", "-1.0", "-30.0") ])
+            }
+        }
+        |> produces
+            """
+
+[| -24.0 .. -1.0 .. -30.0 |]
+[ -24.0 .. -1.0 .. -30.0 ]
+"""
