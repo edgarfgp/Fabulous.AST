@@ -13,6 +13,7 @@ module PropertyGetSetBinding =
     let BodyExpr = Attributes.defineWidget "BodyExpr"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
+
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
@@ -271,4 +272,3 @@ type PropertyGetSetBindingModifiers =
         (this: WidgetBuilder<PropertyGetSetBindingNode>, attribute: WidgetBuilder<AttributeNode>)
         =
         PropertyGetSetBindingModifiers.attributes(this, [ attribute ])
-

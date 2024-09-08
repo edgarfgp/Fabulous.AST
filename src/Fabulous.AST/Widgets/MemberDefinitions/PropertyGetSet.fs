@@ -143,9 +143,7 @@ type PropertyGetSetMemberModifiers =
         )
 
     [<Extension>]
-    static member attribute
-        (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, value: WidgetBuilder<AttributeNode>)
-        =
+    static member attribute(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, value: WidgetBuilder<AttributeNode>) =
         PropertyGetSetMemberModifiers.attributes(this, [ value ])
 
     [<Extension>]

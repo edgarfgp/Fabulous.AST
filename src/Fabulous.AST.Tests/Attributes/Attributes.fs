@@ -72,15 +72,11 @@ let x = 12
                 Class("Object3D") {
                     Property(
                         "this.position",
-                        Setter(
-                            NamedPat("v"),
-                            SetExpr(
-                                ConstantExpr("_position"),
-                                ConstantExpr("v")
-                            )
-                        ).attribute(Attribute("Y")),
+                        Setter(NamedPat("v"), SetExpr(ConstantExpr("_position"), ConstantExpr("v")))
+                            .attribute(Attribute("Y")),
                         Getter("_position").attribute(Attribute("Z"))
-                    ).attribute(Attribute("X"))
+                    )
+                        .attribute(Attribute("X"))
                 }
             }
         }
