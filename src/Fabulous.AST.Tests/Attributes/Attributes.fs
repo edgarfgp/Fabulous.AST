@@ -64,3 +64,27 @@ let x = 12
 [<return: Struct>]
 let x = 12
 """
+
+    [<Fact>]
+    let ``attributes on member and get, set properties``() =
+        Oak() {
+            AnonymousModule() {
+                Class("Object3D") {
+                    Property(
+                        "this.position",
+                        Setter(NamedPat("v"), SetExpr(ConstantExpr("_position"), ConstantExpr("v")))
+                            .attribute(Attribute("Y")),
+                        Getter("_position").attribute(Attribute("Z"))
+                    )
+                        .attribute(Attribute("X"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    [<X>]
+    member this.position
+        with [<Y>] set v = _position <- v
+        and [<Z>] get () = _position
+"""
