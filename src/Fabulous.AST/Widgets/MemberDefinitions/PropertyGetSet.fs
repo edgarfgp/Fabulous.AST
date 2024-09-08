@@ -129,21 +129,21 @@ module PropertyGetSetMemberMemberBuilders =
 type PropertyGetSetMemberModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: string list) =
-        this.AddScalar(AutoPropertyMember.XmlDocs.WithValue(values))
+        this.AddScalar(PropertyGetSetMember.XmlDocs.WithValue(values))
 
     [<Extension>]
-    static member inline attributes
+    static member attributes
         (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
-            AutoPropertyMember.MultipleAttributes.WithValue(
+            PropertyGetSetMember.MultipleAttributes.WithValue(
                 [ for vals in values do
                       Gen.mkOak vals ]
             )
         )
 
     [<Extension>]
-    static member inline attribute
+    static member attribute
         (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, value: WidgetBuilder<AttributeNode>)
         =
         PropertyGetSetMemberModifiers.attributes(this, [ value ])

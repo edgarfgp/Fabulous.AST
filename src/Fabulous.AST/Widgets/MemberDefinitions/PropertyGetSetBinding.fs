@@ -13,6 +13,8 @@ module PropertyGetSetBinding =
     let BodyExpr = Attributes.defineWidget "BodyExpr"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "PropertyGetSetBinding" (fun widget ->
@@ -54,8 +56,14 @@ module PropertyGetSetBinding =
                 Widgets.tryGetScalarValue widget Parameters
                 |> ValueOption.defaultValue([ pattern ])
 
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
+
             PropertyGetSetBindingNode(
                 inlined,
+                attributes,
                 accessControl,
                 leadingKeyword,
                 parameters,
@@ -246,3 +254,21 @@ type PropertyGetSetBindingModifiers =
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: WidgetBuilder<Type>) =
         this.AddWidget(PropertyGetSetBinding.ReturnType.WithValue(value.Compile()))
+
+    [<Extension>]
+    static member inline attributes
+        (this: WidgetBuilder<PropertyGetSetBindingNode>, values: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(
+            PropertyGetSetBinding.MultipleAttributes.WithValue(
+                [ for vals in values do
+                      Gen.mkOak vals ]
+            )
+        )
+
+    [<Extension>]
+    static member inline attribute
+        (this: WidgetBuilder<PropertyGetSetBindingNode>, attribute: WidgetBuilder<AttributeNode>)
+        =
+        PropertyGetSetBindingModifiers.attributes(this, [ attribute ])
+
