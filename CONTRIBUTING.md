@@ -7,12 +7,12 @@ please read these instructions carefully.
 
 ### Bug Reports
 
-- If you find a bug, please first report it using [Github issues].
+- If you find a bug, please first report it using [GitHub issues].
   - First check if there is not already an issue for it; duplicated issues will be closed.
 
 ### Bug Fix
 
-- If you'd like to submit a fix for a bug, please read the [How To](#how-to-contribute) for how to
+- If you'd like to submit a fix for a bug, please read the [How-To](#how-to-contribute) for how to
    send a Pull Request.
 - Indicate on the open issue that you are working on fixing the bug and the issue will be assigned
    to you.
@@ -21,19 +21,19 @@ please read these instructions carefully.
 
 ### New Features
 
-- If you'd like to add a feature to the library that doesn't already exist, feel free to describe
+- If you'd like to add a feature to the library that does not already exist, feel free to describe
    the feature in a new [GitHub issue].
 - If you'd like to implement the new feature, please wait for feedback from the project maintainers
    before spending too much time writing the code. In some cases, enhancements may not align well
-   with the project future development direction.
-- Implement the code for the new feature and please read the [How To](#how-to-contribute).
+   with the project's future development direction.
+- Implement the code for the new feature and please read the [How-To](#how-to-contribute).
 
 ### Documentation & Miscellaneous
 
 - If you have suggestions for improvements to the documentation, tutorial or examples (or something
    else), we would love to hear about it.
-- As always first file a [Github issue].
-- Implement the changes to the documentation, please read the [How To](#how-to-contribute).
+- As always first file a [GitHub issue].
+- Implement the changes to the documentation, please read the [How-To](#how-to-contribute).
 
 ## How To Contribute
 
@@ -46,13 +46,15 @@ For a contribution to be accepted:
 dotnet tool restore
 dotnet fantomas -r src
 ```
+- Make sure that the Fantomas [Oak](https://fsprojects.github.io/fantomas-tools/#/oak?data=N4KABGBEDGD2AmBTSAuKAbRAXMAPMAvGAIwAMkANOFEgGYCWAdogM6pSXWT0sBiL9drQCG6FoioRuLAOIAnYQAcAFgDV6iAO5DR4kAF8gA) model supports the code you are trying to generate.
 - Check that all tests pass: `dotnet test`;
 - Documentation should always be updated or added (if applicable);
 - Examples should always be updated or added (if applicable);
 - Tests should always be updated or added (if applicable).
 
 If the contribution doesn't meet these criteria, a maintainer will discuss it with you on the issue
-or PR. You can still continue to add more commits to the branch you have sent the Pull Request from
+or PR.
+You can still continue to add more commits to the branch you have sent the Pull Request from, 
 and it will be automatically reflected in the PR.
 
 
@@ -92,7 +94,7 @@ dotnet fsi build.fsx
 
 ### Open a pull request
 
-Go to the [pull request page of Fabulous.AST][PRs] and in the top
+Go to the [pull request page of Fabulous.AST][PRs] and at the top
 of the page it will ask you if you want to open a pull request from your newly created branch.
 
 The title of the pull request should be descriptive of the work you did.
