@@ -17,6 +17,7 @@
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
         <Compile Include="ModuleDeclarations\Oak.fs" />
+        <Compile Include="ModuleDeclarations\Trivia.fs" />
         <Compile Include="ModuleDeclarations\AnonymousModule.fs" />
         <Compile Include="ModuleDeclarations\OpenList.fs" />
         <Compile Include="ModuleDeclarations\HashDirectives.fs" />
