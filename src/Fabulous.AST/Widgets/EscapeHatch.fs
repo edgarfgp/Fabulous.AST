@@ -48,7 +48,9 @@ type EscapeHatchModifiers =
         Ast.EscapeHatch(node)
 
     [<Extension>]
-    static member inline blockCommentAfter(this: WidgetBuilder<#NodeBase>, value: string, newlineBefore: bool, newlineAfter: bool) =
+    static member inline blockCommentAfter
+        (this: WidgetBuilder<#NodeBase>, value: string, newlineBefore: bool, newlineAfter: bool)
+        =
         let node = Gen.mkOak this
         node.AddAfter(TriviaNode(BlockComment(value, newlineBefore, newlineAfter), Range.Zero))
         Ast.EscapeHatch(node)
@@ -91,7 +93,9 @@ type EscapeHatchModifiers =
         Ast.EscapeHatch(node)
 
     [<Extension>]
-    static member inline blockCommentBefore(this: WidgetBuilder<#NodeBase>, value: string, newlineBefore: bool, newlineAfter: bool) =
+    static member inline blockCommentBefore
+        (this: WidgetBuilder<#NodeBase>, value: string, newlineBefore: bool, newlineAfter: bool)
+        =
         let node = Gen.mkOak this
         node.AddBefore(TriviaNode(BlockComment(value, newlineBefore, newlineAfter), Range.Zero))
         Ast.EscapeHatch(node)
