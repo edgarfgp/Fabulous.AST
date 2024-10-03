@@ -8,10 +8,12 @@ open Fantomas.FCS.Text
 module BindingMethodNode =
     let Name = Attributes.defineScalar<string> "Name"
 
+    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
+
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let parameters = Widgets.getScalarValue widget BindingNode.Parameters
+            let parameters = Widgets.getScalarValue widget Parameters
             let bodyExpr = Widgets.getNodeFromWidget widget BindingNode.BodyExpr
             let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
 
@@ -95,7 +97,10 @@ module BindingMethodBuilders =
             WidgetBuilder<BindingNode>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
-                    StackList.two(BindingMethodNode.Name.WithValue(name), BindingNode.Parameters.WithValue(parameters)),
+                    StackList.two(
+                        BindingMethodNode.Name.WithValue(name),
+                        BindingMethodNode.Parameters.WithValue(parameters)
+                    ),
                     [| BindingNode.BodyExpr.WithValue(body.Compile()) |],
                     Array.empty
                 )

@@ -11,11 +11,13 @@ module BindingFunction =
 
     let Leading = Attributes.defineScalar<SingleTextNode> "Leading"
 
+    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
+
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
             let name = Widgets.getScalarValue widget Name
             let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
-            let parameters = Widgets.getScalarValue widget BindingNode.Parameters
+            let parameters = Widgets.getScalarValue widget Parameters
 
             let leading =
                 Widgets.tryGetScalarValue widget Leading
@@ -88,7 +90,10 @@ module BindingFunctionBuilders =
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
                 AttributesBundle(
-                    StackList.two(BindingFunction.Name.WithValue(name), BindingNode.Parameters.WithValue(parameters)),
+                    StackList.two(
+                        BindingFunction.Name.WithValue(name),
+                        BindingFunction.Parameters.WithValue(parameters)
+                    ),
                     [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     Array.empty
                 )
@@ -147,7 +152,7 @@ module BindingFunctionBuilders =
                 AttributesBundle(
                     StackList.three(
                         BindingFunction.Name.WithValue(name),
-                        BindingNode.Parameters.WithValue(parameters),
+                        BindingFunction.Parameters.WithValue(parameters),
                         BindingFunction.Leading.WithValue(SingleTextNode.``default``)
                     ),
                     [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
