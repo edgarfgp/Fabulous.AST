@@ -33,6 +33,7 @@
         <Compile Include="Widgets\Expr.fs" />
         <Compile Include="Widgets\AttributeNode.fs" />
         <Compile Include="Widgets\ImplicitConstructor.fs" />
+        <Compile Include="Widgets\Trivia\Trivia.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Named.fs" />
         <Compile Include="Widgets\Patterns\Or.fs" />

@@ -18,7 +18,6 @@ module BindingNode =
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Return = Attributes.defineWidget "Return"
     let TypeParams = Attributes.defineWidget "TypeParams"
-    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
 
 type BindingNodeModifiers =
     [<Extension>]

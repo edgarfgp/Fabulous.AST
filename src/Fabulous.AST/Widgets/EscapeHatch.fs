@@ -1,6 +1,8 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fabulous.Builders
+open Fantomas.Core.SyntaxOak
 
 module EscapeHatch =
     let Node = Attributes.defineScalar<obj> "Node"
@@ -23,3 +25,12 @@ module EscapeHatchBuilders =
         /// </code>
         static member inline EscapeHatch(node: 'T) =
             WidgetBuilder<'T>(EscapeHatch.WidgetKey, EscapeHatch.Node.WithValue(node))
+
+type EscapeHatchModifiers =
+
+    [<Extension>]
+    static member inline commentsBefore(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaNode>) =
+        let node = Gen.mkOak this
+        let value = Gen.mkOak value
+        node.AddBefore(value)
+        Ast.EscapeHatch(node)
