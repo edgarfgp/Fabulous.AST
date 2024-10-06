@@ -25,12 +25,3 @@ module EscapeHatchBuilders =
         /// </code>
         static member inline EscapeHatch(node: 'T) =
             WidgetBuilder<'T>(EscapeHatch.WidgetKey, EscapeHatch.Node.WithValue(node))
-
-type EscapeHatchModifiers =
-
-    [<Extension>]
-    static member inline commentsBefore(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaNode>) =
-        let node = Gen.mkOak this
-        let value = Gen.mkOak value
-        node.AddBefore(value)
-        Ast.EscapeHatch(node)

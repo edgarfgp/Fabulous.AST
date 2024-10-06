@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0-pre17] - 2024-10-06
+
+### Added
+- Gen.run in https://github.com/edgarfgp/Fabulous.AST/pull/119
+- Support TriviaNode in https://github.com/edgarfgp/Fabulous.AST/pull/122
+
+### Changed
+- Better Yield Extensions in https://github.com/edgarfgp/Fabulous.AST/pull/117
+- Use Fabulous.Builders in https://github.com/edgarfgp/Fabulous.AST/pull/118
+- Update Fantomas in https://github.com/edgarfgp/Fabulous.AST/pull/120
+- Correctly generate attributes on properties in https://github.com/edgarfgp/Fabulous.AST/pull/121
+
 ## [1.0.0-pre16] - 2024-07-14
 
 ### Added
@@ -15,8 +27,8 @@ _No unreleased changes_
 - Allow ParsedHashDirectives to take non string arguments by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/116
 
 ### Changed
-* Update target frameworks by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/114
-* Correct typo by @sashang in https://github.com/edgarfgp/Fabulous.AST/pull/115
+- Update target frameworks by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/114
+- Correct typo by @sashang in https://github.com/edgarfgp/Fabulous.AST/pull/115
 
 ## [1.0.0-pre15] - 2024-07-01
   
@@ -240,7 +252,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre16...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre17...HEAD
+[1.0.0-pre17]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre17
 [1.0.0-pre16]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre16
 [1.0.0-pre15]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre15
 [1.0.0-pre14]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre14
