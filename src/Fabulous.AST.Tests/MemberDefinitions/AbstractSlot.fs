@@ -9,40 +9,124 @@ open type Ast
 module AbstractMembers =
 
     [<Fact>]
-    let ``Produces a classes with a abstract members``() =
+    let ``Produces a classes with a abstracts``() =
         Oak() {
             AnonymousModule() {
                 TypeDefn("Meh") {
-                    AbstractSlot("Area", Float(), true)
-                    AbstractSlot("Area1", LongIdent "float", true)
+                    Abstract("Area", Float(), true)
+                    Abstract("Area1", LongIdent "float", true)
 
-                    AbstractSlot("Area2", Float(), hasSetter = true)
-                    AbstractSlot("Area3", LongIdent "float", hasSetter = true)
+                    Abstract("Area2", Float(), hasSetter = true)
+                    Abstract("Area3", LongIdent "float", hasSetter = true)
 
-                    AbstractSlot("Area4", Float(), true, true)
-                    AbstractSlot("Area5", LongIdent "float", true, true)
+                    Abstract("Area4", Float(), true, true)
+                    Abstract("Area5", LongIdent "float", true, true)
 
-                    AbstractSlot("Pi", Float())
-                    AbstractSlot("Pi2", LongIdent "float")
+                    Abstract("Pi", Float())
+                    Abstract("Pi2", LongIdent "float")
 
-                    AbstractSlot("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
-                    AbstractSlot("Add2", [ Int(); Int() ], Int(), true)
+                    Abstract("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
+                    Abstract("Add2", [ Int(); Int() ], Int(), true)
 
-                    AbstractSlot("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
+                    Abstract("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
 
-                    AbstractSlot(
+                    Abstract(
                         "Add4",
                         [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
                         LongIdent "int",
                         true
                     )
 
-                    AbstractSlot("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
-                    AbstractSlot("Add6", [ Int(); Int() ], Int())
+                    Abstract("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    Abstract("Add6", [ Int(); Int() ], Int())
 
-                    AbstractSlot("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    Abstract("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractSlot("Add8", [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ], LongIdent "int")
+                    Abstract("Add8", [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ], LongIdent "int")
+
+                }
+            }
+        }
+        |> produces
+            """
+type Meh =
+    abstract Area: float with get
+    abstract Area1: float with get
+    abstract Area2: float with set
+    abstract Area3: float with set
+    abstract Area4: float with get, set
+    abstract Area5: float with get, set
+    abstract Pi: float
+    abstract Pi2: float
+    abstract Add: int * int -> int
+    abstract Add2: int * int -> int
+    abstract Add3: a: int * b: int -> int
+    abstract Add4: a: int * b: int -> int
+    abstract Add5: int -> int -> int
+    abstract Add6: int -> int -> int
+    abstract Add7: a: int -> b: int -> int
+    abstract Add8: a: int -> b: int -> int
+"""
+
+    [<Fact>]
+    let ``Produces a abstract members with type params``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Meh") {
+                    Abstract("Area", [ LongIdent "'a" ], Float()).typeParams(PostfixList([ "'a" ]))
+
+                    AbstractMember("Area1", [ LongIdent "'b" ], Float())
+                        .typeParams(PostfixList([ "'b" ]))
+
+                }
+            }
+        }
+        |> produces
+            """
+type Meh =
+    abstract Area<'a> : 'a -> float
+    abstract member Area1<'b> : 'b -> float
+"""
+
+    [<Fact>]
+    let ``Produces a classes with a abstract members``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Meh") {
+                    AbstractMember("Area", Float(), true)
+                    AbstractMember("Area1", LongIdent "float", true)
+
+                    AbstractMember("Area2", Float(), hasSetter = true)
+                    AbstractMember("Area3", LongIdent "float", hasSetter = true)
+
+                    AbstractMember("Area4", Float(), true, true)
+                    AbstractMember("Area5", LongIdent "float", true, true)
+
+                    AbstractMember("Pi", Float())
+                    AbstractMember("Pi2", LongIdent "float")
+
+                    AbstractMember("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
+                    AbstractMember("Add2", [ Int(); Int() ], Int(), true)
+
+                    AbstractMember("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
+
+                    AbstractMember(
+                        "Add4",
+                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
+                        LongIdent "int",
+                        true
+                    )
+
+                    AbstractMember("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractMember("Add6", [ Int(); Int() ], Int())
+
+                    AbstractMember("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+
+                    AbstractMember(
+                        "Add8",
+                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
+                        LongIdent "int"
+                    )
 
                 }
             }
@@ -74,36 +158,40 @@ type Meh =
         Oak() {
             AnonymousModule() {
                 TypeDefn("Meh") {
-                    AbstractSlot("Area", Float(), true)
-                    AbstractSlot("Area1", LongIdent "float", true)
+                    AbstractMember("Area", Float(), true)
+                    AbstractMember("Area1", LongIdent "float", true)
 
-                    AbstractSlot("Area2", Float(), hasSetter = true)
-                    AbstractSlot("Area3", LongIdent "float", hasSetter = true)
+                    AbstractMember("Area2", Float(), hasSetter = true)
+                    AbstractMember("Area3", LongIdent "float", hasSetter = true)
 
-                    AbstractSlot("Area4", Float(), true, true)
-                    AbstractSlot("Area5", LongIdent "float", true, true)
+                    AbstractMember("Area4", Float(), true, true)
+                    AbstractMember("Area5", LongIdent "float", true, true)
 
-                    AbstractSlot("Pi", Float())
-                    AbstractSlot("Pi2", LongIdent "float")
+                    AbstractMember("Pi", Float())
+                    AbstractMember("Pi2", LongIdent "float")
 
-                    AbstractSlot("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
-                    AbstractSlot("Add2", [ Int(); Int() ], Int(), true)
+                    AbstractMember("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
+                    AbstractMember("Add2", [ Int(); Int() ], Int(), true)
 
-                    AbstractSlot("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
+                    AbstractMember("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
 
-                    AbstractSlot(
+                    AbstractMember(
                         "Add4",
                         [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
                         LongIdent "int",
                         true
                     )
 
-                    AbstractSlot("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
-                    AbstractSlot("Add6", [ Int(); Int() ], Int())
+                    AbstractMember("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
+                    AbstractMember("Add6", [ Int(); Int() ], Int())
 
-                    AbstractSlot("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractMember("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
 
-                    AbstractSlot("Add8", [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ], LongIdent "int")
+                    AbstractMember(
+                        "Add8",
+                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
+                        LongIdent "int"
+                    )
 
                 }
                 |> _.typeParams(PostfixList([ "'other"; "'another" ]))
@@ -138,20 +226,20 @@ type Meh<'other, 'another> =
                 TypeDefn("IMeh") {
                     Inherit("IFoo")
 
-                    AbstractSlot("ClientInfo1", "{| Name: string; Version: string option |}")
-                    AbstractSlot("ClientInfo2", AnonRecord([ ("Name", "string"); ("Version", "string option") ]))
+                    AbstractMember("ClientInfo1", "{| Name: string; Version: string option |}")
+                    AbstractMember("ClientInfo2", AnonRecord([ ("Name", "string"); ("Version", "string option") ]))
 
-                    AbstractSlot(
+                    AbstractMember(
                         "ClientInfo3",
                         AnonRecord([ ("Name", String()); ("Version", LongIdent("string option")) ])
                     )
 
-                    AbstractSlot(
+                    AbstractMember(
                         "ClientInfo4",
                         AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ])
                     )
 
-                    AbstractSlot(
+                    AbstractMember(
                         "ClientInfo4",
                         AppPostfix(
                             AnonRecord([ ("Name", String()); ("Version", AppPostfix(String(), "option")) ]),
@@ -189,12 +277,12 @@ type IMeh =
         Oak() {
             AnonymousModule() {
                 TypeDefn("IMeh") {
-                    AbstractSlot(
+                    AbstractMember(
                         "ClientInfo1",
                         AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ])
                     )
 
-                    AbstractSlot(
+                    AbstractMember(
                         "ClientInfo2",
                         OptionPostfix(AnonRecord([ ("Name", String()); ("Version", OptionPostfix(String())) ]))
                     )
@@ -218,7 +306,7 @@ type IMeh =
         Oak() {
             AnonymousModule() {
                 TypeDefn("IMeh") {
-                    AbstractSlot(
+                    AbstractMember(
                         "ClientInfo1",
                         Array(
                             AppPrefix(
