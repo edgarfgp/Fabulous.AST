@@ -143,8 +143,8 @@ Oak() {
         Augmentation("Variant") { Method("x.Print", UnitPat(), AppExpr("Variant.print", "x")) }
 
         TypeDefn("IFoo") {
-            AbstractSlot("Area", Float(), true)
-            AbstractSlot("Area1", LongIdent "float", true)
+            AbstractMember("Area", Float(), true)
+            AbstractMember("Area1", LongIdent "float", true)
         }
 
         TypeDefn("X") {

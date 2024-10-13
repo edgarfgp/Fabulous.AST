@@ -70,7 +70,7 @@ Oak() {
                 Setter(ParenPat(NamedPat("value")), LongIdentSetExpr("_age", "value"))
             )
 
-            AbstractSlot("GetValue", [ Unit() ], String())
+            AbstractMember("GetValue", [ Unit() ], String())
 
             Default("this.GetValue", UnitPat(), ConstantExpr(String("Hello World")))
 
