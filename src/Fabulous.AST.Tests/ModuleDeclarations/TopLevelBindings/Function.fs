@@ -303,7 +303,7 @@ let internal z i = ()
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    AbstractSlot("GetValue", [ Unit() ], String())
+                    AbstractMember("GetValue", [ Unit() ], String())
                     Default("this.GetValue", UnitPat(), ConstantExpr(String("")))
                 }
             }

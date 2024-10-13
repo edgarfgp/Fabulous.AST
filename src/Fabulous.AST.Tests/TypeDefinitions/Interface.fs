@@ -11,9 +11,9 @@ module Interface =
     let ``Produces an interface abstract method``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("INumericFSharp") { AbstractSlot("Add", [ Int(); Int() ], Int()) }
+                TypeDefn("INumericFSharp") { AbstractMember("Add", [ Int(); Int() ], Int()) }
 
-                TypeDefn("INumericDotNet") { AbstractSlot("Add", [ Int(); Int() ], Int(), true) }
+                TypeDefn("INumericDotNet") { AbstractMember("Add", [ Int(); Int() ], Int(), true) }
             }
         }
         |> produces
@@ -34,9 +34,9 @@ module GenericInterface =
             AnonymousModule() {
                 TypeDefn("MyInterface") {
                     let parameters = [ Int(); Int(); String() ]
-                    AbstractSlot("Add", parameters, Int())
-                    AbstractSlot("Pi", Float())
-                    AbstractSlot("Area", Float(), true, true)
+                    AbstractMember("Add", parameters, Int())
+                    AbstractMember("Pi", Float())
+                    AbstractMember("Area", Float(), true, true)
                 }
                 |> _.typeParams(PostfixList([ "'other"; "'another" ]))
 
