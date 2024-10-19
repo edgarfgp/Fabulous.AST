@@ -111,8 +111,7 @@ module BindingPropertyBuilders =
         static member Property(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
             Ast.Property(name, Ast.ConstantExpr(body))
 
-        static member Property(name: string, body: WidgetBuilder<Expr>) =
-            Ast.Property(Ast.Constant(name), body)
+        static member Property(name: string, body: WidgetBuilder<Expr>) = Ast.Property(Ast.Constant(name), body)
 
         static member Property(name: WidgetBuilder<Constant>, body: string) =
             Ast.Property(name, Ast.ConstantExpr(Ast.Constant(body)))

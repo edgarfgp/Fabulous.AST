@@ -24,37 +24,24 @@ type DateTime with
     member this.Print() = ()
 
  """
+
     [<Fact>]
     let ``Produces an Augmentation with attributes``() =
         Oak() {
             AnonymousModule() {
                 Open("Microsoft.FSharp.Core")
 
-                Class("A",
-                      ImplicitConstructor(
-                          ParenPat(
-                              ParameterPat(
-                                  "x",
-                                  AppPrefix(
-                                      Int(),
-                                      "'u")
-                                  )
-                              )
-                          )
-                      ) {
+                Class("A", ImplicitConstructor(ParenPat(ParameterPat("x", AppPrefix(Int(), "'u"))))) {
                     Property("_.X", ConstantExpr("x"))
                 }
                 |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))
 
                 NestedModule("M") {
-                    Augmentation("A") {
-                        Property(ConstantPat(Constant("this.Y")), ConstantExpr("this.X"))
-                    }
+                    Augmentation("A") { Property(ConstantPat(Constant("this.Y")), ConstantExpr("this.X")) }
                     |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))
                 }
 
-                Function("main", "argv", Constant("0"))
-                    .attribute(Attribute("EntryPoint"))
+                Function("main", "argv", Constant("0")).attribute(Attribute("EntryPoint"))
             }
         }
         |> produces

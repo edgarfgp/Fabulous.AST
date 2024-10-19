@@ -60,9 +60,10 @@ module AugmentBuilders =
 
 type AugmentationModifiers =
     [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<TypeDefnAugmentationNode>, typeParams: WidgetBuilder<TyparDecls>) =
+    static member inline typeParams
+        (this: WidgetBuilder<TypeDefnAugmentationNode>, typeParams: WidgetBuilder<TyparDecls>)
+        =
         this.AddWidget(Augmentation.TypeParams.WithValue(typeParams.Compile()))
-
 
 type AugmentYieldExtensions =
     [<Extension>]
