@@ -112,7 +112,6 @@ module BindingPropertyBuilders =
             Ast.Property(name, Ast.ConstantExpr(body))
 
         static member Property(name: string, body: WidgetBuilder<Expr>) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.Property(Ast.Constant(name), body)
 
         static member Property(name: WidgetBuilder<Constant>, body: string) =

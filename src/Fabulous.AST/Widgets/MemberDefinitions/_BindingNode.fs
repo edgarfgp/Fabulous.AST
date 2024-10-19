@@ -25,7 +25,7 @@ type BindingNodeModifiers =
         this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
 
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<#BindingNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
             BindingNode.MultipleAttributes.WithValue(
                 [ for attr in attributes do
@@ -34,7 +34,7 @@ type BindingNodeModifiers =
         )
 
     [<Extension>]
-    static member inline attribute(this: WidgetBuilder<BindingNode>, attribute: WidgetBuilder<AttributeNode>) =
+    static member inline attribute(this: WidgetBuilder<#BindingNode>, attribute: WidgetBuilder<AttributeNode>) =
         BindingNodeModifiers.attributes(this, [ attribute ])
 
     [<Extension>]

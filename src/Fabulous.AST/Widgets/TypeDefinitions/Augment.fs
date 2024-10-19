@@ -13,6 +13,8 @@ module Augmentation =
     let Name = Attributes.defineScalar<string> "Name"
     let Members = Attributes.defineWidgetCollection "Members"
 
+    let TypeParams = Attributes.defineWidget "TypeParams"
+
     let WidgetKey =
         Widgets.register "Augmentation" (fun widget ->
             let name =
@@ -22,18 +24,23 @@ module Augmentation =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
                 |> ValueOption.defaultValue []
 
+            let typeParams =
+                Widgets.tryGetNodeFromWidget widget TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
+
             TypeDefnAugmentationNode(
                 TypeNameNode(
                     None,
                     None,
                     SingleTextNode.``type``,
-                    Some(SingleTextNode.Create(name)),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.``with``) ], Range.Zero),
                     None,
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                    typeParams,
                     [],
                     None,
                     None,
-                    None,
+                    Some SingleTextNode.``with``,
                     Range.Zero
                 ),
                 members,
@@ -50,6 +57,12 @@ module AugmentBuilders =
                 Augmentation.Members,
                 AttributesBundle(StackList.one(Augmentation.Name.WithValue(name)), Array.empty, Array.empty)
             )
+
+type AugmentationModifiers =
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<TypeDefnAugmentationNode>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(Augmentation.TypeParams.WithValue(typeParams.Compile()))
+
 
 type AugmentYieldExtensions =
     [<Extension>]

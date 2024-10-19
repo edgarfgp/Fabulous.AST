@@ -91,9 +91,9 @@ module TyparDecls =
 
             TyparDecls.PrefixList(
                 TyparDeclsPrefixListNode(
-                    SingleTextNode.leftParenthesis,
+                    SingleTextNode.lessThan,
                     decls,
-                    SingleTextNode.rightParenthesis,
+                    SingleTextNode.greaterThan,
                     Range.Zero
                 )
             ))
