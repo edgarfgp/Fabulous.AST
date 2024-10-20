@@ -26,7 +26,7 @@ type DateTime with
  """
 
     [<Fact>]
-    let ``Produces an Augmentation with attributes``() =
+    let ``Produces an augmentation with type parameters - measure``() =
         Oak() {
             AnonymousModule() {
                 Open("Microsoft.FSharp.Core")
@@ -57,4 +57,72 @@ module M =
 
 [<EntryPoint>]
 let main argv = 0
+ """
+
+    [<Fact>]
+    let ``Produces an augmentation with accessors``() =
+        Oak() { AnonymousModule() { Augmentation("A") { Property("this.Y", "this.X") } |> _.toPrivate() } }
+        |> produces
+            """
+type private A with
+    member this.Y = this.X
+ """
+
+    [<Fact>]
+    let ``Produces an augmentation with xml docs``() =
+        Oak() {
+            AnonymousModule() {
+                Augmentation("A") { Property("this.Y", "this.X") }
+                |> _.xmlDocs([ "This is a test" ])
+            }
+        }
+        |> produces
+            """
+/// This is a test
+type A with
+    member this.Y = this.X
+ """
+
+    [<Fact>]
+    let ``Produces an augmentation with attributes``() =
+        Oak() {
+            AnonymousModule() {
+                Augmentation("A") { Property("this.Y", "this.X") }
+                |> _.attributes([ Attribute("Test") ])
+            }
+        }
+        |> produces
+            """
+[<Test>]
+type A with
+    member this.Y = this.X
+ """
+
+    [<Fact>]
+    let ``Produces an augmentation with constraints``() =
+        Oak() {
+            AnonymousModule() {
+                Augmentation("A") { Property("this.Y", "this.X") }
+                |> _.typeParams(PostfixList(TyparDecl("'T")))
+                |> _.constraints([ ConstraintSingle("'T", "equality") ])
+            }
+        }
+        |> produces
+            """
+type A<'T> when 'T: equality with
+    member this.Y = this.X
+ """
+
+    [<Fact>]
+    let ``Produces an augmentation with type params constraints``() =
+        Oak() {
+            AnonymousModule() {
+                Augmentation("A") { Property("this.Y", "this.X") }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
+            }
+        }
+        |> produces
+            """
+type A<'T when 'T: equality> with
+    member this.Y = this.X
  """
