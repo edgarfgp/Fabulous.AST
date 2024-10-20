@@ -90,12 +90,7 @@ module TyparDecls =
             let decls = Widgets.getScalarValue widget Decls
 
             TyparDecls.PrefixList(
-                TyparDeclsPrefixListNode(
-                    SingleTextNode.leftParenthesis,
-                    decls,
-                    SingleTextNode.rightParenthesis,
-                    Range.Zero
-                )
+                TyparDeclsPrefixListNode(SingleTextNode.lessThan, decls, SingleTextNode.greaterThan, Range.Zero)
             ))
 
     let Constraints = Attributes.defineScalar<TypeConstraint list> "ConstraintValue"

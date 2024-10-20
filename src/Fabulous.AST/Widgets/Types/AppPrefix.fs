@@ -23,7 +23,6 @@ module TypeAppPrefix =
                 | ValueSome postIdentifier ->
                     IdentListNode(
                         [ for identifier in postIdentifier do
-                              let identifier = PrettyNaming.NormalizeIdentifierBackticks identifier
                               IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ],
                         Range.Zero
                     )
@@ -129,6 +128,8 @@ module TypeAppPrefixBuilders =
 
         static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string, arguments: string list) =
             Ast.AppPrefix(t, [ postIdentifier ], arguments |> List.map Ast.LongIdent)
+
+        static member AppPrefix(t: WidgetBuilder<Type>, argument: string) = Ast.AppPrefix(t, [], [ argument ])
 
         static member AppPrefix(t: WidgetBuilder<Type>, postIdentifier: string list, arguments: string list) =
             Ast.AppPrefix(t, postIdentifier, arguments |> List.map Ast.LongIdent)
