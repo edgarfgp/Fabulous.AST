@@ -35,3 +35,12 @@ module MyModule =
     type Person = { name: string }
 
 """
+
+    [<Fact>]
+    let ``hashDirective``() =
+        Oak() { () }
+        |> _.hashDirective(NoWarn(String "0044"))
+        |> produces
+            """
+#nowarn "0044"
+"""

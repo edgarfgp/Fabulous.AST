@@ -28,6 +28,7 @@ module Oak =
 [<AutoOpen>]
 module SyntaxOakBuilders =
     type Ast with
+        /// Creates an Oak AST node
         static member Oak() =
             CollectionBuilder<Oak, 'marker>(Oak.WidgetKey, Oak.Decls)
 
