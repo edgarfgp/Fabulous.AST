@@ -184,10 +184,8 @@
         <Compile Include="Widgets\ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Exception.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ModuleDecl.fs" />
-        <Compile Include="Widgets\Namespace.fs" />
-        <Compile Include="Widgets\AnonymousModule.fs" />
-        <Compile Include="Widgets\TopLevelModule.fs" />
         <Compile Include="Widgets\Oak.fs" />
+        <Compile Include="Widgets\ModuleOrNamespace.fs" />
     </ItemGroup>
 
     <ItemGroup>

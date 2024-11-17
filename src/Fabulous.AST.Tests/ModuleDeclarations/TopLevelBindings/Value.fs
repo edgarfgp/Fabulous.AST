@@ -45,7 +45,7 @@ let x = 12
 
         Oak() {
             Namespace("Gdmt.Launcher") {
-                NestedModule("Subcommands") {
+                Module("Subcommands") {
                     Value(
                         ConstantPat(Constant("GdmtSubcommands")),
                         ArrayExpr(

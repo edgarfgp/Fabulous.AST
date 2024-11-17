@@ -20,9 +20,9 @@ For details on how the AST node works, please refer to the [Fantomas Core docume
 *)
 
 (**
-### Properties
+### Modifiers
 
-| Properties                                                                                  | Description                                                                                     |
+| Modifiers                                                                                  | Description                                                                                     |
 | ------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------------------------------|
 | hashDirectives(values: WidgetBuilder<ParsedHashDirectiveNode> list)                         |  a list of hash directive nodes                                                                                             |
 | hashDirective(value: WidgetBuilder<ParsedHashDirectiveNode>)      |   a hash directive node                    |

@@ -82,7 +82,7 @@ let x = 12
     let ``Produces a namespace with nested module``() =
         Oak() {
             Namespace("Fabulous") {
-                NestedModule("AST") {
+                Module("AST") {
                     BindingNode(
                         None,
                         None,

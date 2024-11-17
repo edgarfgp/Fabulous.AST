@@ -74,7 +74,7 @@ module NestedModule =
 [<AutoOpen>]
 module NestedModuleBuilders =
     type Ast with
-        static member NestedModule(name: string) =
+        static member Module(name: string) =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(
                 NestedModule.WidgetKey,
                 NestedModule.Decls,

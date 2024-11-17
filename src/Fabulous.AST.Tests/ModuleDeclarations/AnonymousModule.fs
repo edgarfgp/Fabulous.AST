@@ -57,7 +57,7 @@ printfn "%s" 2
 
     [<Fact>]
     let ``AnonymousModule inside of top level module``() =
-        Oak() { TopLevelModule("MyModule") { AnonymousModule() { () } } }
+        Oak() { ImplicitNamespace("MyModule") { AnonymousModule() { () } } }
         |> produces
             """
 module MyModule

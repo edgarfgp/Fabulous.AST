@@ -36,7 +36,7 @@ type DateTime with
                 }
                 |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))
 
-                NestedModule("M") {
+                Module("M") {
                     Augmentation("A") { Property(ConstantPat(Constant("this.Y")), ConstantExpr("this.X")) }
                     |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))
                 }

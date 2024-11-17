@@ -13,11 +13,11 @@ module Oak =
         Oak() {
             Namespace("MyNamespace") { Record("Person") { Field("name", "string") } }
 
-            TopLevelModule("MyModule") { Record("Person") { Field("name", "string") } }
+            ImplicitNamespace("MyModule") { Record("Person") { Field("name", "string") } }
 
             AnonymousModule() { Record("Person") { Field("name", "string") } }
 
-            Namespace("MyNamespace") { NestedModule("MyModule") { Record("Person") { Field("name", "string") } } }
+            Namespace("MyNamespace") { Module("MyModule") { Record("Person") { Field("name", "string") } } }
         }
         |> produces
             """
