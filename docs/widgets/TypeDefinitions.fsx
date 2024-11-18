@@ -128,7 +128,7 @@ Oak() {
             UnionCase("Str", String())
         }
 
-        NestedModule("Variant") {
+        Module("Variant") {
             Function(
                 "print",
                 "v",

@@ -13,7 +13,8 @@ module Oak =
         Oak() {
             Namespace("MyNamespace") { Record("Person") { Field("name", "string") } }
 
-            ImplicitNamespace("MyModule") { Record("Person") { Field("name", "string") } }
+            Namespace("MyModule") { Record("Person") { Field("name", "string") } }
+            |> _.toImplicit()
 
             AnonymousModule() { Record("Person") { Field("name", "string") } }
 

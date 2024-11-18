@@ -60,9 +60,9 @@ Oak() {
             Property(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
         }
 
-        NestedModule("Values") { Value("myValue", Int(12)) }
+        Module("Values") { Value("myValue", Int(12)) }
 
-        NestedModule("Functions") { Function("myFunctionValue", "p", Int(12)) }
+        Module("Functions") { Function("myFunctionValue", "p", Int(12)) }
     }
 }
 |> Gen.mkOak

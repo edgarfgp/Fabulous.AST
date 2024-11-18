@@ -52,7 +52,7 @@ for i in 0..9 do
                 ForEachDoExpr(
                     Constant("i"),
                     ConstantExpr(Constant("0..9")),
-                    InfixAppExpr(ConstantExpr(Constant("i")), "|>", ConstantExpr(Constant("ignore")))
+                    InfixAppExpr("i", "|>", ConstantExpr(Constant("ignore")))
                 )
 
                 ForEachDoExpr(

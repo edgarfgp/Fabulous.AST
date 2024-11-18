@@ -13,8 +13,9 @@ module ModuleOrNamespace =
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let IsImplicit = Attributes.defineScalar<bool> "IsImplicit"
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let IsGlobal = Attributes.defineScalar<bool> "IsGlobal"
 
-    let IsAnonymousModdule = Attributes.defineScalar<bool> "IsAnonymousModule"
+    let IsAnonymousModule = Attributes.defineScalar<bool> "IsAnonymousModule"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -24,19 +25,26 @@ module ModuleOrNamespace =
             let decls = Widgets.getNodesFromWidgetCollection<ModuleDecl> widget Decls
 
             let isAnonymousModule =
-                Widgets.tryGetScalarValue widget IsAnonymousModdule
+                Widgets.tryGetScalarValue widget IsAnonymousModule
                 |> ValueOption.defaultValue false
 
             if isAnonymousModule then
                 ModuleOrNamespaceNode(None, decls, Range.Zero)
             else
-                let headerName = Widgets.getScalarValue widget HeaderName
-
-                let isRecursive =
-                    Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+                let isGlobal =
+                    Widgets.tryGetScalarValue widget IsGlobal |> ValueOption.defaultValue false
 
                 let isImplicit =
                     Widgets.tryGetScalarValue widget IsImplicit |> ValueOption.defaultValue false
+
+                let headerName =
+                    if isGlobal then
+                        SingleTextNode.``global``
+                    else
+                        SingleTextNode.Create(Widgets.getScalarValue widget HeaderName)
+
+                let isRecursive =
+                    Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
 
                 let leadingKeyword =
                     if isImplicit then
@@ -77,9 +85,7 @@ module ModuleOrNamespace =
                             MultipleTextsNode([ leadingKeyword ], Range.Zero),
                             accessControl,
                             isRecursive,
-                            Some(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(headerName)) ], Range.Zero)
-                            ),
+                            Some(IdentListNode([ IdentifierOrDot.Ident(headerName) ], Range.Zero)),
                             Range.Zero
                         )
                     )
@@ -94,25 +100,23 @@ module NamespaceBuilders =
                 ModuleOrNamespace.WidgetKey,
                 ModuleOrNamespace.Decls,
                 AttributesBundle(
-                    StackList.three(
+                    StackList.two(
                         ModuleOrNamespace.HeaderName.WithValue(name),
-                        ModuleOrNamespace.IsImplicit.WithValue(false),
-                        ModuleOrNamespace.IsAnonymousModdule.WithValue(false)
+                        ModuleOrNamespace.IsAnonymousModule.WithValue(false)
                     ),
                     Array.empty,
                     Array.empty
                 )
             )
 
-        static member ImplicitNamespace(name: string) =
+        static member GlobalNamespace() =
             CollectionBuilder<ModuleOrNamespaceNode, ModuleDecl>(
                 ModuleOrNamespace.WidgetKey,
                 ModuleOrNamespace.Decls,
                 AttributesBundle(
-                    StackList.three(
-                        ModuleOrNamespace.HeaderName.WithValue(name),
-                        ModuleOrNamespace.IsImplicit.WithValue(true),
-                        ModuleOrNamespace.IsAnonymousModdule.WithValue(false)
+                    StackList.two(
+                        ModuleOrNamespace.IsGlobal.WithValue(true),
+                        ModuleOrNamespace.IsAnonymousModule.WithValue(false)
                     ),
                     Array.empty,
                     Array.empty
@@ -124,10 +128,7 @@ module NamespaceBuilders =
                 ModuleOrNamespace.WidgetKey,
                 ModuleOrNamespace.Decls,
                 AttributesBundle(
-                    StackList.two(
-                        ModuleOrNamespace.IsImplicit.WithValue(false),
-                        ModuleOrNamespace.IsAnonymousModdule.WithValue(true)
-                    ),
+                    StackList.one(ModuleOrNamespace.IsAnonymousModule.WithValue(true)),
                     Array.empty,
                     Array.empty
                 )
@@ -170,3 +171,7 @@ type NamespaceModifiers =
         (this: WidgetBuilder<ModuleOrNamespaceNode>, attribute: WidgetBuilder<AttributeNode>)
         =
         NamespaceModifiers.attributes(this, [ attribute ])
+
+    [<Extension>]
+    static member inline toImplicit(this: WidgetBuilder<ModuleOrNamespaceNode>) =
+        this.AddScalar(ModuleOrNamespace.IsImplicit.WithValue(true))
