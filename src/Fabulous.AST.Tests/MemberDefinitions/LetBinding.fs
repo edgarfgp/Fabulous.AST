@@ -22,11 +22,13 @@ module LetBinding =
                           Value(ConstantPat(Constant "_weight"), ConstantExpr(String("0.0"))).toMutable() ]
                     )
 
-                    Property(
+                    Member(
                         "this.Name",
                         Getter(ConstantExpr(Constant "_name")),
                         Setter(NamedPat("value"), ConstantExpr(Constant "_name <- value"))
                     )
+                        .getter(Getter(ConstantExpr(Constant "_name")))
+                        .setter(Setter(NamedPat("value"), ConstantExpr(Constant "_name <- value")))
 
                 }
 

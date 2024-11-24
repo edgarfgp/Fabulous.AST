@@ -70,7 +70,7 @@ let x = 12
         Oak() {
             AnonymousModule() {
                 Class("Object3D") {
-                    Property(
+                    Member(
                         "this.position",
                         Setter(NamedPat("v"), SetExpr(ConstantExpr("_position"), ConstantExpr("v")))
                             .attribute(Attribute("Y")),

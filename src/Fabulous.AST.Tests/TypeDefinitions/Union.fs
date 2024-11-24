@@ -89,7 +89,7 @@ type Option<'a> =
                 })
                     .members() {
                     InterfaceMember("IMyInterface") {
-                        Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
+                        Member(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
                     }
                 }
             }
@@ -250,7 +250,7 @@ type Colors<'other> =
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     InterfaceMember(LongIdent "IMyInterface") {
-                        Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
+                        Member(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
                     }
                 }
             }

@@ -14,7 +14,7 @@ module Class =
         let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
 
         Oak() {
-            AnonymousModule() { Class("Person") { Property(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) } }
+            AnonymousModule() { Class("Person") { Member(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) } }
         }
         |> produces
             """
@@ -28,7 +28,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                Class("Person") { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
             }
         }
         |> produces
@@ -43,7 +43,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                Class("Person") { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.toPrivate()
             }
         }
@@ -70,7 +70,7 @@ type private Person() =
                         )
                     )
                 ) {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
 
             }
@@ -98,7 +98,7 @@ type Person(name, lastName, age) =
                         )
                     )
                 ) {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
             }
         }
@@ -123,7 +123,7 @@ type Person(name: string, lastName: string, ?age: int) =
                         )
                     )
                 ) {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
             }
         }
@@ -139,7 +139,7 @@ type Person(name: string, age: int) =
         Oak() {
             AnonymousModule() {
                 (Class("Person", ImplicitConstructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))) {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 })
                     .attribute(Attribute("Struct"))
             }
@@ -158,7 +158,7 @@ type Person(name: string) =
 
         Oak() {
             AnonymousModule() {
-                (Class("Person") { Property(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) })
+                (Class("Person") { Member(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) })
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
             }
         }
@@ -175,7 +175,7 @@ module GenericClass =
     let ``Produces a generic class``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                Class("Person") { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
             }
@@ -192,7 +192,7 @@ type Person<'a, 'b>() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                Class("Person") { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
             }
@@ -208,7 +208,7 @@ type Person<'a, 'b>() =
     let ``Produces a struct generic class with a constructor``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                Class("Person") { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams(PostfixList([ "'a"; "'b" ]))
                 |> _.attribute(Attribute("Struct"))
 

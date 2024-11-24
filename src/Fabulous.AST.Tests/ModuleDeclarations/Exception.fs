@@ -20,7 +20,7 @@ module ExceptionDefn =
                 ExceptionDefn("Error2", [ Field(String()); Field(Int()) ])
 
                 ExceptionDefn("Error3", Field("msg", String())).members() {
-                    Property(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
+                    Member(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
                 }
             }
         }
@@ -47,7 +47,7 @@ exception Error3 of msg: string with
 
                       AnyModuleDecl(
                           ExceptionDefn("Error3", Field("msg", String())).members() {
-                              Property(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
+                              Member(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
                           }
                       ) ]
             }

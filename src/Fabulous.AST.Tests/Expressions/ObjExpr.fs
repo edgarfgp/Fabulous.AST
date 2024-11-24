@@ -14,7 +14,7 @@ module ObjExpr =
         Oak() {
             AnonymousModule() {
                 ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit())) {
-                    Method("x.ToString", [], ConstantExpr(String("F#")))
+                    Member("x.ToString", [], ConstantExpr(String("F#")))
                 }
             }
         }
@@ -29,7 +29,7 @@ module ObjExpr =
         Oak() {
             AnonymousModule() {
                 ObjExpr(LongIdent("System.IFormattable")) {
-                    Method(
+                    Member(
                         "x.ToString",
                         ParenPat(
                             TuplePat(
@@ -50,7 +50,7 @@ module ObjExpr =
                 }
 
                 ObjExpr(LongIdent("System.IFormattable")) {
-                    Method(
+                    Member(
                         "x.ToString",
                         ParenPat(
                             TuplePat(

@@ -26,13 +26,13 @@ module MemberDefn =
                     yield!
                         [ AnyMemberDefn(
                               InterfaceMember(LongIdent "IMyInterface") {
-                                  Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
                           )
 
                           AnyMemberDefn(
                               InterfaceMember(LongIdent "IMyInterface1") {
-                                  Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
                           ) ]
 

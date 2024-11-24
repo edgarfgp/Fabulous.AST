@@ -18,7 +18,7 @@ module InheritConstructor =
                 ) {
                     InheritConstructorUnit(LongIdent "BaseClass")
 
-                    Property(
+                    Member(
                         "this.Name",
                         Getter(ConstantExpr(Constant "name")),
                         Setter(NamedPat("value"), ConstantExpr(Constant("()")))

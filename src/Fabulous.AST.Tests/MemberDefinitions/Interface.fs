@@ -23,7 +23,7 @@ module InterfaceMembers =
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     InterfaceMember(LongIdent "IMyInterface") {
-                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                        Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
 
                     InterfaceMember("IMyInterface2") { () }
@@ -68,7 +68,7 @@ type Colors<'other> =
                 })
                     .members() {
                     InterfaceMember(LongIdent "IMyInterface") {
-                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                        Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
                 }
             }
@@ -96,7 +96,7 @@ type MyRecord =
 
                 Class("Person") {
                     InterfaceMember(LongIdent "Meh") {
-                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                        Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
                 }
             }
@@ -126,13 +126,13 @@ type Person() =
 
                 Class("Person") {
                     InterfaceMember(LongIdent "IFoo") {
-                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                        Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
                     InterfaceMember("IFoo2") { () }
 
                     InterfaceMember(LongIdent "IFoo3") {
-                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                        Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
                     InterfaceMember("IFoo4") { () }

@@ -23,33 +23,33 @@ module PropertyGetSet =
                         )
                     )
                 ) {
-                    Property(
+                    Member(
                         "this.Name",
                         Getter(ConstantExpr(Constant("name"))),
                         Setter(NamedPat("value"), ConstantExpr(Constant("()")))
                     )
 
-                    Property(
+                    Member(
                         "this.Age",
                         Getter(ConstantExpr(Constant("age"))),
                         Setter(NamedPat("value"), ConstantExpr(ConstantUnit()))
                     )
                         .toInlined()
 
-                    Property(
+                    Member(
                         "this.Name2",
                         Getter(ConstantExpr(Constant("name"))).toInlined(),
                         Setter(NamedPat("value"), ConstantExpr(Constant("()")))
                     )
                         .toPrivate()
 
-                    Property(
+                    Member(
                         "this.FirstName",
                         Getter(ConstantExpr(Constant("firstName"))),
                         Setter(ParenPat(NamedPat("value")), ConstantExpr(Constant("()")))
                     )
 
-                    Property(
+                    Member(
                         "this.LastName",
                         Getter(ConstantExpr(Constant("lastName"))).returnType(String()),
                         Setter(
@@ -59,7 +59,7 @@ module PropertyGetSet =
                             .returnType(Unit())
                     )
 
-                    Property(
+                    Member(
                         "this.Item",
                         Getter(
                             ParenPat("index"),

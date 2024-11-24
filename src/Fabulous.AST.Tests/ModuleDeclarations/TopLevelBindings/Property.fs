@@ -14,26 +14,26 @@ module PropertyMember =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent "string") }).members() {
-                    Property(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
 
-                    Property(ConstantPat(Constant("this.C")), ConstantExpr(String "")).toInlined()
+                    Member(ConstantPat(Constant("this.C")), ConstantExpr(String "")).toInlined()
 
-                    Property(ConstantPat(Constant("B")), ConstantExpr(String "")).toStatic()
+                    Member(ConstantPat(Constant("B")), ConstantExpr(String "")).toStatic()
 
-                    Property(ConstantPat(Constant("D")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("D")), ConstantExpr(String ""))
                         .toStatic()
                         .toInlined()
 
-                    Property(ConstantPat(Constant("this.E")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("this.E")), ConstantExpr(String ""))
                     |> _.returnType(String())
 
-                    Property(ConstantPat(Constant("this.F")), ConstantExpr(String "")).toInlined()
+                    Member(ConstantPat(Constant("this.F")), ConstantExpr(String "")).toInlined()
                     |> _.returnType(String())
 
-                    Property(ConstantPat(Constant("G")), ConstantExpr(String "")).toStatic()
+                    Member(ConstantPat(Constant("G")), ConstantExpr(String "")).toStatic()
                     |> _.returnType(String())
 
-                    Property(ConstantPat(Constant("H")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("H")), ConstantExpr(String ""))
                         .toStatic()
                         .toInlined()
                     |> _.returnType(String())
@@ -63,26 +63,26 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Property(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
 
-                    Property(ConstantPat(Constant("this.C")), ConstantExpr(String "")).toInlined()
+                    Member(ConstantPat(Constant("this.C")), ConstantExpr(String "")).toInlined()
 
-                    Property(ConstantPat(Constant("(|B|_|)")), ConstantExpr(String "")).toStatic()
+                    Member(ConstantPat(Constant("(|B|_|)")), ConstantExpr(String "")).toStatic()
 
-                    Property(ConstantPat(Constant("D")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("D")), ConstantExpr(String ""))
                         .toStatic()
                         .toInlined()
 
-                    Property(ConstantPat(Constant("this.E")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("this.E")), ConstantExpr(String ""))
                     |> _.returnType(String())
 
-                    Property(ConstantPat(Constant("this.F")), ConstantExpr(String "")).toInlined()
+                    Member(ConstantPat(Constant("this.F")), ConstantExpr(String "")).toInlined()
                     |> _.returnType(String())
 
-                    Property(ConstantPat(Constant("G")), ConstantExpr(String "")).toStatic()
+                    Member(ConstantPat(Constant("G")), ConstantExpr(String "")).toStatic()
                     |> _.returnType(String())
 
-                    Property(ConstantPat(Constant("H")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("H")), ConstantExpr(String ""))
                         .toStatic()
                         .toInlined()
                     |> _.returnType(String())
@@ -111,7 +111,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Property(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
                 }
             }
         }
@@ -131,7 +131,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Property(ConstantPat(Constant("A")), ConstantExpr(String "")).toStatic()
+                    Member(ConstantPat(Constant("A")), ConstantExpr(String "")).toStatic()
                 }
             }
         }
@@ -156,7 +156,7 @@ type Colors =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Property(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("this.A")), ConstantExpr(String ""))
                 }
             }
         }
@@ -184,7 +184,7 @@ type Colors<'other> =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Property(ConstantPat(Constant("A")), ConstantExpr(String "")).toStatic()
+                    Member(ConstantPat(Constant("A")), ConstantExpr(String "")).toStatic()
                 }
             }
         }
@@ -207,9 +207,9 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Property(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
 
-                    Property(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
+                    Member(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
                 }
             }
         }
@@ -226,8 +226,8 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Property(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
-                    Property(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
+                    Member(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
                 }
                 |> _.typeParams(PostfixList([ "'other" ]))
             }
@@ -245,7 +245,7 @@ type Person<'other>() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                         .xmlDocs([ "This is a comment" ])
                 }
             }
@@ -271,7 +271,7 @@ type Person() =
                 Class("Person") {
                     for name, acc in data do
                         let widget =
-                            Property(ConstantPat(Constant($"this.{name}")), ConstantExpr(String "name"))
+                            Member(ConstantPat(Constant($"this.{name}")), ConstantExpr(String "name"))
 
                         match acc with
                         | AccessControl.Public -> widget.toPublic()
@@ -296,7 +296,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
                     |> _.returnType(LongIdent "int")
                 }
 
@@ -313,7 +313,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                         .toInlined()
                 }
             }
@@ -330,7 +330,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 Class("Person") {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
                         .attribute(Attribute "Obsolete")
                 }
 
@@ -348,7 +348,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 (Record("Person") { Field("Name", LongIdent("string")) }).members() {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                 }
 
             }
@@ -369,7 +369,7 @@ type Person =
                 (Record("Person") { Field("Name", LongIdent("'other")) })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                 }
 
             }
@@ -388,7 +388,7 @@ type Person<'other> =
         Oak() {
             AnonymousModule() {
                 (Union("Person") { UnionCase("Name") }).members() {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                 }
 
             }
@@ -407,7 +407,7 @@ type Person =
         Oak() {
             AnonymousModule() {
                 (Union("Person") { UnionCase("Name") }).members() {
-                    Property(ConstantPat(Constant("Name")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("Name")), ConstantExpr(String "name"))
                         .toStatic()
                         .toStatic()
                 }
@@ -436,7 +436,7 @@ type Person =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                 }
 
             }
@@ -466,7 +466,7 @@ type Colors<'other> =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Property(ConstantPat(Constant("Name")), ConstantExpr(String "name")).toStatic()
+                    Member(ConstantPat(Constant("Name")), ConstantExpr(String "name")).toStatic()
                 }
 
             }

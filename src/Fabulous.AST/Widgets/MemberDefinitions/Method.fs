@@ -91,7 +91,7 @@ module BindingMethodNode =
 module BindingMethodBuilders =
     type Ast with
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, body: WidgetBuilder<Expr>) =
+        static member Member(name: string, parameters: WidgetBuilder<Pattern> list, body: WidgetBuilder<Expr>) =
             let parameters = parameters |> List.map Gen.mkOak
 
             WidgetBuilder<BindingNode>(
@@ -106,35 +106,35 @@ module BindingMethodBuilders =
                 )
             )
 
-        static member Method(name: string, parameter: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
-            Ast.Method(name, [ parameter ], body)
+        static member Member(name: string, parameter: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+            Ast.Member(name, [ parameter ], body)
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>) =
-            Ast.Method(name, parameters, Ast.ConstantExpr(bodyExpr))
+        static member Member(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Member(name, parameters, Ast.ConstantExpr(bodyExpr))
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
-            Ast.Method(name, parameters, Ast.Constant(bodyExpr))
+        static member Member(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
+            Ast.Member(name, parameters, Ast.Constant(bodyExpr))
 
-        static member Method(name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>) =
+        static member Member(name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>) =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
-            Ast.Method(name, parameters, bodyExpr)
+            Ast.Member(name, parameters, bodyExpr)
 
-        static member Method(name: string, parameters: string list, bodyExpr: string) =
+        static member Member(name: string, parameters: string list, bodyExpr: string) =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
-            Ast.Method(name, parameters, bodyExpr)
+            Ast.Member(name, parameters, bodyExpr)
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
-            Ast.Method(name, [ parameters ], bodyExpr)
+        static member Member(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Member(name, [ parameters ], bodyExpr)
 
-        static member Method(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string) =
-            Ast.Method(name, [ parameters ], bodyExpr)
+        static member Member(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string) =
+            Ast.Member(name, [ parameters ], bodyExpr)
 
-        static member Method(name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>) =
-            Ast.Method(name, [ parameters ], bodyExpr)
+        static member Member(name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.Member(name, [ parameters ], bodyExpr)
 
-        static member Method(name: string, parameters: string, bodyExpr: string) =
-            Ast.Method(name, [ parameters ], bodyExpr)
+        static member Member(name: string, parameters: string, bodyExpr: string) =
+            Ast.Member(name, [ parameters ], bodyExpr)

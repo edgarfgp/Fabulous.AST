@@ -39,7 +39,7 @@ let x = 3
 
     [<Fact>]
     let ``Produces a global namespace``() =
-        Oak() { GlobalNamespace() { Class("MyClass") { Property("this.Prop1", String("X")) } } }
+        Oak() { GlobalNamespace() { Class("MyClass") { Member("this.Prop1", String("X")) } } }
         |> produces
             """
 namespace global

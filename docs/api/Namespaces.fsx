@@ -18,8 +18,8 @@ See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fshar
 | Constructors                       | Description                                           |
 |------------------------------------| ----------------------------------------------------- |
 | Namespace(name: string)                  | Creates a NamespaceNode AST node with the specified name. |
-| ImplicitNamespace(name: string)          | Creates an ImplicitNamespaceNode AST node with the specified name. |
-| AnonymousModule()                        | Creates an AnonymousModuleNode AST node. |
+| Namespace(name: string)          | Creates an implicit NamespaceNode AST node with the specified name
+| AnonymousModule()                        | Creates an NamespaceNode AST node. |
 *)
 
 (**
@@ -27,10 +27,11 @@ See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fshar
 
 | Modifier                                   | Description                                                                                     |
 |---------------------------------------------|-------------------------------------------------------------------------------------------------|
-| toRecursive(this: WidgetBuilder<ModuleOrNamespaceNode>) | Adds a scalar indicating that the module is recursive.                                         |
-| toPrivate(this: WidgetBuilder<ModuleOrNamespaceNode>)   | Sets the accessibility of the module to private.                                               |
-| toPublic(this: WidgetBuilder<ModuleOrNamespaceNode>)    | Sets the accessibility of the module to public.                                                |
-| toInternal(this: WidgetBuilder<ModuleOrNamespaceNode>)  | Sets the accessibility of the module to internal.                                              |
+| toRecursive(this: WidgetBuilder<ModuleOrNamespaceNode>) | Adds a scalar indicating that the namespace is recursive.                                         |
+| toPrivate(this: WidgetBuilder<ModuleOrNamespaceNode>)   | Sets the accessibility of the namespace to private.                                               |
+| toPublic(this: WidgetBuilder<ModuleOrNamespaceNode>)    | Sets the accessibility of the namespace to public.                                                |
+| toInternal(this: WidgetBuilder<ModuleOrNamespaceNode>)  | Sets the accessibility of the namespace to internal.
+| toImplicit(this: WidgetBuilder<ModuleOrNamespaceNode>)  | Sets the namespace to be implicit.
 | xmlDocs(this: WidgetBuilder<ModuleOrNamespaceNode>, xmlDocs: string list) | Adds XML documentation comments to the module.                                                |
 | attributes(this: WidgetBuilder<ModuleOrNamespaceNode>, attributes: WidgetBuilder<AttributeNode> list) | Adds multiple attributes to the module.                                                        |
 | attribute(this: WidgetBuilder<ModuleOrNamespaceNode>, attribute: WidgetBuilder<AttributeNode>) | Adds a single attribute to the module.                                                         |

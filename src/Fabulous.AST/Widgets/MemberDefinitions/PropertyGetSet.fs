@@ -9,8 +9,8 @@ open Fantomas.FCS.Text
 module PropertyGetSetMember =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let Identifier = Attributes.defineScalar<string> "Identifier"
-    let GetterWidget = Attributes.defineWidget "GetterWidget"
-    let SetterWidget = Attributes.defineWidget "SetterWidget"
+    let FirstBindingWidget = Attributes.defineWidget "GetterWidget"
+    let LastBindingWidget = Attributes.defineWidget "SetterWidget"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
 
     let MultipleAttributes =
@@ -68,16 +68,21 @@ module PropertyGetSetMember =
             let memberName =
                 IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero)
 
-            let getterWidget =
-                Widgets.getNodeFromWidget<PropertyGetSetBindingNode> widget GetterWidget
+            let firstBinding =
+                Widgets.tryGetNodeFromWidget<PropertyGetSetBindingNode> widget FirstBindingWidget
 
-            let setterWidget =
-                Widgets.tryGetNodeFromWidget<PropertyGetSetBindingNode> widget SetterWidget
+            let firstBinding =
+                match firstBinding with
+                | ValueSome value -> value
+                | ValueNone -> failwith "Getter is required"
+
+            let lastBindingWidget =
+                Widgets.tryGetNodeFromWidget<PropertyGetSetBindingNode> widget LastBindingWidget
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let andKeyword =
-                if setterWidget.IsSome then
+                if lastBindingWidget.IsSome then
                     Some SingleTextNode.``and``
                 else
                     None
@@ -90,9 +95,9 @@ module PropertyGetSetMember =
                 accessControl,
                 memberName,
                 SingleTextNode.``with``,
-                getterWidget,
+                firstBinding,
                 andKeyword,
-                setterWidget,
+                lastBindingWidget,
                 Range.Zero
             ))
 
@@ -100,17 +105,17 @@ module PropertyGetSetMember =
 module PropertyGetSetMemberMemberBuilders =
     type Ast with
 
-        static member Property(identifier: string, getter: WidgetBuilder<PropertyGetSetBindingNode>) =
+        static member Member(identifier: string, first: WidgetBuilder<PropertyGetSetBindingNode>) =
             WidgetBuilder<MemberDefnPropertyGetSetNode>(
                 PropertyGetSetMember.WidgetKey,
                 AttributesBundle(
                     StackList.one(PropertyGetSetMember.Identifier.WithValue(identifier)),
-                    [| PropertyGetSetMember.GetterWidget.WithValue(getter.Compile()) |],
+                    [| PropertyGetSetMember.FirstBindingWidget.WithValue(first.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member Property
+        static member Member
             (
                 identifier: string,
                 getter: WidgetBuilder<PropertyGetSetBindingNode>,
@@ -120,8 +125,8 @@ module PropertyGetSetMemberMemberBuilders =
                 PropertyGetSetMember.WidgetKey,
                 AttributesBundle(
                     StackList.one(PropertyGetSetMember.Identifier.WithValue(identifier)),
-                    [| PropertyGetSetMember.GetterWidget.WithValue(getter.Compile())
-                       PropertyGetSetMember.SetterWidget.WithValue(setter.Compile()) |],
+                    [| PropertyGetSetMember.FirstBindingWidget.WithValue(getter.Compile())
+                       PropertyGetSetMember.LastBindingWidget.WithValue(setter.Compile()) |],
                     Array.empty
                 )
             )
@@ -165,3 +170,31 @@ type PropertyGetSetMemberModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
         this.AddScalar(PropertyGetSetMember.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline getter
+        (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, getter: WidgetBuilder<PropertyGetSetBindingNode>)
+        =
+        this.AddWidget(PropertyGetSetMember.FirstBindingWidget.WithValue(getter.Compile()))
+
+    [<Extension>]
+    static member inline getter(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, getter: WidgetBuilder<Expr>) =
+        PropertyGetSetMemberModifiers.getter(this, Ast.Getter(getter))
+
+    [<Extension>]
+    static member inline getter(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, getter: string) =
+        PropertyGetSetMemberModifiers.getter(this, Ast.Getter(getter))
+
+    [<Extension>]
+    static member inline setter
+        (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, setter: WidgetBuilder<PropertyGetSetBindingNode>)
+        =
+        this.AddWidget(PropertyGetSetMember.LastBindingWidget.WithValue(setter.Compile()))
+
+    [<Extension>]
+    static member inline setter(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, setter: WidgetBuilder<Expr>) =
+        PropertyGetSetMemberModifiers.setter(this, Ast.Setter(setter))
+
+    [<Extension>]
+    static member inline setter(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, setter: string) =
+        PropertyGetSetMemberModifiers.setter(this, Ast.Setter(setter))
