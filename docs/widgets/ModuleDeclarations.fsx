@@ -57,7 +57,7 @@ Oak() {
         ExceptionDefn("Error1", Field("string"))
 
         ExceptionDefn("Error2", Field("msg", String())).members() {
-            Property(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
+            Member(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
         }
 
         Module("Values") { Value("myValue", Int(12)) }

@@ -98,7 +98,7 @@ module AutoPropertyMember =
 [<AutoOpen>]
 module AutoPropertyMemberBuilders =
     type Ast with
-        static member AutoProperty(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
+        static member MemberVal(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
 
@@ -114,17 +114,15 @@ module AutoPropertyMemberBuilders =
                 )
             )
 
-        static member AutoProperty
-            (identifier: string, expr: WidgetBuilder<Constant>, ?hasGetter: bool, ?hasSetter: bool)
-            =
+        static member MemberVal(identifier: string, expr: WidgetBuilder<Constant>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.AutoProperty(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
+            Ast.MemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
 
-        static member AutoProperty(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
+        static member MemberVal(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.AutoProperty(identifier, Ast.Constant(expr), hasGetter, hasSetter)
+            Ast.MemberVal(identifier, Ast.Constant(expr), hasGetter, hasSetter)
 
 type AutoPropertyMemberModifiers =
     [<Extension>]

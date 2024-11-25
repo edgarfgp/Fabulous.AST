@@ -48,7 +48,7 @@ open type Fabulous.AST.Ast
 
 Oak() {
     Namespace("Widgets") {
-        TypeDefn("MyWidget1") { Property("this.WidgetName", String("Widget1")) }
+        TypeDefn("MyWidget1") { Member("this.WidgetName", String("Widget1")) }
 
         Module("WidgetsModule") { Value("widgetName", String("Widget2")) }
     }
@@ -97,7 +97,7 @@ Oak() {
     |> _.triviaAfter(Newline())
 
     Namespace("Widgets") {
-        TypeDefn("MyWidget1") { Property("this.WidgetName", String("Widget1")) }
+        TypeDefn("MyWidget1") { Member("this.WidgetName", String("Widget1")) }
 
         Module("WidgetsModule") { Value("widgetName", String("Widget2")) }
     }
@@ -106,18 +106,18 @@ Oak() {
 
     Namespace("Outer") {
         Class("MyClass") {
-            Method("this.X", ParenPat(ParameterPat(ConstantPat(Constant "x"))), InfixAppExpr("p", "+", Int(1)))
+            Member("this.X", ParenPat(ParameterPat(ConstantPat(Constant "x"))), InfixAppExpr("p", "+", Int(1)))
         }
         |> _.triviaBefore(SingleLine("Full name: Outer.MyClass"))
     }
     |> _.triviaBefore(SingleLine("Nested Namespaces"))
     |> _.triviaAfter(Newline())
 
-    Namespace("Outer.Inner") { Class("MyClass") { Property("this.Prop1", String("X")) } }
+    Namespace("Outer.Inner") { Class("MyClass") { Member("this.Prop1", String("X")) } }
     |> _.triviaBefore(SingleLine("Full name: Outer.Inner.MyClass"))
     |> _.triviaAfter(Newline())
 
-    GlobalNamespace() { Class("MyClass") { Property("this.Prop1", String("X")) } }
+    GlobalNamespace() { Class("MyClass") { Member("this.Prop1", String("X")) } }
     |> _.triviaBefore(SingleLine("Global Namespace"))
     |> _.triviaAfter(Newline())
 
@@ -139,16 +139,16 @@ Oak() {
         ExceptionDefn("DontSqueezeTheBananaException", Field("Banana"))
 
         Class("Banana", ImplicitConstructor(ParameterPat("orientation", LongIdent("Orientation")))) {
-            AutoProperty("IsPeeled", Bool(false), true, true)
-            AutoProperty("Orientation", "orientation", true, true)
+            MemberVal("IsPeeled", Bool(false), true, true)
+            MemberVal("Orientation", "orientation", true, true)
 
-            AutoProperty("Sides", ListExpr([ "PeelState"; "Unpeeled" ]), true, true)
+            MemberVal("Sides", ListExpr([ "PeelState"; "Unpeeled" ]), true, true)
                 .returnType(LongIdent "PeelState list")
 
-            Method("self.Peel", ParenPat(), "BananaHelpers.peel")
+            Member("self.Peel", ParenPat(), "BananaHelpers.peel")
                 .triviaAfter(LineCommentAfterSourceCode("Note the dependency on the BananaHelpers module."))
 
-            Method("self.SqueezeJuiceOut", ParenPat(), "raise (DontSqueezeTheBananaException self)")
+            Member("self.SqueezeJuiceOut", ParenPat(), "raise (DontSqueezeTheBananaException self)")
                 .triviaAfter(LineCommentAfterSourceCode("This member depends on the exception above."))
         }
 

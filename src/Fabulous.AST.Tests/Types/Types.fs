@@ -378,7 +378,7 @@ let t: array<array<string>> = false
                         PostfixList(TyparDecl("'T"), SupportsMember("'T", SigMember(Val("member", "Property1", Int()))))
                     )
 
-                Class("Class7") { AutoProperty("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
+                Class("Class7") { MemberVal("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
                 |> _.typeParams(
                     PostfixList(
                         TyparDecl("'T"),

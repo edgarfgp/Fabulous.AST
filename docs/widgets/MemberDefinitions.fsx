@@ -51,20 +51,20 @@ Oak() {
                 NewExpr(LongIdent "Person", ParenExpr(TupleExpr([ "name"; "middle" ])))
             )
 
-            Method(
+            Member(
                 "Create2",
                 ParenPat(TuplePat [ "name"; "middle" ]),
                 NewExpr(LongIdent "Person", ParenExpr(TupleExpr([ "name"; "middle" ])))
             )
                 .toStatic()
 
-            Property("this.Name", "name")
+            Member("this.Name", "name")
 
-            AutoProperty("Middle", "middle", true)
+            MemberVal("Middle", "middle", true)
 
-            AutoProperty("LastName", "lastName", true, true)
+            MemberVal("LastName", "lastName", true, true)
 
-            Property(
+            Member(
                 "this.Age",
                 Getter(ConstantExpr(Constant("_age"))),
                 Setter(ParenPat(NamedPat("value")), LongIdentSetExpr("_age", "value"))
@@ -74,7 +74,7 @@ Oak() {
 
             Default("this.GetValue", UnitPat(), ConstantExpr(String("Hello World")))
 
-            InterfaceMember("IDisposable") { Method("this.Dispose", UnitPat(), ConstantUnit()) }
+            InterfaceMember("IDisposable") { Member("this.Dispose", UnitPat(), ConstantUnit()) }
         }
     }
 }

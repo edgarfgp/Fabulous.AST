@@ -72,7 +72,109 @@ without the extension, with the first letter converted to uppercase. For example
                     SingleLine("Indent all program elements within modules that are declared with an equal sign.")
                 )
         }
+        |> _.triviaBefore(Newline())
+
+        Module("MyModule2") {
+            Value("module2Value", Int(121))
+                .triviaBefore(
+                    SingleLine("Indent all program elements within modules that are declared with an equal sign.")
+                )
+
+            Function(
+                "module2Function",
+                ParameterPat("x"),
+                InfixAppExpr("x", "*", ParenExpr(AppExpr("MyModule1.module1Function", "module2Value")))
+            )
+                .triviaBefore(
+                    SingleLine("Indent all program elements within modules that are declared with an equal sign.")
+                )
+        }
     }
+
+    Namespace("Arithmetic") {
+        Function("add", [ ParameterPat("x"); ParameterPat("y") ], InfixAppExpr("x", "+", "y"))
+        Function("sub", [ ParameterPat("x"); ParameterPat("y") ], InfixAppExpr("x", "-", "y"))
+
+    }
+    |> _.toImplicit()
+    |> _.triviaBefore(Newline())
+    |> _.triviaBefore(
+        BlockComment(
+            """
+
+Referencing Code in Modules
+When you reference functions, types, and values from another module, you must either use a qualified name or open the module.
+If you use a qualified name, you must specify the namespaces, the module, and the identifier for the program element you want.
+You separate each part of the qualified path with a dot (.), as follows.
+
+Namespace1.Namespace2.ModuleName.Identifier
+"""
+        )
+    )
+
+    AnonymousModule() {
+        Value("result1", AppExpr("Arithmetic.add", [ Int(5); Int(9) ]))
+            .triviaBefore(SingleLine("Fully qualify the function name."))
+
+        Open("Arithmetic").triviaBefore(SingleLine("Open the module."))
+
+        Value("result2", AppExpr("add", [ Int(5); Int(9) ]))
+    }
+    |> _.triviaBefore(Newline())
+
+    AnonymousModule() {
+        Module("Y") {
+            Value("x", Int(1))
+
+            Module("Z") { Value("z", Int(5)).triviaAfter(Newline()) }
+        }
+        |> _.triviaBefore(
+            BlockComment(
+                """
+Nested Modules
+Modules can be nested. Inner modules must be indented as far as outer module declarations to indicate that they are inner modules, not new modules.
+For example, compare the following two examples. Module Z is an inner module in the following code.
+"""
+            )
+        )
+    }
+    |> _.triviaBefore(Newline())
+
+    (*
+module Y =
+    let x = 1
+
+module Z =
+    let z = 5
+*)
+
+    AnonymousModule() {
+        Module("Y") { Value("x", Int(1)) }
+
+        Module("Z") { Value("z", Int(5)) }
+    }
+    |> _.triviaBefore(SingleLine("Nested Modules"))
+    |> _.triviaBefore(Newline())
+
+    (*
+module Y =
+        let x = 1
+
+    module Z =
+        let z = 5
+*)
+
+    AnonymousModule() {
+        Module("Y") {
+            Value("x", Int(1))
+
+            Module("Z") { Value("z", Int(5)) }
+        }
+
+    }
+    |> _.triviaBefore(SingleLine("Nested Modules"))
+    |> _.triviaBefore(Newline())
+
 }
 |> Gen.mkOak
 |> Gen.run

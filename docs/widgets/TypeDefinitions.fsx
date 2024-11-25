@@ -35,7 +35,7 @@ Oak() {
             UnionCase("Prism", [ Field("width", Float()); Field("float"); Field("height", Float()) ])
         })
             .members() {
-            Method(
+            Member(
                 "this.Area",
                 UnitPat(),
                 MatchExpr(
@@ -102,7 +102,7 @@ Oak() {
         (Record("Person") { Field("Name", LongIdent("'other")) })
             .typeParams(PostfixList([ "'other" ]))
             .members() {
-            Property(ConstantPat(Constant("this.GetName")), ConstantExpr(String "name"))
+            Member(ConstantPat(Constant("this.GetName")), ConstantExpr(String "name"))
         }
 
         Class(
@@ -117,10 +117,10 @@ Oak() {
                 )
             )
         ) {
-            Property(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+            Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
         }
 
-        Class("Person3") { Property(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+        Class("Person3") { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
         |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
         Union("Variant") {
@@ -140,7 +140,7 @@ Oak() {
             )
         }
 
-        Augmentation("Variant") { Method("x.Print", UnitPat(), AppExpr("Variant.print", "x")) }
+        Augmentation("Variant") { Member("x.Print", UnitPat(), AppExpr("Variant.print", "x")) }
 
         TypeDefn("IFoo") {
             AbstractMember("Area", Float(), true)

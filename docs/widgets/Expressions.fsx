@@ -112,7 +112,7 @@ Oak() {
         AnonStructRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
 
         ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit())) {
-            Method("x.ToString()", [], ConstantExpr(String("F#")))
+            Member("x.ToString()", [], ConstantExpr(String("F#")))
         }
 
         AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String("a")))
