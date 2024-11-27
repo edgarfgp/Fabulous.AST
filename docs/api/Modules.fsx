@@ -140,14 +140,6 @@ For example, compare the following two examples. Module Z is an inner module in 
     }
     |> _.triviaBefore(Newline())
 
-    (*
-module Y =
-    let x = 1
-
-module Z =
-    let z = 5
-*)
-
     AnonymousModule() {
         Module("Y") { Value("x", Int(1)) }
 
@@ -155,14 +147,6 @@ module Z =
     }
     |> _.triviaBefore(SingleLine("Nested Modules"))
     |> _.triviaBefore(Newline())
-
-    (*
-module Y =
-        let x = 1
-
-    module Z =
-        let z = 5
-*)
 
     AnonymousModule() {
         Module("Y") {
@@ -173,6 +157,131 @@ module Y =
 
     }
     |> _.triviaBefore(SingleLine("Nested Modules"))
+    |> _.triviaBefore(Newline())
+
+    AnonymousModule() { Module("Y") { Module("Z") { Value("z", Int(5)) } } }
+    |> _.triviaBefore(SingleLine("Nested Modules"))
+    |> _.triviaBefore(Newline())
+
+    Namespace("TopLevel") {
+        Value("topLevelX", Int(5))
+
+        Module("Inner1") { Value("inner1X", Int(1)) }
+
+        Module("Inner2") { Value("inner2X", Int(5)) }
+    }
+    |> _.toImplicit()
+    |> _.triviaBefore(
+        BlockComment(
+            """
+The top-level module declaration can be omitted if the file is named
+TopLevel.fs or topLevel.fs, and the file is the only file in an
+application.
+"""
+        )
+    )
+    |> _.triviaBefore(Newline())
+
+    AnonymousModule() {
+        Module("RecursiveModule") {
+            Union("Orientation") {
+                UnionCase("Up")
+                UnionCase("Down")
+            }
+
+            Union("PeelState") {
+                UnionCase("Peeled")
+                UnionCase("Unpeeled")
+            }
+
+            ExceptionDefn("DontSqueezeTheBananaException", Field("Banana"))
+
+            Class("Banana", ImplicitConstructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
+                MemberVal("IsPeeled", Bool(false), true, true)
+                MemberVal("Orientation", "orientation", true, true)
+
+                MemberVal("Sides", ListExpr([ "PeelState"; "Unpeeled" ]), true, true)
+                    .returnType(LongIdent "PeelState list")
+
+                Member("self.Peel", ParenPat(), "BananaHelpers.peel")
+                    .triviaAfter(LineCommentAfterSourceCode("Note the dependency on the BananaHelpers module."))
+
+                Member("self.SqueezeJuiceOut", ParenPat(), "raise (DontSqueezeTheBananaException self)")
+                    .triviaAfter(LineCommentAfterSourceCode("This member depends on the exception above."))
+            }
+
+            Module("BananaHelpers") {
+                Function(
+                    "peel",
+                    [ ParenPat(ParameterPat("b", "Banana")) ],
+                    CompExprBodyExpr(
+                        [ Function(
+                              "flip",
+                              [ ParenPat(ParameterPat("banana", "Banana")) ],
+                              MatchExpr(
+                                  "banana.Orientation",
+                                  [ MatchClauseExpr(
+                                        "Up",
+                                        CompExprBodyExpr(
+                                            [ LongIdentSetExpr("banana.Orientation", "Down"); ConstantExpr("banana") ]
+                                        )
+                                    )
+
+                                    MatchClauseExpr("Down", "banana") ]
+                              )
+                          )
+                          |> LetOrUseExpr
+
+                          Function(
+                              "peelSides",
+                              [ ParenPat(ParameterPat("banana", "Banana")) ],
+                              InfixAppExpr(
+                                  "banana.Sides",
+                                  "|>",
+                                  MatchLambdaExpr(
+                                      [ MatchClauseExpr("Unpeeled", "Peeled"); MatchClauseExpr("Peeled", "Peeled") ]
+                                  )
+                              )
+                          )
+                          |> LetOrUseExpr
+
+                          MatchExpr(
+                              "b.Orientation",
+                              [ MatchClauseExpr("Up", SameInfixAppsExpr("b", [ ("|>", "flip"); ("|>", "peelSides") ]))
+
+                                MatchClauseExpr("Down", InfixAppExpr("b", "|>", "peelSides")) ]
+                          )
+                          |> OtherExpr ]
+                    )
+                )
+            }
+            |> _.triviaBefore(Newline())
+            |> _.triviaBefore(SingleLine("Mutual References"))
+            |> _.triviaAfter(Newline())
+            |> _.triviaAfter(
+                BlockComment(
+                    """
+Note that the exception DontSqueezeTheBananaException and the class Banana both refer to each other.
+Additionally, the module BananaHelpers and the class Banana also refer to each other.
+This would not be possible to express in F# if you removed the rec keyword from the RecursiveModule module.
+"""
+                )
+            )
+
+        }
+        |> _.toRecursive()
+    }
+    |> _.triviaBefore(
+        BlockComment(
+            """
+Recursive modules
+F# 4.1 introduces the notion of modules which allow for all contained code to be mutually recursive.
+This is done via module rec.
+Use of module rec can alleviate some pains in not being able to write mutually referential code between types and modules.
+The following is an example of this:
+"""
+        )
+    )
     |> _.triviaBefore(Newline())
 
 }

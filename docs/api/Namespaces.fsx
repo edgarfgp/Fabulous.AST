@@ -138,7 +138,7 @@ Oak() {
 
         ExceptionDefn("DontSqueezeTheBananaException", Field("Banana"))
 
-        Class("Banana", ImplicitConstructor(ParameterPat("orientation", LongIdent("Orientation")))) {
+        Class("Banana", ImplicitConstructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
             MemberVal("IsPeeled", Bool(false), true, true)
             MemberVal("Orientation", "orientation", true, true)
 
@@ -161,7 +161,7 @@ Oak() {
                           "flip",
                           [ ParenPat(ParameterPat("banana", "Banana")) ],
                           MatchExpr(
-                              "b.Orientation",
+                              "banana.Orientation",
                               [ MatchClauseExpr(
                                     "Up",
                                     CompExprBodyExpr(
@@ -197,6 +197,18 @@ Oak() {
                 )
             )
         }
+        |> _.triviaBefore(Newline())
+        |> _.triviaBefore(SingleLine("Mutual References"))
+        |> _.triviaAfter(Newline())
+        |> _.triviaAfter(
+            BlockComment(
+                """
+Note that the exception DontSqueezeTheBananaException and the class Banana both refer to each other.
+Additionally, the module BananaHelpers and the class Banana also refer to each other.
+This wouldn't be possible to express in F# if you removed the rec keyword from the MutualReferences namespace.
+"""
+            )
+        )
 
     }
     |> _.toRecursive()
