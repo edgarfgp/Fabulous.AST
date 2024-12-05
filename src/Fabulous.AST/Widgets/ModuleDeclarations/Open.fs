@@ -1,77 +1,58 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Open =
-    let IdentList = Attributes.defineScalar<string list> "IdentList"
-
-    let WidgetModuleOrNamespaceKey =
-        Widgets.register "Open" (fun widget ->
-            let identList =
-                Widgets.getScalarValue widget IdentList
-                |> List.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
-
-            Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(identList, Range.Zero), Range.Zero)))
-
-    let Target = Attributes.defineWidget "Target"
-
-    let WidgetTargetKey =
-        Widgets.register "Target" (fun widget ->
-            let target = Widgets.getNodeFromWidget widget Target
-            Open.Target(OpenTargetNode(target, Range.Zero)))
-
-    let OpenList = Attributes.defineScalar<Open list> "OpenListNode"
+    let OpenList = Attributes.defineScalar<Open> "OpenListNode"
 
     let WidgetKey =
         Widgets.register "OpenList" (fun widget ->
             let openList = Widgets.getScalarValue widget OpenList
-            OpenListNode(openList))
+            OpenListNode([ openList ]))
 
 [<AutoOpen>]
 module OpenBuilders =
     type Ast with
-        static member private OpenNode(name: string list) =
-            WidgetBuilder<Open>(
-                Open.WidgetModuleOrNamespaceKey,
-                AttributesBundle(StackList.one(Open.IdentList.WithValue(name)), Array.empty, Array.empty)
-            )
-
-        static member private OpenTypeNode(name: WidgetBuilder<Type>) =
-            WidgetBuilder<Open>(
-                Open.WidgetTargetKey,
-                AttributesBundle(StackList.empty(), [| Open.Target.WithValue(name.Compile()) |], Array.empty)
-            )
-
-        static member private OpenListNode(values: WidgetBuilder<Open> list) =
-            let values = values |> List.map(Gen.mkOak)
-
-            WidgetBuilder<OpenListNode>(
-                Open.WidgetKey,
-                AttributesBundle(StackList.one(Open.OpenList.WithValue(values)), Array.empty, Array.empty)
-            )
-
         static member Open(values: string list) =
-            Ast.OpenListNode([ Ast.OpenNode(values) ])
+            let values =
+                values
+                |> List.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
+                |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
+
+            let value =
+                Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
+
+            WidgetBuilder<OpenListNode>(Open.WidgetKey, Open.OpenList.WithValue(value))
 
         static member Open(value: string) = Ast.Open([ value ])
 
-        static member OpenType(values: WidgetBuilder<Type> list) =
-            let values = values |> List.map(Ast.OpenTypeNode)
-            Ast.OpenListNode(values)
+        static member OpenGlobal(values: string list) =
+            let values =
+                values
+                |> List.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
+                |> fun gbl -> IdentifierOrDot.Ident(SingleTextNode.``global``) :: gbl
+                |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
+
+            let value =
+                Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
+
+            WidgetBuilder<OpenListNode>(Open.WidgetKey, Open.OpenList.WithValue(value))
+
+        static member OpenGlobal(value: string) = Ast.OpenGlobal([ value ])
 
         static member OpenType(values: string list) =
-            let values = values |> List.map(Ast.LongIdent)
-            Ast.OpenType(values)
+            WidgetBuilder<OpenListNode>(
+                Open.WidgetKey,
+                Open.OpenList.WithValue(Open.Target(OpenTargetNode(Gen.mkOak(Ast.LongIdent(values)), Range.Zero)))
 
-        static member OpenType(value: WidgetBuilder<Type>) =
-            Ast.OpenListNode([ Ast.OpenTypeNode(value) ])
+            )
 
-        static member OpenType(value: string) = Ast.OpenType(Ast.LongIdent(value))
+        static member OpenType(value: string) = Ast.OpenType([ value ])
 
 type OpenYieldExtensions =
     [<Extension>]

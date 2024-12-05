@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -56,11 +56,7 @@ module InheritConstructorBuilders =
         static member InheritConstructorTypeOnly(value: WidgetBuilder<Type>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetTypedOnlyKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| InheritConstructor.TypeValue.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                InheritConstructor.TypeValue.WithValue(value.Compile())
             )
 
         static member InheritConstructorTypeOnly(value: string) =
@@ -69,11 +65,7 @@ module InheritConstructorBuilders =
         static member InheritConstructorUnit(value: WidgetBuilder<Type>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetUnitKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| InheritConstructor.TypeValue.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                InheritConstructor.TypeValue.WithValue(value.Compile())
             )
 
         static member InheritConstructorUnit(value: string) =

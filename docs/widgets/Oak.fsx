@@ -1,13 +1,15 @@
 (**
 ---
 title: Oak
-category: api
+category: widgets
 index: 1
 ---
 *)
 
 (**
 # Oak
+It is the entry point for out DSL, it can contain one or more `Namespace`, `Module` and `AnonymousModule` nodes. `Module` must be inside a `AnonymousModule` or `Namespace` nodes.
+
 For details on how the AST node works, please refer to the [Fantomas Core documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-oak.html).
 
 *)
@@ -32,13 +34,26 @@ For details on how the AST node works, please refer to the [Fantomas Core docume
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-Oak() { () }
-|> _.hashDirective(NoWarn(String "0044"))
+Oak() {
+    AnonymousModule() { NoWarn(String "0044") }
+
+    Namespace("Widgets") { Module("WidgetsModule") { Value("x", String("12")) } }
+
+    Namespace("Widgets.WidgetModule") {
+        Function("widgetFunction", [ ParameterPat("x"); ParameterPat("y") ], String("12"))
+    }
+    |> _.toImplicit()
+    |> _.triviaBefore(Newline())
+
+    AnonymousModule() { Module("WidgetsModule") { Value("y", String("12")) } }
+    |> _.triviaBefore(Newline())
+
+    AnonymousModule() { Value("y", String("12")) } |> _.triviaBefore(Newline())
+}
 |> Gen.mkOak
 |> Gen.run
 |> printfn "%s"

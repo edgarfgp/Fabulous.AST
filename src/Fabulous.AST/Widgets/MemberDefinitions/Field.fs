@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -64,10 +64,7 @@ module Field =
 module FieldBuilders =
     type Ast with
         static member Field(fieldType: WidgetBuilder<Type>) =
-            WidgetBuilder<FieldNode>(
-                Field.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Field.FieldType.WithValue(fieldType.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<FieldNode>(Field.WidgetKey, Field.FieldType.WithValue(fieldType.Compile()))
 
         static member Field(fieldType: string) = Ast.Field(Ast.LongIdent(fieldType))
 

@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module Expr =
@@ -21,15 +21,11 @@ module Expr =
 module ExprBuilders =
     type Ast with
         static member ConstantExpr(value: WidgetBuilder<Constant>) =
-            WidgetBuilder<Expr>(
-                Expr.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Expr.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(Expr.WidgetKey, Expr.Value.WithValue(value.Compile()))
 
         static member ConstantExpr(value: string) = Ast.ConstantExpr(Ast.Constant(value))
 
-        static member NullExpr() =
-            WidgetBuilder<Expr>(Expr.WidgetNullKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
+        static member NullExpr() = WidgetBuilder<Expr>(Expr.WidgetNullKey)
 
 type ExprYieldExtensions =
     [<Extension>]

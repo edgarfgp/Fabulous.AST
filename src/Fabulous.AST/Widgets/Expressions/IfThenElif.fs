@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -70,14 +70,7 @@ module IfThenElifBuilders =
             Ast.IfThenElifExpr(branches, Ast.Constant(elseExpr))
 
         static member IfThenElifExpr(branches: WidgetBuilder<Expr> list) =
-            WidgetBuilder<Expr>(
-                IfThenElif.WidgetKey,
-                AttributesBundle(
-                    StackList.one(IfThenElif.Branches.WithValue(branches |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Expr>(IfThenElif.WidgetKey, IfThenElif.Branches.WithValue(branches |> List.map Gen.mkOak))
 
         static member IfThenElifExpr(branches: WidgetBuilder<Constant> list) =
             Ast.IfThenElifExpr(branches |> List.map Ast.ConstantExpr)

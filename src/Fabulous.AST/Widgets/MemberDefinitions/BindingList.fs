@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -20,19 +20,11 @@ module LetBindingMemberBuilders =
         static member LetBindings(bindings: WidgetBuilder<BindingNode> list) =
             WidgetBuilder<BindingListNode>(
                 BindingList.WidgetKey,
-                AttributesBundle(
-                    StackList.one(BindingList.Bindings.WithValue(bindings |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
+                BindingList.Bindings.WithValue(bindings |> List.map Gen.mkOak)
             )
 
         static member LetBinding(binding: WidgetBuilder<BindingNode>) =
             WidgetBuilder<BindingListNode>(
                 BindingList.WidgetKey,
-                AttributesBundle(
-                    StackList.one(BindingList.Bindings.WithValue([ binding ] |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
+                BindingList.Bindings.WithValue([ binding ] |> List.map Gen.mkOak)
             )

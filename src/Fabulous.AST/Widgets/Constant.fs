@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -20,11 +20,7 @@ module ConstantBuilders =
         static member private BaseConstant(value: string) =
             WidgetBuilder<Constant>(
                 Constant.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Constant.Value.WithValue(Constant.FromText(SingleTextNode.Create(value)))),
-                    Array.empty,
-                    Array.empty
-                )
+                Constant.Value.WithValue(Constant.FromText(SingleTextNode.Create(value)))
             )
 
         static member Bool(value: bool) = Ast.BaseConstant($"{value}".ToLower())
@@ -77,10 +73,7 @@ module ConstantBuilders =
                 | Constant.Unit _ as unit -> unit
                 | Constant.Measure _ as measure -> measure
 
-            WidgetBuilder<Constant>(
-                Constant.WidgetKey,
-                AttributesBundle(StackList.one(Constant.Value.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Constant>(Constant.WidgetKey, Constant.Value.WithValue(value))
 
         static member String(value: WidgetBuilder<Constant>) =
             let value =
@@ -90,10 +83,7 @@ module ConstantBuilders =
                 | Constant.Unit _ as unit -> unit
                 | Constant.Measure _ as measure -> measure
 
-            WidgetBuilder<Constant>(
-                Constant.WidgetKey,
-                AttributesBundle(StackList.one(Constant.Value.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Constant>(Constant.WidgetKey, Constant.Value.WithValue(value))
 
         static member RawString(value: string) =
             Ast.BaseConstant($"\"\"\"{value}\"\"\"")
@@ -105,10 +95,7 @@ module ConstantBuilders =
                 | Constant.Unit _ as unit -> unit
                 | Constant.Measure _ as measure -> measure
 
-            WidgetBuilder<Constant>(
-                Constant.WidgetKey,
-                AttributesBundle(StackList.one(Constant.Value.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Constant>(Constant.WidgetKey, Constant.Value.WithValue(value))
 
 module ConstantUnit =
     let WidgetKey =
@@ -119,10 +106,7 @@ module ConstantUnit =
 module ConstantUnitBuilders =
     type Ast with
         static member ConstantUnit() =
-            WidgetBuilder<Constant>(
-                ConstantUnit.WidgetKey,
-                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Constant>(ConstantUnit.WidgetKey)
 
 module ConstantMeasure =
     let Value = Attributes.defineWidget "Value"

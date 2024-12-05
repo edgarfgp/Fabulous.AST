@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -37,11 +37,7 @@ module InterfaceMemberBuilders =
             CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| InterfaceMember.TypeValue.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                InterfaceMember.TypeValue.WithValue(value.Compile())
             )
 
         static member InterfaceMember(name: string) =

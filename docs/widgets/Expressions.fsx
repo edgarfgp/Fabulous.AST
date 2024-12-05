@@ -2,7 +2,7 @@
 ---
 title: Expressions
 category: widgets
-index: 2
+index: 7
 ---
 *)
 
@@ -14,7 +14,6 @@ index: 2
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
 open Fantomas.Core

@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -36,10 +36,7 @@ module NamedBuilders =
     type Ast with
 
         static member NamedPat(value: string) =
-            WidgetBuilder<Pattern>(
-                Named.WidgetKey,
-                AttributesBundle(StackList.one(Named.Value.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Pattern>(Named.WidgetKey, Named.Value.WithValue(value))
 
 type NamedPatModifiers =
     [<Extension>]

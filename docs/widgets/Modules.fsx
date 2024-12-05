@@ -1,7 +1,7 @@
 (**
 ---
 title: Modules
-category: api
+category: widgets
 index: 3
 ---
 *)
@@ -33,7 +33,6 @@ See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fshar
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
 open type Fabulous.AST.Ast

@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -91,7 +91,7 @@ module AugmentBuilders =
             CollectionBuilder<TypeDefnAugmentationNode, MemberDefn>(
                 Augmentation.WidgetKey,
                 Augmentation.Members,
-                AttributesBundle(StackList.one(Augmentation.Name.WithValue(name)), Array.empty, Array.empty)
+                Augmentation.Name.WithValue(name)
             )
 
 type AugmentationModifiers =

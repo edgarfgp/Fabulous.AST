@@ -11,6 +11,8 @@ module Oak =
     [<Fact>]
     let ``Produces multiple ModuleOrNamespaceNode widgets``() =
         Oak() {
+            AnonymousModule() { NoWarn(String "0044") }
+
             Namespace("MyNamespace") { Record("Person") { Field("name", "string") } }
 
             Namespace("MyModule") { Record("Person") { Field("name", "string") } }
@@ -22,7 +24,7 @@ module Oak =
         }
         |> produces
             """
-
+#nowarn "0044"
 namespace MyNamespace
 
 type Person = { name: string }
@@ -35,13 +37,4 @@ namespace MyNamespace
 module MyModule =
     type Person = { name: string }
 
-"""
-
-    [<Fact>]
-    let ``hashDirective``() =
-        Oak() { () }
-        |> _.hashDirective(NoWarn(String "0044"))
-        |> produces
-            """
-#nowarn "0044"
 """

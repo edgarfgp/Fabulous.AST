@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -21,7 +21,4 @@ module QuoteExprBuilders =
     type Ast with
 
         static member QuoteExprPat(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<Pattern>(
-                QuoteExpr.WidgetKey,
-                AttributesBundle(StackList.empty(), [| QuoteExpr.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Pattern>(QuoteExpr.WidgetKey, QuoteExpr.Value.WithValue(value.Compile()))

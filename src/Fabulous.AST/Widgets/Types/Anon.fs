@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 
@@ -20,7 +20,4 @@ module TypeAnon =
 module TypeAnonBuilders =
     type Ast with
         static member Anon(value: string) =
-            WidgetBuilder<Type>(
-                TypeAnon.WidgetKey,
-                AttributesBundle(StackList.one(TypeAnon.Identifier.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Type>(TypeAnon.WidgetKey, TypeAnon.Identifier.WithValue(value))

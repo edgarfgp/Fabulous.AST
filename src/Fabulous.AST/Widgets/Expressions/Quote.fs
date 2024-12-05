@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -18,10 +18,7 @@ module QuotedBuilders =
     type Ast with
 
         static member QuotedExpr(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                Quoted.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Quoted.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(Quoted.WidgetKey, Quoted.Value.WithValue(value.Compile()))
 
         static member QuotedExpr(value: WidgetBuilder<Constant>) = Ast.QuotedExpr(Ast.ConstantExpr(value))
 

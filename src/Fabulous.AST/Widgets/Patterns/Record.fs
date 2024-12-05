@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -21,11 +21,4 @@ module RecordPatBuilders =
     type Ast with
 
         static member RecordPat(fields: WidgetBuilder<PatRecordField> list) =
-            WidgetBuilder<Pattern>(
-                RecordPat.WidgetKey,
-                AttributesBundle(
-                    StackList.one(RecordPat.Fields.WithValue(fields |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Pattern>(RecordPat.WidgetKey, RecordPat.Fields.WithValue(fields |> List.map Gen.mkOak))

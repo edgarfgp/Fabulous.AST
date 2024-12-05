@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module Ident =
@@ -17,7 +17,4 @@ module IdentBuilders =
     type Ast with
 
         static member IdentExpr(identifier: string) =
-            WidgetBuilder<Expr>(
-                Ident.WidgetKey,
-                AttributesBundle(StackList.one(Ident.Identifier.WithValue(identifier)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Expr>(Ident.WidgetKey, Ident.Identifier.WithValue(identifier))

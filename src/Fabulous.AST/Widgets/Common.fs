@@ -1,6 +1,6 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
+open Fabulous.AST
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Microsoft.FSharp.Core.CompilerServices

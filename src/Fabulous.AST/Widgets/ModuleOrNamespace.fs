@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -127,11 +127,7 @@ module NamespaceBuilders =
             CollectionBuilder<ModuleOrNamespaceNode, ModuleDecl>(
                 ModuleOrNamespace.WidgetKey,
                 ModuleOrNamespace.Decls,
-                AttributesBundle(
-                    StackList.one(ModuleOrNamespace.IsAnonymousModule.WithValue(true)),
-                    Array.empty,
-                    Array.empty
-                )
+                ModuleOrNamespace.IsAnonymousModule.WithValue(true)
             )
 
 type NamespaceModifiers =

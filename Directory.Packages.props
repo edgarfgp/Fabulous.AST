@@ -3,7 +3,6 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Fabulous.Builders" Version="1.2.0" />
     <PackageVersion Include="Fantomas.Core" Version="[6.3.16]" />
     <PackageVersion Include="FSharp.Core" Version="8.0.100" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />

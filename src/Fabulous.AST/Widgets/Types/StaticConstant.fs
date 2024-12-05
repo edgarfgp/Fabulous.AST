@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module TypeStaticConstant =
@@ -16,13 +16,6 @@ module TypeStaticConstant =
 module TypeStaticConstantBuilders =
     type Ast with
         static member StaticConstant(value: WidgetBuilder<Constant>) =
-            WidgetBuilder<Type>(
-                TypeStaticConstant.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| TypeStaticConstant.TypeWidget.WithValue(value.Compile()) |],
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Type>(TypeStaticConstant.WidgetKey, TypeStaticConstant.TypeWidget.WithValue(value.Compile()))
 
         static member StaticConstant(value: string) = Ast.StaticConstant(Ast.Constant value)

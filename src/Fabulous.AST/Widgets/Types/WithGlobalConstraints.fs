@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -22,11 +22,7 @@ module WithGlobalConstraintsBuilders =
 
             WidgetBuilder<Type>(
                 WithGlobalConstraints.WidgetKey,
-                AttributesBundle(
-                    StackList.one(WithGlobalConstraints.GlobalConstraints.WithValue(Gen.mkOak tp, constraints)),
-                    Array.empty,
-                    Array.empty
-                )
+                WithGlobalConstraints.GlobalConstraints.WithValue(Gen.mkOak tp, constraints)
             )
 
         static member WithGlobalConstraints(tp: string, constraints: WidgetBuilder<TypeConstraint> list) =

@@ -6,8 +6,6 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 open Xunit
 
-open Fabulous.AST
-
 open type Ast
 
 module Value =

@@ -23,39 +23,36 @@ open Fantomas.FCS.Text
 open Fantomas.Core
 open Fantomas.Core.SyntaxOak
 
-let implementationSyntaxTree =
-    Oak(
-        [],
-        [ ModuleOrNamespaceNode(
-              None,
-              [ BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    [],
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
-                )
-                |> ModuleDecl.TopLevelBinding ],
-              Range.Zero
-          ) ],
-        Range.Zero
-    )
-
-CodeFormatter.FormatOakAsync(implementationSyntaxTree)
+Oak(
+    [],
+    [ ModuleOrNamespaceNode(
+          None,
+          [ BindingNode(
+                None,
+                None,
+                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                false,
+                None,
+                None,
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                None,
+                [],
+                None,
+                SingleTextNode("=", Range.Zero),
+                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                Range.Zero
+            )
+            |> ModuleDecl.TopLevelBinding ],
+          Range.Zero
+      ) ],
+    Range.Zero
+)
+|> CodeFormatter.FormatOakAsync
 |> Async.RunSynchronously
 |> printfn "%s"
 
 // produces the following code:
 (*** include-output ***)
-let x = 12
 (**
 
 ## Using Fabulous.AST
@@ -64,18 +61,14 @@ Now let's take a look at same example using Fabulous.AST:
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
-#r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-Oak() { AnonymousModule() { Value("y", "12") } }
-|> Gen.mkOak
-|> Gen.run
-|> printfn "%s"
+Oak() { Value("y", "12") } |> Gen.mkOak |> Gen.run |> printfn "%s"
 // produces the following code:
 (*** include-output ***)
-let y = 12
+
 (**
 
 ### Escape Hatch
@@ -85,7 +78,7 @@ For example, the following code: *)
 
 open type Fabulous.AST.Ast
 
-let topLevelBinding: ModuleDecl =
+let topLevelBinding =
     BindingNode(
         xmlDoc = None,
         attributes = None,
@@ -101,17 +94,8 @@ let topLevelBinding: ModuleDecl =
         expr = Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
         range = Range.Zero
     )
-    |> ModuleDecl.TopLevelBinding
 
-let sourceWithEscapeHatch =
-    Oak() {
-        AnonymousModule() {
-            Value("a", "11")
-            EscapeHatch(topLevelBinding)
-        }
-    }
-
-Gen.mkOak sourceWithEscapeHatch |> Gen.run |> printfn "%s"
+Oak() { EscapeHatch(topLevelBinding) } |> Gen.mkOak |> Gen.run |> printfn "%s"
 
 // produces the following code:
 (*** include-output ***)

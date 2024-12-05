@@ -2,7 +2,7 @@
 ---
 title: ModuleDeclarations
 category: widgets
-index: 4
+index: 5
 ---
 *)
 
@@ -14,7 +14,6 @@ index: 4
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
 open Fantomas.Core

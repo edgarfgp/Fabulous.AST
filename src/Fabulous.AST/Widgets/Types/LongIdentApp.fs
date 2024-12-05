@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -24,14 +24,7 @@ module LongIdentApp =
 module LongIdentAppBuilders =
     type Ast with
         static member LongIdentApp(appType: WidgetBuilder<Type>, longIdent: string) =
-            WidgetBuilder<Type>(
-                LongIdentApp.WidgetKey,
-                AttributesBundle(
-                    StackList.one(LongIdentApp.AppNode.WithValue(Gen.mkOak appType, longIdent)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Type>(LongIdentApp.WidgetKey, LongIdentApp.AppNode.WithValue(Gen.mkOak appType, longIdent))
 
         static member LongIdentApp(appType: string, longIdent: string) =
             Ast.LongIdentApp(Ast.LongIdent(appType), longIdent)

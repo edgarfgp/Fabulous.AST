@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST.StackAllocatedCollections.StackList
+open Fabulous.AST
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -49,7 +49,7 @@ module RationalConstNodeBuilders =
         static member Integer(value: string) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetIntegerKey,
-                AttributesBundle(StackList.one(RationalConstNode.Value.WithValue(value)), Array.empty, Array.empty)
+                RationalConstNode.Value.WithValue(value)
             )
 
         static member Integer(value: int) = Ast.Integer($"{value}")
@@ -57,11 +57,7 @@ module RationalConstNodeBuilders =
         static member Negate(value: WidgetBuilder<RationalConstNode>) =
             WidgetBuilder<RationalConstNode>(
                 RationalConstNode.WidgetNegateKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| RationalConstNode.Node.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                RationalConstNode.Node.WithValue(value.Compile())
             )
 
         static member Rational(numerator: string, divOp: string, denominator: string) =
@@ -152,10 +148,7 @@ module MeasureBuilders =
     type Ast with
 
         static member MeasureSingle(value: string) =
-            WidgetBuilder<Measure>(
-                Measure.WidgetMeasureSingleKey,
-                AttributesBundle(StackList.one(Measure.Value.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Measure>(Measure.WidgetMeasureSingleKey, Measure.Value.WithValue(value))
 
         static member MeasureOperator(operator: string, lhs: WidgetBuilder<Measure>, rhs: WidgetBuilder<Measure>) =
             WidgetBuilder<Measure>(
@@ -222,41 +215,25 @@ module MeasureBuilders =
             )
 
         static member MeasureMultiple(content: string list) =
-            WidgetBuilder<Measure>(
-                Measure.WidgetMeasureMultiplyKey,
-                AttributesBundle(StackList.one(Measure.Content.WithValue(content)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Measure>(Measure.WidgetMeasureMultiplyKey, Measure.Content.WithValue(content))
 
         static member MeasureSeq(value: WidgetBuilder<Measure> list) =
             let measures = value |> List.map Gen.mkOak
 
-            WidgetBuilder<Measure>(
-                Measure.WidgetSequenceKey,
-                AttributesBundle(StackList.one(Measure.Measures.WithValue(measures)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Measure>(Measure.WidgetSequenceKey, Measure.Measures.WithValue(measures))
 
         static member MeasureSeq(values: string list) =
             let measures =
                 [ for value in values do
                       Gen.mkOak(Ast.MeasureSingle(value)) ]
 
-            WidgetBuilder<Measure>(
-                Measure.WidgetSequenceKey,
-                AttributesBundle(StackList.one(Measure.Measures.WithValue(measures)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Measure>(Measure.WidgetSequenceKey, Measure.Measures.WithValue(measures))
 
         static member MeasureParen(value: WidgetBuilder<Measure>) =
-            WidgetBuilder<Measure>(
-                Measure.WidgetParenthesisKey,
-                AttributesBundle(StackList.empty(), [| Measure.Node.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Measure>(Measure.WidgetParenthesisKey, Measure.Node.WithValue(value.Compile()))
 
         static member MeasureParen(value: string) =
             WidgetBuilder<Measure>(
                 Measure.WidgetParenthesisKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| Measure.Node.WithValue(Ast.MeasureSingle(value).Compile()) |],
-                    Array.empty
-                )
+                Measure.Node.WithValue(Ast.MeasureSingle(value).Compile())
             )

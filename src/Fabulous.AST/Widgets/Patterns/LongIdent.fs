@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -51,11 +51,7 @@ module LongIdentPatternBuilders =
         static member LongIdentPat(pairs: WidgetBuilder<Pattern> list) =
             WidgetBuilder<Pattern>(
                 LongIdentPattern.WidgetKey,
-                AttributesBundle(
-                    StackList.one(LongIdentPattern.Pairs.WithValue(pairs |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
+                LongIdentPattern.Pairs.WithValue(pairs |> List.map Gen.mkOak)
             )
 
         static member LongIdentPat(pair: WidgetBuilder<Pattern>) = Ast.LongIdentPat([ pair ])

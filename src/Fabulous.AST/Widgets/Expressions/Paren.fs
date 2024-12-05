@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -21,10 +21,7 @@ module ParenBuilders =
     type Ast with
 
         static member ParenExpr(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                ParenExpr.WidgetKey,
-                AttributesBundle(StackList.empty(), [| ParenExpr.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(ParenExpr.WidgetKey, ParenExpr.Value.WithValue(value.Compile()))
 
         static member ParenExpr(value: WidgetBuilder<Constant>) = Ast.ParenExpr(Ast.ConstantExpr(value))
 

@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -29,17 +29,10 @@ module IndexRangeBuilders =
     type Ast with
 
         static member IndexRangeExpr() =
-            WidgetBuilder<Expr>(IndexRange.WidgetKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
+            WidgetBuilder<Expr>(IndexRange.WidgetKey)
 
         static member IndexFromRangeExpr(fromExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                IndexRange.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| IndexRange.FromExpr.WithValue(fromExpr.Compile()) |],
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Expr>(IndexRange.WidgetKey, IndexRange.FromExpr.WithValue(fromExpr.Compile()))
 
         static member IndexFromRangeExpr(fromExpr: WidgetBuilder<Constant>) =
             Ast.IndexFromRangeExpr(Ast.ConstantExpr(fromExpr))
@@ -48,10 +41,7 @@ module IndexRangeBuilders =
             Ast.IndexFromRangeExpr(Ast.Constant(fromExpr))
 
         static member IndexToRangeExpr(toExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                IndexRange.WidgetKey,
-                AttributesBundle(StackList.empty(), [| IndexRange.ToExpr.WithValue(toExpr.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(IndexRange.WidgetKey, IndexRange.ToExpr.WithValue(toExpr.Compile()))
 
         static member IndexToRangeExpr(toExpr: WidgetBuilder<Constant>) =
             Ast.IndexToRangeExpr(Ast.ConstantExpr(toExpr))

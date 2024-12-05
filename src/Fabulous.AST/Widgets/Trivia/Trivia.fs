@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -33,10 +33,7 @@ module TriviaNode =
 module TriviaNodeNodeBuilder =
     type Ast with
         static member TriviaNode(content: WidgetBuilder<TriviaContent>) =
-            WidgetBuilder<TriviaNode>(
-                TriviaNode.WidgetKey,
-                AttributesBundle(StackList.empty(), [| TriviaNode.Content.WithValue(content.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<TriviaNode>(TriviaNode.WidgetKey, TriviaNode.Content.WithValue(content.Compile()))
 
 module LineCommentAfterSourceCode =
     let Value = Attributes.defineScalar<string> "Comment"
@@ -116,10 +113,7 @@ module Newline =
 module NewlineBuilders =
     type Ast with
         static member Newline() =
-            WidgetBuilder<TriviaContent>(
-                Newline.WidgetKey,
-                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
-            )
+            WidgetBuilder<TriviaContent>(Newline.WidgetKey)
 
 type TriviaNodeModifiers =
     [<Extension>]

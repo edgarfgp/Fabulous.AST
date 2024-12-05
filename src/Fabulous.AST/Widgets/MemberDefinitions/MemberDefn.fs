@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module MemberDefn =
@@ -19,10 +19,7 @@ module MemberDefnBuilders =
     type Ast with
 
         static member private BaseAny(value: MemberDefn) =
-            WidgetBuilder<MemberDefn>(
-                MemberDefn.WidgetKey,
-                AttributesBundle(StackList.one(MemberDefn.MemberDefn.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<MemberDefn>(MemberDefn.WidgetKey, MemberDefn.MemberDefn.WithValue(value))
 
         static member AnyMemberDefn(value: WidgetBuilder<InheritConstructor>) =
             let memberDefn = MemberDefn.ImplicitInherit(Gen.mkOak value)

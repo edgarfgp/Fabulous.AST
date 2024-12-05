@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -20,9 +20,6 @@ module ChainBuilders =
         static member ChainExpr(value: WidgetBuilder<ChainLink> list) =
             let chains = value |> List.map Gen.mkOak
 
-            WidgetBuilder<Expr>(
-                Chain.WidgetKey,
-                AttributesBundle(StackList.one(Chain.Value.WithValue(chains)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Expr>(Chain.WidgetKey, Chain.Value.WithValue(chains))
 
         static member ChainExpr(value: WidgetBuilder<ChainLink>) = Ast.ChainExpr([ value ])

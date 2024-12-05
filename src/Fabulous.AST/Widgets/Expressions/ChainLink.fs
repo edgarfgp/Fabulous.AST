@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -64,10 +64,7 @@ module ChainLinkBuilders =
     type Ast with
 
         static member ChainLinkIdentifier(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<ChainLink>(
-                ChainLink.WidgetIdentifierKey,
-                AttributesBundle(StackList.empty(), [| ChainLink.Identifier.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<ChainLink>(ChainLink.WidgetIdentifierKey, ChainLink.Identifier.WithValue(value.Compile()))
 
         static member ChainLinkIdentifier(value: WidgetBuilder<Constant>) =
             Ast.ChainLinkIdentifier(Ast.ConstantExpr(value))
@@ -76,16 +73,10 @@ module ChainLinkBuilders =
             Ast.ChainLinkIdentifier(Ast.Constant(value))
 
         static member ChainLinkDot() =
-            WidgetBuilder<ChainLink>(
-                ChainLink.WidgetDotKey,
-                AttributesBundle(StackList.empty(), Array.empty, Array.empty)
-            )
+            WidgetBuilder<ChainLink>(ChainLink.WidgetDotKey)
 
         static member ChainLinkExpr(expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<ChainLink>(
-                ChainLink.WidgetExprKey,
-                AttributesBundle(StackList.empty(), [| ChainLink.Identifier.WithValue(expr.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<ChainLink>(ChainLink.WidgetExprKey, ChainLink.Identifier.WithValue(expr.Compile()))
 
         static member ChainLinkExpr(expr: WidgetBuilder<Constant>) =
             Ast.ChainLinkExpr(Ast.ConstantExpr(expr))
@@ -122,10 +113,7 @@ module ChainLinkBuilders =
             Ast.ChainLinkAppParen(Ast.ConstantExpr(funcName), Ast.ConstantExpr(parenName))
 
         static member ChainLinkAppUnit(expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<ChainLink>(
-                ChainLink.WidgetAppUnitKey,
-                AttributesBundle(StackList.empty(), [| ChainLink.FuncName.WithValue(expr.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<ChainLink>(ChainLink.WidgetAppUnitKey, ChainLink.FuncName.WithValue(expr.Compile()))
 
         static member ChainLinkAppUnit(expr: WidgetBuilder<Constant>) =
             Ast.ChainLinkAppUnit(Ast.ConstantExpr(expr))
@@ -134,10 +122,7 @@ module ChainLinkBuilders =
             Ast.ChainLinkAppUnit(Ast.Constant(expr))
 
         static member ChainLinkIndex(expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<ChainLink>(
-                ChainLink.WidgetIndexKey,
-                AttributesBundle(StackList.empty(), [| ChainLink.FuncName.WithValue(expr.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<ChainLink>(ChainLink.WidgetIndexKey, ChainLink.FuncName.WithValue(expr.Compile()))
 
         static member ChainLinkIndex(expr: WidgetBuilder<Constant>) =
             Ast.ChainLinkIndex(Ast.ConstantExpr(expr))

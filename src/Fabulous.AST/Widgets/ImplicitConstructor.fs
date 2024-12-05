@@ -4,8 +4,8 @@ open System.Runtime.CompilerServices
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 
 module ImplicitConstructor =
 
@@ -64,11 +64,7 @@ module ImplicitConstructorBuilders =
         static member ImplicitConstructor(pattern: WidgetBuilder<Pattern>) =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| ImplicitConstructor.Pattern.WithValue(pattern.Compile()) |],
-                    Array.empty
-                )
+                ImplicitConstructor.Pattern.WithValue(pattern.Compile())
             )
 
         static member ImplicitConstructor(pattern: WidgetBuilder<Constant>) =
@@ -96,7 +92,7 @@ module ImplicitConstructorBuilders =
         static member ImplicitConstructorAlias(alias: string) =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
-                AttributesBundle(StackList.one(ImplicitConstructor.Alias.WithValue(alias)), Array.empty, Array.empty)
+                ImplicitConstructor.Alias.WithValue(alias)
             )
 
 type ImplicitConstructorModifiers =
