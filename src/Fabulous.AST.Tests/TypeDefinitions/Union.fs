@@ -97,7 +97,7 @@ type Option<'a> =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors =
     | Red
@@ -259,7 +259,7 @@ type Colors<'other> =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors<'other> =
     | Red of a: string * 'other

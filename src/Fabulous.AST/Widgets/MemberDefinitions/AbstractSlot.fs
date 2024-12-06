@@ -16,8 +16,6 @@ module AbstractSlot =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let HasMemberKeyword = Attributes.defineScalar<bool> "HasMemberKeyword"
-
     let TypeParams = Attributes.defineWidget "TypeParams"
 
     let WidgetKey =
@@ -26,10 +24,6 @@ module AbstractSlot =
             let returnType = Widgets.getNodeFromWidget widget ReturnType
             let parameters = Widgets.tryGetScalarValue widget Parameters
             let hasGetterSetter = Widgets.tryGetScalarValue widget HasGetterSetter
-
-            let hasMemberKeyword =
-                Widgets.tryGetScalarValue widget HasMemberKeyword
-                |> ValueOption.defaultValue true
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -105,12 +99,7 @@ module AbstractSlot =
                 | [], returnType -> returnType
                 | parameters, returnType -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
 
-            let leadingKeywords =
-                MultipleTextsNode.Create(
-                    [ "abstract"
-                      if hasMemberKeyword then
-                          "member" ]
-                )
+            let leadingKeywords = MultipleTextsNode.Create([ SingleTextNode.``abstract`` ])
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeParams
@@ -163,10 +152,9 @@ module AbstractMemberBuilders =
             WidgetBuilder<MemberDefnAbstractSlotNode>(
                 AbstractSlot.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
+                    StackList.two(
                         AbstractSlot.Identifier.WithValue(identifier),
-                        AbstractSlot.HasGetterSetter.WithValue(hasGetter, hasSetter),
-                        AbstractSlot.HasMemberKeyword.WithValue(false)
+                        AbstractSlot.HasGetterSetter.WithValue(hasGetter, hasSetter)
                     ),
                     [| AbstractSlot.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
@@ -202,31 +190,6 @@ module AbstractMemberBuilders =
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
-        static member Abstract
-            (identifier: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>, ?isTupled: bool) =
-            let isTupled = defaultArg isTupled false
-
-            WidgetBuilder<MemberDefnAbstractSlotNode>(
-                AbstractSlot.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        AbstractSlot.Identifier.WithValue(identifier),
-                        AbstractSlot.Parameters.WithValue(UnNamed(parameters, isTupled)),
-                        AbstractSlot.HasMemberKeyword.WithValue(false)
-                    ),
-                    [| AbstractSlot.ReturnType.WithValue(returnType.Compile()) |],
-                    Array.empty
-                )
-            )
-
-        static member Abstract
-            (identifier: string, parameters: string list, returnType: WidgetBuilder<Type>, ?isTupled: bool)
-            =
-            let isTupled = defaultArg isTupled false
-            let parameters = parameters |> List.map Ast.LongIdent
-
-            Ast.Abstract(identifier, parameters, returnType, isTupled)
-
         static member AbstractMember
             (identifier: string, parameters: WidgetBuilder<Type> list, returnType: string, ?isTupled: bool)
             =
@@ -234,26 +197,12 @@ module AbstractMemberBuilders =
             let returnType = Ast.LongIdent(returnType)
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
-        static member Abstract
-            (identifier: string, parameters: WidgetBuilder<Type> list, returnType: string, ?isTupled: bool)
-            =
-            let isTupled = defaultArg isTupled false
-            let returnType = Ast.LongIdent(returnType)
-            Ast.Abstract(identifier, parameters, returnType, isTupled)
-
         static member AbstractMember(identifier: string, parameters: string list, returnType: string, ?isTupled: bool) =
             let parameters = parameters |> List.map Ast.LongIdent
             let isTupled = defaultArg isTupled false
             let returnType = Ast.LongIdent(returnType)
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
-
-        static member Abstract(identifier: string, parameters: string list, returnType: string, ?isTupled: bool) =
-            let parameters = parameters |> List.map Ast.LongIdent
-            let isTupled = defaultArg isTupled false
-            let returnType = Ast.LongIdent(returnType)
-
-            Ast.Abstract(identifier, parameters, returnType, isTupled)
 
         static member AbstractMember
             (
@@ -276,28 +225,6 @@ module AbstractMemberBuilders =
                 )
             )
 
-        static member Abstract
-            (
-                identifier: string,
-                parameters: (string option * WidgetBuilder<Type>) list,
-                returnType: WidgetBuilder<Type>,
-                ?isTupled: bool
-            ) =
-            let isTupled = defaultArg isTupled false
-
-            WidgetBuilder<MemberDefnAbstractSlotNode>(
-                AbstractSlot.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        AbstractSlot.Identifier.WithValue(identifier),
-                        AbstractSlot.Parameters.WithValue(Named(parameters, isTupled)),
-                        AbstractSlot.HasMemberKeyword.WithValue(false)
-                    ),
-                    [| AbstractSlot.ReturnType.WithValue(returnType.Compile()) |],
-                    Array.empty
-                )
-            )
-
         static member AbstractMember
             (
                 identifier: string,
@@ -313,21 +240,6 @@ module AbstractMemberBuilders =
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
-        static member Abstract
-            (
-                identifier: string,
-                parameters: (string option * string) list,
-                returnType: WidgetBuilder<Type>,
-                ?isTupled: bool
-            ) =
-            let isTupled = defaultArg isTupled false
-
-            let parameters =
-                parameters
-                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
-
-            Ast.Abstract(identifier, parameters, returnType, isTupled)
-
         static member AbstractMember
             (
                 identifier: string,
@@ -340,18 +252,6 @@ module AbstractMemberBuilders =
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
-        static member Abstract
-            (
-                identifier: string,
-                parameters: (string option * WidgetBuilder<Type>) list,
-                returnType: string,
-                ?isTupled: bool
-            ) =
-            let isTupled = defaultArg isTupled false
-            let returnType = Ast.LongIdent(returnType)
-
-            Ast.Abstract(identifier, parameters, returnType, isTupled)
-
         static member AbstractMember
             (identifier: string, parameters: (string option * string) list, returnType: string, ?isTupled: bool) =
             let isTupled = defaultArg isTupled false
@@ -363,18 +263,6 @@ module AbstractMemberBuilders =
             let returnType = Ast.LongIdent(returnType)
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
-
-        static member Abstract
-            (identifier: string, parameters: (string option * string) list, returnType: string, ?isTupled: bool) =
-            let isTupled = defaultArg isTupled false
-
-            let parameters =
-                parameters
-                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
-
-            let returnType = Ast.LongIdent(returnType)
-
-            Ast.Abstract(identifier, parameters, returnType, isTupled)
 
 type AbstractMemberModifiers =
     [<Extension>]

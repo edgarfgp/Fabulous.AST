@@ -35,10 +35,10 @@ module InterfaceMembers =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type IMyInterface2 =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors<'other> =
     { Green: string
@@ -77,7 +77,7 @@ type Colors<'other> =
             """
 
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type MyRecord =
     { MyField1: int
@@ -104,7 +104,7 @@ type MyRecord =
         |> produces
             """
 type Meh =
-    abstract member Name: string
+    abstract Name: string
 
 type Person() =
     interface Meh with
@@ -142,12 +142,12 @@ type Person() =
         |> produces
             """
 type IFoo =
-    abstract member Name: string
+    abstract Name: string
 
 type IFoo2 = interface end
 
 type IFoo3 =
-    abstract member Name: string
+    abstract Name: string
 
 type IFoo4 = interface end
 

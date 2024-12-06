@@ -311,6 +311,6 @@ let internal z i = ()
         |> produces
             """
 type Person() =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
     default this.GetValue() = ""
 """

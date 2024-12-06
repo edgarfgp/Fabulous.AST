@@ -46,13 +46,13 @@ module MemberDefn =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type IMyInterface1 =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type IMyInterface2 =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors<'other> =
     { Green: string

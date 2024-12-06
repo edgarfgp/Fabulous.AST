@@ -19,10 +19,10 @@ module Interface =
         |> produces
             """
 type INumericFSharp =
-    abstract member Add: int -> int -> int
+    abstract Add: int -> int -> int
 
 type INumericDotNet =
-    abstract member Add: int * int -> int
+    abstract Add: int * int -> int
 
  """
 
@@ -45,8 +45,8 @@ module GenericInterface =
         |> produces
             """
 type MyInterface<'other, 'another> =
-    abstract member Add: int -> int -> string -> int
-    abstract member Pi: float
-    abstract member Area: float with get, set
+    abstract Add: int -> int -> string -> int
+    abstract Pi: float
+    abstract Area: float with get, set
 
  """
