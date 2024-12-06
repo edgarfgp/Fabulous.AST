@@ -61,16 +61,19 @@ Now let's take a look at same example using Fabulous.AST:
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
+#r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
 
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
-Oak() { Value("y", "12") } |> Gen.mkOak |> Gen.run |> printfn "%s"
+Oak() { AnonymousModule() { Value("y", "12") } }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 // produces the following code:
 (*** include-output ***)
 
 (**
-
 ### Escape Hatch
 
 You can use an `Escape Hatch` to generate code that is not supported by Fabulous.AST yet by constructing the raw [Fantomas.SyntaxOak](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak.html) node.
@@ -95,12 +98,15 @@ let topLevelBinding =
         range = Range.Zero
     )
 
-Oak() { EscapeHatch(topLevelBinding) } |> Gen.mkOak |> Gen.run |> printfn "%s"
+Oak() { AnonymousModule() { EscapeHatch(topLevelBinding) } }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
 // produces the following code:
 (*** include-output ***)
-(**
 
+(**
 ## Key takeaway
 
 Using Fabulous.AST, you can easily create and manipulate ASTs like this one using F# functions. For example, you can add new nodes to the AST, modify existing nodes, or traverse the AST to perform analysis or transformation tasks.
