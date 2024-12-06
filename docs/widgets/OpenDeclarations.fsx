@@ -10,7 +10,7 @@ index: 10
 # Open declarations
 An import declaration specifies a module or namespace whose elements you can reference without using a fully qualified name.
 
-For details on how the AST node works, please refer to the [Fantomas Core documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-open.html).
+For details on how the AST node works, please refer to the [Fantomas Core documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-openlistnode.html).
 
 *)
 (**

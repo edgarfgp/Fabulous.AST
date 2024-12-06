@@ -10,7 +10,7 @@ type Ast = class end
 
 type MethodParamsType =
     | UnNamed of parameters: WidgetBuilder<Type> list * isTupled: bool
-    | Named of types: (string option * WidgetBuilder<Type>) list * isTupled: bool
+    | Named of types: (string * WidgetBuilder<Type>) list * isTupled: bool
 
 type AccessControl =
     | Public
@@ -21,14 +21,6 @@ type AccessControl =
 [<AutoOpen>]
 module CommonExtensions =
     type MultipleTextsNode with
-
-        static member Create(texts: string list) =
-            MultipleTextsNode(
-                [ for v in texts do
-                      SingleTextNode.Create(v) ],
-                Range.Zero
-            )
-
         static member Create(texts: SingleTextNode list) = MultipleTextsNode(texts, Range.Zero)
 
     type XmlDocNode with

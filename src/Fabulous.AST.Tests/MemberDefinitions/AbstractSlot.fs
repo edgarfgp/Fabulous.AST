@@ -28,25 +28,16 @@ module AbstractMembers =
                     AbstractMember("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
                     AbstractMember("Add2", [ Int(); Int() ], Int(), true)
 
-                    AbstractMember("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
+                    AbstractMember("Add3", [ ("a", Int()); ("b", Int()) ], Int(), true)
 
-                    AbstractMember(
-                        "Add4",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int",
-                        true
-                    )
+                    AbstractMember("Add4", [ ("a", LongIdent "int"); ("b", LongIdent "int") ], LongIdent "int", true)
 
                     AbstractMember("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
                     AbstractMember("Add6", [ Int(); Int() ], Int())
 
-                    AbstractMember("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractMember("Add7", [ ("a", Int()); ("b", Int()) ], Int())
 
-                    AbstractMember(
-                        "Add8",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int"
-                    )
+                    AbstractMember("Add8", [ ("a", LongIdent "int"); ("b", LongIdent "int") ], LongIdent "int")
 
                 }
             }
@@ -113,25 +104,16 @@ type Meh =
                     AbstractMember("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
                     AbstractMember("Add2", [ Int(); Int() ], Int(), true)
 
-                    AbstractMember("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
+                    AbstractMember("Add3", [ ("a", Int()); ("b", Int()) ], Int(), true)
 
-                    AbstractMember(
-                        "Add4",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int",
-                        true
-                    )
+                    AbstractMember("Add4", [ ("a", LongIdent "int"); ("b", LongIdent "int") ], LongIdent "int", true)
 
                     AbstractMember("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
                     AbstractMember("Add6", [ Int(); Int() ], Int())
 
-                    AbstractMember("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractMember("Add7", [ ("a", Int()); ("b", Int()) ], Int())
 
-                    AbstractMember(
-                        "Add8",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int"
-                    )
+                    AbstractMember("Add8", [ ("a", LongIdent "int"); ("b", LongIdent "int") ], LongIdent "int")
 
                 }
             }
@@ -178,25 +160,16 @@ type Meh =
                     AbstractMember("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
                     AbstractMember("Add2", [ Int(); Int() ], Int(), true)
 
-                    AbstractMember("Add3", [ (Some "a", Int()); (Some "b", Int()) ], Int(), true)
+                    AbstractMember("Add3", [ ("a", Int()); ("b", Int()) ], Int(), true)
 
-                    AbstractMember(
-                        "Add4",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int",
-                        true
-                    )
+                    AbstractMember("Add4", [ ("a", LongIdent "int"); ("b", LongIdent "int") ], LongIdent "int", true)
 
                     AbstractMember("Add5", [ LongIdent "int"; LongIdent "int" ], LongIdent "int")
                     AbstractMember("Add6", [ Int(); Int() ], Int())
 
-                    AbstractMember("Add7", [ (Some "a", Int()); (Some "b", Int()) ], Int())
+                    AbstractMember("Add7", [ ("a", Int()); ("b", Int()) ], Int())
 
-                    AbstractMember(
-                        "Add8",
-                        [ (Some "a", LongIdent "int"); (Some "b", LongIdent "int") ],
-                        LongIdent "int"
-                    )
+                    AbstractMember("Add8", [ ("a", LongIdent "int"); ("b", LongIdent "int") ], LongIdent "int")
 
                 }
                 |> _.typeParams(PostfixList([ "'other"; "'another" ]))

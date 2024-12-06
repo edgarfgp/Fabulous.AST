@@ -76,9 +76,16 @@ module AutoPropertyMember =
 
             let withGetSetText =
                 match hasGetterSetter with
-                | ValueSome(true, true) -> Some(MultipleTextsNode.Create([ "with"; "get,"; "set" ]))
-                | ValueSome(true, false) -> Some(MultipleTextsNode.Create([ "with"; "get" ]))
-                | ValueSome(false, true) -> Some(MultipleTextsNode.Create([ "with"; "set" ]))
+                | ValueSome(true, true) ->
+                    Some(
+                        MultipleTextsNode.Create(
+                            [ SingleTextNode.``with``; SingleTextNode.Create("get,"); SingleTextNode.set ]
+                        )
+                    )
+                | ValueSome(true, false) ->
+                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
+                | ValueSome(false, true) ->
+                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
                 | ValueSome(false, false)
                 | ValueNone -> None
 
