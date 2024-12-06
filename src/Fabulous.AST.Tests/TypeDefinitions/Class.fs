@@ -83,6 +83,30 @@ type Person(name, lastName, age) =
 """
 
     [<Fact>]
+    let ``Produces a class implicit constructor with params``() =
+        Oak() {
+            AnonymousModule() {
+                Class(
+                    "Person",
+                    TuplePat(
+                        [ ParameterPat(ConstantPat(Constant("name")))
+                          ParameterPat(ConstantPat(Constant("lastName")))
+                          ParameterPat(ConstantPat(Constant("age"))) ]
+                    )
+                ) {
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+                }
+
+            }
+        }
+        |> produces
+            """
+type Person(name, lastName, age) =
+    member this.Name = name
+
+"""
+
+    [<Fact>]
     let ``Produces a class explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
@@ -135,10 +159,50 @@ type Person(name: string, age: int) =
 """
 
     [<Fact>]
+    let ``Produces a class simplified explicit constructor with multiple typed params``() =
+        Oak() {
+            AnonymousModule() {
+                Class(
+                    "Person",
+                    TuplePat(
+                        [ ParameterPat(ConstantPat(Constant("name")), String())
+                          ParameterPat(ConstantPat(Constant("age")), Int()) ]
+                    )
+                ) {
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+                }
+            }
+        }
+        |> produces
+            """
+type Person(name: string, age: int) =
+    member this.Name = name
+
+"""
+
+    [<Fact>]
     let ``Produces a class marked as a Struct explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
                 (Class("Person", ImplicitConstructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))) {
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
+                })
+                    .attribute(Attribute("Struct"))
+            }
+        }
+        |> produces
+            """
+[<Struct>]
+type Person(name: string) =
+    member this.Name = name
+
+"""
+
+    [<Fact>]
+    let ``Produces a class marked as a Struct simplified explicit constructor with typed params``() =
+        Oak() {
+            AnonymousModule() {
+                (Class("Person", ParameterPat(ConstantPat(Constant("name")), String())) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 })
                     .attribute(Attribute("Struct"))

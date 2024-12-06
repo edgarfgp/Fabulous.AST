@@ -2,6 +2,7 @@ namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
 open Fabulous.AST
+open Fabulous.AST.Intersection
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -102,20 +103,23 @@ module TypeDefnRegular =
 [<AutoOpen>]
 module TypeDefnRegularBuilders =
     type Ast with
-        static member BaseClass(name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption) =
+        static member BaseClass(name: string, parameters: WidgetBuilder<ImplicitConstructorNode> voption) =
             CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
                 TypeDefnRegular.WidgetKey,
                 TypeDefnRegular.Members,
                 AttributesBundle(
                     StackList.two(TypeDefnRegular.Name.WithValue(name), TypeDefnRegular.IsClass.WithValue(true)),
-                    [| match constructor with
-                       | ValueSome constructor -> TypeDefnRegular.ImplicitConstructor.WithValue(constructor.Compile())
+                    [| match parameters with
+                       | ValueSome parameters -> TypeDefnRegular.ImplicitConstructor.WithValue(parameters.Compile())
                        | ValueNone -> () |],
                     Array.empty
                 )
             )
 
         static member Class(name: string) = Ast.BaseClass(name, ValueNone)
+
+        static member Class(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseClass(name, ValueSome(Ast.ImplicitConstructor(Ast.ParenPat(parameters))))
 
         static member Class(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseClass(name, ValueSome constructor)
