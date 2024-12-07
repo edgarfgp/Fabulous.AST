@@ -31,7 +31,7 @@ type DateTime with
             AnonymousModule() {
                 Open("Microsoft.FSharp.Core")
 
-                Class("A", ImplicitConstructor(ParenPat(ParameterPat("x", AppPrefix(Int(), "'u"))))) {
+                TypeDefn("A", ImplicitConstructor(ParenPat(ParameterPat("x", AppPrefix(Int(), "'u"))))) {
                     Member("_.X", ConstantExpr("x"))
                 }
                 |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))

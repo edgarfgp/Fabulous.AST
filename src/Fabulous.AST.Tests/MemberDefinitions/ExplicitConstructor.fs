@@ -12,7 +12,7 @@ module ExplicitConstructor =
     let ``Produces a classes ExplicitCtor``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     ExplicitConstructor(
                         ParenPat(
                             TuplePat(

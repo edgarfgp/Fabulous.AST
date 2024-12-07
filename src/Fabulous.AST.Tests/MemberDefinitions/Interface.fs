@@ -22,11 +22,11 @@ module InterfaceMembers =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    InterfaceMember(LongIdent "IMyInterface") {
+                    InterfaceWith(LongIdent "IMyInterface") {
                         Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
 
-                    InterfaceMember("IMyInterface2") { () }
+                    InterfaceWith("IMyInterface2") { () }
                 }
 
             }
@@ -67,7 +67,7 @@ type Colors<'other> =
                     Field("MyField2", LongIdent("string"))
                 })
                     .members() {
-                    InterfaceMember(LongIdent "IMyInterface") {
+                    InterfaceWith(LongIdent "IMyInterface") {
                         Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
                 }
@@ -94,8 +94,8 @@ type MyRecord =
             AnonymousModule() {
                 TypeDefn("Meh") { AbstractMember("Name", String()) }
 
-                Class("Person") {
-                    InterfaceMember(LongIdent "Meh") {
+                TypeDefn("Person", ParenPat()) {
+                    InterfaceWith(LongIdent "Meh") {
                         Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
                 }
@@ -118,24 +118,24 @@ type Person() =
             AnonymousModule() {
                 TypeDefn("IFoo") { AbstractMember("Name", String()) }
 
-                InterfaceEnd("IFoo2")
+                InterfaceEnd ("IFoo2") { }
 
                 TypeDefn("IFoo3") { AbstractMember("Name", String()) }
 
-                InterfaceEnd("IFoo4")
+                InterfaceEnd ("IFoo4") { }
 
-                Class("Person") {
-                    InterfaceMember(LongIdent "IFoo") {
+                TypeDefn("Person", ParenPat()) {
+                    InterfaceWith(LongIdent "IFoo") {
                         Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
-                    InterfaceMember("IFoo2") { () }
+                    InterfaceWith("IFoo2") { () }
 
-                    InterfaceMember(LongIdent "IFoo3") {
+                    InterfaceWith(LongIdent "IFoo3") {
                         Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
-                    InterfaceMember("IFoo4") { () }
+                    InterfaceWith("IFoo4") { () }
                 }
             }
         }

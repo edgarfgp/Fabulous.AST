@@ -12,7 +12,7 @@ module PropertyGetSet =
     let ``Produces a classes with get set members``() =
         Oak() {
             AnonymousModule() {
-                Class(
+                TypeDefn(
                     "Person",
                     ImplicitConstructor(
                         ParenPat(

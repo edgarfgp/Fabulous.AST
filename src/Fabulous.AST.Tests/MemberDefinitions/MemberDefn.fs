@@ -25,18 +25,18 @@ module MemberDefn =
                     .members() {
                     yield!
                         [ AnyMemberDefn(
-                              InterfaceMember(LongIdent "IMyInterface") {
+                              InterfaceWith(LongIdent "IMyInterface") {
                                   Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
                           )
 
                           AnyMemberDefn(
-                              InterfaceMember(LongIdent "IMyInterface1") {
+                              InterfaceWith(LongIdent "IMyInterface1") {
                                   Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
                           ) ]
 
-                    InterfaceMember("IMyInterface2") { () }
+                    InterfaceWith("IMyInterface2") { () }
 
                 }
 

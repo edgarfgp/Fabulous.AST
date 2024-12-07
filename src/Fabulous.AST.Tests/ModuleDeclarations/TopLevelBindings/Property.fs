@@ -206,7 +206,7 @@ type Colors<'other> =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     Member(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
 
                     Member(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
@@ -225,7 +225,7 @@ type Person() =
     let ``Produces a generic class with a static and not static member property ``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     Member(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
                     Member(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
                 }
@@ -244,7 +244,7 @@ type Person<'other>() =
     let ``Produces a class with a member property with xml comments``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                         .xmlDocs([ "This is a comment" ])
                 }
@@ -268,7 +268,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     for name, acc in data do
                         let widget =
                             Member(ConstantPat(Constant($"this.{name}")), ConstantExpr(String "name"))
@@ -295,7 +295,7 @@ type Person() =
     let ``Produces a class with a member property and return type``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
                     |> _.returnType(LongIdent "int")
                 }
@@ -312,7 +312,7 @@ type Person() =
     let ``Produces a class with a member property inlined``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                         .toInlined()
                 }
@@ -329,7 +329,7 @@ type Person() =
     let ``Produces a class with property member with attributes``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
                         .attribute(Attribute "Obsolete")
                 }

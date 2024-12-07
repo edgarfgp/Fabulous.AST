@@ -21,7 +21,7 @@ Oak() {
     AnonymousModule() {
         Open("System")
 
-        Class(
+        TypeDefn(
             "Person",
             ImplicitConstructor(
                 ParenPat(

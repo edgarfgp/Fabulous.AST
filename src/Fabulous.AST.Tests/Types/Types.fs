@@ -354,31 +354,32 @@ let t: array<array<string>> = false
         Oak() {
             AnonymousModule() {
                 // Base Type Constraint
-                ClassEnd("Class1").typeParams(PostfixList("'T when 'T :> System.Exception"))
+                ClassEnd ("Class1") { }
+                |> _.typeParams(PostfixList("'T when 'T :> System.Exception"))
 
-                ClassEnd("Class11")
-                    .typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.Exception"))))
+                ClassEnd ("Class11") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.Exception"))))
 
-                ClassEnd("Class2")
-                    .typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.IComparable"))))
+                ClassEnd ("Class2") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.IComparable"))))
 
-                ClassEnd("Class3")
-                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "null")))
+                ClassEnd ("Class3") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "null")))
 
-                ClassEnd("Class5")
-                    .typeParams(
-                        PostfixList(
-                            TyparDecl("'T"),
-                            SupportsMember("'T", SigMember(Val("member", "Method1", LongIdent("'T -> int"))))
-                        )
+                ClassEnd ("Class5") { }
+                |> _.typeParams(
+                    PostfixList(
+                        TyparDecl("'T"),
+                        SupportsMember("'T", SigMember(Val("member", "Method1", LongIdent("'T -> int"))))
                     )
+                )
 
-                ClassEnd("Class6")
-                    .typeParams(
-                        PostfixList(TyparDecl("'T"), SupportsMember("'T", SigMember(Val("member", "Property1", Int()))))
-                    )
+                ClassEnd ("Class6") { }
+                |> _.typeParams(
+                    PostfixList(TyparDecl("'T"), SupportsMember("'T", SigMember(Val("member", "Property1", Int()))))
+                )
 
-                Class("Class7") { MemberVal("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
+                TypeDefn("Class7", ParenPat()) { MemberVal("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
                 |> _.typeParams(
                     PostfixList(
                         TyparDecl("'T"),
@@ -386,42 +387,39 @@ let t: array<array<string>> = false
                     )
                 )
 
-                ClassEnd("Class8")
-                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "not struct")))
+                ClassEnd ("Class8") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "not struct")))
 
                 // Enumeration constraint with underlying value specified
-                ClassEnd("Class9")
-                    .typeParams(PostfixList(TyparDecl("'T"), EnumOrDelegate("'T", "enum", UInt32())))
+                ClassEnd ("Class9") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), EnumOrDelegate("'T", "enum", UInt32())))
 
                 // 'T must implement IComparable, or be an array type with comparable
                 // elements, or be System.IntPtr or System.UIntPtr. Also, 'T must not have
                 // the NoComparison attribute.
-                ClassEnd("Class10")
-                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "comparison")))
+                ClassEnd ("Class10") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "comparison")))
 
                 // 'T must support equality. This is true for any type that does not
                 // have the NoEquality attribute.
-                ClassEnd("Class11")
-                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
+                ClassEnd ("Class11") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
 
-                ClassEnd("Class12")
-                    .typeParams(
-                        PostfixList(
-                            TyparDecl("'T"),
-                            EnumOrDelegate("'T", "delegate", [ "obj * System.EventArgs"; "unit" ])
-                        )
+                ClassEnd ("Class12") { }
+                |> _.typeParams(
+                    PostfixList(TyparDecl("'T"), EnumOrDelegate("'T", "delegate", [ "obj * System.EventArgs"; "unit" ]))
+                )
+
+                ClassEnd ("Class122") { }
+                |> _.typeParams(
+                    PostfixList(
+                        TyparDecl("'T"),
+                        EnumOrDelegate("'T", "delegate", [ Tuple([ "obj"; "System.EventArgs" ]); Unit() ])
                     )
+                )
 
-                ClassEnd("Class122")
-                    .typeParams(
-                        PostfixList(
-                            TyparDecl("'T"),
-                            EnumOrDelegate("'T", "delegate", [ Tuple([ "obj"; "System.EventArgs" ]); Unit() ])
-                        )
-                    )
-
-                ClassEnd("Class13")
-                    .typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "unmanaged")))
+                ClassEnd ("Class13") { }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "unmanaged")))
 
                 // Member constraints with two type parameters
                 // Most often used with static type parameters in inline functions
@@ -471,13 +469,13 @@ let t: array<array<string>> = false
                     .toInlined()
 
                 // If there are multiple constraints, use the and keyword to separate them.
-                ClassEnd("Class14")
-                    .typeParams(
-                        PostfixList(
-                            [ TyparDecl("'T"); TyparDecl("'U") ],
-                            [ ConstraintSingle("'T", "equality"); ConstraintSingle("'U", "equality") ]
-                        )
+                ClassEnd ("Class14") { }
+                |> _.typeParams(
+                    PostfixList(
+                        [ TyparDecl("'T"); TyparDecl("'U") ],
+                        [ ConstraintSingle("'T", "equality"); ConstraintSingle("'U", "equality") ]
                     )
+                )
             }
         }
         |> produces

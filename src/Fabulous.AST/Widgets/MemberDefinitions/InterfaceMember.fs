@@ -33,16 +33,16 @@ module InterfaceMember =
 module InterfaceMemberBuilders =
     type Ast with
 
-        static member InterfaceMember(value: WidgetBuilder<Type>) =
+        static member InterfaceWith(value: WidgetBuilder<Type>) =
             CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
                 InterfaceMember.TypeValue.WithValue(value.Compile())
             )
 
-        static member InterfaceMember(name: string) =
+        static member InterfaceWith(name: string) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
-            Ast.InterfaceMember(Ast.LongIdent name)
+            Ast.InterfaceWith(Ast.LongIdent name)
 
 type InterfaceMemberYieldExtensions =
     [<Extension>]

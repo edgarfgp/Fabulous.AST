@@ -302,7 +302,7 @@ let internal z i = ()
     let ``Produces a default member``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
+                TypeDefn("Person", ParenPat()) {
                     AbstractMember("GetValue", [ Unit() ], String())
                     Default("this.GetValue", UnitPat(), ConstantExpr(String("")))
                 }

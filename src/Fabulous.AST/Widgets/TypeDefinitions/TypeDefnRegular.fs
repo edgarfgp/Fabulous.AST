@@ -2,7 +2,6 @@ namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
 open Fabulous.AST
-open Fabulous.AST.Intersection
 open Fabulous.AST.StackAllocatedCollections
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -20,7 +19,7 @@ module TypeDefnRegular =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let TypeParams = Attributes.defineWidget "TypeParams"
 
-    let IsClass = Attributes.defineScalar<bool> "IsClass"
+    let Constraints = Attributes.defineWidget "Constraints"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -31,18 +30,6 @@ module TypeDefnRegular =
 
             let constructor =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget ImplicitConstructor
-                |> ValueOption.defaultValue(
-                    ImplicitConstructorNode(
-                        None,
-                        None,
-                        None,
-                        Pattern.Unit(
-                            UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)
-                        ),
-                        None,
-                        Range.Zero
-                    )
-                )
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
@@ -53,7 +40,9 @@ module TypeDefnRegular =
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
-            let isClass = Widgets.getScalarValue widget IsClass
+            let constraints =
+                Widgets.tryGetNodeFromWidget<TypeConstraint list> widget Constraints
+                |> ValueOption.defaultValue []
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -69,7 +58,10 @@ module TypeDefnRegular =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let constructor = if not isClass then None else Some constructor
+            let constructor =
+                match constructor with
+                | ValueNone -> None
+                | ValueSome constructor -> Some constructor
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -90,7 +82,7 @@ module TypeDefnRegular =
                     accessControl,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
-                    [],
+                    constraints,
                     constructor,
                     Some(SingleTextNode.equals),
                     None,
@@ -103,37 +95,26 @@ module TypeDefnRegular =
 [<AutoOpen>]
 module TypeDefnRegularBuilders =
     type Ast with
-        static member BaseClass(name: string, parameters: WidgetBuilder<ImplicitConstructorNode> voption) =
+        static member BaseTypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption) =
             CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
                 TypeDefnRegular.WidgetKey,
                 TypeDefnRegular.Members,
                 AttributesBundle(
-                    StackList.two(TypeDefnRegular.Name.WithValue(name), TypeDefnRegular.IsClass.WithValue(true)),
-                    [| match parameters with
-                       | ValueSome parameters -> TypeDefnRegular.ImplicitConstructor.WithValue(parameters.Compile())
+                    StackList.one(TypeDefnRegular.Name.WithValue(name)),
+                    [| match constructor with
+                       | ValueSome constructor -> TypeDefnRegular.ImplicitConstructor.WithValue(constructor.Compile())
                        | ValueNone -> () |],
                     Array.empty
                 )
             )
 
-        static member Class(name: string) = Ast.BaseClass(name, ValueNone)
+        static member TypeDefn(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseTypeDefn(name, ValueSome(Ast.ImplicitConstructor parameters))
 
-        static member Class(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseClass(name, ValueSome(Ast.ImplicitConstructor(Ast.ParenPat(parameters))))
+        static member TypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
+            Ast.BaseTypeDefn(name, ValueSome constructor)
 
-        static member Class(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
-            Ast.BaseClass(name, ValueSome constructor)
-
-        static member TypeDefn(name: string) =
-            CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
-                TypeDefnRegular.WidgetKey,
-                TypeDefnRegular.Members,
-                AttributesBundle(
-                    StackList.two(TypeDefnRegular.Name.WithValue(name), TypeDefnRegular.IsClass.WithValue(false)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member TypeDefn(name: string) = Ast.BaseTypeDefn(name, ValueNone)
 
 type TypeDefnRegularModifiers =
     [<Extension>]
@@ -143,6 +124,12 @@ type TypeDefnRegularModifiers =
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(TypeDefnRegular.TypeParams.WithValue(typeParams.Compile()))
+
+    [<Extension>]
+    static member inline constraints
+        (this: WidgetBuilder<TypeDefnRegularNode>, constraints: WidgetBuilder<TypeConstraint list>)
+        =
+        this.AddWidget(TypeDefnRegular.Constraints.WithValue(constraints.Compile()))
 
     [<Extension>]
     static member inline attributes

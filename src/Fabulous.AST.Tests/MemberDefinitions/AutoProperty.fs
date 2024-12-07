@@ -12,7 +12,7 @@ module AutoProperty =
     let ``Produces a classes with an auto property``() =
         Oak() {
             AnonymousModule() {
-                Class(
+                TypeDefn(
                     "Person",
                     ImplicitConstructor(
                         ParenPat(

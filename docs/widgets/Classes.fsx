@@ -19,7 +19,7 @@ open type Fabulous.AST.Ast
 
 Oak() {
     AnonymousModule() {
-        Class(
+        TypeDefn(
             "Person2",
             ImplicitConstructor(
                 ParenPat(
@@ -34,7 +34,7 @@ Oak() {
             Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
         }
 
-        Class("Person3") { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+        TypeDefn("Person3", ParenPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
         |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
     }

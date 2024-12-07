@@ -103,7 +103,7 @@ Oak() {
     |> _.triviaAfter(Newline())
 
     Namespace("Outer") {
-        Class("MyClass") {
+        TypeDefn("MyClass", ParenPat()) {
             Member("this.X", ParenPat(ParameterPat(ConstantPat(Constant "x"))), InfixAppExpr("p", "+", Int(1)))
         }
         |> _.triviaBefore(SingleLine("Full name: Outer.MyClass"))
@@ -111,11 +111,11 @@ Oak() {
     |> _.triviaBefore(SingleLine("Nested Namespaces"))
     |> _.triviaAfter(Newline())
 
-    Namespace("Outer.Inner") { Class("MyClass") { Member("this.Prop1", String("X")) } }
+    Namespace("Outer.Inner") { TypeDefn("MyClass", ParenPat()) { Member("this.Prop1", String("X")) } }
     |> _.triviaBefore(SingleLine("Full name: Outer.Inner.MyClass"))
     |> _.triviaAfter(Newline())
 
-    GlobalNamespace() { Class("MyClass") { Member("this.Prop1", String("X")) } }
+    GlobalNamespace() { TypeDefn("MyClass", ParenPat()) { Member("this.Prop1", String("X")) } }
     |> _.triviaBefore(SingleLine("Global Namespace"))
     |> _.triviaAfter(Newline())
 
@@ -136,7 +136,7 @@ Oak() {
 
         ExceptionDefn("DontSqueezeTheBananaException", Field("Banana"))
 
-        Class("Banana", ImplicitConstructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
+        TypeDefn("Banana", ImplicitConstructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
             MemberVal("IsPeeled", Bool(false), true, true)
             MemberVal("Orientation", "orientation", true, true)
 

@@ -88,7 +88,7 @@ type Option<'a> =
                     UnionCase("Yellow")
                 })
                     .members() {
-                    InterfaceMember("IMyInterface") {
+                    InterfaceWith("IMyInterface") {
                         Member(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
                     }
                 }
@@ -249,7 +249,7 @@ type Colors<'other> =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    InterfaceMember(LongIdent "IMyInterface") {
+                    InterfaceWith(LongIdent "IMyInterface") {
                         Member(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
                     }
                 }

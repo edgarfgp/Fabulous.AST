@@ -95,17 +95,17 @@ module TypeDefnExplicit =
 [<AutoOpen>]
 module TypeDefnExplicitBuilders =
     type Ast with
-
         static member private BaseClassEnd
             (name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption, kind: SingleTextNode)
             =
-            WidgetBuilder<TypeDefnExplicitNode>(
+            CollectionBuilder<TypeDefnExplicitNode, MemberDefn>(
                 TypeDefnExplicit.WidgetKey,
+                TypeDefnExplicit.Members,
                 AttributesBundle(
                     StackList.two(TypeDefnExplicit.Name.WithValue(name), TypeDefnExplicit.Kind.WithValue(kind)),
                     [| match constructor with
-                       | ValueNone -> ()
-                       | ValueSome value -> TypeDefnExplicit.Constructor.WithValue(value.Compile()) |],
+                       | ValueSome constructor -> TypeDefnExplicit.Constructor.WithValue(constructor.Compile())
+                       | ValueNone -> () |],
                     Array.empty
                 )
             )
@@ -116,11 +116,17 @@ module TypeDefnExplicitBuilders =
         static member ClassEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``class``)
 
+        static member ClassEnd(name: string, constructor: WidgetBuilder<Pattern>) =
+            Ast.BaseClassEnd(name, ValueSome(Ast.ImplicitConstructor(constructor)), SingleTextNode.``class``)
+
         static member StructEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``struct``)
 
         static member StructEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``struct``)
+
+        static member StructEnd(name: string, constructor: WidgetBuilder<Pattern>) =
+            Ast.BaseClassEnd(name, ValueSome(Ast.ImplicitConstructor(constructor)), SingleTextNode.``struct``)
 
         static member InterfaceEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``interface``)
@@ -160,10 +166,6 @@ type TypeDefnExplicitModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnExplicitNode>) =
         this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Internal))
-
-    [<Extension>]
-    static member inline members(this: WidgetBuilder<TypeDefnExplicitNode>) =
-        AttributeCollectionBuilder<TypeDefnExplicitNode, MemberDefn>(this, TypeDefnExplicit.Members)
 
 type TypeDefnExplicitYieldExtensions =
     [<Extension>]
