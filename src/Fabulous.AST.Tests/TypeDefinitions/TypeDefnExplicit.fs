@@ -9,7 +9,7 @@ open type Ast
 module TypeDefnExplicit =
     [<Fact>]
     let ``Produces a class end``() =
-        Oak() { AnonymousModule() { ClassEnd ("MyClass") { } } }
+        Oak() { AnonymousModule() { ClassEnd("MyClass") { () } } }
         |> produces
             """
 type MyClass = class end
@@ -17,7 +17,7 @@ type MyClass = class end
 
     [<Fact>]
     let ``Produces a class end with constructor``() =
-        Oak() { AnonymousModule() { ClassEnd ("MyClass", ParenPat()) { } } }
+        Oak() { AnonymousModule() { ClassEnd("MyClass", ParenPat()) { () } } }
         |> produces
             """
 type MyClass() = class end
@@ -27,7 +27,7 @@ type MyClass() = class end
     let ``Produces a class end with constructor and attributes``() =
         Oak() {
             AnonymousModule() {
-                (ClassEnd ("MyClass") { })
+                (ClassEnd("MyClass") { () })
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
@@ -42,7 +42,7 @@ type MyClass = class end
     let ``Produces a class end with constructor params``() =
         Oak() {
             AnonymousModule() {
-                (ClassEnd ("MyClass", ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))) { })
+                (ClassEnd("MyClass", ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))) { () })
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
@@ -57,7 +57,7 @@ type MyClass(name: string) = class end
     let ``Produces a class end with constructor params and type args``() =
         Oak() {
             AnonymousModule() {
-                (ClassEnd ("MyClass", ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))) { })
+                (ClassEnd("MyClass", ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))) { () })
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
                     .typeParams(PostfixList([ "'a" ]))
             }
@@ -70,7 +70,7 @@ type MyClass<'a>(name: string) = class end
 
     [<Fact>]
     let ``Produces a class end with type params``() =
-        Oak() { AnonymousModule() { ClassEnd ("MyClass") { } |> _.typeParams(PostfixList([ "'a"; "'b" ])) } }
+        Oak() { AnonymousModule() { ClassEnd("MyClass") { () } |> _.typeParams(PostfixList([ "'a"; "'b" ])) } }
         |> produces
             """
 type MyClass<'a, 'b> = class end
@@ -78,7 +78,7 @@ type MyClass<'a, 'b> = class end
 
     [<Fact>]
     let ``Produces a class end with constructor and  type params``() =
-        Oak() { AnonymousModule() { (ClassEnd ("MyClass", ParenPat()) { }).typeParams(PostfixList([ "'a"; "'b" ])) } }
+        Oak() { AnonymousModule() { (ClassEnd("MyClass", ParenPat()) { () }).typeParams(PostfixList([ "'a"; "'b" ])) } }
         |> produces
             """
 type MyClass<'a, 'b>() = class end
@@ -87,7 +87,7 @@ type MyClass<'a, 'b>() = class end
 module StructEnd =
     [<Fact>]
     let ``Produces a struct end empty constructor``() =
-        Oak() { AnonymousModule() { StructEnd ("MyClass", ParenPat()) { } } }
+        Oak() { AnonymousModule() { StructEnd("MyClass", ParenPat()) { () } } }
         |> produces
             """
 type MyClass() = struct end
@@ -97,7 +97,7 @@ type MyClass() = struct end
     let ``Produces a struct end non empty constructor``() =
         Oak() {
             AnonymousModule() {
-                StructEnd ("MyClass", ParenPat(ParameterPat(ConstantPat(Constant("a")), String()))) { }
+                StructEnd("MyClass", ParenPat(ParameterPat(ConstantPat(Constant("a")), String()))) { () }
             }
         }
         |> produces
@@ -108,7 +108,7 @@ type MyClass(a: string) = struct end
 module InterfaceEnd =
     [<Fact>]
     let ``Produces an interface end``() =
-        Oak() { AnonymousModule() { InterfaceEnd ("IFoo") { } } }
+        Oak() { AnonymousModule() { InterfaceEnd("IFoo") { () } } }
         |> produces
             """
 type IFoo = interface end

@@ -118,11 +118,11 @@ type Person() =
             AnonymousModule() {
                 TypeDefn("IFoo") { AbstractMember("Name", String()) }
 
-                InterfaceEnd ("IFoo2") { }
+                InterfaceEnd("IFoo2") { () }
 
                 TypeDefn("IFoo3") { AbstractMember("Name", String()) }
 
-                InterfaceEnd ("IFoo4") { }
+                InterfaceEnd("IFoo4") { () }
 
                 TypeDefn("Person", ParenPat()) {
                     InterfaceWith(LongIdent "IFoo") {

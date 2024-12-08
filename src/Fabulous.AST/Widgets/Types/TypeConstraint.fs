@@ -37,6 +37,7 @@ module TypeConstraint =
     let WidgetSubtypeOfTypeKey =
         Widgets.register "SubtypeOfType" (fun widget ->
             let struct (typar, tp) = Widgets.getScalarValue widget SubtypeOfType
+
             TypeConstraint.SubtypeOfType(TypeConstraintSubtypeOfTypeNode(SingleTextNode.Create(typar), tp, Range.Zero)))
 
     let SupportsMember =

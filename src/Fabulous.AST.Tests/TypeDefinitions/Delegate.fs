@@ -14,6 +14,7 @@ module Delegate =
             AnonymousModule() {
                 Delegate("Delegate1", Paren(Tuple([ Int(); Int() ])), Int())
                 Delegate("Delegate2", SignatureParameter("a", Paren(Tuple([ Int(); Int() ]))), Int())
+
                 Delegate("Delegate3", Tuple([ SignatureParameter("a", Int()); SignatureParameter("b", Int()) ]), Int())
             }
         }

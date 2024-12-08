@@ -194,7 +194,7 @@ application.
 
             ExceptionDefn("DontSqueezeTheBananaException", Field("Banana"))
 
-            Class("Banana", ImplicitConstructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
+            TypeDefn("Banana", ImplicitConstructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
                 MemberVal("IsPeeled", Bool(false), true, true)
                 MemberVal("Orientation", "orientation", true, true)
 

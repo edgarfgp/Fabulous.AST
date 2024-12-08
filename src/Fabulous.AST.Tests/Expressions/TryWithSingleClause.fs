@@ -18,6 +18,7 @@ module TryWithSingleClause =
                 )
 
                 TryWithSingleClauseExpr(Int(12), MatchClauseExpr(WildPat(), FailWithExpr(String("Not implemented"))))
+
                 TryWithSingleClauseExpr("12", MatchClauseExpr("_", FailWithExpr(String("Not implemented"))))
             }
         }

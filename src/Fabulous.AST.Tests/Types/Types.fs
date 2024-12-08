@@ -42,7 +42,9 @@ module Types =
                 Value(ConstantPat(Constant "e"), ConstantExpr(UInt16 1us)).returnType(UInt16())
 
                 Value(ConstantPat(Constant "f"), ConstantExpr(Int(1))).returnType(Int())
+
                 Value(ConstantPat(Constant "g"), ConstantExpr(UInt32 1u)).returnType(UInt32())
+
                 Value(ConstantPat(Constant "h"), ConstantExpr(Int64 1L)).returnType(Int64())
 
                 Value(ConstantPat(Constant "i"), ConstantExpr(UInt64 1UL)).returnType(UInt64())
@@ -354,19 +356,19 @@ let t: array<array<string>> = false
         Oak() {
             AnonymousModule() {
                 // Base Type Constraint
-                ClassEnd ("Class1") { }
+                ClassEnd("Class1") { () }
                 |> _.typeParams(PostfixList("'T when 'T :> System.Exception"))
 
-                ClassEnd ("Class11") { }
+                ClassEnd("Class11") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.Exception"))))
 
-                ClassEnd ("Class2") { }
+                ClassEnd("Class2") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.IComparable"))))
 
-                ClassEnd ("Class3") { }
+                ClassEnd("Class3") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "null")))
 
-                ClassEnd ("Class5") { }
+                ClassEnd("Class5") { () }
                 |> _.typeParams(
                     PostfixList(
                         TyparDecl("'T"),
@@ -374,7 +376,7 @@ let t: array<array<string>> = false
                     )
                 )
 
-                ClassEnd ("Class6") { }
+                ClassEnd("Class6") { () }
                 |> _.typeParams(
                     PostfixList(TyparDecl("'T"), SupportsMember("'T", SigMember(Val("member", "Property1", Int()))))
                 )
@@ -387,30 +389,30 @@ let t: array<array<string>> = false
                     )
                 )
 
-                ClassEnd ("Class8") { }
+                ClassEnd("Class8") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "not struct")))
 
                 // Enumeration constraint with underlying value specified
-                ClassEnd ("Class9") { }
+                ClassEnd("Class9") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), EnumOrDelegate("'T", "enum", UInt32())))
 
                 // 'T must implement IComparable, or be an array type with comparable
                 // elements, or be System.IntPtr or System.UIntPtr. Also, 'T must not have
                 // the NoComparison attribute.
-                ClassEnd ("Class10") { }
+                ClassEnd("Class10") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "comparison")))
 
                 // 'T must support equality. This is true for any type that does not
                 // have the NoEquality attribute.
-                ClassEnd ("Class11") { }
+                ClassEnd("Class11") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
 
-                ClassEnd ("Class12") { }
+                ClassEnd("Class12") { () }
                 |> _.typeParams(
                     PostfixList(TyparDecl("'T"), EnumOrDelegate("'T", "delegate", [ "obj * System.EventArgs"; "unit" ]))
                 )
 
-                ClassEnd ("Class122") { }
+                ClassEnd("Class122") { () }
                 |> _.typeParams(
                     PostfixList(
                         TyparDecl("'T"),
@@ -418,7 +420,7 @@ let t: array<array<string>> = false
                     )
                 )
 
-                ClassEnd ("Class13") { }
+                ClassEnd("Class13") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "unmanaged")))
 
                 // Member constraints with two type parameters
@@ -469,7 +471,7 @@ let t: array<array<string>> = false
                     .toInlined()
 
                 // If there are multiple constraints, use the and keyword to separate them.
-                ClassEnd ("Class14") { }
+                ClassEnd("Class14") { () }
                 |> _.typeParams(
                     PostfixList(
                         [ TyparDecl("'T"); TyparDecl("'U") ],

@@ -71,7 +71,7 @@ Oak() {
 
             Default("this.GetValue", UnitPat(), ConstantExpr(String("Hello World")))
 
-            InterfaceMember("IDisposable") { Member("this.Dispose", UnitPat(), ConstantUnit()) }
+            InterfaceWith("IDisposable") { Member("this.Dispose", UnitPat(), ConstantUnit()) }
         }
     }
 }

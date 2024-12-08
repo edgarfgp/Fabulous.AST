@@ -227,6 +227,7 @@ type Person() =
             AnonymousModule() {
                 TypeDefn("Person", ParenPat()) {
                     Member(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
+
                     Member(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
                 }
                 |> _.typeParams(PostfixList([ "'other" ]))
