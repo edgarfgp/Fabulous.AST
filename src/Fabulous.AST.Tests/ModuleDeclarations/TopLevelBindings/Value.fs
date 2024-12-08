@@ -101,8 +101,7 @@ let z = \"\"\"12\"\"\"
     let ``Simple Let binding with return widget type``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .returnType(LongIdent "int")
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).returnType(Int())
 
                 Value(ConstantPat(Constant("y")), ConstantExpr(Int(12)))
                     .returnType(LongIdent("int"))

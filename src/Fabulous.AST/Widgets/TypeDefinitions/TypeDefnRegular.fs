@@ -23,6 +23,8 @@ module TypeDefnRegular =
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
+    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
+
     let WidgetKey =
         Widgets.register "TypeDefnRegular" (fun widget ->
             let name =
@@ -74,11 +76,20 @@ module TypeDefnRegular =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
+            let isRecursive =
+                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+
+            let leadingKeyword =
+                if isRecursive then
+                    (SingleTextNode.``and``)
+                else
+                    (SingleTextNode.``type``)
+
             TypeDefnRegularNode(
                 TypeNameNode(
                     xmlDocs,
                     attributes,
-                    SingleTextNode.``type``,
+                    leadingKeyword,
                     accessControl,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
@@ -157,6 +168,10 @@ type TypeDefnRegularModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnRegularNode>) =
         this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<TypeDefnRegularNode>) =
+        this.AddScalar(TypeDefnRegular.IsRecursive.WithValue(true))
 
 type TypeDefnRegularYieldExtensions =
     [<Extension>]
