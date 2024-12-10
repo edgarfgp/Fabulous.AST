@@ -19,8 +19,6 @@ module TypeDefnRegular =
     let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
     let TypeParams = Attributes.defineWidget "TypeParams"
 
-    let Constraints = Attributes.defineWidget "Constraints"
-
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
@@ -41,10 +39,6 @@ module TypeDefnRegular =
                 Widgets.tryGetNodeFromWidget widget TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
-
-            let constraints =
-                Widgets.tryGetNodeFromWidget<TypeConstraint list> widget Constraints
-                |> ValueOption.defaultValue []
 
             let lines = Widgets.tryGetScalarValue widget XmlDocs
 
@@ -81,9 +75,9 @@ module TypeDefnRegular =
 
             let leadingKeyword =
                 if isRecursive then
-                    (SingleTextNode.``and``)
+                    SingleTextNode.``and``
                 else
-                    (SingleTextNode.``type``)
+                    SingleTextNode.``type``
 
             TypeDefnRegularNode(
                 TypeNameNode(
@@ -93,7 +87,7 @@ module TypeDefnRegular =
                     accessControl,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
-                    constraints,
+                    [],
                     constructor,
                     Some(SingleTextNode.equals),
                     None,
@@ -135,12 +129,6 @@ type TypeDefnRegularModifiers =
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(TypeDefnRegular.TypeParams.WithValue(typeParams.Compile()))
-
-    [<Extension>]
-    static member inline constraints
-        (this: WidgetBuilder<TypeDefnRegularNode>, constraints: WidgetBuilder<TypeConstraint list>)
-        =
-        this.AddWidget(TypeDefnRegular.Constraints.WithValue(constraints.Compile()))
 
     [<Extension>]
     static member inline attributes

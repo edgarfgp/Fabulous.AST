@@ -135,6 +135,48 @@ type Colors =
 """
 
     [<Fact>]
+    let ``Produces recursive unions``() =
+        Oak() {
+            AnonymousModule() {
+                Union("Colors") {
+                    UnionCase("Red", [ Field("a", String()); Field("b", LongIdent "int") ])
+
+                    UnionCase("Green", [ Field(String()); Field(Int()) ])
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                }
+
+                Union("Shapes") {
+                    UnionCase("Circle", [ Field("radius", LongIdent "float") ])
+                    UnionCase("Rectangle", [ Field("width", LongIdent "float"); Field("height", LongIdent "float") ])
+
+                    UnionCase(
+                        "Triangle",
+                        [ Field("a", LongIdent "float")
+                          Field("b", LongIdent "float")
+                          Field("c", LongIdent "float") ]
+                    )
+                }
+                |> _.toRecursive()
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    | Red of a: string * b: int
+    | Green of string * int
+    | Blue
+    | Yellow
+
+and Shapes =
+    | Circle of radius: float
+    | Rectangle of width: float * height: float
+    | Triangle of a: float * b: float * c: float
+
+"""
+
+    [<Fact>]
     let ``Produces an union with SingleTextNode``() =
         Oak() {
             AnonymousModule() {

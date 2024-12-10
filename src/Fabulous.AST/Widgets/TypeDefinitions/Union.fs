@@ -25,6 +25,8 @@ module Union =
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
+    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
+
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
             let name =
@@ -67,11 +69,20 @@ module Union =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
+            let isRecursive =
+                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+
+            let leadingKeyword =
+                if isRecursive then
+                    SingleTextNode.``and``
+                else
+                    SingleTextNode.``type``
+
             TypeDefnUnionNode(
                 TypeNameNode(
                     xmlDocs,
                     attributes,
-                    SingleTextNode.``type``,
+                    leadingKeyword,
                     None,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
@@ -138,6 +149,10 @@ type UnionModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnUnionNode>) =
         this.AddScalar(Union.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<TypeDefnUnionNode>) =
+        this.AddScalar(Union.IsRecursive.WithValue(true))
 
 type UnionYieldExtensions =
     [<Extension>]
