@@ -10,6 +10,7 @@ index: 15
 # Classes
 Classes are types that represent objects that can have properties, methods, and events.
 For details on how the AST node works, please refer to the [Fantomas Core documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-typedefnregularnode.html).
+See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/classes) for a comparison between the two.
 *)
 
 (**

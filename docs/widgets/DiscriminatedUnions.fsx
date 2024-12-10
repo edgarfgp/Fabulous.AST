@@ -15,6 +15,7 @@ Discriminated unions are useful for heterogeneous data; data that can have speci
 In addition, recursive discriminated unions are used to represent tree data structures.
 
 For details on how the AST node works, please refer to the [Fantomas Core documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-typedefnunionnode.html).
+See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/discriminated-unions) for a comparison between the two.
 *)
 
 (**
