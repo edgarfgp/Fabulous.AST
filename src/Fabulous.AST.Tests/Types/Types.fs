@@ -360,10 +360,10 @@ let t: array<array<string>> = false
                 |> _.typeParams(PostfixList("'T when 'T :> System.Exception"))
 
                 ClassEnd("Class11") { () }
-                |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.Exception"))))
+                |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOf("'T", LongIdent("System.Exception"))))
 
                 ClassEnd("Class2") { () }
-                |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOfType("'T", LongIdent("System.IComparable"))))
+                |> _.typeParams(PostfixList(TyparDecl("'T"), SubtypeOf("'T", LongIdent("System.IComparable"))))
 
                 ClassEnd("Class3") { () }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "null")))
@@ -372,21 +372,18 @@ let t: array<array<string>> = false
                 |> _.typeParams(
                     PostfixList(
                         TyparDecl("'T"),
-                        SupportsMember("'T", SigMember(Val("member", "Method1", LongIdent("'T -> int"))))
+                        Supports("'T", SigMember(Val("member", "Method1", LongIdent("'T -> int"))))
                     )
                 )
 
                 ClassEnd("Class6") { () }
                 |> _.typeParams(
-                    PostfixList(TyparDecl("'T"), SupportsMember("'T", SigMember(Val("member", "Property1", Int()))))
+                    PostfixList(TyparDecl("'T"), Supports("'T", SigMember(Val("member", "Property1", Int()))))
                 )
 
                 TypeDefn("Class7", ParenPat()) { MemberVal("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
                 |> _.typeParams(
-                    PostfixList(
-                        TyparDecl("'T"),
-                        SupportsMember("'T", SigMember(Val("new", "", Funs("'T", [ "unit" ]))))
-                    )
+                    PostfixList(TyparDecl("'T"), Supports("'T", SigMember(Val("new", "", Funs("'T", [ "unit" ])))))
                 )
 
                 ClassEnd("Class8") { () }
@@ -431,9 +428,9 @@ let t: array<array<string>> = false
                         TuplePat(
                             [ ParameterPat(
                                   NamedPat("value1"),
-                                  WithGlobalConstraints(
+                                  WithGlobal(
                                       "^T",
-                                      SupportsMember(
+                                      Supports(
                                           "^T",
                                           SigMember(Val([ "static"; "member" ], "(+)", LongIdent("^T * ^T -> ^T")))
                                       )
@@ -454,9 +451,9 @@ let t: array<array<string>> = false
                         TuplePat(
                             [ ParameterPat(
                                   NamedPat("value1"),
-                                  WithGlobalConstraints(
+                                  WithGlobal(
                                       "^T",
-                                      SupportsMember(
+                                      Supports(
                                           Paren(Or("^T", "^U")),
                                           SigMember(Val([ "static"; "member" ], "(+)", LongIdent("^T * ^U -> ^T")))
                                       )

@@ -14,9 +14,9 @@ module InheritConstructor =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ImplicitConstructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("name")), String()) ])))
+                    Constructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("name")), String()) ])))
                 ) {
-                    InheritConstructorUnit(LongIdent "BaseClass")
+                    InheritUnit(LongIdent "BaseClass")
 
                     Member(
                         "this.Name",

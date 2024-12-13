@@ -13,7 +13,7 @@ module ExplicitConstructor =
         Oak() {
             AnonymousModule() {
                 TypeDefn("Person", ParenPat()) {
-                    ExplicitConstructor(
+                    Constructor(
                         ParenPat(
                             TuplePat(
                                 [ (ConstantPat(Constant "x"))
@@ -25,11 +25,11 @@ module ExplicitConstructor =
                             [ RecordFieldExpr("X", ConstantExpr(Constant "x"))
                               RecordFieldExpr("Y", ConstantExpr(Constant "y"))
                               RecordFieldExpr("Z", ConstantExpr(Constant "z")) ]
-                        ),
-                        "this"
+                        )
                     )
+                        .alias("this")
 
-                    ExplicitConstructor(
+                    Constructor(
                         ParenPat(TuplePat([ Constant "x"; Constant "y"; Constant "z" ])),
                         RecordExpr(
                             [ RecordFieldExpr("X", ConstantExpr(Constant "x"))

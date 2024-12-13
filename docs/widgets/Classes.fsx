@@ -53,7 +53,7 @@ Oak() {
     AnonymousModule() {
         TypeDefn(
             "MyClass1",
-            ImplicitConstructor(
+            Constructor(
                 ParenPat(
                     TuplePat(
                         [ ParameterPat(ConstantPat(Constant("x")), Int())
@@ -64,17 +64,14 @@ Oak() {
         ) {
             DoExpr(AppExpr(" printfn", [ String("%d %d"); Constant("x"); Constant("y") ]))
 
-            ExplicitConstructor(
+            Constructor(
                 ParenPat(TuplePat([ Constant("0"); Constant("0") ])),
                 AppExpr("MyClass1", ParenExpr(TupleExpr([ Constant("0"); Constant("0") ])))
             )
         }
         |> _.triviaBefore(SingleLine("Constructors"))
 
-        TypeDefn(
-            "MyClass2",
-            ImplicitConstructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("dataIn")), Int()) ])))
-        ) {
+        TypeDefn("MyClass2", Constructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("dataIn")), Int()) ])))) {
             LetBindings([ Value("data", "dataIn") ])
             DoExpr(AppExpr(" self.PrintMessage", ConstantUnit()))
 
@@ -127,7 +124,7 @@ Oak() {
 
         TypeDefn(
             "Person2",
-            ImplicitConstructor(
+            Constructor(
                 ParenPat(
                     TuplePat(
                         [ ParameterPat(ConstantPat(Constant("name")), String())

@@ -5,7 +5,6 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 open Fabulous.AST
-open Fabulous.AST.StackAllocatedCollections.StackList
 
 module ImplicitConstructor =
 
@@ -61,39 +60,16 @@ module ImplicitConstructor =
 [<AutoOpen>]
 module ImplicitConstructorBuilders =
     type Ast with
-        static member ImplicitConstructor(pattern: WidgetBuilder<Pattern>) =
+        static member Constructor(pattern: WidgetBuilder<Pattern>) =
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
                 ImplicitConstructor.Pattern.WithValue(pattern.Compile())
             )
 
-        static member ImplicitConstructor(pattern: WidgetBuilder<Constant>) =
-            Ast.ImplicitConstructor(Ast.ConstantPat(pattern))
+        static member Constructor(pattern: WidgetBuilder<Constant>) =
+            Ast.Constructor(Ast.ConstantPat(pattern))
 
-        static member ImplicitConstructor(pattern: string) =
-            Ast.ImplicitConstructor(Ast.Constant(pattern))
-
-        static member ImplicitConstructorAlias(pattern: WidgetBuilder<Pattern>, alias: string) =
-            WidgetBuilder<ImplicitConstructorNode>(
-                ImplicitConstructor.WidgetKey,
-                AttributesBundle(
-                    StackList.one(ImplicitConstructor.Alias.WithValue(alias)),
-                    [| ImplicitConstructor.Pattern.WithValue(pattern.Compile()) |],
-                    Array.empty
-                )
-            )
-
-        static member ImplicitConstructorAlias(pattern: WidgetBuilder<Constant>, alias: string) =
-            Ast.ImplicitConstructorAlias(Ast.ConstantPat(pattern), alias)
-
-        static member ImplicitConstructorAlias(pattern: string, alias: string) =
-            Ast.ImplicitConstructorAlias(Ast.Constant(pattern), alias)
-
-        static member ImplicitConstructorAlias(alias: string) =
-            WidgetBuilder<ImplicitConstructorNode>(
-                ImplicitConstructor.WidgetKey,
-                ImplicitConstructor.Alias.WithValue(alias)
-            )
+        static member Constructor(pattern: string) = Ast.Constructor(Ast.Constant(pattern))
 
 type ImplicitConstructorModifiers =
     [<Extension>]
@@ -128,3 +104,7 @@ type ImplicitConstructorModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<ImplicitConstructorNode>) =
         this.AddScalar(ImplicitConstructor.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline alias(this: WidgetBuilder<ImplicitConstructorNode>, alias: string) =
+        this.AddScalar(ImplicitConstructor.Alias.WithValue(alias))

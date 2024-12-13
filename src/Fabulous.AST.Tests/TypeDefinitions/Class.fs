@@ -62,7 +62,7 @@ type private Person() =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ImplicitConstructor(
+                    Constructor(
                         ParenPat(
                             TuplePat(
                                 [ ParameterPat(ConstantPat(Constant("name")))
@@ -116,7 +116,7 @@ type Person(name, lastName, age) =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ImplicitConstructor(
+                    Constructor(
                         ParenPat(
                             TuplePat(
                                 [ ParameterPat(ConstantPat(Constant("name")), String())
@@ -142,7 +142,7 @@ type Person(name: string, lastName: string, ?age: int) =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ImplicitConstructor(
+                    Constructor(
                         ParenPat(
                             TuplePat(
                                 [ ParameterPat(ConstantPat(Constant("name")), String())
@@ -190,10 +190,7 @@ type Person(name: string, age: int) =
     let ``Produces a TypeDefn marked as a Struct explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
-                (TypeDefn(
-                    "Person",
-                    ImplicitConstructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))
-                ) {
+                (TypeDefn("Person", Constructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 })
                     .attribute(Attribute("Struct"))

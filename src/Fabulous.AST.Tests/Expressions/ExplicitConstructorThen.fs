@@ -13,9 +13,9 @@ module ExplicitConstructorThen =
     let ``let value with a ExplicitConstructorThen expression``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("MyClass", ImplicitConstructor(ParenPat(TuplePat([ "x0"; "y0"; "z0" ])))) {
-                    ExplicitConstructor(
-                        ParenPat(""),
+                TypeDefn("MyClass", Constructor(ParenPat(TuplePat([ "x0"; "y0"; "z0" ])))) {
+                    Constructor(
+                        ParenPat(),
                         CompExprBodyExpr(
                             [ AppSingleParenArgExpr("MyClass", ParenExpr(TupleExpr([ "0"; "0"; "0" ])))
                               ExplicitConstructorThenExpr(

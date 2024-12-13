@@ -14,7 +14,7 @@ module AutoProperty =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ImplicitConstructor(
+                    Constructor(
                         ParenPat(
                             TuplePat(
                                 [ ParameterPat(ConstantPat(Constant("name")), String())

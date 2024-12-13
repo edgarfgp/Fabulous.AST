@@ -53,25 +53,23 @@ module InheritConstructor =
 [<AutoOpen>]
 module InheritConstructorBuilders =
     type Ast with
-        static member InheritConstructorTypeOnly(value: WidgetBuilder<Type>) =
+        static member InheritType(value: WidgetBuilder<Type>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetTypedOnlyKey,
                 InheritConstructor.TypeValue.WithValue(value.Compile())
             )
 
-        static member InheritConstructorTypeOnly(value: string) =
-            Ast.InheritConstructorTypeOnly(Ast.LongIdent(value))
+        static member InheritType(value: string) = Ast.InheritType(Ast.LongIdent(value))
 
-        static member InheritConstructorUnit(value: WidgetBuilder<Type>) =
+        static member InheritUnit(value: WidgetBuilder<Type>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetUnitKey,
                 InheritConstructor.TypeValue.WithValue(value.Compile())
             )
 
-        static member InheritConstructorUnit(value: string) =
-            Ast.InheritConstructorUnit(Ast.LongIdent(value))
+        static member InheritUnit(value: string) = Ast.InheritUnit(Ast.LongIdent(value))
 
-        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
+        static member InheritParen(value: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetParentKey,
                 AttributesBundle(
@@ -82,22 +80,22 @@ module InheritConstructorBuilders =
                 )
             )
 
-        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
-            Ast.InheritConstructorParen(value, Ast.ConstantExpr(expr))
+        static member InheritParen(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
+            Ast.InheritParen(value, Ast.ConstantExpr(expr))
 
-        static member InheritConstructorParen(value: WidgetBuilder<Type>, expr: string) =
-            Ast.InheritConstructorParen(value, Ast.Constant(expr))
+        static member InheritParen(value: WidgetBuilder<Type>, expr: string) =
+            Ast.InheritParen(value, Ast.Constant(expr))
 
-        static member InheritConstructorParen(value: string, expr: WidgetBuilder<Expr>) =
-            Ast.InheritConstructorParen(Ast.LongIdent(value), expr)
+        static member InheritParen(value: string, expr: WidgetBuilder<Expr>) =
+            Ast.InheritParen(Ast.LongIdent(value), expr)
 
-        static member InheritConstructorParen(value: string, expr: WidgetBuilder<Constant>) =
-            Ast.InheritConstructorParen(Ast.LongIdent(value), Ast.ConstantExpr(expr))
+        static member InheritParen(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.InheritParen(Ast.LongIdent(value), Ast.ConstantExpr(expr))
 
-        static member InheritConstructorParen(value: string, expr: string) =
-            Ast.InheritConstructorParen(value, Ast.Constant(expr))
+        static member InheritParen(value: string, expr: string) =
+            Ast.InheritParen(value, Ast.Constant(expr))
 
-        static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
+        static member InheritOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<InheritConstructor>(
                 InheritConstructor.WidgetOtherKey,
                 AttributesBundle(
@@ -108,17 +106,17 @@ module InheritConstructorBuilders =
                 )
             )
 
-        static member InheritConstructorOther(value: string, expr: WidgetBuilder<Expr>) =
-            Ast.InheritConstructorOther(Ast.LongIdent(value), expr)
+        static member InheritOther(value: string, expr: WidgetBuilder<Expr>) =
+            Ast.InheritOther(Ast.LongIdent(value), expr)
 
-        static member InheritConstructorOther(value: string, expr: WidgetBuilder<Constant>) =
-            Ast.InheritConstructorOther(value, Ast.ConstantExpr(expr))
+        static member InheritOther(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.InheritOther(value, Ast.ConstantExpr(expr))
 
-        static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
-            Ast.InheritConstructorOther(value, Ast.ConstantExpr(expr))
+        static member InheritOther(value: WidgetBuilder<Type>, expr: WidgetBuilder<Constant>) =
+            Ast.InheritOther(value, Ast.ConstantExpr(expr))
 
-        static member InheritConstructorOther(value: WidgetBuilder<Type>, expr: string) =
-            Ast.InheritConstructorOther(value, Ast.Constant(expr))
+        static member InheritOther(value: WidgetBuilder<Type>, expr: string) =
+            Ast.InheritOther(value, Ast.Constant(expr))
 
-        static member InheritConstructorOther(value: string, expr: string) =
-            Ast.InheritConstructorOther(Ast.LongIdent(value), expr)
+        static member InheritOther(value: string, expr: string) =
+            Ast.InheritOther(Ast.LongIdent(value), expr)

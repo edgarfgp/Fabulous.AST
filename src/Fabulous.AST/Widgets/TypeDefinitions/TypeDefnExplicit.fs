@@ -117,7 +117,7 @@ module TypeDefnExplicitBuilders =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``class``)
 
         static member ClassEnd(name: string, constructor: WidgetBuilder<Pattern>) =
-            Ast.BaseClassEnd(name, ValueSome(Ast.ImplicitConstructor(constructor)), SingleTextNode.``class``)
+            Ast.BaseClassEnd(name, ValueSome(Ast.Constructor(constructor)), SingleTextNode.``class``)
 
         static member StructEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``struct``)
@@ -126,7 +126,7 @@ module TypeDefnExplicitBuilders =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``struct``)
 
         static member StructEnd(name: string, constructor: WidgetBuilder<Pattern>) =
-            Ast.BaseClassEnd(name, ValueSome(Ast.ImplicitConstructor(constructor)), SingleTextNode.``struct``)
+            Ast.BaseClassEnd(name, ValueSome(Ast.Constructor(constructor)), SingleTextNode.``struct``)
 
         static member InterfaceEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``interface``)

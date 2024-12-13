@@ -14,7 +14,7 @@ module Inherit =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ImplicitConstructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("name")), String()) ])))
+                    Constructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("name")), String()) ])))
                 ) {
                     Inherit(LongIdent "BaseClass()")
 

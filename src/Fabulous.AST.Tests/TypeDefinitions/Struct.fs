@@ -14,13 +14,13 @@ module Struct =
                 StructEnd("X") {
                     ValField("x", Int()).toMutable()
 
-                    ExplicitConstructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
+                    Constructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
                 }
 
                 StructEnd("Y") {
                     ValField("x", Int()).toMutable()
 
-                    ExplicitConstructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
+                    Constructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
                 }
             }
         }
@@ -45,7 +45,7 @@ type Y =
             AnonymousModule() {
                 TypeDefn("X") {
                     ValField("x", Int()).toMutable()
-                    ExplicitConstructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
+                    Constructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
                 }
                 |> _.attribute(Attribute("Struct"))
             }

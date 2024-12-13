@@ -114,7 +114,7 @@ module TypeDefnRegularBuilders =
             )
 
         static member TypeDefn(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseTypeDefn(name, ValueSome(Ast.ImplicitConstructor parameters))
+            Ast.BaseTypeDefn(name, ValueSome(Ast.Constructor parameters))
 
         static member TypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseTypeDefn(name, ValueSome constructor)

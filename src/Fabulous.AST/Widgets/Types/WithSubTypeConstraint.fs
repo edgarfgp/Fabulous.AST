@@ -15,7 +15,7 @@ module WithSubTypeConstraint =
 [<AutoOpen>]
 module WithSubTypeConstraintBuilders =
     type Ast with
-        static member WithSubTypeConstraint(value: WidgetBuilder<TypeConstraint>) =
+        static member WithSubType(value: WidgetBuilder<TypeConstraint>) =
             WidgetBuilder<Type>(
                 WithSubTypeConstraint.WidgetKey,
                 WithSubTypeConstraint.ConstraintValue.WithValue(value.Compile())

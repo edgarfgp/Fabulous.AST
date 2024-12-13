@@ -17,7 +17,7 @@ module WithGlobalConstraints =
 [<AutoOpen>]
 module WithGlobalConstraintsBuilders =
     type Ast with
-        static member WithGlobalConstraints(tp: WidgetBuilder<Type>, constraints: WidgetBuilder<TypeConstraint> list) =
+        static member WithGlobal(tp: WidgetBuilder<Type>, constraints: WidgetBuilder<TypeConstraint> list) =
             let constraints = constraints |> List.map Gen.mkOak
 
             WidgetBuilder<Type>(
@@ -25,8 +25,8 @@ module WithGlobalConstraintsBuilders =
                 WithGlobalConstraints.GlobalConstraints.WithValue(Gen.mkOak tp, constraints)
             )
 
-        static member WithGlobalConstraints(tp: string, constraints: WidgetBuilder<TypeConstraint> list) =
-            Ast.WithGlobalConstraints(Ast.LongIdent(tp), constraints)
+        static member WithGlobal(tp: string, constraints: WidgetBuilder<TypeConstraint> list) =
+            Ast.WithGlobal(Ast.LongIdent(tp), constraints)
 
-        static member WithGlobalConstraints(tp: string, constraints: WidgetBuilder<TypeConstraint>) =
-            Ast.WithGlobalConstraints(tp, [ constraints ])
+        static member WithGlobal(tp: string, constraints: WidgetBuilder<TypeConstraint>) =
+            Ast.WithGlobal(tp, [ constraints ])
