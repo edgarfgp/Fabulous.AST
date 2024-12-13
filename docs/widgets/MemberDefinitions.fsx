@@ -23,7 +23,7 @@ Oak() {
 
         TypeDefn(
             "Person",
-            ImplicitConstructor(
+            Constructor(
                 ParenPat(
                     TuplePat(
                         [ ParameterPat("name", String())
@@ -43,7 +43,7 @@ Oak() {
                   ) ]
             )
 
-            ExplicitConstructor(
+            Constructor(
                 ParenPat(TuplePat([ Constant "name"; Constant "middle" ])),
                 NewExpr(LongIdent "Person", ParenExpr(TupleExpr([ "name"; "middle" ])))
             )

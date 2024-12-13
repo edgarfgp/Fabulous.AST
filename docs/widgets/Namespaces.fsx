@@ -136,7 +136,7 @@ Oak() {
 
         ExceptionDefn("DontSqueezeTheBananaException", Field("Banana"))
 
-        TypeDefn("Banana", ImplicitConstructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
+        TypeDefn("Banana", Constructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
             MemberVal("IsPeeled", Bool(false), true, true)
             MemberVal("Orientation", "orientation", true, true)
 
