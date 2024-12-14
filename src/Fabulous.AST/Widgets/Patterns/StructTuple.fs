@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -21,11 +21,7 @@ module StructTuplePatBuilders =
         static member StructTuplePat(values: WidgetBuilder<Pattern> list) =
             WidgetBuilder<Pattern>(
                 StructTuplePat.WidgetKey,
-                AttributesBundle(
-                    StackList.one(StructTuplePat.Parameters.WithValue(values |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
+                StructTuplePat.Parameters.WithValue(values |> List.map Gen.mkOak)
             )
 
         static member StructTuplePat(values: WidgetBuilder<Constant> list) =

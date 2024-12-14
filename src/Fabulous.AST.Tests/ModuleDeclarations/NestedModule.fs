@@ -12,7 +12,7 @@ module NestedModule =
 
     [<Fact>]
     let ``Produces a NestedModule``() =
-        Oak() { AnonymousModule() { NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } } }
+        Oak() { AnonymousModule() { Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } } }
 
         |> produces
             """
@@ -26,7 +26,7 @@ module A =
     let ``Produces a NestedModule with xml comments``() =
         Oak() {
             AnonymousModule() {
-                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
                 |> _.xmlDocs([ "I'm a xml comment" ])
             }
         }
@@ -44,7 +44,7 @@ module A =
     let ``Produces a NestedModule with an attribute``() =
         Oak() {
             AnonymousModule() {
-                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
                 |> _.attribute(Attribute("AutoOpen"))
             }
         }
@@ -62,7 +62,7 @@ module A =
     let ``Produces a NestedModule using escape hatch``() =
         Oak() {
             AnonymousModule() {
-                NestedModule("A") {
+                Module("A") {
                     BindingNode(
                         None,
                         None,
@@ -96,7 +96,7 @@ module A =
     let ``Produces a recursive NestedModule``() =
         Oak() {
             AnonymousModule() {
-                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
                 |> _.toRecursive()
             }
         }
@@ -113,7 +113,7 @@ module rec A =
     let ``Produces a private NestedModule``() =
         Oak() {
             AnonymousModule() {
-                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
                 |> _.toPrivate()
             }
         }
@@ -129,7 +129,7 @@ module private A =
     let ``Produces a internal NestedModule``() =
         Oak() {
             AnonymousModule() {
-                NestedModule("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
                 |> _.toInternal()
             }
         }
@@ -145,7 +145,7 @@ module internal A =
     let ``Produces a module with nested module``() =
         Oak() {
             Namespace("Fabulous.AST") {
-                NestedModule("Foo") {
+                Module("Foo") {
                     BindingNode(
                         None,
                         None,
@@ -179,7 +179,7 @@ module Foo =
     let ``Produces a module with multiple nested module``() =
         Oak() {
             Namespace("Fabulous.AST") {
-                NestedModule("Foo") {
+                Module("Foo") {
                     BindingNode(
                         None,
                         None,
@@ -199,7 +199,7 @@ module Foo =
                     )
                 }
 
-                NestedModule("Bar") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
+                Module("Bar") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) }
             }
         }
 

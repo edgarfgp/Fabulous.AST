@@ -22,11 +22,11 @@ module InterfaceMembers =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    InterfaceMember(LongIdent "IMyInterface") {
-                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                    InterfaceWith(LongIdent "IMyInterface") {
+                        Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
 
-                    InterfaceMember("IMyInterface2") { () }
+                    InterfaceWith("IMyInterface2") { () }
                 }
 
             }
@@ -35,10 +35,10 @@ module InterfaceMembers =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type IMyInterface2 =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors<'other> =
     { Green: string
@@ -67,8 +67,8 @@ type Colors<'other> =
                     Field("MyField2", LongIdent("string"))
                 })
                     .members() {
-                    InterfaceMember(LongIdent "IMyInterface") {
-                        Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                    InterfaceWith(LongIdent "IMyInterface") {
+                        Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                     }
                 }
             }
@@ -77,7 +77,7 @@ type Colors<'other> =
             """
 
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type MyRecord =
     { MyField1: int
@@ -94,9 +94,9 @@ type MyRecord =
             AnonymousModule() {
                 TypeDefn("Meh") { AbstractMember("Name", String()) }
 
-                Class("Person") {
-                    InterfaceMember(LongIdent "Meh") {
-                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                TypeDefn("Person", ParenPat()) {
+                    InterfaceWith(LongIdent "Meh") {
+                        Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
                 }
             }
@@ -104,7 +104,7 @@ type MyRecord =
         |> produces
             """
 type Meh =
-    abstract member Name: string
+    abstract Name: string
 
 type Person() =
     interface Meh with
@@ -118,36 +118,36 @@ type Person() =
             AnonymousModule() {
                 TypeDefn("IFoo") { AbstractMember("Name", String()) }
 
-                InterfaceEnd("IFoo2")
+                InterfaceEnd("IFoo2") { () }
 
                 TypeDefn("IFoo3") { AbstractMember("Name", String()) }
 
-                InterfaceEnd("IFoo4")
+                InterfaceEnd("IFoo4") { () }
 
-                Class("Person") {
-                    InterfaceMember(LongIdent "IFoo") {
-                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                TypeDefn("Person", ParenPat()) {
+                    InterfaceWith(LongIdent "IFoo") {
+                        Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
-                    InterfaceMember("IFoo2") { () }
+                    InterfaceWith("IFoo2") { () }
 
-                    InterfaceMember(LongIdent "IFoo3") {
-                        Property(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
+                    InterfaceWith(LongIdent "IFoo3") {
+                        Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
 
-                    InterfaceMember("IFoo4") { () }
+                    InterfaceWith("IFoo4") { () }
                 }
             }
         }
         |> produces
             """
 type IFoo =
-    abstract member Name: string
+    abstract Name: string
 
 type IFoo2 = interface end
 
 type IFoo3 =
-    abstract member Name: string
+    abstract Name: string
 
 type IFoo4 = interface end
 

@@ -88,8 +88,8 @@ type Option<'a> =
                     UnionCase("Yellow")
                 })
                     .members() {
-                    InterfaceMember("IMyInterface") {
-                        Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
+                    InterfaceWith("IMyInterface") {
+                        Member(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
                     }
                 }
             }
@@ -97,7 +97,7 @@ type Option<'a> =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors =
     | Red
@@ -131,6 +131,48 @@ type Colors =
     | Green of string * int
     | Blue
     | Yellow
+
+"""
+
+    [<Fact>]
+    let ``Produces recursive unions``() =
+        Oak() {
+            AnonymousModule() {
+                Union("Colors") {
+                    UnionCase("Red", [ Field("a", String()); Field("b", LongIdent "int") ])
+
+                    UnionCase("Green", [ Field(String()); Field(Int()) ])
+                    UnionCase("Blue")
+                    UnionCase("Yellow")
+                }
+
+                Union("Shapes") {
+                    UnionCase("Circle", [ Field("radius", LongIdent "float") ])
+                    UnionCase("Rectangle", [ Field("width", LongIdent "float"); Field("height", LongIdent "float") ])
+
+                    UnionCase(
+                        "Triangle",
+                        [ Field("a", LongIdent "float")
+                          Field("b", LongIdent "float")
+                          Field("c", LongIdent "float") ]
+                    )
+                }
+                |> _.toRecursive()
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    | Red of a: string * b: int
+    | Green of string * int
+    | Blue
+    | Yellow
+
+and Shapes =
+    | Circle of radius: float
+    | Rectangle of width: float * height: float
+    | Triangle of a: float * b: float * c: float
 
 """
 
@@ -249,8 +291,8 @@ type Colors<'other> =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    InterfaceMember(LongIdent "IMyInterface") {
-                        Property(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
+                    InterfaceWith(LongIdent "IMyInterface") {
+                        Member(ConstantPat(Constant("x.GetValue")), ConstantExpr(String ""))
                     }
                 }
             }
@@ -259,7 +301,7 @@ type Colors<'other> =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors<'other> =
     | Red of a: string * 'other

@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -26,10 +26,7 @@ module FillExprNodeBuilders =
     type Ast with
 
         static member FillExpr(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<FillExprNode>(
-                FillExprNode.WidgetKey,
-                AttributesBundle(StackList.empty(), [| FillExprNode.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<FillExprNode>(FillExprNode.WidgetKey, FillExprNode.Value.WithValue(value.Compile()))
 
         static member FillExpr(value: WidgetBuilder<Constant>) = Ast.FillExpr(Ast.ConstantExpr(value))
 

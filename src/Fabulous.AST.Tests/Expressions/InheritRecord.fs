@@ -14,25 +14,25 @@ module InheritRecord =
         Oak() {
             AnonymousModule() {
                 InheritRecordExpr(
-                    InheritConstructorTypeOnly(LongIdent "BaseClass"),
+                    InheritType(LongIdent "BaseClass"),
                     [ RecordFieldExpr("B", ConstantExpr(Int 1))
                       RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
 
                 InheritRecordExpr(
-                    InheritConstructorParen(LongIdent "BaseClass", ParenExpr(ConstantExpr(Constant "1"))),
+                    InheritParen(LongIdent "BaseClass", ParenExpr(ConstantExpr(Constant "1"))),
                     [ RecordFieldExpr("B", ConstantExpr(Constant "1"))
                       RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
 
                 InheritRecordExpr(
-                    InheritConstructorUnit(LongIdent "BaseClass"),
+                    InheritUnit(LongIdent "BaseClass"),
                     [ RecordFieldExpr("B", ConstantExpr(Constant "1"))
                       RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
 
                 InheritRecordExpr(
-                    InheritConstructorOther(LongIdent "BaseClass", ParenExpr(ConstantExpr(Constant "1"))),
+                    InheritOther(LongIdent "BaseClass", ParenExpr(ConstantExpr(Constant "1"))),
                     [ RecordFieldExpr("B", ConstantExpr(Constant "1"))
                       RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )

@@ -12,9 +12,9 @@ module AutoProperty =
     let ``Produces a classes with an auto property``() =
         Oak() {
             AnonymousModule() {
-                Class(
+                TypeDefn(
                     "Person",
-                    ImplicitConstructor(
+                    Constructor(
                         ParenPat(
                             TuplePat(
                                 [ ParameterPat(ConstantPat(Constant("name")), String())
@@ -23,21 +23,21 @@ module AutoProperty =
                         )
                     )
                 ) {
-                    AutoProperty("Name", ConstantExpr(Constant("name")), true, true)
-                    AutoProperty("Age", ConstantExpr(Constant("age")), true, true)
-                    AutoProperty("A", ConstantExpr(String("")), true)
-                    AutoProperty("B", ConstantExpr(String("")), true).toStatic()
+                    MemberVal("Name", ConstantExpr(Constant("name")), true, true)
+                    MemberVal("Age", ConstantExpr(Constant("age")), true, true)
+                    MemberVal("A", ConstantExpr(String("")), true)
+                    MemberVal("B", ConstantExpr(String("")), true).toStatic()
 
-                    AutoProperty("C", ConstantExpr(String("")), true, true)
+                    MemberVal("C", ConstantExpr(String("")), true, true)
                         .toPrivate()
                         .xmlDocs([ "Im a private property" ])
 
-                    AutoProperty("D", ConstantExpr(String("")), true, true)
+                    MemberVal("D", ConstantExpr(String("")), true, true)
                         .toInternal()
                         .returnType(String())
                         .xmlDocs([ "Im an internal property with a return type" ])
 
-                    AutoProperty("E", ConstantExpr(String("")), true, true)
+                    MemberVal("E", ConstantExpr(String("")), true, true)
                         .toPublic()
                         .attribute(Attribute("System.Obsolete"))
                         .xmlDocs([ "Im a public property with an attribute" ])

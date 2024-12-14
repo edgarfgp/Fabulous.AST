@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -29,10 +29,7 @@ module TypeTupleBuilders =
         static member Tuple(items: WidgetBuilder<Type> list) =
             let items = items |> List.map Gen.mkOak
 
-            WidgetBuilder<Type>(
-                TypeTuple.WidgetKey,
-                AttributesBundle(StackList.one(TypeTuple.Items.WithValue(items)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Type>(TypeTuple.WidgetKey, TypeTuple.Items.WithValue(items))
 
         static member Tuple(items: WidgetBuilder<Type> list, exponent: string) =
             let items = items |> List.map Gen.mkOak

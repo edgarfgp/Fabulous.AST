@@ -69,8 +69,8 @@ let x = 12
     let ``attributes on member and get, set properties``() =
         Oak() {
             AnonymousModule() {
-                Class("Object3D") {
-                    Property(
+                TypeDefn("Object3D", ParenPat()) {
+                    Member(
                         "this.position",
                         Setter(NamedPat("v"), SetExpr(ConstantExpr("_position"), ConstantExpr("v")))
                             .attribute(Attribute("Y")),

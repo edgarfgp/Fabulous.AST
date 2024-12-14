@@ -38,6 +38,7 @@ module SingleTextNode =
     let ``internal`` = SingleTextNode.Create "internal"
     let ``inline`` = SingleTextNode.Create "inline"
     let ``namespace`` = SingleTextNode.Create "namespace"
+    let ``global`` = SingleTextNode.Create "global"
     let ``module`` = SingleTextNode.Create "module"
     let colon = SingleTextNode.Create ":"
     let minus = SingleTextNode.Create "-"

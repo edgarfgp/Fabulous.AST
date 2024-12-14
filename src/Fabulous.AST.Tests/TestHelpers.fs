@@ -1,9 +1,7 @@
 namespace Fabulous.AST.Tests
 
-open Fabulous.Builders
-open Fantomas.Core
-open Fantomas.Core.SyntaxOak
 open Fabulous.AST
+open Fantomas.Core.SyntaxOak
 open Xunit
 
 [<AutoOpen>]

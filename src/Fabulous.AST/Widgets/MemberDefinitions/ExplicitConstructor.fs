@@ -1,13 +1,13 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ExplicitConstructorMember =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -22,14 +22,10 @@ module ExplicitConstructorMember =
 
     let WidgetKey =
         Widgets.register "ExplicitConstructorMember" (fun widget ->
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -72,7 +68,7 @@ module ExplicitConstructorMember =
 module ExplicitConstructorBuilders =
     type Ast with
 
-        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
+        static member Constructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<MemberDefnExplicitCtorNode>(
                 ExplicitConstructorMember.WidgetKey,
                 AttributesBundle(
@@ -83,50 +79,29 @@ module ExplicitConstructorBuilders =
                 )
             )
 
-        static member ExplicitConstructor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
-            Ast.ExplicitConstructor(Ast.ConstantPat(pattern), expr)
+        static member Constructor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.Constructor(Ast.ConstantPat(pattern), expr)
 
-        static member ExplicitConstructor(pattern: string, expr: WidgetBuilder<Expr>) =
-            Ast.ExplicitConstructor(Ast.Constant(pattern), expr)
+        static member Constructor(pattern: string, expr: WidgetBuilder<Expr>) =
+            Ast.Constructor(Ast.Constant(pattern), expr)
 
-        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
-            Ast.ExplicitConstructor(pattern, Ast.ConstantExpr(expr))
+        static member Constructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
+            Ast.Constructor(pattern, Ast.ConstantExpr(expr))
 
-        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: string) =
-            Ast.ExplicitConstructor(pattern, Ast.Constant(expr))
+        static member Constructor(pattern: WidgetBuilder<Pattern>, expr: string) =
+            Ast.Constructor(pattern, Ast.Constant(expr))
 
-        static member ExplicitConstructor(pattern: string, expr: string) =
-            Ast.ExplicitConstructor(Ast.ConstantPat(pattern), expr)
-
-        static member ExplicitConstructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, alias: string) =
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
-                ExplicitConstructorMember.WidgetKey,
-                AttributesBundle(
-                    StackList.one(ExplicitConstructorMember.Alias.WithValue(alias)),
-                    [| ExplicitConstructorMember.Pat.WithValue(pattern.Compile())
-                       ExplicitConstructorMember.ExprValue.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
-
-        static member ExplicitConstructor
-            (pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, alias: string)
-            =
-            Ast.ExplicitConstructor(pattern, Ast.ConstantExpr(expr), alias)
-
-        static member ExplicitConstructor(pattern: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, alias: string) =
-            Ast.ExplicitConstructor(Ast.ConstantPat(pattern), expr, alias)
-
-        static member ExplicitConstructor(pattern: string, expr: WidgetBuilder<Expr>, alias: string) =
-            Ast.ExplicitConstructor(Ast.Constant(pattern), expr, alias)
-
-        static member ExplicitConstructor(pattern: string, expr: string, alias: string) =
-            Ast.ExplicitConstructor(pattern, Ast.ConstantExpr expr, alias)
+        static member Constructor(pattern: string, expr: string) =
+            Ast.Constructor(Ast.ConstantPat(pattern), expr)
 
 type ExplicitConstructorModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(ExplicitConstructorMember.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: string list) =
-        this.AddScalar(ExplicitConstructorMember.XmlDocs.WithValue(xmlDocs))
+        ExplicitConstructorModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes
@@ -156,3 +131,7 @@ type ExplicitConstructorModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<MemberDefnExplicitCtorNode>) =
         this.AddScalar(ExplicitConstructorMember.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline alias(this: WidgetBuilder<MemberDefnExplicitCtorNode>, alias: string) =
+        this.AddScalar(ExplicitConstructorMember.Alias.WithValue(alias))

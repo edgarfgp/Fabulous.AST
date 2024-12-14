@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -31,21 +31,18 @@ module PatternBuilders =
     type Ast with
 
         static member ConstantPat(value: WidgetBuilder<Constant>) =
-            WidgetBuilder<Pattern>(
-                Pattern.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Pattern.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Pattern>(Pattern.WidgetKey, Pattern.Value.WithValue(value.Compile()))
 
         static member ConstantPat(value: string) = Ast.ConstantPat(Ast.Constant(value))
 
         static member NullPat() =
-            WidgetBuilder<Pattern>(Pattern.WidgetNullKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
+            WidgetBuilder<Pattern>(Pattern.WidgetNullKey)
 
         static member WildPat() =
-            WidgetBuilder<Pattern>(Pattern.WidgetWildKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
+            WidgetBuilder<Pattern>(Pattern.WidgetWildKey)
 
         static member UnitPat() =
-            WidgetBuilder<Pattern>(Pattern.WidgetUnitKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
+            WidgetBuilder<Pattern>(Pattern.WidgetUnitKey)
 
 type PatternModifiers =
     [<Extension>]

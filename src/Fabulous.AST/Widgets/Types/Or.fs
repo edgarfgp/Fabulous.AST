@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -17,14 +17,7 @@ module OrType =
 module OrTypeBuilders =
     type Ast with
         static member Or(lhs: WidgetBuilder<Type>, rhs: WidgetBuilder<Type>) =
-            WidgetBuilder<Type>(
-                OrType.WidgetKey,
-                AttributesBundle(
-                    StackList.one(OrType.Identifier.WithValue(Gen.mkOak lhs, Gen.mkOak rhs)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Type>(OrType.WidgetKey, OrType.Identifier.WithValue(Gen.mkOak lhs, Gen.mkOak rhs))
 
         static member Or(lhs: string, rhs: WidgetBuilder<Type>) = Ast.Or(Ast.LongIdent(lhs), rhs)
 

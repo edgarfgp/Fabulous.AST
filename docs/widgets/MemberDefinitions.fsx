@@ -2,7 +2,7 @@
 ---
 title: MemberDefinitions
 category: widgets
-index: 5
+index: 6
 ---
 *)
 
@@ -12,21 +12,18 @@ index: 5
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
-open Fantomas.Core
 open type Fabulous.AST.Ast
 
 Oak() {
     AnonymousModule() {
         Open("System")
 
-        Class(
+        TypeDefn(
             "Person",
-            ImplicitConstructor(
+            Constructor(
                 ParenPat(
                     TuplePat(
                         [ ParameterPat("name", String())
@@ -46,25 +43,25 @@ Oak() {
                   ) ]
             )
 
-            ExplicitConstructor(
+            Constructor(
                 ParenPat(TuplePat([ Constant "name"; Constant "middle" ])),
                 NewExpr(LongIdent "Person", ParenExpr(TupleExpr([ "name"; "middle" ])))
             )
 
-            Method(
+            Member(
                 "Create2",
                 ParenPat(TuplePat [ "name"; "middle" ]),
                 NewExpr(LongIdent "Person", ParenExpr(TupleExpr([ "name"; "middle" ])))
             )
                 .toStatic()
 
-            Property("this.Name", "name")
+            Member("this.Name", "name")
 
-            AutoProperty("Middle", "middle", true)
+            MemberVal("Middle", "middle", true)
 
-            AutoProperty("LastName", "lastName", true, true)
+            MemberVal("LastName", "lastName", true, true)
 
-            Property(
+            Member(
                 "this.Age",
                 Getter(ConstantExpr(Constant("_age"))),
                 Setter(ParenPat(NamedPat("value")), LongIdentSetExpr("_age", "value"))
@@ -74,7 +71,7 @@ Oak() {
 
             Default("this.GetValue", UnitPat(), ConstantExpr(String("Hello World")))
 
-            InterfaceMember("IDisposable") { Method("this.Dispose", UnitPat(), ConstantUnit()) }
+            InterfaceWith("IDisposable") { Member("this.Dispose", UnitPat(), ConstantUnit()) }
         }
     }
 }

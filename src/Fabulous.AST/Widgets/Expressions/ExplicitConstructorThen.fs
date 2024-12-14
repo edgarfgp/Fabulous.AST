@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -23,11 +23,7 @@ module ExplicitConstructorThenBuilders =
         static member ExplicitConstructorThenExpr(value: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 ExplicitConstructorThen.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| ExplicitConstructorThen.Value.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                ExplicitConstructorThen.Value.WithValue(value.Compile())
             )
 
         static member ExplicitConstructorThenExpr(value: WidgetBuilder<Constant>) =

@@ -1,14 +1,14 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ExternBinding =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -22,14 +22,10 @@ module ExternBinding =
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -120,8 +116,12 @@ module ExternBindingNodeBuilders =
 
 type ExternBindingNodeModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, comments: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(ExternBinding.XmlDocs.WithValue(comments.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, comments: string list) =
-        this.AddScalar(ExternBinding.XmlDocs.WithValue(comments))
+        ExternBindingNodeModifiers.xmlDocs(this, Ast.XmlDocs(comments))
 
     [<Extension>]
     static member inline attributes

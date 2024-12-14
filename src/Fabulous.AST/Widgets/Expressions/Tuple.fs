@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -26,10 +26,7 @@ module TupleBuilders =
         static member TupleExpr(value: WidgetBuilder<Expr> list) =
             let parameters = value |> List.map Gen.mkOak
 
-            WidgetBuilder<Expr>(
-                Tuple.WidgetKey,
-                AttributesBundle(StackList.one(Tuple.Items.WithValue(parameters)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Expr>(Tuple.WidgetKey, Tuple.Items.WithValue(parameters))
 
         static member TupleExpr(value: WidgetBuilder<Constant> list) =
             Ast.TupleExpr(value |> List.map Ast.ConstantExpr)

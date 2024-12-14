@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -16,12 +16,12 @@ module TypeDefnRegular =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let TypeParams = Attributes.defineWidget "TypeParams"
 
-    let IsClass = Attributes.defineScalar<bool> "IsClass"
-
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
+    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
 
     let WidgetKey =
         Widgets.register "TypeDefnRegular" (fun widget ->
@@ -30,18 +30,6 @@ module TypeDefnRegular =
 
             let constructor =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget ImplicitConstructor
-                |> ValueOption.defaultValue(
-                    ImplicitConstructorNode(
-                        None,
-                        None,
-                        None,
-                        Pattern.Unit(
-                            UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)
-                        ),
-                        None,
-                        Range.Zero
-                    )
-                )
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
@@ -52,23 +40,20 @@ module TypeDefnRegular =
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
-            let isClass = Widgets.getScalarValue widget IsClass
-
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let constructor = if not isClass then None else Some constructor
+            let constructor =
+                match constructor with
+                | ValueNone -> None
+                | ValueSome constructor -> Some constructor
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -81,11 +66,20 @@ module TypeDefnRegular =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
+            let isRecursive =
+                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+
+            let leadingKeyword =
+                if isRecursive then
+                    SingleTextNode.``and``
+                else
+                    SingleTextNode.``type``
+
             TypeDefnRegularNode(
                 TypeNameNode(
                     xmlDocs,
                     attributes,
-                    SingleTextNode.``type``,
+                    leadingKeyword,
                     accessControl,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
@@ -102,12 +96,12 @@ module TypeDefnRegular =
 [<AutoOpen>]
 module TypeDefnRegularBuilders =
     type Ast with
-        static member BaseClass(name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption) =
+        static member BaseTypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption) =
             CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
                 TypeDefnRegular.WidgetKey,
                 TypeDefnRegular.Members,
                 AttributesBundle(
-                    StackList.two(TypeDefnRegular.Name.WithValue(name), TypeDefnRegular.IsClass.WithValue(true)),
+                    StackList.one(TypeDefnRegular.Name.WithValue(name)),
                     [| match constructor with
                        | ValueSome constructor -> TypeDefnRegular.ImplicitConstructor.WithValue(constructor.Compile())
                        | ValueNone -> () |],
@@ -115,26 +109,22 @@ module TypeDefnRegularBuilders =
                 )
             )
 
-        static member Class(name: string) = Ast.BaseClass(name, ValueNone)
+        static member TypeDefn(name: string, parameters: WidgetBuilder<Pattern>) =
+            Ast.BaseTypeDefn(name, ValueSome(Ast.Constructor parameters))
 
-        static member Class(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
-            Ast.BaseClass(name, ValueSome constructor)
+        static member TypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
+            Ast.BaseTypeDefn(name, ValueSome constructor)
 
-        static member TypeDefn(name: string) =
-            CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
-                TypeDefnRegular.WidgetKey,
-                TypeDefnRegular.Members,
-                AttributesBundle(
-                    StackList.two(TypeDefnRegular.Name.WithValue(name), TypeDefnRegular.IsClass.WithValue(false)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+        static member TypeDefn(name: string) = Ast.BaseTypeDefn(name, ValueNone)
 
 type TypeDefnRegularModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(TypeDefnRegular.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string list) =
-        this.AddScalar(TypeDefnRegular.XmlDocs.WithValue(xmlDocs))
+        TypeDefnRegularModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: WidgetBuilder<TyparDecls>) =
@@ -166,6 +156,10 @@ type TypeDefnRegularModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnRegularNode>) =
         this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<TypeDefnRegularNode>) =
+        this.AddScalar(TypeDefnRegular.IsRecursive.WithValue(true))
 
 type TypeDefnRegularYieldExtensions =
     [<Extension>]

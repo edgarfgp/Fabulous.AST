@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -19,11 +19,13 @@ module Union =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let TypeParams = Attributes.defineWidget "TypeParams"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
+    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
 
     let WidgetKey =
         Widgets.register "Union" (fun widget ->
@@ -37,14 +39,10 @@ module Union =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
                 |> ValueOption.defaultValue []
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -67,11 +65,20 @@ module Union =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
+            let isRecursive =
+                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+
+            let leadingKeyword =
+                if isRecursive then
+                    SingleTextNode.``and``
+                else
+                    SingleTextNode.``type``
+
             TypeDefnUnionNode(
                 TypeNameNode(
                     xmlDocs,
                     attributes,
-                    SingleTextNode.``type``,
+                    leadingKeyword,
                     None,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
@@ -96,7 +103,7 @@ module UnionBuilders =
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                AttributesBundle(StackList.one(Union.Name.WithValue(name)), Array.empty, Array.empty)
+                Union.Name.WithValue(name)
             )
 
 type UnionModifiers =
@@ -109,8 +116,12 @@ type UnionModifiers =
         this.AddWidget(Union.TypeParams.WithValue(typeParams.Compile()))
 
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Union.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: string list) =
-        this.AddScalar(Union.XmlDocs.WithValue(xmlDocs))
+        UnionModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes
@@ -138,6 +149,10 @@ type UnionModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnUnionNode>) =
         this.AddScalar(Union.Accessibility.WithValue(AccessControl.Internal))
+
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<TypeDefnUnionNode>) =
+        this.AddScalar(Union.IsRecursive.WithValue(true))
 
 type UnionYieldExtensions =
     [<Extension>]

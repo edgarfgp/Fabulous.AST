@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -62,7 +62,7 @@ module ObjExprBuilders =
             CollectionBuilder<Expr, BindingNode>(
                 ObjExpr.WidgetKey,
                 ObjExpr.Bindings,
-                AttributesBundle(StackList.empty(), [| ObjExpr.Name.WithValue(name.Compile()) |], Array.empty)
+                ObjExpr.Name.WithValue(name.Compile())
             )
 
         static member ObjExpr(name: string) =

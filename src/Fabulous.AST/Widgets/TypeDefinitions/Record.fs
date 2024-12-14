@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -19,7 +19,7 @@ module Record =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let TypeParams = Attributes.defineWidget "TypeParams"
 
@@ -36,14 +36,10 @@ module Record =
                 Widgets.tryGetNodesFromWidgetCollection widget Members
                 |> ValueOption.defaultValue []
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -97,7 +93,7 @@ module RecordBuilders =
             CollectionBuilder<TypeDefnRecordNode, FieldNode>(
                 Record.WidgetKey,
                 Record.RecordCaseNode,
-                AttributesBundle(StackList.one(Record.Name.WithValue(name)), Array.empty, Array.empty)
+                Record.Name.WithValue(name)
             )
 
 type RecordModifiers =
@@ -106,8 +102,12 @@ type RecordModifiers =
         AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
 
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Record.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: string list) =
-        this.AddScalar(Record.XmlDocs.WithValue(xmlDocs))
+        RecordModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

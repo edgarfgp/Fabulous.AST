@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -35,11 +35,7 @@ module StaticOptimizationConstraintBuilders =
         static member WhenTyparIsStruct(identifier: string) =
             WidgetBuilder<StaticOptimizationConstraint>(
                 StaticOptimizationConstraint.WidgetWhenTyparIsStructKey,
-                AttributesBundle(
-                    StackList.one(StaticOptimizationConstraint.Typar.WithValue(identifier)),
-                    Array.empty,
-                    Array.empty
-                )
+                StaticOptimizationConstraint.Typar.WithValue(identifier)
             )
 
         static member WhenTyparTyconEqualsTycon(identifier: string, typedValue: WidgetBuilder<Type>) =

@@ -1,8 +1,6 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fantomas.Core.SyntaxOak
+open Fabulous.AST
 
 module EscapeHatch =
     let Node = Attributes.defineScalar<obj> "Node"

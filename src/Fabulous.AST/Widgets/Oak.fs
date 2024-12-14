@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -28,6 +28,7 @@ module Oak =
 [<AutoOpen>]
 module SyntaxOakBuilders =
     type Ast with
+        /// Creates an Oak AST node
         static member Oak() =
             CollectionBuilder<Oak, 'marker>(Oak.WidgetKey, Oak.Decls)
 
@@ -42,18 +43,6 @@ type SyntaxOakModifiers =
 
 type SyntaxOakExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, Oak>, x: NamespaceNode) : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<NamespaceNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        SyntaxOakExtensions.Yield(this, node)
-
-    [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, Oak>, x: ModuleOrNamespaceNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
@@ -65,14 +54,17 @@ type SyntaxOakExtensions =
         let node = Gen.mkOak x
         SyntaxOakExtensions.Yield(this, node)
 
+    /// Allows Anonymous Module components to be yielded directly into a Module
+    /// Useful since there's no common holder of declarations or generic WidgetBuilder than can be used
+    /// when yielding different types of declarations
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, Oak>, x: TopLevelModuleNode) : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<TopLevelModuleNode>)
-        : CollectionContent =
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ModuleOrNamespaceNode>) =
         let node = Gen.mkOak x
-        SyntaxOakExtensions.Yield(this, node)
+
+        let ws =
+            node.Declarations
+            |> List.map(fun x -> Ast.EscapeHatch(x).Compile())
+            |> List.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = ws }

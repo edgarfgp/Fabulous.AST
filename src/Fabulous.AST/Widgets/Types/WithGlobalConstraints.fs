@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -17,20 +17,16 @@ module WithGlobalConstraints =
 [<AutoOpen>]
 module WithGlobalConstraintsBuilders =
     type Ast with
-        static member WithGlobalConstraints(tp: WidgetBuilder<Type>, constraints: WidgetBuilder<TypeConstraint> list) =
+        static member WithGlobal(tp: WidgetBuilder<Type>, constraints: WidgetBuilder<TypeConstraint> list) =
             let constraints = constraints |> List.map Gen.mkOak
 
             WidgetBuilder<Type>(
                 WithGlobalConstraints.WidgetKey,
-                AttributesBundle(
-                    StackList.one(WithGlobalConstraints.GlobalConstraints.WithValue(Gen.mkOak tp, constraints)),
-                    Array.empty,
-                    Array.empty
-                )
+                WithGlobalConstraints.GlobalConstraints.WithValue(Gen.mkOak tp, constraints)
             )
 
-        static member WithGlobalConstraints(tp: string, constraints: WidgetBuilder<TypeConstraint> list) =
-            Ast.WithGlobalConstraints(Ast.LongIdent(tp), constraints)
+        static member WithGlobal(tp: string, constraints: WidgetBuilder<TypeConstraint> list) =
+            Ast.WithGlobal(Ast.LongIdent(tp), constraints)
 
-        static member WithGlobalConstraints(tp: string, constraints: WidgetBuilder<TypeConstraint>) =
-            Ast.WithGlobalConstraints(tp, [ constraints ])
+        static member WithGlobal(tp: string, constraints: WidgetBuilder<TypeConstraint>) =
+            Ast.WithGlobal(tp, [ constraints ])

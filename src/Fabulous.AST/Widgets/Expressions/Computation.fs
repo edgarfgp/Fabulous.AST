@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -26,10 +26,7 @@ module ComputationBuilders =
     type Ast with
 
         static member ComputationExpr(body: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                Computation.WidgetKey,
-                AttributesBundle(StackList.empty(), [| Computation.BodyExpr.WithValue(body.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(Computation.WidgetKey, Computation.BodyExpr.WithValue(body.Compile()))
 
         static member ComputationExpr(body: WidgetBuilder<Constant>) =
             Ast.ComputationExpr(Ast.ConstantExpr(body))

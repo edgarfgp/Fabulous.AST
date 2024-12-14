@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -17,7 +17,7 @@ module TypeDefnExplicit =
     let TypeParams = Attributes.defineWidget "TypeParams"
 
     let Constructor = Attributes.defineWidget "Constructor"
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let Kind = Attributes.defineScalar<SingleTextNode> "Kind"
@@ -34,14 +34,10 @@ module TypeDefnExplicit =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeParams
@@ -95,17 +91,17 @@ module TypeDefnExplicit =
 [<AutoOpen>]
 module TypeDefnExplicitBuilders =
     type Ast with
-
         static member private BaseClassEnd
             (name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption, kind: SingleTextNode)
             =
-            WidgetBuilder<TypeDefnExplicitNode>(
+            CollectionBuilder<TypeDefnExplicitNode, MemberDefn>(
                 TypeDefnExplicit.WidgetKey,
+                TypeDefnExplicit.Members,
                 AttributesBundle(
                     StackList.two(TypeDefnExplicit.Name.WithValue(name), TypeDefnExplicit.Kind.WithValue(kind)),
                     [| match constructor with
-                       | ValueNone -> ()
-                       | ValueSome value -> TypeDefnExplicit.Constructor.WithValue(value.Compile()) |],
+                       | ValueSome constructor -> TypeDefnExplicit.Constructor.WithValue(constructor.Compile())
+                       | ValueNone -> () |],
                     Array.empty
                 )
             )
@@ -116,19 +112,29 @@ module TypeDefnExplicitBuilders =
         static member ClassEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``class``)
 
+        static member ClassEnd(name: string, constructor: WidgetBuilder<Pattern>) =
+            Ast.BaseClassEnd(name, ValueSome(Ast.Constructor(constructor)), SingleTextNode.``class``)
+
         static member StructEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``struct``)
 
         static member StructEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``struct``)
 
+        static member StructEnd(name: string, constructor: WidgetBuilder<Pattern>) =
+            Ast.BaseClassEnd(name, ValueSome(Ast.Constructor(constructor)), SingleTextNode.``struct``)
+
         static member InterfaceEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``interface``)
 
 type TypeDefnExplicitModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(TypeDefnExplicit.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
-        this.AddScalar(TypeDefnExplicit.XmlDocs.WithValue(xmlDocs))
+        TypeDefnExplicitModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes
@@ -160,10 +166,6 @@ type TypeDefnExplicitModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnExplicitNode>) =
         this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Internal))
-
-    [<Extension>]
-    static member inline members(this: WidgetBuilder<TypeDefnExplicitNode>) =
-        AttributeCollectionBuilder<TypeDefnExplicitNode, MemberDefn>(this, TypeDefnExplicit.Members)
 
 type TypeDefnExplicitYieldExtensions =
     [<Extension>]

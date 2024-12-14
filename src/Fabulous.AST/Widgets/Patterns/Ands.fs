@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -18,14 +18,7 @@ module AndsBuilders =
     type Ast with
 
         static member AndsPat(values: WidgetBuilder<Pattern> list) =
-            WidgetBuilder<Pattern>(
-                Ands.WidgetKey,
-                AttributesBundle(
-                    StackList.one(Ands.Items.WithValue(values |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Pattern>(Ands.WidgetKey, Ands.Items.WithValue(values |> List.map Gen.mkOak))
 
         static member AndsPat(values: WidgetBuilder<Constant> list) =
             let values = values |> List.map Ast.ConstantPat

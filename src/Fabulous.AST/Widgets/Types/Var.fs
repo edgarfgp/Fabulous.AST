@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 
@@ -20,7 +20,4 @@ module TypeVar =
 module TypeVarBuilders =
     type Ast with
         static member Var(value: string) =
-            WidgetBuilder<Type>(
-                TypeVar.WidgetKey,
-                AttributesBundle(StackList.one(TypeVar.Identifier.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Type>(TypeVar.WidgetKey, TypeVar.Identifier.WithValue(value))

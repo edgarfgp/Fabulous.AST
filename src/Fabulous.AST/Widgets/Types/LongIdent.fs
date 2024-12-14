@@ -1,29 +1,31 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module TypeLongIdent =
 
-    let Value = Attributes.defineScalar<string> "Value"
+    let Value = Attributes.defineScalar<string list> "Value"
 
     let WidgetKey =
         Widgets.register "LongIdentType" (fun widget ->
-            let value = Widgets.getScalarValue widget Value
+            let values =
+                Widgets.getScalarValue widget Value
+                |> List.intersperse "."
+                |> List.map(fun value -> IdentifierOrDot.Ident(SingleTextNode.Create(value)))
 
-            Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)))
+            Type.LongIdent(IdentListNode(values, Range.Zero)))
 
 [<AutoOpen>]
 module LongIdentTypeBuilders =
     type Ast with
 
-        static member LongIdent(value: string) =
-            WidgetBuilder<Type>(
-                TypeLongIdent.WidgetKey,
-                AttributesBundle(StackList.one(TypeLongIdent.Value.WithValue(value)), Array.empty, Array.empty)
-            )
+        static member LongIdent(value: string list) =
+            WidgetBuilder<Type>(TypeLongIdent.WidgetKey, TypeLongIdent.Value.WithValue(value))
+
+        static member LongIdent(value: string) = Ast.LongIdent([ value ])
 
         static member Boolean() = Ast.LongIdent("bool")
 

@@ -12,8 +12,8 @@ module Augmentation =
         Oak() {
             AnonymousModule() {
                 Augmentation("DateTime") {
-                    Property(ConstantPat(Constant("this.Print")), ConstantExpr(ConstantUnit()))
-                    Method("this.Print", UnitPat(), ConstantExpr(ConstantUnit()))
+                    Member(ConstantPat(Constant("this.Print")), ConstantExpr(ConstantUnit()))
+                    Member("this.Print", UnitPat(), ConstantExpr(ConstantUnit()))
                 }
             }
         }
@@ -31,13 +31,13 @@ type DateTime with
             AnonymousModule() {
                 Open("Microsoft.FSharp.Core")
 
-                Class("A", ImplicitConstructor(ParenPat(ParameterPat("x", AppPrefix(Int(), "'u"))))) {
-                    Property("_.X", ConstantExpr("x"))
+                TypeDefn("A", Constructor(ParenPat(ParameterPat("x", AppPrefix(Int(), "'u"))))) {
+                    Member("_.X", ConstantExpr("x"))
                 }
                 |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))
 
-                NestedModule("M") {
-                    Augmentation("A") { Property(ConstantPat(Constant("this.Y")), ConstantExpr("this.X")) }
+                Module("M") {
+                    Augmentation("A") { Member(ConstantPat(Constant("this.Y")), ConstantExpr("this.X")) }
                     |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))
                 }
 
@@ -61,7 +61,7 @@ let main argv = 0
 
     [<Fact>]
     let ``Produces an augmentation with accessors``() =
-        Oak() { AnonymousModule() { Augmentation("A") { Property("this.Y", "this.X") } |> _.toPrivate() } }
+        Oak() { AnonymousModule() { Augmentation("A") { Member("this.Y", "this.X") } |> _.toPrivate() } }
         |> produces
             """
 type private A with
@@ -72,7 +72,7 @@ type private A with
     let ``Produces an augmentation with xml docs``() =
         Oak() {
             AnonymousModule() {
-                Augmentation("A") { Property("this.Y", "this.X") }
+                Augmentation("A") { Member("this.Y", "this.X") }
                 |> _.xmlDocs([ "This is a test" ])
             }
         }
@@ -87,7 +87,7 @@ type A with
     let ``Produces an augmentation with attributes``() =
         Oak() {
             AnonymousModule() {
-                Augmentation("A") { Property("this.Y", "this.X") }
+                Augmentation("A") { Member("this.Y", "this.X") }
                 |> _.attributes([ Attribute("Test") ])
             }
         }
@@ -102,7 +102,7 @@ type A with
     let ``Produces an augmentation with constraints``() =
         Oak() {
             AnonymousModule() {
-                Augmentation("A") { Property("this.Y", "this.X") }
+                Augmentation("A") { Member("this.Y", "this.X") }
                 |> _.typeParams(PostfixList(TyparDecl("'T")))
                 |> _.constraints([ ConstraintSingle("'T", "equality") ])
             }
@@ -117,7 +117,7 @@ type A<'T> when 'T: equality with
     let ``Produces an augmentation with type params constraints``() =
         Oak() {
             AnonymousModule() {
-                Augmentation("A") { Property("this.Y", "this.X") }
+                Augmentation("A") { Member("this.Y", "this.X") }
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
             }
         }

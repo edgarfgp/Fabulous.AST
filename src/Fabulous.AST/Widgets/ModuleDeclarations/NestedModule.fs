@@ -1,9 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -20,7 +19,9 @@ module NestedModule =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDoc"
+
+    let IsTopLevel = Attributes.defineScalar<bool> "IsTopLevel"
 
     let WidgetKey =
         Widgets.register "NestedModule" (fun widget ->
@@ -34,6 +35,9 @@ module NestedModule =
             let isRecursive =
                 Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
 
+            let isTopLevel =
+                Widgets.tryGetScalarValue widget IsTopLevel |> ValueOption.defaultValue false
+
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
@@ -45,14 +49,10 @@ module NestedModule =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -74,11 +74,11 @@ module NestedModule =
 [<AutoOpen>]
 module NestedModuleBuilders =
     type Ast with
-        static member NestedModule(name: string) =
+        static member Module(name: string) =
             CollectionBuilder<NestedModuleNode, ModuleDecl>(
                 NestedModule.WidgetKey,
                 NestedModule.Decls,
-                AttributesBundle(StackList.one(NestedModule.Name.WithValue(name)), Array.empty, Array.empty)
+                NestedModule.Name.WithValue(name)
             )
 
 type NestedModuleModifiers =
@@ -99,8 +99,12 @@ type NestedModuleModifiers =
         this.AddScalar(NestedModule.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<NestedModuleNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(NestedModule.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<NestedModuleNode>, xmlDocs: string list) =
-        this.AddScalar(NestedModule.XmlDocs.WithValue(xmlDocs))
+        NestedModuleModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

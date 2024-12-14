@@ -1,8 +1,8 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -115,20 +115,14 @@ module TyparDeclsBuilders =
     type Ast with
 
         static member SinglePrefix(value: WidgetBuilder<TyparDeclNode>) =
-            WidgetBuilder<TyparDecls>(
-                TyparDecls.WidgetSinglePrefixKey,
-                AttributesBundle(StackList.empty(), [| TyparDecls.TyparDecl.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<TyparDecls>(TyparDecls.WidgetSinglePrefixKey, TyparDecls.TyparDecl.WithValue(value.Compile()))
 
         static member SinglePrefix(value: string) = Ast.SinglePrefix(Ast.TyparDecl(value))
 
         static member PrefixList(decls: WidgetBuilder<TyparDeclNode> list) =
             let decls = decls |> List.map Gen.mkOak
 
-            WidgetBuilder<TyparDecls>(
-                TyparDecls.WidgetPrefixListKey,
-                AttributesBundle(StackList.one(TyparDecls.Decls.WithValue(decls)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<TyparDecls>(TyparDecls.WidgetPrefixListKey, TyparDecls.Decls.WithValue(decls))
 
         static member PrefixList(decls: string list) =
             let decls = decls |> List.map Ast.TyparDecl

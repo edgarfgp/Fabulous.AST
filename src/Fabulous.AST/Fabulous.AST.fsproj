@@ -24,16 +24,24 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="DSL\Array.fs" />
+        <Compile Include="DSL\Primitives.fs" />
+        <Compile Include="DSL\AttributeDefinitions.fs" />
+        <Compile Include="DSL\Attributes.fs" />
+        <Compile Include="DSL\Builders.fs" />
+        <Compile Include="DSL\WidgetDefinitions.fs" />
+        <Compile Include="DSL\Widgets.fs" />
         <Compile Include="Widgets\SingleTextNode.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
+        <Compile Include="Widgets\XmlDocNode.fs" />
         <Compile Include="Widgets\Measure.fs" />
         <Compile Include="Widgets\Constant.fs" />
         <Compile Include="Widgets\Pattern.fs" />
         <Compile Include="Widgets\Expr.fs" />
         <Compile Include="Widgets\AttributeNode.fs" />
         <Compile Include="Widgets\ImplicitConstructor.fs" />
-        <Compile Include="Widgets\Trivia\Trivia.fs" />
+        <Compile Include="Widgets\Trivia.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Named.fs" />
         <Compile Include="Widgets\Patterns\Or.fs" />
@@ -184,14 +192,11 @@
         <Compile Include="Widgets\ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Exception.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ModuleDecl.fs" />
-        <Compile Include="Widgets\Namespace.fs" />
-        <Compile Include="Widgets\AnonymousModule.fs" />
-        <Compile Include="Widgets\TopLevelModule.fs" />
+        <Compile Include="Widgets\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\Oak.fs" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fabulous.Builders" />
         <PackageReference Include="Fantomas.Core" />
     </ItemGroup>
 

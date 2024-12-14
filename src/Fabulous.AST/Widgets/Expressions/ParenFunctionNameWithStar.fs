@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -28,9 +28,5 @@ module ParenFunctionNameWithStarBuilders =
         static member ParenFunctionNameWithStarExpr(name: string) =
             WidgetBuilder<Expr>(
                 ParenFunctionNameWithStar.WidgetKey,
-                AttributesBundle(
-                    StackList.one(ParenFunctionNameWithStar.FunctionName.WithValue(name)),
-                    Array.empty,
-                    Array.empty
-                )
+                ParenFunctionNameWithStar.FunctionName.WithValue(name)
             )

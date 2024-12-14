@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -18,10 +18,7 @@ module IndexFromEndBuilders =
     type Ast with
 
         static member IndexFromEndExpr(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                IndexFromEnd.WidgetKey,
-                AttributesBundle(StackList.empty(), [| IndexFromEnd.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(IndexFromEnd.WidgetKey, IndexFromEnd.Value.WithValue(value.Compile()))
 
         static member IndexFromEndExpr(value: WidgetBuilder<Constant>) =
             Ast.IndexFromEndExpr(Ast.ConstantExpr(value))

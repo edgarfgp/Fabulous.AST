@@ -12,8 +12,8 @@ module ExplicitConstructor =
     let ``Produces a classes ExplicitCtor``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    ExplicitConstructor(
+                TypeDefn("Person", ParenPat()) {
+                    Constructor(
                         ParenPat(
                             TuplePat(
                                 [ (ConstantPat(Constant "x"))
@@ -25,11 +25,11 @@ module ExplicitConstructor =
                             [ RecordFieldExpr("X", ConstantExpr(Constant "x"))
                               RecordFieldExpr("Y", ConstantExpr(Constant "y"))
                               RecordFieldExpr("Z", ConstantExpr(Constant "z")) ]
-                        ),
-                        "this"
+                        )
                     )
+                        .alias("this")
 
-                    ExplicitConstructor(
+                    Constructor(
                         ParenPat(TuplePat([ Constant "x"; Constant "y"; Constant "z" ])),
                         RecordExpr(
                             [ RecordFieldExpr("X", ConstantExpr(Constant "x"))

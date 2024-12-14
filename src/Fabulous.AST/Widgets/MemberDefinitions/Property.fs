@@ -1,9 +1,8 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module BindingProperty =
@@ -38,14 +37,10 @@ module BindingProperty =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
@@ -89,7 +84,7 @@ module BindingProperty =
 [<AutoOpen>]
 module BindingPropertyBuilders =
     type Ast with
-        static member Property(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
+        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
             WidgetBuilder<BindingNode>(
                 BindingProperty.WidgetKey,
                 AttributesBundle(
@@ -99,25 +94,25 @@ module BindingPropertyBuilders =
                 )
             )
 
-        static member Property(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>) =
-            Ast.Property(name, Ast.ConstantExpr(body))
+        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>) =
+            Ast.Member(name, Ast.ConstantExpr(body))
 
-        static member Property(name: WidgetBuilder<Pattern>, body: string) =
-            Ast.Property(name, Ast.ConstantExpr(Ast.Constant(body)))
+        static member Member(name: WidgetBuilder<Pattern>, body: string) =
+            Ast.Member(name, Ast.ConstantExpr(Ast.Constant(body)))
 
-        static member Property(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>) =
-            Ast.Property(Ast.ConstantPat(name), body)
+        static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>) =
+            Ast.Member(Ast.ConstantPat(name), body)
 
-        static member Property(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
-            Ast.Property(name, Ast.ConstantExpr(body))
+        static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
+            Ast.Member(name, Ast.ConstantExpr(body))
 
-        static member Property(name: string, body: WidgetBuilder<Expr>) = Ast.Property(Ast.Constant(name), body)
+        static member Member(name: string, body: WidgetBuilder<Expr>) = Ast.Member(Ast.Constant(name), body)
 
-        static member Property(name: WidgetBuilder<Constant>, body: string) =
-            Ast.Property(name, Ast.ConstantExpr(Ast.Constant(body)))
+        static member Member(name: WidgetBuilder<Constant>, body: string) =
+            Ast.Member(name, Ast.ConstantExpr(Ast.Constant(body)))
 
-        static member Property(name: string, body: WidgetBuilder<Constant>) =
-            Ast.Property(name, Ast.ConstantExpr(body))
+        static member Member(name: string, body: WidgetBuilder<Constant>) =
+            Ast.Member(name, Ast.ConstantExpr(body))
 
-        static member Property(name: string, body: string) =
-            Ast.Property(Ast.Constant(name), Ast.Constant(body))
+        static member Member(name: string, body: string) =
+            Ast.Member(Ast.Constant(name), Ast.Constant(body))

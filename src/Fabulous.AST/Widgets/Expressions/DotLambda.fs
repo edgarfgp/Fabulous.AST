@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -18,10 +18,7 @@ module DotLambdaBuilders =
     type Ast with
 
         static member DotLambdaExpr(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                DotLambda.WidgetKey,
-                AttributesBundle(StackList.empty(), [| DotLambda.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(DotLambda.WidgetKey, DotLambda.Value.WithValue(value.Compile()))
 
         static member DotLambdaExpr(value: WidgetBuilder<Constant>) =
             Ast.DotLambdaExpr(Ast.ConstantExpr(value))

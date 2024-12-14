@@ -1,7 +1,6 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
 open Fantomas.Core.SyntaxOak
 
 module ModuleDecl =
@@ -17,10 +16,7 @@ module ModuleDeclBuilders =
     type Ast with
 
         static member private BaseAny(value: ModuleDecl) =
-            WidgetBuilder<ModuleDecl>(
-                ModuleDecl.WidgetKey,
-                AttributesBundle(StackList.one(ModuleDecl.ModuleDecl.WithValue(value)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<ModuleDecl>(ModuleDecl.WidgetKey, ModuleDecl.ModuleDecl.WithValue(value))
 
         static member AnyModuleDecl(value: WidgetBuilder<TypeDefnRecordNode>) =
             let value = ModuleDecl.TypeDefn(TypeDefn.Record(Gen.mkOak value))

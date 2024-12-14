@@ -12,7 +12,7 @@ open type Ast
 module Module =
     [<Fact>]
     let ``Produces a top level module``() =
-        Oak() { TopLevelModule("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) } }
+        Oak() { Namespace("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) } |> _.toImplicit() }
         |> produces
             """
 module Fabulous.AST
@@ -23,7 +23,8 @@ let x = 3
     [<Fact>]
     let ``Produces a top level module with xml docs``() =
         Oak() {
-            TopLevelModule("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
+            Namespace("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
+            |> _.toImplicit()
             |> _.xmlDocs([ "Im a TopLevelModule" ])
         }
         |> produces
@@ -37,8 +38,9 @@ let x = 3
     [<Fact>]
     let ``Produces a top level module with an attribute``() =
         Oak() {
-            TopLevelModule("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
+            Namespace("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
             |> _.attribute(Attribute("AutoOpen"))
+            |> _.toImplicit()
         }
         |> produces
             """
@@ -51,9 +53,10 @@ let x = 3
     [<Fact>]
     let ``Produces a top level module with an attribute and xmldocs``() =
         Oak() {
-            TopLevelModule("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
+            Namespace("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
             |> _.attribute(Attribute("AutoOpen"))
             |> _.xmlDocs([ "Im a TopLevelModule" ])
+            |> _.toImplicit()
         }
         |> produces
             """
@@ -67,8 +70,9 @@ let x = 3
     [<Fact>]
     let ``Produces a recursive top level module``() =
         Oak() {
-            TopLevelModule("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
+            Namespace("Fabulous.AST") { Value("x", ConstantExpr(Int(3))) }
             |> _.toRecursive()
+            |> _.toImplicit()
         }
         |> produces
             """
@@ -79,7 +83,7 @@ let x = 3
 
     [<Fact>]
     let ``Produces a top level module with unit``() =
-        Oak() { TopLevelModule("Fabulous.AST") { ConstantExpr(ConstantUnit()) } }
+        Oak() { Namespace("Fabulous.AST") { ConstantExpr(ConstantUnit()) } |> _.toImplicit() }
         |> produces
             """
 module Fabulous.AST
@@ -89,7 +93,10 @@ module Fabulous.AST
 
     [<Fact>]
     let ``Produces a top level module with IdentListNode``() =
-        Oak() { TopLevelModule("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) } }
+        Oak() {
+            Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) }
+            |> _.toImplicit()
+        }
         |> produces
             """
 module Fabulous.AST
@@ -100,7 +107,7 @@ let x = 3
     [<Fact>]
     let ``Produces a top level module with IdentListNode and BindingNode``() =
         Oak() {
-            TopLevelModule("Fabulous.AST") {
+            Namespace("Fabulous.AST") {
                 BindingNode(
                     None,
                     None,
@@ -117,6 +124,7 @@ let x = 3
                     Range.Zero
                 )
             }
+            |> _.toImplicit()
         }
         |> produces
             """

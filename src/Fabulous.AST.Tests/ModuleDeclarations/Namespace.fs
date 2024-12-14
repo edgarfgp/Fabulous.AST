@@ -38,6 +38,17 @@ let x = 3
 """
 
     [<Fact>]
+    let ``Produces a global namespace``() =
+        Oak() { GlobalNamespace() { TypeDefn("MyClass", ParenPat()) { Member("this.Prop1", String("X")) } } }
+        |> produces
+            """
+namespace global
+
+type MyClass() =
+    member this.Prop1 = "X"
+"""
+
+    [<Fact>]
     let ``Produces a rec namespace with binding``() =
         Oak() {
             (Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) })
@@ -82,7 +93,7 @@ let x = 12
     let ``Produces a namespace with nested module``() =
         Oak() {
             Namespace("Fabulous") {
-                NestedModule("AST") {
+                Module("AST") {
                     BindingNode(
                         None,
                         None,

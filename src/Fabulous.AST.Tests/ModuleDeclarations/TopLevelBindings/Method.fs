@@ -14,34 +14,34 @@ module MethodMembers =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Method(
+                    Member(
                         "this.A",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                         ConstantExpr(String "")
                     )
 
-                    Method(
+                    Member(
                         "this.C",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                         ConstantExpr(String "")
                     )
                         .toInlined()
 
-                    Method("B", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                    Member("B", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
                         .toStatic()
 
-                    Method("D", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                    Member("D", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
                         .toInlined()
                         .toStatic()
 
-                    Method(
+                    Member(
                         "this.E",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                         ConstantExpr(String "")
                     )
                     |> _.returnType(String())
 
-                    Method(
+                    Member(
                         "this.F",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                         ConstantExpr(String "")
@@ -49,22 +49,22 @@ module MethodMembers =
                         .toInlined()
                     |> _.returnType(String())
 
-                    Method("G", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                    Member("G", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
                         .toStatic()
                     |> _.returnType(String())
 
-                    Method("H", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                    Member("H", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
                         .toStatic()
                         .toInlined()
                     |> _.returnType(String())
 
-                    Method(
+                    Member(
                         "this.I",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                         ConstantExpr(String "")
                     )
 
-                    Method(
+                    Member(
                         "this.J",
                         ParenPat(
                             TuplePat(
@@ -75,14 +75,14 @@ module MethodMembers =
                         ConstantExpr(String "")
                     )
 
-                    Method(
+                    Member(
                         "this.K",
                         [ ParenPat(ParameterPat(ConstantPat(Constant "p"), String()))
                           ParenPat(ParameterPat(ConstantPat(Constant "p2"), String())) ],
                         ConstantExpr(String "")
                     )
 
-                    Method(
+                    Member(
                         "__.DoSomething",
                         UnitPat(),
                         IfThenElseExpr(
@@ -127,7 +127,7 @@ type Colors =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Method(
+                    Member(
                         "this.A",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
                         ConstantExpr(String "")
@@ -158,7 +158,7 @@ type Colors<'other> =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Method("A", ParenPat(ParameterPat(ConstantPat(Constant("p")), String())), ConstantExpr(String ""))
+                    Member("A", ParenPat(ParameterPat(ConstantPat(Constant("p")), String())), ConstantExpr(String ""))
                         .toStatic()
                 }
             }
@@ -181,7 +181,7 @@ type Colors<'other> =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Method(
+                    Member(
                         "this.A",
                         ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
                         ConstantExpr(String "")
@@ -204,7 +204,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Record("Colors") { Field("X", LongIdent("string")) }).members() {
-                    Method("A", ParenPat(ParameterPat(ConstantPat(Constant("p")), String())), ConstantExpr(String ""))
+                    Member("A", ParenPat(ParameterPat(ConstantPat(Constant("p")), String())), ConstantExpr(String ""))
                         .toStatic()
                 }
             }
@@ -221,7 +221,11 @@ type Colors =
 
     [<Fact>]
     let ``Produces a classes with a method member``() =
-        Oak() { AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Int 23)) } } }
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Person", ParenPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)) }
+            }
+        }
         |> produces
             """
 type Person() =
@@ -232,8 +236,8 @@ type Person() =
     let ``Produces a classes with a method member and parameter``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Method(
+                TypeDefn("Person", ParenPat()) {
+                    Member(
                         "this.Name",
                         ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
                         ConstantExpr(Int 23)
@@ -251,8 +255,8 @@ type Person() =
     let ``Produces a method member with tupled parameter``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Method(
+                TypeDefn("Person", ParenPat()) {
+                    Member(
                         "this.Name",
                         ParenPat(
                             TuplePat(
@@ -275,8 +279,8 @@ type Person() =
     let ``Produces a method member with multiple parameter``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Method(
+                TypeDefn("Person", ParenPat()) {
+                    Member(
                         "this.Name",
                         LongIdentPat(
                             [ ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))
@@ -297,8 +301,8 @@ type Person() =
     let ``Need to add multiple bindings to method``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Method(
+                TypeDefn("Person", ParenPat()) {
+                    Member(
                         "GetPrimitiveReader",
                         ParenPat(
                             TuplePat(
@@ -690,8 +694,8 @@ type Person() =
     let ``Produces a method member with attributes``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Method("this.Name", UnitPat(), ConstantExpr(Int 23))
+                TypeDefn("Person", ParenPat()) {
+                    Member("this.Name", UnitPat(), ConstantExpr(Int 23))
                         .attribute(Attribute "Obsolete")
                 }
             }
@@ -707,7 +711,9 @@ type Person() =
     [<Fact>]
     let ``Produces an inline method member``() =
         Oak() {
-            AnonymousModule() { Class("Person") { Method("this.Name", UnitPat(), ConstantExpr(Int 23)).toInlined() } }
+            AnonymousModule() {
+                TypeDefn("Person", ParenPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)).toInlined() }
+            }
         }
         |> produces
             """
@@ -719,8 +725,8 @@ type Person() =
     let ``Produces an method member with type parameters``() =
         Oak() {
             AnonymousModule() {
-                Class("Person") {
-                    Method("this.Name", UnitPat(), ConstantExpr(Int 23))
+                TypeDefn("Person", ParenPat()) {
+                    Member("this.Name", UnitPat(), ConstantExpr(Int 23))
                         .typeParams(PostfixList(TyparDecl("'other")))
                 }
             }
@@ -736,7 +742,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 (Union("Person") { UnionCase("Name") }).members() {
-                    Method("this.Name", UnitPat(), ConstantExpr(String "name"))
+                    Member("this.Name", UnitPat(), ConstantExpr(String "name"))
                 }
             }
         }
@@ -762,7 +768,7 @@ type Person =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Method("this.Name", UnitPat(), ConstantExpr(String "name"))
+                    Member("this.Name", UnitPat(), ConstantExpr(String "name"))
                 }
 
             }

@@ -2,7 +2,7 @@
 ---
 title: ModuleDeclarations
 category: widgets
-index: 4
+index: 5
 ---
 *)
 
@@ -12,12 +12,9 @@ index: 4
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
-#r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.Builders.dll"
 
 open Fabulous.AST
-open Fantomas.Core
 open type Fabulous.AST.Ast
 
 Oak() {
@@ -57,12 +54,12 @@ Oak() {
         ExceptionDefn("Error1", Field("string"))
 
         ExceptionDefn("Error2", Field("msg", String())).members() {
-            Property(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
+            Member(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
         }
 
-        NestedModule("Values") { Value("myValue", Int(12)) }
+        Module("Values") { Value("myValue", Int(12)) }
 
-        NestedModule("Functions") { Function("myFunctionValue", "p", Int(12)) }
+        Module("Functions") { Function("myFunctionValue", "p", Int(12)) }
     }
 }
 |> Gen.mkOak

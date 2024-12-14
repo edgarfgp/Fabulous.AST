@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -26,13 +26,10 @@ module ParenPatBuilders =
     type Ast with
 
         static member ParenPat() =
-            WidgetBuilder<Pattern>(ParenPat.WidgetKey, AttributesBundle(StackList.empty(), Array.empty, Array.empty))
+            WidgetBuilder<Pattern>(ParenPat.WidgetKey)
 
         static member ParenPat(pat: WidgetBuilder<Pattern>) =
-            WidgetBuilder<Pattern>(
-                ParenPat.WidgetKey,
-                AttributesBundle(StackList.empty(), [| ParenPat.Pat.WithValue(pat.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Pattern>(ParenPat.WidgetKey, ParenPat.Pat.WithValue(pat.Compile()))
 
         static member ParenPat(pat: WidgetBuilder<Constant>) = Ast.ParenPat(Ast.ConstantPat(pat))
 

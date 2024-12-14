@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -52,21 +52,13 @@ module ComputationExpressionStatementBuilders =
         static member LetOrUseExpr(value: WidgetBuilder<BindingNode>) =
             WidgetBuilder<ComputationExpressionStatement>(
                 ComputationExpressionStatement.WidgetLetOrUseStatementKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| ComputationExpressionStatement.Binding.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                ComputationExpressionStatement.Binding.WithValue(value.Compile())
             )
 
         static member OtherExpr(value: WidgetBuilder<Expr>) =
             WidgetBuilder<ComputationExpressionStatement>(
                 ComputationExpressionStatement.WidgetOtherStatementKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| ComputationExpressionStatement.ExprValue.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                ComputationExpressionStatement.ExprValue.WithValue(value.Compile())
             )
 
         static member OtherExpr(value: WidgetBuilder<Constant>) = Ast.OtherExpr(Ast.ConstantExpr(value))

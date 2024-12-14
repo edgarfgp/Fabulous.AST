@@ -11,16 +11,16 @@ module Struct =
     let ``Produces a verbose struct``() =
         Oak() {
             AnonymousModule() {
-                StructEnd("X").members() {
+                StructEnd("X") {
                     ValField("x", Int()).toMutable()
 
-                    ExplicitConstructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
+                    Constructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
                 }
 
-                StructEnd("X", ImplicitConstructor(ParenPat())).members() {
+                StructEnd("Y") {
                     ValField("x", Int()).toMutable()
 
-                    ExplicitConstructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
+                    Constructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
                 }
             }
         }
@@ -32,7 +32,7 @@ type X =
         new(x) = { x = x }
     end
 
-type X() =
+type Y =
     struct
         val mutable x: int
         new(x) = { x = x }
@@ -45,7 +45,7 @@ type X() =
             AnonymousModule() {
                 TypeDefn("X") {
                     ValField("x", Int()).toMutable()
-                    ExplicitConstructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
+                    Constructor(ParenPat("x"), RecordExpr([ RecordFieldExpr("x", "x") ]))
                 }
                 |> _.attribute(Attribute("Struct"))
             }

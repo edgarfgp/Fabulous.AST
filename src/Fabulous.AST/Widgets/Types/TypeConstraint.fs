@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -37,6 +37,7 @@ module TypeConstraint =
     let WidgetSubtypeOfTypeKey =
         Widgets.register "SubtypeOfType" (fun widget ->
             let struct (typar, tp) = Widgets.getScalarValue widget SubtypeOfType
+
             TypeConstraint.SubtypeOfType(TypeConstraintSubtypeOfTypeNode(SingleTextNode.Create(typar), tp, Range.Zero)))
 
     let SupportsMember =
@@ -71,82 +72,57 @@ module TypeConstraintBuilders =
         static member ConstraintSingle(typar: string, kind: string) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetSingleKey,
-                AttributesBundle(
-                    StackList.one(TypeConstraint.Single.WithValue((typar, kind))),
-                    Array.empty,
-                    Array.empty
-                )
+                TypeConstraint.Single.WithValue((typar, kind))
             )
 
-        static member DefaultsToType(def: string, typar: string, tp: WidgetBuilder<Type>) =
+        static member DefaultsTo(def: string, typar: string, tp: WidgetBuilder<Type>) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetDefaultsToTypeKey,
-                AttributesBundle(
-                    StackList.one(TypeConstraint.DefaultsToType.WithValue((def, typar, Gen.mkOak tp))),
-                    Array.empty,
-                    Array.empty
-                )
+                TypeConstraint.DefaultsToType.WithValue((def, typar, Gen.mkOak tp))
             )
 
-        static member DefaultsToType(def: string, typar: string, tp: string) =
-            Ast.DefaultsToType(def, typar, Ast.LongIdent(tp))
+        static member DefaultsTo(def: string, typar: string, tp: string) =
+            Ast.DefaultsTo(def, typar, Ast.LongIdent(tp))
 
-        static member SubtypeOfType(typar: string, tp: WidgetBuilder<Type>) =
+        static member SubtypeOf(typar: string, tp: WidgetBuilder<Type>) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetSubtypeOfTypeKey,
-                AttributesBundle(
-                    StackList.one(TypeConstraint.SubtypeOfType.WithValue((typar, Gen.mkOak tp))),
-                    Array.empty,
-                    Array.empty
-                )
+                TypeConstraint.SubtypeOfType.WithValue((typar, Gen.mkOak tp))
             )
 
-        static member SubtypeOfType(typar: string, tp: string) =
-            Ast.SubtypeOfType(typar, Ast.LongIdent(tp))
+        static member SubtypeOf(typar: string, tp: string) = Ast.SubtypeOf(typar, Ast.LongIdent(tp))
 
         static member EnumOrDelegate(tp: string, verb: string, ts: WidgetBuilder<Type> list) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetEnumOrDelegateKey,
-                AttributesBundle(
-                    StackList.one(TypeConstraint.EnumOrDelegate.WithValue((tp, verb, List.map Gen.mkOak ts))),
-                    Array.empty,
-                    Array.empty
-                )
+                TypeConstraint.EnumOrDelegate.WithValue((tp, verb, List.map Gen.mkOak ts))
             )
 
         static member EnumOrDelegate(tp: string, verb: string, ts: WidgetBuilder<Type>) =
             Ast.EnumOrDelegate(tp, verb, [ ts ])
 
         static member EnumOrDelegate(tp: string, verb: string, ts: string list) =
-            Ast.EnumOrDelegate(tp, verb, List.map Ast.LongIdent ts)
+            let ts = ts |> List.map Ast.LongIdent
+            Ast.EnumOrDelegate(tp, verb, ts)
 
         static member EnumOrDelegate(tp: string, verb: string, ts: string) = Ast.EnumOrDelegate(tp, verb, [ ts ])
 
-        static member WhereSelfConstrained(tp: WidgetBuilder<Type>) =
+        static member WhereSelf(tp: WidgetBuilder<Type>) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetKeyWhereSelfConstrained,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| TypeConstraint.WhereSelfConstrained.WithValue(tp.Compile()) |],
-                    Array.empty
-                )
+                TypeConstraint.WhereSelfConstrained.WithValue(tp.Compile())
             )
 
-        static member WhereSelfConstrained(tp: string) =
-            Ast.WhereSelfConstrained(Ast.LongIdent tp)
+        static member WhereSelf(tp: string) = Ast.WhereSelf(Ast.LongIdent tp)
 
-        static member private BaseSupportsMember(tp: WidgetBuilder<Type>, memberDefn: MemberDefn) =
+        static member private BaseSupports(tp: WidgetBuilder<Type>, memberDefn: MemberDefn) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetSupportsMemberKey,
-                AttributesBundle(
-                    StackList.one(TypeConstraint.SupportsMember.WithValue((Gen.mkOak tp, memberDefn))),
-                    Array.empty,
-                    Array.empty
-                )
+                TypeConstraint.SupportsMember.WithValue((Gen.mkOak tp, memberDefn))
             )
 
-        static member SupportsMember(tp: WidgetBuilder<Type>, memberDefn: WidgetBuilder<MemberDefnSigMemberNode>) =
-            Ast.BaseSupportsMember(tp, MemberDefn.SigMember(Gen.mkOak memberDefn))
+        static member Supports(tp: WidgetBuilder<Type>, memberDefn: WidgetBuilder<MemberDefnSigMemberNode>) =
+            Ast.BaseSupports(tp, MemberDefn.SigMember(Gen.mkOak memberDefn))
 
-        static member SupportsMember(tp: string, memberDefn: WidgetBuilder<MemberDefnSigMemberNode>) =
-            Ast.BaseSupportsMember(Ast.LongIdent(tp), MemberDefn.SigMember(Gen.mkOak memberDefn))
+        static member Supports(tp: string, memberDefn: WidgetBuilder<MemberDefnSigMemberNode>) =
+            Ast.BaseSupports(Ast.LongIdent(tp), MemberDefn.SigMember(Gen.mkOak memberDefn))

@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -17,7 +17,7 @@ module UnionCase =
 
     let Fields = Attributes.defineScalar<FieldNode list> "Fields"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let WidgetKey =
         Widgets.register "UnionCase" (fun widget ->
@@ -38,14 +38,10 @@ module UnionCase =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             UnionCaseNode(xmlDocs, attributes, None, name, fields, Range.Zero))
 
@@ -53,10 +49,7 @@ module UnionCase =
 module UnionCaseBuilders =
     type Ast with
         static member UnionCase(name: string) =
-            WidgetBuilder<UnionCaseNode>(
-                UnionCase.WidgetKey,
-                AttributesBundle(StackList.one(UnionCase.Name.WithValue(name)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<UnionCaseNode>(UnionCase.WidgetKey, UnionCase.Name.WithValue(name))
 
         static member UnionCase(name: string, parameters: WidgetBuilder<FieldNode> list) =
             WidgetBuilder<UnionCaseNode>(
@@ -94,8 +87,12 @@ module UnionCaseBuilders =
 
 type UnionCaseModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(UnionCase.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: string list) =
-        this.AddScalar(UnionCase.XmlDocs.WithValue(xmlDocs))
+        UnionCaseModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =

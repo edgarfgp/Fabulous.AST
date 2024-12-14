@@ -25,18 +25,18 @@ module MemberDefn =
                     .members() {
                     yield!
                         [ AnyMemberDefn(
-                              InterfaceMember(LongIdent "IMyInterface") {
-                                  Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                              InterfaceWith(LongIdent "IMyInterface") {
+                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
                           )
 
                           AnyMemberDefn(
-                              InterfaceMember(LongIdent "IMyInterface1") {
-                                  Method("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                              InterfaceWith(LongIdent "IMyInterface1") {
+                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
                           ) ]
 
-                    InterfaceMember("IMyInterface2") { () }
+                    InterfaceWith("IMyInterface2") { () }
 
                 }
 
@@ -46,13 +46,13 @@ module MemberDefn =
         |> produces
             """
 type IMyInterface =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type IMyInterface1 =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type IMyInterface2 =
-    abstract member GetValue: unit -> string
+    abstract GetValue: unit -> string
 
 type Colors<'other> =
     { Green: string

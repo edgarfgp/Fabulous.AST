@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -29,7 +29,4 @@ module NamedParenStarIdentBuilders =
     type Ast with
 
         static member NamedParenStarIdentPat(name: string) =
-            WidgetBuilder<Pattern>(
-                NamedParenStarIdent.WidgetKey,
-                AttributesBundle(StackList.one(NamedParenStarIdent.Value.WithValue(name)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Pattern>(NamedParenStarIdent.WidgetKey, NamedParenStarIdent.Value.WithValue(name))

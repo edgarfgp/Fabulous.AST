@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -26,7 +26,7 @@ module TypeFuns =
 module FunsBuilders =
     type Ast with
 
-        static member Funs(returnType: WidgetBuilder<Type>, parameters: WidgetBuilder<Type> list) =
+        static member Funs(parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>) =
             WidgetBuilder<Type>(
                 TypeFuns.WidgetKey,
                 AttributesBundle(
@@ -36,23 +36,23 @@ module FunsBuilders =
                 )
             )
 
-        static member Funs(returnType: string, parameters: WidgetBuilder<Type> list) =
-            Ast.Funs(Ast.LongIdent returnType, parameters)
+        static member Funs(parameters: WidgetBuilder<Type> list, returnType: string) =
+            Ast.Funs(parameters, Ast.LongIdent returnType)
 
-        static member Funs(returnType: WidgetBuilder<Type>, parameter: WidgetBuilder<Type>) =
-            Ast.Funs(returnType, [ parameter ])
+        static member Funs(parameter: WidgetBuilder<Type>, returnType: WidgetBuilder<Type>) =
+            Ast.Funs([ parameter ], returnType)
 
-        static member Funs(returnType: string, parameter: WidgetBuilder<Type>) =
-            Ast.Funs(Ast.LongIdent returnType, [ parameter ])
+        static member Funs(parameter: WidgetBuilder<Type>, returnType: string) =
+            Ast.Funs([ parameter ], Ast.LongIdent returnType)
 
-        static member Funs(returnType: string, parameter: string) =
-            Ast.Funs(Ast.LongIdent returnType, [ Ast.LongIdent parameter ])
+        static member Funs(parameter: string, returnType: string) =
+            Ast.Funs([ Ast.LongIdent parameter ], Ast.LongIdent returnType)
 
-        static member Funs(returnType: WidgetBuilder<Type>, parameters: string list) =
-            Ast.Funs(returnType, parameters |> List.map Ast.LongIdent)
+        static member Funs(parameters: string list, returnType: WidgetBuilder<Type>) =
+            Ast.Funs(parameters |> List.map Ast.LongIdent, returnType)
 
-        static member Funs(returnType: WidgetBuilder<Type>, parameters: string) =
-            Ast.Funs(returnType, [ Ast.LongIdent parameters ])
+        static member Funs(parameters: string, returnType: WidgetBuilder<Type>) =
+            Ast.Funs([ Ast.LongIdent parameters ], returnType)
 
-        static member Funs(returnType: string, parameters: string list) =
-            Ast.Funs(Ast.LongIdent returnType, parameters |> List.map Ast.LongIdent)
+        static member Funs(parameters: string list, returnType: string) =
+            Ast.Funs(parameters |> List.map Ast.LongIdent, Ast.LongIdent returnType)

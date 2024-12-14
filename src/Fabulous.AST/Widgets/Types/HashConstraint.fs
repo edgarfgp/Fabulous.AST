@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -17,13 +17,6 @@ module TypeHashConstraint =
 module TypeHashConstraintBuilders =
     type Ast with
         static member HashConstraint(value: WidgetBuilder<Type>) =
-            WidgetBuilder<Type>(
-                TypeHashConstraint.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| TypeHashConstraint.TypeWidget.WithValue(value.Compile()) |],
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Type>(TypeHashConstraint.WidgetKey, TypeHashConstraint.TypeWidget.WithValue(value.Compile()))
 
         static member HashConstraint(value: string) = Ast.HashConstraint(Ast.LongIdent value)

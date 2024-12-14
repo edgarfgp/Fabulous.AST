@@ -6,8 +6,6 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 open Xunit
 
-open Fabulous.AST
-
 open type Ast
 
 module Value =
@@ -45,7 +43,7 @@ let x = 12
 
         Oak() {
             Namespace("Gdmt.Launcher") {
-                NestedModule("Subcommands") {
+                Module("Subcommands") {
                     Value(
                         ConstantPat(Constant("GdmtSubcommands")),
                         ArrayExpr(
@@ -103,17 +101,16 @@ let z = \"\"\"12\"\"\"
     let ``Simple Let binding with return widget type``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .returnType(LongIdent "int")
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).returnType(Int())
 
                 Value(ConstantPat(Constant("y")), ConstantExpr(Int(12)))
                     .returnType(LongIdent("int"))
 
                 Value(ConstantPat(Constant("z")), ConstantExpr(Int(12)))
-                    .returnType(Funs(LongIdent("string"), [ LongIdent("int") ]))
+                    .returnType(Funs([ LongIdent("int") ], LongIdent("string")))
 
                 Value(ConstantPat(Constant("a")), ConstantExpr(Int(12)))
-                    .returnType(Funs(LongIdent "string", [ LongIdent("int") ]))
+                    .returnType(Funs([ LongIdent("int") ], LongIdent "string"))
 
                 Value(ConstantPat(Constant("b")), ConstantExpr(Int(12)))
                     .returnType(LongIdent "string -> int")

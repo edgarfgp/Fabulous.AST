@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module WithSubTypeConstraint =
@@ -15,12 +15,8 @@ module WithSubTypeConstraint =
 [<AutoOpen>]
 module WithSubTypeConstraintBuilders =
     type Ast with
-        static member WithSubTypeConstraint(value: WidgetBuilder<TypeConstraint>) =
+        static member WithSubType(value: WidgetBuilder<TypeConstraint>) =
             WidgetBuilder<Type>(
                 WithSubTypeConstraint.WidgetKey,
-                AttributesBundle(
-                    StackList.empty(),
-                    [| WithSubTypeConstraint.ConstraintValue.WithValue(value.Compile()) |],
-                    Array.empty
-                )
+                WithSubTypeConstraint.ConstraintValue.WithValue(value.Compile())
             )

@@ -1,9 +1,9 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -14,19 +14,16 @@ module TypeNameNode =
 
     let PowerType = Attributes.defineWidget "PowerType"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let WidgetKey =
         Widgets.register "TypeDefnAbbrevNode" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             TypeNameNode(
                 xmlDocs,
@@ -58,15 +55,16 @@ module TypeNameNodeBuilders =
         static member Measure(name: string) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
 
-            WidgetBuilder<TypeNameNode>(
-                TypeNameNode.WidgetKey,
-                AttributesBundle(StackList.one(TypeNameNode.Name.WithValue(name)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<TypeNameNode>(TypeNameNode.WidgetKey, TypeNameNode.Name.WithValue(name))
 
 type TypeNameNodeModifiers =
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<TypeNameNode>, comments: string list) =
-        this.AddScalar(TypeNameNode.XmlDocs.WithValue(comments))
+    static member xmlDocs(this: WidgetBuilder<TypeNameNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(TypeNameNode.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
+    static member xmlDocs(this: WidgetBuilder<TypeNameNode>, xmlDocs: string list) =
+        TypeNameNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
 type TypeDefnAbbrevNodeYieldExtensions =
     [<Extension>]

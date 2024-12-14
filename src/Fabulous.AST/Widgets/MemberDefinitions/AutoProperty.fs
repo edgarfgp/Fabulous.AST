@@ -1,13 +1,13 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module AutoPropertyMember =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
@@ -53,14 +53,10 @@ module AutoPropertyMember =
                 | ValueSome tp -> Some tp
                 | ValueNone -> None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let multipleTextsNode =
                 MultipleTextsNode(
@@ -76,9 +72,16 @@ module AutoPropertyMember =
 
             let withGetSetText =
                 match hasGetterSetter with
-                | ValueSome(true, true) -> Some(MultipleTextsNode.Create([ "with"; "get,"; "set" ]))
-                | ValueSome(true, false) -> Some(MultipleTextsNode.Create([ "with"; "get" ]))
-                | ValueSome(false, true) -> Some(MultipleTextsNode.Create([ "with"; "set" ]))
+                | ValueSome(true, true) ->
+                    Some(
+                        MultipleTextsNode.Create(
+                            [ SingleTextNode.``with``; SingleTextNode.Create("get,"); SingleTextNode.set ]
+                        )
+                    )
+                | ValueSome(true, false) ->
+                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
+                | ValueSome(false, true) ->
+                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
                 | ValueSome(false, false)
                 | ValueNone -> None
 
@@ -98,7 +101,7 @@ module AutoPropertyMember =
 [<AutoOpen>]
 module AutoPropertyMemberBuilders =
     type Ast with
-        static member AutoProperty(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
+        static member MemberVal(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
 
@@ -114,22 +117,24 @@ module AutoPropertyMemberBuilders =
                 )
             )
 
-        static member AutoProperty
-            (identifier: string, expr: WidgetBuilder<Constant>, ?hasGetter: bool, ?hasSetter: bool)
-            =
+        static member MemberVal(identifier: string, expr: WidgetBuilder<Constant>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.AutoProperty(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
+            Ast.MemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
 
-        static member AutoProperty(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
+        static member MemberVal(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.AutoProperty(identifier, Ast.Constant(expr), hasGetter, hasSetter)
+            Ast.MemberVal(identifier, Ast.Constant(expr), hasGetter, hasSetter)
 
 type AutoPropertyMemberModifiers =
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, values: string list) =
-        this.AddScalar(AutoPropertyMember.XmlDocs.WithValue(values))
+    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(AutoPropertyMember.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
+    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: string list) =
+        AutoPropertyMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

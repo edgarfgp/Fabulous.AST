@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -27,10 +27,7 @@ module IntersectionBuilders =
         static member Intersection(values: WidgetBuilder<Type> list) =
             let values = values |> List.map Gen.mkOak
 
-            WidgetBuilder<Type>(
-                Intersection.WidgetKey,
-                AttributesBundle(StackList.one(Intersection.Values.WithValue(values)), Array.empty, Array.empty)
-            )
+            WidgetBuilder<Type>(Intersection.WidgetKey, Intersection.Values.WithValue(values))
 
         static member Intersection(values: string list) =
             Ast.Intersection(values |> List.map Ast.LongIdent)

@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -25,14 +25,7 @@ module TypeStructTuple =
 module TypeStructTupleBuilders =
     type Ast with
         static member StructTuple(items: WidgetBuilder<Type> list) =
-            WidgetBuilder<Type>(
-                TypeStructTuple.WidgetKey,
-                AttributesBundle(
-                    StackList.one(TypeStructTuple.Items.WithValue(items |> List.map Gen.mkOak)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Type>(TypeStructTuple.WidgetKey, TypeStructTuple.Items.WithValue(items |> List.map Gen.mkOak))
 
         static member StructTuple(items: string list) =
             let items = items |> List.map Ast.LongIdent

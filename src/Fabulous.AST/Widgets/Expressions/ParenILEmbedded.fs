@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module ParenILEmbedded =
@@ -17,11 +17,4 @@ module ParenILEmbeddedBuilders =
     type Ast with
 
         static member ParenILEmbeddedExpr(identifier: string) =
-            WidgetBuilder<Expr>(
-                ParenILEmbedded.WidgetKey,
-                AttributesBundle(
-                    StackList.one(ParenILEmbedded.Identifier.WithValue(identifier)),
-                    Array.empty,
-                    Array.empty
-                )
-            )
+            WidgetBuilder<Expr>(ParenILEmbedded.WidgetKey, ParenILEmbedded.Identifier.WithValue(identifier))

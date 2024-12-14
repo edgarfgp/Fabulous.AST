@@ -1,7 +1,7 @@
 namespace Fabulous.AST
 
-open Fabulous.Builders
-open Fabulous.Builders.StackAllocatedCollections.StackList
+open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -18,10 +18,7 @@ module ExprBeginEndBuilders =
     type Ast with
 
         static member BeginEndExpr(value: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                ExprBeginEnd.WidgetKey,
-                AttributesBundle(StackList.empty(), [| ExprBeginEnd.Value.WithValue(value.Compile()) |], Array.empty)
-            )
+            WidgetBuilder<Expr>(ExprBeginEnd.WidgetKey, ExprBeginEnd.Value.WithValue(value.Compile()))
 
         static member BeginEndExpr(value: WidgetBuilder<Constant>) =
             Ast.BeginEndExpr(Ast.ConstantExpr(value))
