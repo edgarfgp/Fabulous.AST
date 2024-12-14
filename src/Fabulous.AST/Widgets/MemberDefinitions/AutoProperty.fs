@@ -7,7 +7,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module AutoPropertyMember =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
@@ -53,14 +53,10 @@ module AutoPropertyMember =
                 | ValueSome tp -> Some tp
                 | ValueNone -> None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let multipleTextsNode =
                 MultipleTextsNode(
@@ -133,8 +129,12 @@ module AutoPropertyMemberBuilders =
 
 type AutoPropertyMemberModifiers =
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, values: string list) =
-        this.AddScalar(AutoPropertyMember.XmlDocs.WithValue(values))
+    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(AutoPropertyMember.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
+    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: string list) =
+        AutoPropertyMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

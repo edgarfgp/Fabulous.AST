@@ -12,7 +12,7 @@ module ModuleOrNamespace =
     let HeaderName = Attributes.defineScalar<string> "HeaderName"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let IsImplicit = Attributes.defineScalar<bool> "IsImplicit"
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let IsGlobal = Attributes.defineScalar<bool> "IsGlobal"
 
     let IsAnonymousModule = Attributes.defineScalar<bool> "IsAnonymousModule"
@@ -63,14 +63,10 @@ module ModuleOrNamespace =
                     | Internal -> Some(SingleTextNode.``internal``)
                     | Unknown -> None
 
-                let lines = Widgets.tryGetScalarValue widget XmlDocs
-
                 let xmlDocs =
-                    match lines with
-                    | ValueSome values ->
-                        let xmlDocNode = XmlDocNode.Create(values)
-                        Some xmlDocNode
-                    | ValueNone -> None
+                    Widgets.tryGetNodeFromWidget widget XmlDocs
+                    |> ValueOption.map(fun x -> Some(x))
+                    |> ValueOption.defaultValue None
 
                 let attributes =
                     Widgets.tryGetScalarValue widget MultipleAttributes
@@ -148,8 +144,12 @@ type NamespaceModifiers =
         this.AddScalar(ModuleOrNamespace.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<ModuleOrNamespaceNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(ModuleOrNamespace.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ModuleOrNamespaceNode>, xmlDocs: string list) =
-        this.AddScalar(ModuleOrNamespace.XmlDocs.WithValue(xmlDocs))
+        NamespaceModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

@@ -34,14 +34,10 @@ module BindingMethodNode =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let lines = Widgets.tryGetScalarValue widget BindingNode.XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let returnType =
                 match returnType with

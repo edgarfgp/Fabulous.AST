@@ -24,7 +24,7 @@ module TypeDefnAbbrevNode =
 
     let TypeDefnAbbrev = Attributes.defineScalar<TypeDefnAbbrev> "TypeDefnAbbrev"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let TypeParams = Attributes.defineWidget "TypeParams"
 
@@ -32,14 +32,10 @@ module TypeDefnAbbrevNode =
         Widgets.register "Abbrev" (fun widget ->
             let name = Widgets.getScalarValue widget Name
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let aliasType = Widgets.getNodeFromWidget widget AliasType
 
@@ -140,8 +136,12 @@ module TypeDefnAbbrevNodeBuilders =
 
 type TypeDefnAbbrevNodeModifiers =
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, comments: string list) =
-        this.AddScalar(TypeDefnAbbrevNode.XmlDocs.WithValue(comments))
+    static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(TypeDefnAbbrevNode.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
+    static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, xmlDocs: string list) =
+        TypeDefnAbbrevNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

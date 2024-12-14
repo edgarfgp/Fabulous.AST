@@ -156,7 +156,7 @@ let t: obj = obj
                     .returnType(MeasurePower("cm", Integer(2)))
 
                 Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(Funs(String(), [ Int() ]))
+                    .returnType(Funs([ Int() ], String()))
             }
         }
         |> produces
@@ -383,7 +383,7 @@ let t: array<array<string>> = false
 
                 TypeDefn("Class7", ParenPat()) { MemberVal("Field", NewExpr("'T", ConstantExpr(ConstantUnit()))) }
                 |> _.typeParams(
-                    PostfixList(TyparDecl("'T"), Supports("'T", SigMember(Val("new", "", Funs("'T", [ "unit" ])))))
+                    PostfixList(TyparDecl("'T"), Supports("'T", SigMember(Val("new", "", Funs([ "unit" ], "'T")))))
                 )
 
                 ClassEnd("Class8") { () }

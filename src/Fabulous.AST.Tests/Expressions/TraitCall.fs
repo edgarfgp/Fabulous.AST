@@ -48,7 +48,7 @@ module TraitCall =
                 ParenExpr(
                     TraitCallExpr(
                         Paren(Or("^I", "^R")),
-                        SigMember(Val([ "static"; "member" ], "Map", Funs("^R", Tuple([ "^I"; "^F" ])))),
+                        SigMember(Val([ "static"; "member" ], "Map", Funs(Tuple([ "^I"; "^F" ]), "^R"))),
                         TupleExpr([ "source"; "mapping" ])
                     )
                 )

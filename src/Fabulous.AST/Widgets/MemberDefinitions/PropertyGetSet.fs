@@ -7,7 +7,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module PropertyGetSetMember =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let FirstBindingWidget = Attributes.defineWidget "GetterWidget"
     let LastBindingWidget = Attributes.defineWidget "SetterWidget"
@@ -45,14 +45,10 @@ module PropertyGetSetMember =
             let isStatic =
                 Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let multipleTextsNode =
                 MultipleTextsNode(
@@ -133,8 +129,12 @@ module PropertyGetSetMemberMemberBuilders =
 
 type PropertyGetSetMemberModifiers =
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: string list) =
-        this.AddScalar(PropertyGetSetMember.XmlDocs.WithValue(values))
+    static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(PropertyGetSetMember.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
+    static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, comments: string list) =
+        PropertyGetSetMemberModifiers.xmlDocs(this, Ast.XmlDocs(comments))
 
     [<Extension>]
     static member attributes

@@ -107,10 +107,10 @@ let z = \"\"\"12\"\"\"
                     .returnType(LongIdent("int"))
 
                 Value(ConstantPat(Constant("z")), ConstantExpr(Int(12)))
-                    .returnType(Funs(LongIdent("string"), [ LongIdent("int") ]))
+                    .returnType(Funs([ LongIdent("int") ], LongIdent("string")))
 
                 Value(ConstantPat(Constant("a")), ConstantExpr(Int(12)))
-                    .returnType(Funs(LongIdent "string", [ LongIdent("int") ]))
+                    .returnType(Funs([ LongIdent("int") ], LongIdent "string"))
 
                 Value(ConstantPat(Constant("b")), ConstantExpr(Int(12)))
                     .returnType(LongIdent "string -> int")

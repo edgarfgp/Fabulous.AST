@@ -8,7 +8,7 @@ open Fabulous.AST
 
 module ImplicitConstructor =
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -21,14 +21,10 @@ module ImplicitConstructor =
 
     let WidgetKey =
         Widgets.register "ImplicitConstructor" (fun widget ->
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -73,8 +69,12 @@ module ImplicitConstructorBuilders =
 
 type ImplicitConstructorModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(ImplicitConstructor.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: string list) =
-        this.AddScalar(ImplicitConstructor.XmlDocs.WithValue(xmlDocs))
+        ImplicitConstructorModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

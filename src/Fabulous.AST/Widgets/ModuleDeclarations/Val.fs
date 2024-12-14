@@ -8,7 +8,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Val =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -29,14 +29,17 @@ module Val =
 
     let WidgetKey =
         Widgets.register "ValNode" (fun widget ->
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget<XmlDocNode> widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
+
+            // let xmlDocs =
+            //     match lines with
+            //     | ValueSome values ->
+            //         let xmlDocNode = XmlDocNode.Create(values)
+            //         Some xmlDocNode
+            //     | ValueNone -> None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -136,8 +139,12 @@ module ValBuilders =
 
 type ValNodeModifiers =
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ValNode>, comments: string list) =
-        this.AddScalar(Val.XmlDocs.WithValue(comments))
+    static member inline xmlDocs(this: WidgetBuilder<ValNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Val.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<ValNode>, xmlDocs: string list) =
+        ValNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline toMutable(this: WidgetBuilder<ValNode>) =

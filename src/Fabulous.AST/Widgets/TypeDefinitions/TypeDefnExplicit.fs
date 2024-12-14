@@ -17,7 +17,7 @@ module TypeDefnExplicit =
     let TypeParams = Attributes.defineWidget "TypeParams"
 
     let Constructor = Attributes.defineWidget "Constructor"
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let Kind = Attributes.defineScalar<SingleTextNode> "Kind"
@@ -34,14 +34,10 @@ module TypeDefnExplicit =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeParams
@@ -133,8 +129,12 @@ module TypeDefnExplicitBuilders =
 
 type TypeDefnExplicitModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(TypeDefnExplicit.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
-        this.AddScalar(TypeDefnExplicit.XmlDocs.WithValue(xmlDocs))
+        TypeDefnExplicitModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

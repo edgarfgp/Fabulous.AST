@@ -34,13 +34,14 @@
         <Compile Include="Widgets\SingleTextNode.fs" />
         <Compile Include="Widgets\Common.fs" />
         <Compile Include="Widgets\EscapeHatch.fs" />
+        <Compile Include="Widgets\XmlDocNode.fs" />
         <Compile Include="Widgets\Measure.fs" />
         <Compile Include="Widgets\Constant.fs" />
         <Compile Include="Widgets\Pattern.fs" />
         <Compile Include="Widgets\Expr.fs" />
         <Compile Include="Widgets\AttributeNode.fs" />
         <Compile Include="Widgets\ImplicitConstructor.fs" />
-        <Compile Include="Widgets\Trivia\Trivia.fs" />
+        <Compile Include="Widgets\Trivia.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Named.fs" />
         <Compile Include="Widgets\Patterns\Or.fs" />

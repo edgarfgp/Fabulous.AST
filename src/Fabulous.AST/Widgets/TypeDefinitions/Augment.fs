@@ -9,7 +9,7 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module Augmentation =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDocs"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let Name = Attributes.defineScalar<string> "Name"
     let Members = Attributes.defineWidgetCollection "Members"
@@ -42,14 +42,10 @@ module Augmentation =
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -109,8 +105,12 @@ type AugmentationModifiers =
         this.AddScalar(Augmentation.Constraints.WithValue(constraints))
 
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnAugmentationNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Augmentation.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnAugmentationNode>, xmlDocs: string list) =
-        this.AddScalar(Augmentation.XmlDocs.WithValue(xmlDocs))
+        AugmentationModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnAugmentationNode>) =

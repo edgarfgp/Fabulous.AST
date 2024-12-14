@@ -8,7 +8,7 @@ open Fantomas.Core.SyntaxOak
 module BindingNode =
     let BodyExpr = Attributes.defineWidget "BindingBodyExpr"
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
 
@@ -21,8 +21,12 @@ module BindingNode =
 
 type BindingNodeModifiers =
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: string list) =
-        this.AddScalar(BindingNode.XmlDocs.WithValue(xmlDocs))
+    static member inline xmlDocs(this: WidgetBuilder<BindingNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(BindingNode.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<BindingNode>, comments: string list) =
+        BindingNodeModifiers.xmlDocs(this, Ast.XmlDocs(comments))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<#BindingNode>, attributes: WidgetBuilder<AttributeNode> list) =

@@ -19,7 +19,7 @@ module Union =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let TypeParams = Attributes.defineWidget "TypeParams"
 
@@ -39,14 +39,10 @@ module Union =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
                 |> ValueOption.defaultValue []
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -120,8 +116,12 @@ type UnionModifiers =
         this.AddWidget(Union.TypeParams.WithValue(typeParams.Compile()))
 
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Union.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: string list) =
-        this.AddScalar(Union.XmlDocs.WithValue(xmlDocs))
+        UnionModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

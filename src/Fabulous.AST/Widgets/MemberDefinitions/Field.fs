@@ -8,7 +8,7 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module Field =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let Name = Attributes.defineScalar<string> "Name"
 
@@ -23,7 +23,10 @@ module Field =
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
+            let xmlDocs =
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let name =
                 Widgets.tryGetScalarValue widget Name
@@ -36,13 +39,6 @@ module Field =
                 Widgets.tryGetScalarValue widget MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
-
-            let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
 
             let mutableKeyword =
                 Widgets.tryGetScalarValue widget Mutable |> ValueOption.defaultValue false
@@ -96,8 +92,12 @@ module FieldBuilders =
 
 type FieldModifiers =
     [<Extension>]
+    static member xmlDocs(this: WidgetBuilder<FieldNode>, comments: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Field.XmlDocs.WithValue(comments.Compile()))
+
+    [<Extension>]
     static member xmlDocs(this: WidgetBuilder<FieldNode>, comments: string list) =
-        this.AddScalar(Field.XmlDocs.WithValue(comments))
+        FieldModifiers.xmlDocs(this, Ast.XmlDocs(comments))
 
     [<Extension>]
     static member toMutable(this: WidgetBuilder<FieldNode>) =

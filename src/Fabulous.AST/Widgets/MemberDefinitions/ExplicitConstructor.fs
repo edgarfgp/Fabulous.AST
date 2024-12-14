@@ -7,7 +7,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ExplicitConstructorMember =
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -22,14 +22,10 @@ module ExplicitConstructorMember =
 
     let WidgetKey =
         Widgets.register "ExplicitConstructorMember" (fun widget ->
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -100,8 +96,12 @@ module ExplicitConstructorBuilders =
 
 type ExplicitConstructorModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(ExplicitConstructorMember.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: string list) =
-        this.AddScalar(ExplicitConstructorMember.XmlDocs.WithValue(xmlDocs))
+        ExplicitConstructorModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes

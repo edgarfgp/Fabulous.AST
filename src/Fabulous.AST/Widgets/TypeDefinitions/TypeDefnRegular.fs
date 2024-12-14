@@ -16,7 +16,7 @@ module TypeDefnRegular =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let TypeParams = Attributes.defineWidget "TypeParams"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
@@ -40,14 +40,10 @@ module TypeDefnRegular =
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
-
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -123,8 +119,12 @@ module TypeDefnRegularBuilders =
 
 type TypeDefnRegularModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(TypeDefnRegular.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string list) =
-        this.AddScalar(TypeDefnRegular.XmlDocs.WithValue(xmlDocs))
+        TypeDefnRegularModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: WidgetBuilder<TyparDecls>) =

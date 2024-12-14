@@ -17,7 +17,7 @@ module EnumCase =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let XmlDocs = Attributes.defineScalar<string list> "XmlDoc"
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let WidgetKey =
         Widgets.register "EnumCase" (fun widget ->
@@ -25,14 +25,11 @@ module EnumCase =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let value = Widgets.getNodeFromWidget widget Value
-            let lines = Widgets.tryGetScalarValue widget XmlDocs
 
             let xmlDocs =
-                match lines with
-                | ValueSome values ->
-                    let xmlDocNode = XmlDocNode.Create(values)
-                    Some xmlDocNode
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -70,8 +67,12 @@ module EnumCaseBuilders =
 
 type EnumCaseModifiers =
     [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(EnumCase.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: string list) =
-        this.AddScalar(EnumCase.XmlDocs.WithValue(xmlDocs))
+        EnumCaseModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =
