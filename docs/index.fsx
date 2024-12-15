@@ -7,12 +7,15 @@ index: 0
 
 # Fabulous.AST
 
-#### What is an AST?
+#### What is AST?
 
 `AST` stands for Abstract Syntax Tree. It is a tree representation of the abstract syntactic structure of source code written in a programming language.
 It is used by compilers to analyze, transform, and generate code.
 
-You can generate code by just using strings and string interpolation. But there are several reasons why you should not do that:
+#### Can I generate code without using AST?
+You can generate code by just using strings and string interpolation. But there are several reasons why you should not do that.
+
+Here are some of the reasons:
 
 - It's error-prone and hard to maintain.
 - If the code you are generating is complex, then it's even harder to generate it using string interpolation.
@@ -31,7 +34,12 @@ code |> string |> printfn "%s"
 (*** include-output ***)
 
 (**
-#### Why use AST to generate code?
+
+Quote from fantomas:
+
+> For mercy's sake don't use string concatenation when generating F# code, use Fantomas instead. It is battle tested and proven technology!
+
+#### Why use AST?
 
 ASTs are more verbose than string interpolation and requires you to think in terms of nodes and trees, which can be a bit hard to grasp at first, but it becomes very powerful when you use it to generate code.
 
@@ -146,7 +154,7 @@ It is a simplified version of the official AST that is used by Fantomas to forma
 - It is a bit more human-readable. as it contains only the relevant information about the code itself.
 - But it's still not very easy to work with, as we will need to provide a lot of optional values even for simple code.
 
-You can see a live example using [Fantomas tools](https://fsprojects.github.io/fantomas-tools/#/oak?data=N4KABGBEDGD2AmBTSAuKAbRAXMAPMAvGAIwBMkANOFEgGYCWAdogM6pSXWT0sBiL9drQCG6FoioRuLAOIAnYQAcAFgDV6iAO5DR4kAF8gA)
+You can see a live example using the [online tool](https://fsprojects.github.io/fantomas-tools/#/oak?data=N4KABGBEDGD2AmBTSAuKAbRAXMAPMAvGAIwBMkANOFEgGYCWAdogM6pSXWT0sBiL9drQCG6FoioRuLAOIAnYQAcAFgDV6iAO5DR4kAF8gA)
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
@@ -232,7 +240,8 @@ Oak() { AnonymousModule() { Value("x", "12") } }
 
 (**
 #### What widgets to use to generate the code?
-Fabulous.AST maps the Fantomas Oak AST nodes. So you can use [Fantomas tools](https://fsprojects.github.io/fantomas-tools/#/oak?data=N4KABGBEDGD2AmBTSAuKAbRAXMAPMAvGAIwBMAOgHaQA04USAZgJaWIDOqUt9kz7AMXbMujAIbp2iOhD7sA4gCcxABwAWANWaIA7qIlSQAXyA) to take a peak at the AST nodes and then use the corresponding widgets to generate the code.
+
+Fabulous.AST maps the Fantomas Oak AST nodes. So you can use the [online tool](https://fsprojects.github.io/fantomas-tools/#/oak?data=N4KABGBEDGD2AmBTSAuKAbRAXMAPMAvGAIwBMAOgHaQA04USAZgJaWIDOqUt9kz7AMXbMujAIbp2iOhD7sA4gCcxABwAWANWaIA7qIlSQAXyA) to take a peak at the AST nodes and then use the corresponding widgets to generate the code.
 
 For example, the following Oak AST node:
 ```fsharp
@@ -250,16 +259,60 @@ Oak (1,0-1,10)
 Translates to the following Fabulous.AST code:
 
 ```fsharp
-Oak() { AnonymousModule() { Value("x", "12") } }
+Oak() {
+    AnonymousModule() {
+        Value("x", "12")
+    }
+}
 ```
 
 We have cut down the boilerplate code from 70 lines to just 5 lines of code. And it's much easier to read and understand.
 But we can generate much more complex code using Fabulous.AST. Let's take a look at some more examples.
 
-#### Example 1: Generate record type
+*)
+
+(**
+#### Example 1: Generate namespace, module and values
+
+- We will generate a namespace `Widgets` with a module `WidgetsModule` and a value `x` with the value `12`.
+- We will generate an implicit namespace `Widgets.WidgetModule` with a function `widgetFunction` with two parameters `x` and `y` and the body `12`.
+*)
+
+#r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
+#r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
+
+open Fabulous.AST
+open type Fabulous.AST.Ast
+
+Oak() {
+    AnonymousModule() { NoWarn(String "0044") }
+
+    Namespace("Widgets") { Module("WidgetsModule") { Value("x", String("12")) } }
+
+    Namespace("Widgets.WidgetModule") {
+        Function("widgetFunction", [ ParameterPat("x"); ParameterPat("y") ], String("12"))
+    }
+    |> _.toImplicit()
+    |> _.triviaBefore(Newline())
+
+    AnonymousModule() { Module("WidgetsModule") { Value("y", String("12")) } }
+    |> _.triviaBefore(Newline())
+
+    AnonymousModule() { Value("y", String("12")) } |> _.triviaBefore(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+// produces the following code:
+(*** include-output ***)
+
+
+(**
+#### Example 2: Generate record type
 - We will generate a record type with two fields `Name` and `Age`.
 - We will use `Namespace`, `Module` and `Record` widgets to generate the code.
 - We want the record to be formatted using `Stroustrup` style.
+- Create a person record instance with name `Jose` and age `30`.
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
@@ -283,6 +336,14 @@ Oak() {
                 .members() {
                 Member("this.Name", InterpolatedStringExpr([ Constant("this.Name"); Constant("this.Age") ]))
             }
+
+            Value("person", RecordExpr([ RecordFieldExpr("Name", "Jose"); RecordFieldExpr("Age", "30") ]))
+
+            Record("Person") {
+                Field("Name", "string")
+                Field("Age", "int")
+            }
+            |> _.attribute(Attribute("Struct"))
         }
     }
 }
@@ -293,7 +354,7 @@ Oak() {
 (*** include-output ***)
 
 (**
-#### Example 2: Generate a discriminated union type
+#### Example 3: Generate a discriminated union type
 - We will generate a discriminated union type with two cases `Some 'a` and `None`.
 - We will use AnonymousModule, Union and UnionCase widgets to generate the code.
 *)
@@ -313,6 +374,14 @@ Oak() {
         }
         |> _.typeParams(PostfixList("'a"))
         |> _.xmlDocs([ "Represents the option type." ])
+
+        Union("Option") {
+            UnionCase("Some", "'a")
+                .triviaBefore(SingleLine("Represents the Some case with a value."))
+
+            UnionCase("None").triviaBefore(SingleLine("Represents the None case."))
+        }
+        |> _.attribute(Attribute("Struct"))
     }
 }
 |> Gen.mkOak
@@ -322,7 +391,7 @@ Oak() {
 (*** include-output ***)
 
 (**
-#### Example 3: Generate a class type with explicit constructor
+#### Example 4: Generate a class type with explicit constructor
 - We will generate a class type with explicit constructor with two fields `Name`, LastName` and `Age`.
 - We will use AnonymousModule, TypeDefn and Member widgets to generate the code.
 
@@ -402,12 +471,13 @@ Oak() {
 (**
 
 #### Conclusion
-Hope by now you have a good understanding of what is an AST and how you can use it to generate code using Fabulous.AST.
+Hope by now you have a good understanding of what is an AST and how you can use it to generate code using `Fabulous.AST`.
 
-You can generate pretty much any F# code you want as long as you know how to represent it using the DSL provided by Fabulous.AST.
+You can generate pretty much any F# code you want as long as you provide the correct widgets.
+Use the [online tool](https://fsprojects.github.io/fantomas-tools/#/oak?data=N4KABGBEDGD2AmBTSAuKAbRAXMAPMAvGAIwBMAOgHaQA04USAZgJaWIDOqUt9kz7AMXbMujAIbp2iOhD7sA4gCcxABwAWANWaIA7qIlSQAXyA) to find the correct widgets for the code you want to generate.
 
 #### References
-- [F# AST](https://fsharp.github.io/fsharp-compiler-docs/fcs/untypedtree-apis.html)
-- [Fantomas](https://fsprojects.github.io/fantomas/docs/end-users/GeneratingCode.html)
-- [Fantomas tools](https://fsprojects.github.io/fantomas-tools/)
+- [FSharp.Compiler.Service](https://fsharp.github.io/fsharp-compiler-docs/fcs/untypedtree-apis.html)
+- [Generating source code](https://fsprojects.github.io/fantomas/docs/end-users/GeneratingCode.html)
+- [Online tool](https://fsprojects.github.io/fantomas-tools/)
 *)
