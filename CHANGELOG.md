@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.0.0] - 2024-12-15
+
+### Changed
+- Finish abstract members by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/124
+- Improve widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/126
+
+### Fixed
+- Fix type augmentations by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/125
+
 ## [1.0.0-pre17] - 2024-10-06
 
 ### Added
@@ -252,7 +261,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0-pre17...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0
 [1.0.0-pre17]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre17
 [1.0.0-pre16]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre16
 [1.0.0-pre15]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre15
