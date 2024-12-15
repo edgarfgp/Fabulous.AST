@@ -206,7 +206,7 @@ You might be thinking that it's not worth the effort to use ASTs to generate cod
 It is built on top of Fantomas Oak AST and provides a more concise and easier to use API to generate code.
 It aims to really cut down on the boilerplate code required to generate code.
 
-You can even provide your own configuration to format the code as you like by using `FormatConfig` record type.
+You can provide your own configuration to format the code as you like by using `FormatConfig`.
 
 ```fsharp
 type FormatConfig =
@@ -272,10 +272,12 @@ But we can generate much more complex code using Fabulous.AST. Let's take a look
 *)
 
 (**
-#### Example 1: Generate namespace, module and values
+#### Example 1: Modules and Namespaces
 
 - We will generate a namespace `Widgets` with a module `WidgetsModule` and a value `x` with the value `12`.
 - We will generate an implicit namespace `Widgets.WidgetModule` with a function `widgetFunction` with two parameters `x` and `y` and the body `12`.
+
+To learn more about modules and namespaces in F#, you can read the [official documentation](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/namespaces).
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
@@ -306,13 +308,14 @@ Oak() {
 // produces the following code:
 (*** include-output ***)
 
-
 (**
-#### Example 2: Generate record type
+#### Example 2: Records
 - We will generate a record type with two fields `Name` and `Age`.
 - We will use `Namespace`, `Module` and `Record` widgets to generate the code.
 - We want the record to be formatted using `Stroustrup` style.
 - Create a person record instance with name `Jose` and age `30`.
+
+To learn more about records in F#, you can read the [official documentation](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/records).
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
@@ -354,9 +357,12 @@ Oak() {
 (*** include-output ***)
 
 (**
-#### Example 3: Generate a discriminated union type
+#### Example 3: Discriminated unions
 - We will generate a discriminated union type with two cases `Some 'a` and `None`.
 - We will use AnonymousModule, Union and UnionCase widgets to generate the code.
+- We will provide xmlDocs for the union type and the union cases.
+
+To learn more about discriminated unions in F#, you can read the [official documentation](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/discriminated-unions).
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
@@ -391,10 +397,11 @@ Oak() {
 (*** include-output ***)
 
 (**
-#### Example 4: Generate a class type with explicit constructor
+#### Example 4: Classes
 - We will generate a class type with explicit constructor with two fields `Name`, LastName` and `Age`.
 - We will use AnonymousModule, TypeDefn and Member widgets to generate the code.
 
+To learn more about classes in F#, you can read the [official documentation](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/classes).
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
@@ -427,9 +434,12 @@ Oak() {
 (*** include-output ***)
 
 (**
-#### Example 4: Generate unit of measure types
+#### Example 4: Units of Measure
 - We will generate a unit of measure type with 6 cases `cm`, `ml`, `m`, `s`, `kg` and `N`.
-- We will use AnonymousModule, Union and UnionCase widgets to generate the code.
+- We will use AnonymousModule, Measure, MeasurePower, Tuple, AppPostfix and LongIdent widgets to generate the code.
+- We will provide xmlDocs for each unit of measure.
+
+To learn more about units of measure in F#, you can read the [official documentation](https://docs.microsoft.com/en-us/dotnet/fsharp/language-reference/units-of-measure).
 *)
 
 #r "../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
