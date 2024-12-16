@@ -57,7 +57,7 @@ Let's explore three different ways to generate code using AST:
 ##### 1. Compiler AST
 
 - It is a very verbose and hard to read.
-- It is Hard manipulate or analyze programmatically.
+- It is hard manipulate or analyze programmatically.
 - Contains a lot of information that is not relevant to the code itself.
 
 You can see a live example using [Fantomas tools](https://fsprojects.github.io/fantomas-tools/#/ast?data=N4KABGBEAmCmBmBLAdrAzpAXFSAacUiaAYmolmPAIYA2as%2BEkAxgPZwWQ2wAuYAHmAC8YAIwAmPAUix%2BAByrJoFHgCcArrBABfIA)
