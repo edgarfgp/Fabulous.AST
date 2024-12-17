@@ -28,15 +28,52 @@ module Oak =
 [<AutoOpen>]
 module SyntaxOakBuilders =
     type Ast with
-        /// Creates an Oak AST node
+        /// <summary>
+        /// Creates an Oak widget. This is the root widget for the Oak DSL. It is used to define Oak nodes e.g. Modules, Namespaces, and Declarations.
+        /// </summary>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Module("MyModule") {
+        ///             Value("x", "1")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Oak() =
             CollectionBuilder<Oak, 'marker>(Oak.WidgetKey, Oak.Decls)
 
 type SyntaxOakModifiers =
+    /// <summary>Sets the hash directives for the current Oak widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="values">The hash directives to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Module("MyModule") {
+    ///             Value("x", "1")
+    ///         }
+    ///     }
+    /// }
+    /// |> _.hashDirectives([ NoWarn("FS0028") ])
+    /// </code>
     [<Extension>]
     static member inline hashDirectives(this: WidgetBuilder<Oak>, values: WidgetBuilder<ParsedHashDirectiveNode> list) =
         this.AddScalar(Oak.ParsedHashDirectives.WithValue([ for value in values -> Gen.mkOak value ]))
 
+    /// <summary>Sets the hash directive for the current Oak widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The hash directive to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Module("MyModule") {
+    ///             Value("x", "1")
+    ///         }
+    ///     }
+    /// }
+    /// |> _.hashDirective(NoWarn("FS0028"))
+    /// </code>
     [<Extension>]
     static member inline hashDirective(this: WidgetBuilder<Oak>, value: WidgetBuilder<ParsedHashDirectiveNode>) =
         SyntaxOakModifiers.hashDirectives(this, [ value ])
@@ -54,9 +91,9 @@ type SyntaxOakExtensions =
         let node = Gen.mkOak x
         SyntaxOakExtensions.Yield(this, node)
 
-    /// Allows Anonymous Module components to be yielded directly into a Module
+    ///<summary>Allows Anonymous Module components to be yielded directly into a Module
     /// Useful since there's no common holder of declarations or generic WidgetBuilder than can be used
-    /// when yielding different types of declarations
+    /// when yielding different types of declarations.</summary>
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ModuleOrNamespaceNode>) =
         let node = Gen.mkOak x
