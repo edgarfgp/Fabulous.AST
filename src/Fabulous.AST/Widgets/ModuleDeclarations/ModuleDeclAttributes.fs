@@ -10,14 +10,15 @@ open Fantomas.FCS.Text
 module ModuleDeclAttributes =
     let DoExpression = Attributes.defineWidget "DoExpression"
 
-    let Attributes = Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
             let doExpression = Widgets.getNodeFromWidget<Expr> widget DoExpression
 
             let attributes =
-                Widgets.tryGetScalarValue widget Attributes
+                Widgets.tryGetScalarValue widget MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -27,34 +28,79 @@ module ModuleDeclAttributes =
 module ModuleDeclAttributeNodeBuilders =
     type Ast with
 
-        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Expr>, attributes: WidgetBuilder<AttributeNode> list) =
-            let attributes = attributes |> List.map(Gen.mkOak)
-
+        /// <summary>Create a module declaration attribute with a do expression.</summary>
+        /// <param name="doExpr">The do expression.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ModuleDeclAttribute(AppExpr(" printfn", String "Executing..."))
+        ///     }
+        /// }
+        /// </code>
+        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<ModuleDeclAttributesNode>(
                 ModuleDeclAttributes.WidgetKey,
-                AttributesBundle(
-                    StackList.one(ModuleDeclAttributes.Attributes.WithValue(attributes)),
-                    [| ModuleDeclAttributes.DoExpression.WithValue(doExpr.Compile()) |],
-                    Array.empty
-                )
+                ModuleDeclAttributes.DoExpression.WithValue(Ast.SingleExpr(Ast.DoExpr doExpr).Compile())
             )
 
-        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Expr>, attribute: WidgetBuilder<AttributeNode>) =
-            Ast.ModuleDeclAttribute(doExpr, [ attribute ])
+        /// <summary>Create a module declaration attribute with a do expression.</summary>
+        /// <param name="doExpr">The do expression.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ModuleDeclAttribute(Constant(" printfn \"Executing...\""))
+        ///     }
+        /// }
+        /// </code>
+        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Constant>) =
+            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr))
 
-        static member ModuleDeclAttribute
-            (doExpr: WidgetBuilder<Constant>, attributes: WidgetBuilder<AttributeNode> list)
-            =
-            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr), attributes)
+        /// <summary>Create a module declaration attribute with a do expression.</summary>
+        /// <param name="doExpr">The do expression.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ModuleDeclAttribute(" printfn \"Executing...\"")
+        ///     }
+        /// }
+        /// </code>
+        static member ModuleDeclAttribute(doExpr: string) =
+            Ast.ModuleDeclAttribute(Ast.Constant(doExpr))
 
-        static member ModuleDeclAttribute(doExpr: string, attributes: WidgetBuilder<AttributeNode> list) =
-            Ast.ModuleDeclAttribute(Ast.Constant(doExpr), attributes)
+type ModuleDeclAttributeModifiers =
+    /// <summary>Sets the attributes for the current module.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ModuleDeclAttribute(AppExpr(" printfn", String "Executing..."))
+    ///             .attributes([ Attribute("MyCustomModuleAttribute") ])
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline attributes
+        (this: WidgetBuilder<ModuleDeclAttributesNode>, attributes: WidgetBuilder<AttributeNode> list)
+        =
+        this.AddScalar(ModuleDeclAttributes.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
-        static member ModuleDeclAttribute(doExpr: WidgetBuilder<Constant>, attribute: WidgetBuilder<AttributeNode>) =
-            Ast.ModuleDeclAttribute(Ast.ConstantExpr(doExpr), [ attribute ])
-
-        static member ModuleDeclAttribute(doExpr: string, attribute: WidgetBuilder<AttributeNode>) =
-            Ast.ModuleDeclAttribute(Ast.Constant(doExpr), [ attribute ])
+    /// <summary>Sets the attributes for the current module.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ModuleDeclAttribute(AppExpr(" printfn", String "Executing..."))
+    ///             .attribute(Attribute("MyCustomModuleAttribute"))
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline attribute
+        (this: WidgetBuilder<ModuleDeclAttributesNode>, attribute: WidgetBuilder<AttributeNode>)
+        =
+        ModuleDeclAttributeModifiers.attributes(this, [ attribute ])
 
 type ModuleDeclAttributesYieldExtensions =
     [<Extension>]

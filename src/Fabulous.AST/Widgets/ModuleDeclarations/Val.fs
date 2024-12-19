@@ -34,13 +34,6 @@ module Val =
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
-            // let xmlDocs =
-            //     match lines with
-            //     | ValueSome values ->
-            //         let xmlDocNode = XmlDocNode.Create(values)
-            //         Some xmlDocNode
-            //     | ValueNone -> None
-
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
@@ -79,10 +72,8 @@ module Val =
 
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget LeadingKeyword
-                |> ValueOption.map(fun x ->
-                    match x with
-                    | [] -> None
-                    | nodes -> Some(MultipleTextsNode(nodes, Range.Zero)))
+                |> ValueOption.filter(_.IsEmpty >> not)
+                |> ValueOption.map(fun nodes -> Some(MultipleTextsNode(nodes, Range.Zero)))
                 |> ValueOption.defaultValue None
 
             ValNode(
@@ -115,15 +106,57 @@ module ValBuilders =
                 )
             )
 
+        /// <summary>Creates a Val widget with an identifier and a return type.</summary>
+        /// <param name="identifier">The identifier of the Val.</param>
+        /// <param name="returnType">The return type of the Val.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("x", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Val(identifier: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseVal([ SingleTextNode.``val`` ], identifier, returnType)
 
+        /// <summary>Creates a Val widget with an identifier and a return type.</summary>
+        /// <param name="identifier">The identifier of the Val.</param>
+        /// <param name="returnType">The return type of the Val.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("x", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Val(identifier: string, returnType: string) =
             Ast.Val(identifier, Ast.LongIdent(returnType))
 
+        /// <summary>Creates a Val widget with a leading keyword, an identifier, and a return type.</summary>
+        /// <param name="leadingKeyword">The leading keyword of the Val.</param>
+        /// <param name="identifier">The identifier of the Val.</param>
+        /// <param name="returnType">The return type of the Val.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val([ "static"; "member" ], "x", Int())
+        ///     }
+        /// }
+        /// </code>
         static member Val(leadingKeyword: string list, identifier: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseVal([ for kw in leadingKeyword -> SingleTextNode.Create(kw) ], identifier, returnType)
 
+        /// <summary>Creates a Val widget with a leading keyword, an identifier, and a return type.</summary>
+        /// <param name="leadingKeyword">The leading keyword of the Val.</param>
+        /// <param name="identifier">The identifier of the Val.</param>
+        /// <param name="returnType">The return type of the Val.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val([ "static"; "member" ], "x", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Val(leadingKeyword: string list, identifier: string, returnType: string) =
             Ast.BaseVal(
                 [ for kw in leadingKeyword -> SingleTextNode.Create(kw) ],
@@ -131,54 +164,176 @@ module ValBuilders =
                 Ast.LongIdent(returnType)
             )
 
+        /// <summary>Creates a Val widget with a leading keyword, an identifier, and a return type.</summary>
+        /// <param name="leadingKeyword">The leading keyword of the Val.</param>
+        /// <param name="identifier">The identifier of the Val.</param>
+        /// <param name="returnType">The return type of the Val.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("static", "x", Int())
+        ///     }
+        /// }
+        /// </code>
         static member Val(leadingKeyword: string, identifier: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseVal([ SingleTextNode.Create(leadingKeyword) ], identifier, returnType)
 
+        /// <summary>Creates a Val widget with a leading keyword, an identifier, and a return type.</summary>
+        /// <param name="leadingKeyword">The leading keyword of the Val.</param>
+        /// <param name="identifier">The identifier of the Val.</param>
+        /// <param name="returnType">The return type of the Val.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("static", "x", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Val(leadingKeyword: string, identifier: string, returnType: string) =
             Ast.BaseVal([ SingleTextNode.Create(leadingKeyword) ], identifier, Ast.LongIdent(returnType))
 
 type ValNodeModifiers =
+    /// <summary>Sets the XmlDocs for the current Val.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .xmlDocs(Summary("This is a Val"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ValNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(Val.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current Val.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .xmlDocs([ "This is a Val" ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ValNode>, xmlDocs: string list) =
         ValNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the Val to be mutable.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .toMutable()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toMutable(this: WidgetBuilder<ValNode>) =
         this.AddScalar(Val.IsMutable.WithValue(true))
 
+    /// <summary>Sets the Val to be inlined.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .toInlined()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInlined(this: WidgetBuilder<ValNode>) =
         this.AddScalar(Val.IsInlined.WithValue(true))
 
+    /// <summary>Sets the attributes for the current Val.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///        Value("x", "1")
+    ///             .attributes([ Attribute("DefaultValue") ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ValNode>, attributes: WidgetBuilder<AttributeNode> list) =
-        this.AddScalar(
-            Val.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
+        this.AddScalar(Val.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
+    /// <summary>Sets the attribute for the current Val.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .attribute(Attribute("DefaultValue"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ValNode>, attribute: WidgetBuilder<AttributeNode>) =
         ValNodeModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the Val to be private.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .toPrivate()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ValNode>) =
         this.AddScalar(Val.Accessibility.WithValue(AccessControl.Private))
 
+    /// <summary>Sets the Val to be public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .toPublic()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<ValNode>) =
         this.AddScalar(Val.Accessibility.WithValue(AccessControl.Public))
 
+    /// <summary>Sets the Val to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .toInternal()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<ValNode>) =
         this.AddScalar(Val.Accessibility.WithValue(AccessControl.Internal))
 
+    /// <summary>Sets the type parameters for the current Val.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("x", "int")
+    ///             .typeParams(PostfixList([ "'a"; "'b" ]))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<ValNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(Val.TypeParams.WithValue(typeParams.Compile()))
