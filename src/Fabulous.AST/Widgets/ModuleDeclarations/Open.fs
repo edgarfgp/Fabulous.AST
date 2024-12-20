@@ -18,6 +18,15 @@ module Open =
 [<AutoOpen>]
 module OpenBuilders =
     type Ast with
+        /// <summary>Creates an Open widget with the specified values.</summary>
+        /// <param name="values">The values to open.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Open([ "System"; "Collections"; "Generic" ])
+        ///     }
+        /// }
+        /// </code>
         static member Open(values: string list) =
             let values =
                 values
@@ -29,8 +38,26 @@ module OpenBuilders =
 
             WidgetBuilder<OpenListNode>(Open.WidgetKey, Open.OpenList.WithValue(value))
 
+        /// <summary>Creates an Open widget with the specified value.</summary>
+        /// <param name="value">The value to open.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Open("System.Collections.Generic")
+        ///     }
+        /// }
+        /// </code>
         static member Open(value: string) = Ast.Open([ value ])
 
+        /// <summary>Creates an OpenGlobal widget with the specified values.</summary>
+        /// <param name="values">The values to open.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         OpenGlobal([ "System"; "Collections"; "Generic" ])
+        ///     }
+        /// }
+        /// </code>
         static member OpenGlobal(values: string list) =
             let values =
                 values
@@ -43,8 +70,26 @@ module OpenBuilders =
 
             WidgetBuilder<OpenListNode>(Open.WidgetKey, Open.OpenList.WithValue(value))
 
+        /// <summary>Creates an OpenGlobal widget with the specified value.</summary>
+        /// <param name="value">The value to open.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         OpenGlobal("System.Collections.Generic")
+        ///     }
+        /// }
+        /// </code>
         static member OpenGlobal(value: string) = Ast.OpenGlobal([ value ])
 
+        /// <summary>Creates an OpenType widget with the specified values.</summary>
+        /// <param name="values">The values to open.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         OpenType([ "System"; "Collections"; "Generic" ])
+        ///     }
+        /// }
+        /// </code>
         static member OpenType(values: string list) =
             WidgetBuilder<OpenListNode>(
                 Open.WidgetKey,
@@ -52,6 +97,15 @@ module OpenBuilders =
 
             )
 
+        /// <summary>Creates an OpenType widget with the specified value.</summary>
+        /// <param name="value">The value to open.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         OpenType("System.Collections.Generic")
+        ///     }
+        /// }
+        /// </code>
         static member OpenType(value: string) = Ast.OpenType([ value ])
 
 type OpenYieldExtensions =

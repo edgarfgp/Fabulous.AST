@@ -111,6 +111,36 @@ type Colors =
 """
 
     [<Fact>]
+    let ``Produces an union with multiple fields``() =
+        Oak() {
+            AnonymousModule() {
+                Union("Shape") {
+                    UnionCase("Rectangle", [ Field(Float()); Field(Float()) ])
+                    UnionCase("Rectangle", Float())
+                    UnionCase("Rectangle", [ "float"; "float" ])
+                    UnionCase("Rectangle", Field(Float()))
+                    UnionCase("Rectangle", Field("width", Float()))
+                    UnionCase("Rectangle", [ Field("width", Float()); Field("height", Float()) ])
+                    UnionCase("Rectangle", [ ("width", "float"); ("height", "float") ])
+                    UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+                }
+            }
+        }
+        |> produces
+            """
+type Shape =
+    | Rectangle of float * float
+    | Rectangle of float
+    | Rectangle of float * float
+    | Rectangle of float
+    | Rectangle of width: float
+    | Rectangle of width: float * height: float
+    | Rectangle of width: float * height: float
+    | Rectangle of width: float * height: float
+
+"""
+
+    [<Fact>]
     let ``Produces an union with fields``() =
         Oak() {
             AnonymousModule() {
@@ -147,7 +177,7 @@ type Colors =
                 }
 
                 Union("Shapes") {
-                    UnionCase("Circle", [ Field("radius", LongIdent "float") ])
+                    UnionCase("Circle", [ Field("radius", Float()) ])
                     UnionCase("Rectangle", [ Field("width", LongIdent "float"); Field("height", LongIdent "float") ])
 
                     UnionCase(

@@ -26,12 +26,10 @@ module UnionCase =
                 |> PrettyNaming.NormalizeIdentifierBackticks
                 |> SingleTextNode.Create
 
-            let fields = Widgets.tryGetScalarValue widget Fields
-
             let fields =
-                match fields with
-                | ValueSome fields -> fields
-                | ValueNone -> []
+                Widgets.tryGetScalarValue widget Fields
+                |> ValueOption.map id
+                |> ValueOption.defaultValue []
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -40,7 +38,7 @@ module UnionCase =
 
             let xmlDocs =
                 Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             UnionCaseNode(xmlDocs, attributes, None, name, fields, Range.Zero))
@@ -48,52 +46,200 @@ module UnionCase =
 [<AutoOpen>]
 module UnionCaseBuilders =
     type Ast with
+        /// <summary>Create a union case with the specified name.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Color") {
+        ///             UnionCase("Red")
+        ///             UnionCase("Green")
+        ///             UnionCase("Blue")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member UnionCase(name: string) =
             WidgetBuilder<UnionCaseNode>(UnionCase.WidgetKey, UnionCase.Name.WithValue(name))
 
-        static member UnionCase(name: string, parameters: WidgetBuilder<FieldNode> list) =
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="fields">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", [ Field(Float()); Field(Float()) ])
+        ///             UnionCase("Rectangle", [ Field("width", Float()); Field("height", Float()) ])
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, fields: WidgetBuilder<FieldNode> list) =
             WidgetBuilder<UnionCaseNode>(
                 UnionCase.WidgetKey,
                 AttributesBundle(
                     StackList.two(
                         UnionCase.Name.WithValue(name),
-                        UnionCase.Fields.WithValue(parameters |> List.map Gen.mkOak)
+                        UnionCase.Fields.WithValue(fields |> List.map Gen.mkOak)
                     ),
                     Array.empty,
                     Array.empty
                 )
             )
 
-        static member UnionCase(name: string, parameters: WidgetBuilder<Type> list) =
-            let parameters = parameters |> List.map Ast.Field
-            Ast.UnionCase(name, parameters)
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="fields">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", [ Float(); Float() ])
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, fields: WidgetBuilder<Type> list) =
+            let fields = fields |> List.map Ast.Field
+            Ast.UnionCase(name, fields)
 
-        static member UnionCase(name: string, parameter: WidgetBuilder<Type>) =
-            Ast.UnionCase(name, [ Ast.Field parameter ])
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="field">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", Float())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, field: WidgetBuilder<Type>) =
+            Ast.UnionCase(name, [ Ast.Field field ])
 
-        static member UnionCase(name: string, parameters: string list) =
-            Ast.UnionCase(name, parameters |> List.map Ast.Field)
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="fields">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", [ "float"; "float" ])
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, fields: string list) =
+            Ast.UnionCase(name, fields |> List.map Ast.Field)
 
-        static member UnionCase(name: string, parameter: WidgetBuilder<FieldNode>) = Ast.UnionCase(name, [ parameter ])
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="field">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", Field(Float()))
+        ///             UnionCase("Rectangle", Field("width", Float()))
+        ///         }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, field: WidgetBuilder<FieldNode>) = Ast.UnionCase(name, [ field ])
 
-        static member UnionCase(name: string, parameter: string) =
-            Ast.UnionCase(name, Ast.Field(parameter))
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="field">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", "float")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, field: string) = Ast.UnionCase(name, [ field ])
 
-        static member UnionCase(name: string, parameters: (string * string) list) =
-            Ast.UnionCase(name, parameters |> List.map(Ast.Field))
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="fields">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", [ ("width", "float"); ("height", "float") ])
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, fields: (string * string) list) =
+            Ast.UnionCase(name, fields |> List.map(Ast.Field))
 
-        static member UnionCase(name: string, parameters: (string * WidgetBuilder<Type>) list) =
-            Ast.UnionCase(name, parameters |> List.map(Ast.Field))
+        /// <summary>Create a union case with the specified name and fields.</summary>
+        /// <param name="name">The name of the union case.</param>
+        /// <param name="fields">The fields of the union case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member UnionCase(name: string, fields: (string * WidgetBuilder<Type>) list) =
+            Ast.UnionCase(name, fields |> List.map(Ast.Field))
 
 type UnionCaseModifiers =
+    /// <summary>Sets the XmlDocs for the current UnionCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///                 .xmlDocs(Summary("This is a rectangle"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(UnionCase.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current UnionCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///                 .xmlDocs([ "This is a rectangle" ])
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: string list) =
         UnionCaseModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current UnionCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///                 .attributes([ Attribute("MyCustomAttribute") ])
+    ///         }
+    ///    }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
@@ -103,6 +249,19 @@ type UnionCaseModifiers =
             )
         )
 
+    /// <summary>Sets the attributes for the current UnionCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///                 .attribute(Attribute("MyCustomAttribute"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<UnionCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
         UnionCaseModifiers.attributes(this, [ attribute ])

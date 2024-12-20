@@ -97,32 +97,108 @@ module Union =
 [<AutoOpen>]
 module UnionBuilders =
     type Ast with
+        /// <summary>Creates a new union type with the specified name.</summary>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Union("Shape") {
+        ///             UnionCase("Circle")
+        ///             UnionCase("Rectangle")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Union(name: string) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
-
             CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>(
                 Union.WidgetKey,
                 Union.UnionCaseNode,
-                Union.Name.WithValue(name)
+                Union.Name.WithValue(PrettyNaming.NormalizeIdentifierBackticks name)
             )
 
 type UnionModifiers =
+    /// <summary>Sets the members for the current union definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         (Union("Shape") {
+    ///             UnionCase("Rectangle", Field("width", String()))
+    ///         })
+    ///             .members() {
+    ///                 Member("Width", Float(10.)).toStatic()
+    ///             }
+    ///    }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline members(this: WidgetBuilder<TypeDefnUnionNode>) =
         AttributeCollectionBuilder<TypeDefnUnionNode, MemberDefn>(this, Union.Members)
 
+    /// <summary>Sets the type params for the current union definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type params to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Option") {
+    ///             UnionCase("Some", Field("value", "'a"))
+    ///             UnionCase("None")
+    ///         }
+    ///         |> |> _.typeParams(PostfixList("'a"))
+    ///     }
+    /// }
+    ///  </code>
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnUnionNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(Union.TypeParams.WithValue(typeParams.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current union definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.xmlDocs(Summary("This is a shape"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(Union.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current union definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.xmlDocs([ "This is a shape" ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: string list) =
         UnionModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current union definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.attributes([ Attribute("MyCustomUnionAttribute") ])
+    ///    }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnUnionNode>, attributes: WidgetBuilder<AttributeNode> list)
@@ -134,22 +210,83 @@ type UnionModifiers =
             )
         )
 
+    /// <summary>Sets the attributes for the current union definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.attribute(Attribute("MyCustomUnionAttribute"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnUnionNode>, attribute: WidgetBuilder<AttributeNode>) =
         UnionModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the union to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.toInternal()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnUnionNode>) =
         this.AddScalar(Union.Accessibility.WithValue(AccessControl.Private))
 
+    /// <summary>Sets the union to be public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.toPublic()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<TypeDefnUnionNode>) =
         this.AddScalar(Union.Accessibility.WithValue(AccessControl.Public))
 
+    /// <summary>Sets the union to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.toInternal()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnUnionNode>) =
         this.AddScalar(Union.Accessibility.WithValue(AccessControl.Internal))
 
+    /// <summary>Sets the union to be recursive.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Union("Shape") {
+    ///             UnionCase("Rectangle", [ ("width", Float()); ("height", Float()) ])
+    ///         }
+    ///         |> _.toRecursive()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toRecursive(this: WidgetBuilder<TypeDefnUnionNode>) =
         this.AddScalar(Union.IsRecursive.WithValue(true))

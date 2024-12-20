@@ -23,14 +23,6 @@ module CommonExtensions =
     type MultipleTextsNode with
         static member Create(texts: SingleTextNode list) = MultipleTextsNode(texts, Range.Zero)
 
-    // type XmlDocNode with
-    //
-    //     static member Create(content: string list) =
-    //         content
-    //         |> List.map(fun v -> $"/// {v}")
-    //         |> Array.ofList
-    //         |> fun v -> XmlDocNode(v, Range.Zero)
-
     type Type with
         static member Create(name: string) =
             Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))

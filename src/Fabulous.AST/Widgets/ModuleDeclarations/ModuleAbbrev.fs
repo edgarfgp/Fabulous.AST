@@ -30,6 +30,16 @@ module ModuleAbbrev =
 [<AutoOpen>]
 module ModuleAbbrevBuilders =
     type Ast with
+        /// <summary>Creates a ModuleAbbrev widget with the specified name and alias.</summary>
+        /// <param name="name">The name of the module.</param>
+        /// <param name="alias">The alias of the module.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ModuleAbbrev("Module1", "M1")
+        ///     }
+        /// }
+        /// </code>
         static member ModuleAbbrev(name: string, alias: string) =
             WidgetBuilder<ModuleAbbrevNode>(
                 ModuleAbbrev.WidgetKey,
