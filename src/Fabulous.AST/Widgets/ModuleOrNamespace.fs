@@ -97,8 +97,10 @@ module NamespaceBuilders =
         /// <code lang="fsharp">
         /// Oak() {
         ///     Namespace("Fabulous.AST") {
-        ///         Module("Module1") {
-        ///             Value("x", "1")
+        ///         Namespace("MyNamespace") {
+        ///            Module("MyModule") {
+        ///                Value("x", "1")
+        ///            }
         ///         }
         ///     }
         /// }

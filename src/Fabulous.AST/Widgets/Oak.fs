@@ -16,12 +16,10 @@ module Oak =
         Widgets.register "AnonymousModule" (fun widget ->
             let decls = Widgets.getNodesFromWidgetCollection<ModuleOrNamespaceNode> widget Decls
 
-            let hashDirectives = Widgets.tryGetScalarValue widget ParsedHashDirectives
-
             let hashDirectives =
-                match hashDirectives with
-                | ValueSome hashDirectives -> hashDirectives
-                | ValueNone -> []
+                Widgets.tryGetScalarValue widget ParsedHashDirectives
+                |> ValueOption.map id
+                |> ValueOption.defaultValue []
 
             Oak(hashDirectives, decls, Range.Zero))
 
