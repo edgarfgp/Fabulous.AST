@@ -388,9 +388,7 @@ type Person<'other> =
     let ``Produces a union with a member property ``() =
         Oak() {
             AnonymousModule() {
-                (Union("Person") { UnionCase("Name") }).members() {
-                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
-                }
+                (Union("Person") { UnionCase("Name") }).members() { Member("this.Name", (String "name")) }
 
             }
         }
@@ -437,7 +435,7 @@ type Person =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member("this.Name", String "name")
                 }
 
             }
