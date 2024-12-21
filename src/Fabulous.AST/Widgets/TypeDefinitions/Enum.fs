@@ -60,6 +60,19 @@ module Enum =
 module EnumBuilders =
     type Ast with
 
+        /// <summary>Create an enum with the given name.</summary>
+        /// <param name="name">The name of the enum.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Enum("Color") {
+        ///             EnumCase("Red", Int 0)
+        ///             EnumCase("Green", Int 1)
+        ///             EnumCase("Blue", Int 2)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Enum(name: string) =
             CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>(
                 Enum.WidgetKey,
@@ -68,14 +81,59 @@ module EnumBuilders =
             )
 
 type EnumModifiers =
+    /// <summary>Sets the XmlDocs for the current Enum definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///            EnumCase("Red", Int(0))
+    ///            EnumCase("Green", Int(1))
+    ///            EnumCase("Blue", Int(2))
+    ///        }
+    ///        |> _.xmlDocs(Summary("This is a color enum"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnEnumNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(Enum.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current Enum definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///             EnumCase("Red", Int(0))
+    ///             EnumCase("Green", Int(1))
+    ///             EnumCase("Blue", Int(2))
+    ///         }
+    ///         |> _.xmlDocs([ "This is a color enum" ])§
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnEnumNode>, xmlDocs: string list) =
         EnumModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current Enum definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///             EnumCase("Red", Int(0))
+    ///             EnumCase("Green", Int(1))
+    ///             EnumCase("Blue", Int(2))
+    ///         }
+    ///         |> _.attributes([ Attribute("Serializable") ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnEnumNode>, attributes: WidgetBuilder<AttributeNode> list)
@@ -87,6 +145,21 @@ type EnumModifiers =
             )
         )
 
+    /// <summary>Adds an attribute to the current Enum definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to add.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///             EnumCase("Red", Int(0))
+    ///             EnumCase("Green", Int(1))
+    ///             EnumCase("Blue", Int(2))
+    ///         }
+    ///         |> _.attribute(Attribute("Serializable"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnEnumNode>, attribute: WidgetBuilder<AttributeNode>) =
         EnumModifiers.attributes(this, [ attribute ])
