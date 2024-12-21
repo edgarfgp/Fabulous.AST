@@ -103,13 +103,12 @@ type A with
         Oak() {
             AnonymousModule() {
                 Augmentation("A") { Member("this.Y", "this.X") }
-                |> _.typeParams(PostfixList(TyparDecl("'T")))
-                |> _.constraints([ ConstraintSingle("'T", "equality") ])
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
             }
         }
         |> produces
             """
-type A<'T> when 'T: equality with
+type A<'T when 'T: equality> with
     member this.Y = this.X
  """
 

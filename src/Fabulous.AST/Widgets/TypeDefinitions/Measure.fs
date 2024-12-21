@@ -3,7 +3,6 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -25,18 +24,19 @@ module TypeNameNode =
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
+            let measureAttribute =
+                MultipleAttributeListNode.Create(
+                    [ AttributeNode(
+                          IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
+                          None,
+                          None,
+                          Range.Zero
+                      ) ]
+                )
+
             TypeNameNode(
                 xmlDocs,
-                Some(
-                    MultipleAttributeListNode.Create(
-                        [ AttributeNode(
-                              IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
-                              None,
-                              None,
-                              Range.Zero
-                          ) ]
-                    )
-                ),
+                Some(measureAttribute),
                 SingleTextNode.``type``,
                 Some(SingleTextNode.Create(name)),
                 IdentListNode([], Range.Zero),
@@ -56,6 +56,13 @@ module TypeNameNodeBuilders =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
 
             WidgetBuilder<TypeNameNode>(TypeNameNode.WidgetKey, TypeNameNode.Name.WithValue(name))
+
+        static member Measure(name: string, powerType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Abbrev(name, powerType).attribute(Ast.Attribute("Measure"))
+
+        static member Measure(name: string, powerType: string) =
+            Ast.Measure(name, Ast.LongIdent(powerType))
 
 type TypeNameNodeModifiers =
     [<Extension>]

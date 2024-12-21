@@ -8,11 +8,6 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
-[<RequireQualifiedAccess>]
-type TypeDefnAbbrev =
-    | Abbrev
-    | Measure
-
 module TypeDefnAbbrevNode =
 
     let Name = Attributes.defineScalar<string> "Name"
@@ -22,7 +17,7 @@ module TypeDefnAbbrevNode =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let TypeDefnAbbrev = Attributes.defineScalar<TypeDefnAbbrev> "TypeDefnAbbrev"
+    let IsMeasure = Attributes.defineScalar<bool> "IsMeasure"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -39,54 +34,27 @@ module TypeDefnAbbrevNode =
 
             let aliasType = Widgets.getNodeFromWidget widget AliasType
 
-            let typeDefnAbbrev = Widgets.getScalarValue widget TypeDefnAbbrev
-
-            let attributeNode =
-                AttributeNode(
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
-                    None,
-                    None,
-                    Range.Zero
-                )
-
-            let attributes =
-                match Widgets.tryGetScalarValue widget MultipleAttributes, typeDefnAbbrev with
-                | ValueNone, TypeDefnAbbrev.Abbrev -> None
-                | ValueNone, TypeDefnAbbrev.Measure -> Some(MultipleAttributeListNode.Create([ attributeNode ]))
-                | ValueSome attributeNodes, TypeDefnAbbrev.Abbrev ->
-                    Some(MultipleAttributeListNode.Create(attributeNodes))
-                | ValueSome attributeNodes, TypeDefnAbbrev.Measure ->
-                    Some(MultipleAttributeListNode.Create([ attributeNode ] @ attributeNodes))
-
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
-            let equals =
-                match typeDefnAbbrev with
-                | TypeDefnAbbrev.Abbrev -> Some(SingleTextNode.equals)
-                | TypeDefnAbbrev.Measure -> None
-
-            let identListNode, leadingNode =
-                match typeDefnAbbrev with
-                | TypeDefnAbbrev.Abbrev ->
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero), None
-                | TypeDefnAbbrev.Measure ->
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
-                    Some(SingleTextNode.Create(name))
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             TypeDefnAbbrevNode(
                 TypeNameNode(
                     xmlDocs,
                     attributes,
                     SingleTextNode.``type``,
-                    leadingNode,
-                    identListNode,
+                    None,
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
                     [],
                     None,
-                    equals,
+                    Some(SingleTextNode.equals),
                     None,
                     Range.Zero
                 ),
@@ -105,34 +73,13 @@ module TypeDefnAbbrevNodeBuilders =
             WidgetBuilder<TypeDefnAbbrevNode>(
                 TypeDefnAbbrevNode.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        TypeDefnAbbrevNode.Name.WithValue(name),
-                        TypeDefnAbbrevNode.TypeDefnAbbrev.WithValue(TypeDefnAbbrev.Abbrev)
-                    ),
+                    StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)),
                     [| TypeDefnAbbrevNode.AliasType.WithValue(alias.Compile()) |],
                     Array.empty
                 )
             )
 
         static member Abbrev(name: string, alias: string) = Ast.Abbrev(name, Ast.LongIdent(alias))
-
-        static member Measure(name: string, powerType: WidgetBuilder<Type>) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
-
-            WidgetBuilder<TypeDefnAbbrevNode>(
-                TypeDefnAbbrevNode.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeDefnAbbrevNode.Name.WithValue(name),
-                        TypeDefnAbbrevNode.TypeDefnAbbrev.WithValue(TypeDefnAbbrev.Measure)
-                    ),
-                    [| TypeDefnAbbrevNode.AliasType.WithValue(powerType.Compile()) |],
-                    Array.empty
-                )
-            )
-
-        static member Measure(name: string, powerType: string) =
-            Ast.Measure(name, Ast.LongIdent(powerType))
 
 type TypeDefnAbbrevNodeModifiers =
     [<Extension>]

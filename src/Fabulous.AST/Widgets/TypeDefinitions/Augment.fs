@@ -21,8 +21,6 @@ module Augmentation =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
 
-    let Constraints = Attributes.defineScalar<TypeConstraint list> "ConstraintValue"
-
     let WidgetKey =
         Widgets.register "Augmentation" (fun widget ->
             let name =
@@ -58,9 +56,6 @@ module Augmentation =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let constraints =
-                Widgets.tryGetScalarValue widget Constraints |> ValueOption.defaultValue []
-
             TypeDefnAugmentationNode(
                 TypeNameNode(
                     xmlDocs,
@@ -69,7 +64,7 @@ module Augmentation =
                     accessControl,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
-                    constraints,
+                    [],
                     None,
                     None,
                     Some SingleTextNode.``with``,
@@ -96,13 +91,6 @@ type AugmentationModifiers =
         (this: WidgetBuilder<TypeDefnAugmentationNode>, typeParams: WidgetBuilder<TyparDecls>)
         =
         this.AddWidget(Augmentation.TypeParams.WithValue(typeParams.Compile()))
-
-    [<Extension>]
-    static member inline constraints
-        (this: WidgetBuilder<TypeDefnAugmentationNode>, constraints: WidgetBuilder<TypeConstraint> list)
-        =
-        let constraints = constraints |> List.map Gen.mkOak
-        this.AddScalar(Augmentation.Constraints.WithValue(constraints))
 
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnAugmentationNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
