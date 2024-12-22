@@ -24,7 +24,7 @@ module ExternBinding =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
             let xmlDocs =
                 Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
