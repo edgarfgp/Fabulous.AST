@@ -60,6 +60,3 @@ type Person(name: string, age: int) =
     [<System.Obsolete>]
     member val public E = "" with get, set
 """
-
-type Person(name: string, age: int) =
-    member val Name = name with get, set

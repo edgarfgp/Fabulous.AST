@@ -109,27 +109,132 @@ module TypeDefnRegularBuilders =
                 )
             )
 
+        /// <summary>Create a regular type definition with the given name.</summary>
+        /// <param name="name">The name of the type definition.</param>
+        /// <param name="parameters">The parameters of the type definition.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///    AnonymousModule() {
+        ///        TypeDefn("Person", ParenPat()) {
+        ///            Member(
+        ///                "this.Name",
+        ///                ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
+        ///                ConstantExpr(Int 23)
+        ///            )
+        ///        }
+        ///
+        ///        TypeDefn("IFoo") {
+        ///             AbstractMember("Name", String())
+        ///        }
+        ///    }
+        ///}
+        /// </code>
         static member TypeDefn(name: string, parameters: WidgetBuilder<Pattern>) =
             Ast.BaseTypeDefn(name, ValueSome(Ast.Constructor parameters))
 
+        /// <summary>Create a regular type definition with the given name.</summary>
+        /// <param name="name">The name of the type definition.</param>
+        /// <param name="constructor">The constructor of the type definition.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn(
+        ///             "Person",
+        ///              Constructor(
+        ///                  ParenPat(
+        ///                     TuplePat(
+        ///                         [ ParameterPat(ConstantPat(Constant("name")), String())
+        ///                           ParameterPat(ConstantPat(Constant("age")), Int()) ])
+        ///                     )
+        ///                 )
+        ///             ) {
+        ///                   MemberVal("Name", ConstantExpr(Constant("name")), true, true)
+        ///                  MemberVal("Age", ConstantExpr(Constant("age")), true, true)
+        ///              }
+        ///     }
+        /// }
+        /// </code>
         static member TypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseTypeDefn(name, ValueSome constructor)
 
+        /// <summary>Create a regular type definition with the given name.</summary>
+        /// <param name="name">The name of the type definition.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ITriangle") {
+        ///            AbstractMember("Area", Float(), true)
+        ///         }
+        ///    }
+        /// }
+        /// </code>
         static member TypeDefn(name: string) = Ast.BaseTypeDefn(name, ValueNone)
 
 type TypeDefnRegularModifiers =
+    /// <summary>Sets the XmlDocs for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.xmlDocs(Summary("This is a triangle"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(TypeDefnRegular.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.xmlDocs([ "This is a triangle" ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string list) =
         TypeDefnRegularModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the type parameters for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.typeParams(PostfixList([ "'other"; "'another" ]))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(TypeDefnRegular.TypeParams.WithValue(typeParams.Compile()))
 
+    /// <summary>Sets the attributes for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.attributes([ Attribute("Obsolete") ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnRegularNode>, attributes: WidgetBuilder<AttributeNode> list)
@@ -141,22 +246,83 @@ type TypeDefnRegularModifiers =
             )
         )
 
+    /// <summary>Sets the attributes for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.attribute(Attribute("Obsolete"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRegularNode>, attribute: WidgetBuilder<AttributeNode>) =
         TypeDefnRegularModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the type definition to be private.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.toPrivate()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnRegularNode>) =
         this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Private))
 
+    /// <summary>Sets the type definition to be public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.toPublic()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<TypeDefnRegularNode>) =
         this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Public))
 
+    /// <summary>Sets the type definition to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.toInternal()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnRegularNode>) =
         this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Internal))
 
+    /// <summary>Sets the type definition to be recursive.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ITriangle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///         }
+    ///         |> _.toRecursive()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toRecursive(this: WidgetBuilder<TypeDefnRegularNode>) =
         this.AddScalar(TypeDefnRegular.IsRecursive.WithValue(true))
