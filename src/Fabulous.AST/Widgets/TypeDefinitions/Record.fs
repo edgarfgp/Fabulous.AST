@@ -86,6 +86,19 @@ module Record =
 [<AutoOpen>]
 module RecordBuilders =
     type Ast with
+        /// <summary>Create a record type with the given name.</summary>
+        /// <param name="name">The name of the record type.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Record("Point") {
+        ///             Field("X", Float())
+        ///             Field("Y", Float())
+        ///             Field("Z", Float())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Record(name: string) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
 
@@ -96,18 +109,79 @@ module RecordBuilders =
             )
 
 type RecordModifiers =
+    /// <summary>Sets the members for the current record definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         (Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         })
+    ///             .members() {
+    ///                 Member("X", Float(12)).toStatic()
+    ///             }
+    ///    }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline members(this: WidgetBuilder<TypeDefnRecordNode>) =
         AttributeCollectionBuilder<TypeDefnRecordNode, MemberDefn>(this, Record.Members)
 
+    /// <summary>Sets the XmlDocs for the current record definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.xmlDocs(Summary("This is a record type"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(Record.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current record definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.xmlDocs([ "This is a record type" ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: string list) =
         RecordModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current record definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.attributes([ Attribute("Obsolete") ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnRecordNode>, attributes: WidgetBuilder<AttributeNode> list)
@@ -119,22 +193,94 @@ type RecordModifiers =
             )
         )
 
+    /// <summary>Sets the attributes for the current record definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.attribute(Attribute("Obsolete"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnRecordNode>, attribute: WidgetBuilder<AttributeNode>) =
         RecordModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the type parameters for the current record definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.typeParams(PostfixList("'a"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnRecordNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(Record.TypeParams.WithValue(typeParams.Compile()))
 
+    /// <summary>Sets the Record to be private.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.toPrivate()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnRecordNode>) =
         this.AddScalar(Record.Accessibility.WithValue(AccessControl.Private))
 
+    /// <summary>Sets the Record to be public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.toPublic()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<TypeDefnRecordNode>) =
         this.AddScalar(Record.Accessibility.WithValue(AccessControl.Public))
 
+    /// <summary>Sets the Record to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.toInternal()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnRecordNode>) =
         this.AddScalar(Record.Accessibility.WithValue(AccessControl.Internal))
