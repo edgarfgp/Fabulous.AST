@@ -40,12 +40,12 @@
         <Compile Include="Widgets\Pattern.fs" />
         <Compile Include="Widgets\Expr.fs" />
         <Compile Include="Widgets\AttributeNode.fs" />
-        <Compile Include="Widgets\ImplicitConstructor.fs" />
         <Compile Include="Widgets\Trivia.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
         <Compile Include="Widgets\Patterns\Named.fs" />
         <Compile Include="Widgets\Patterns\Or.fs" />
         <Compile Include="Widgets\Patterns\Paren.fs" />
+        <Compile Include="Widgets\Patterns\ImplicitConstructor.fs" />
         <Compile Include="Widgets\Patterns\IsInst.fs" />
         <Compile Include="Widgets\Patterns\QuoteExpr.fs" />
         <Compile Include="Widgets\Patterns\Ands.fs" />

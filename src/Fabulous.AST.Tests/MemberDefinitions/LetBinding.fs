@@ -12,7 +12,7 @@ module LetBinding =
     let ``Produces a classes LetBinding``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
 
                     LetBinding(Value(ConstantPat(Constant "_name"), ConstantExpr(String(""))).toMutable())
 

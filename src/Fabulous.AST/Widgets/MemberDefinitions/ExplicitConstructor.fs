@@ -69,6 +69,12 @@ module ExplicitConstructorBuilders =
     type Ast with
 
         static member Constructor(pattern: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
+            let pattern =
+                match Gen.mkOak pattern with
+                | Pattern.Unit _
+                | Pattern.Paren _ -> pattern
+                | _ -> Ast.ParenPat(pattern)
+
             WidgetBuilder<MemberDefnExplicitCtorNode>(
                 ExplicitConstructorMember.WidgetKey,
                 AttributesBundle(

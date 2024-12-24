@@ -111,7 +111,7 @@ module TypeDefnRegularBuilders =
 
         /// <summary>Create a regular type definition with the given name.</summary>
         /// <param name="name">The name of the type definition.</param>
-        /// <param name="parameters">The parameters of the type definition.</param>
+        /// <param name="constructor">The parameters of the type definition.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///    AnonymousModule() {
@@ -129,8 +129,8 @@ module TypeDefnRegularBuilders =
         ///    }
         ///}
         /// </code>
-        static member TypeDefn(name: string, parameters: WidgetBuilder<Pattern>) =
-            Ast.BaseTypeDefn(name, ValueSome(Ast.Constructor parameters))
+        static member TypeDefn(name: string, constructor: WidgetBuilder<Pattern>) =
+            Ast.BaseTypeDefn(name, ValueSome(Ast.Constructor constructor))
 
         /// <summary>Create a regular type definition with the given name.</summary>
         /// <param name="name">The name of the type definition.</param>

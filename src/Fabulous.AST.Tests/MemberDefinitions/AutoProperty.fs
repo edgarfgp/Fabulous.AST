@@ -15,11 +15,9 @@ module AutoProperty =
                 TypeDefn(
                     "Person",
                     Constructor(
-                        ParenPat(
-                            TuplePat(
-                                [ ParameterPat(ConstantPat(Constant("name")), String())
-                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
-                            )
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant("name")), String())
+                              ParameterPat(ConstantPat(Constant("age")), Int()) ]
                         )
                     )
                 ) {
