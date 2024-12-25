@@ -3,8 +3,8 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.Core
 
 module MemberDefn =
     let MemberDefn = Attributes.defineWidget "MemberDefn"
@@ -14,25 +14,27 @@ module MemberDefn =
             let modeDecl = Widgets.getNodeFromWidget<NodeBase> widget MemberDefn
 
             match modeDecl with
-            | :? MemberDefnInterfaceNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.Interface(x)
-            | :? MemberDefnInheritNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.Inherit(x)
-            | :? FieldNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.ValField(x)
-            | :? BindingNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.Member(x)
-            | :? ExternBindingNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.ExternBinding(x)
-            | :? ExprSingleNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.DoExpr(x)
-            | :? BindingListNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.LetBinding(x)
-            | :? MemberDefnExplicitCtorNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.ExplicitCtor(x)
-            | :? MemberDefnAutoPropertyNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.AutoProperty(x)
-            | :? MemberDefnAbstractSlotNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.AbstractSlot(x)
-            | :? MemberDefnSigMemberNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.SigMember(x)
-            | :? MemberDefnPropertyGetSetNode as x -> Fantomas.Core.SyntaxOak.MemberDefn.PropertyGetSet(x)
+            | :? MemberDefnInterfaceNode as x -> SyntaxOak.MemberDefn.Interface(x)
+            | :? MemberDefnInheritNode as x -> SyntaxOak.MemberDefn.Inherit(x)
+            | :? FieldNode as x -> SyntaxOak.MemberDefn.ValField(x)
+            | :? BindingNode as x -> SyntaxOak.MemberDefn.Member(x)
+            | :? ExternBindingNode as x -> SyntaxOak.MemberDefn.ExternBinding(x)
+            | :? ExprSingleNode as x -> SyntaxOak.MemberDefn.DoExpr(x)
+            | :? BindingListNode as x -> SyntaxOak.MemberDefn.LetBinding(x)
+            | :? MemberDefnExplicitCtorNode as x -> SyntaxOak.MemberDefn.ExplicitCtor(x)
+            | :? MemberDefnAutoPropertyNode as x -> SyntaxOak.MemberDefn.AutoProperty(x)
+            | :? MemberDefnAbstractSlotNode as x -> SyntaxOak.MemberDefn.AbstractSlot(x)
+            | :? MemberDefnSigMemberNode as x -> SyntaxOak.MemberDefn.SigMember(x)
+            | :? MemberDefnPropertyGetSetNode as x -> SyntaxOak.MemberDefn.PropertyGetSet(x)
             | x -> failwith $"Unexpected node type: {x}")
 
 [<AutoOpen>]
 module MemberDefnBuilders =
     type Ast with
 
-        static member AnyNode(value: WidgetBuilder<#NodeBase>) =
+        /// <summary>Create a MemberDefn widget which will accept any MemberDefn node.</summary>
+        /// <param name="value">The MemberDefn node to add to the widget.</param>
+        static member AnyMemberDefn(value: WidgetBuilder<#NodeBase>) =
             WidgetBuilder<MemberDefn>(MemberDefn.WidgetKey, MemberDefn.MemberDefn.WithValue(value.Compile()))
 
 type MemberDefnCollectionBuilderExtensions =

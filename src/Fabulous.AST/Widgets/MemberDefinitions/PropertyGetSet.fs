@@ -3,6 +3,7 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
+open Fabulous.AST.WidgetDefinitionStore
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -101,12 +102,19 @@ module PropertyGetSetMember =
 module PropertyGetSetMemberMemberBuilders =
     type Ast with
 
-        static member Member(identifier: string, first: WidgetBuilder<PropertyGetSetBindingNode>) =
+        /// <summary>Create a property with a getter.</summary>
+        /// <param name="identifier">The name of the property.</param>
+        /// <param name="getter">The getter for the property.</param>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///
+        static member Member(identifier: string, getter: WidgetBuilder<PropertyGetSetBindingNode>) =
             WidgetBuilder<MemberDefnPropertyGetSetNode>(
                 PropertyGetSetMember.WidgetKey,
                 AttributesBundle(
                     StackList.one(PropertyGetSetMember.Identifier.WithValue(identifier)),
-                    [| PropertyGetSetMember.FirstBindingWidget.WithValue(first.Compile()) |],
+                    [| PropertyGetSetMember.FirstBindingWidget.WithValue(getter.Compile()) |],
                     Array.empty
                 )
             )

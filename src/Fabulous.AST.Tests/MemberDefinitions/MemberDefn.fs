@@ -24,13 +24,13 @@ module MemberDefn =
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     yield!
-                        [ AnyNode(
+                        [ AnyMemberDefn(
                               InterfaceWith(LongIdent "IMyInterface") {
                                   Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
                           )
 
-                          AnyNode(
+                          AnyMemberDefn(
                               InterfaceWith(LongIdent "IMyInterface1") {
                                   Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
                               }
