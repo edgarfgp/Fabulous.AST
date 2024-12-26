@@ -66,7 +66,7 @@ let x = 12
 """
 
     [<Fact>]
-    let ``attributes on member and get, set properties``() =
+    let ``Attributes on member and get, set properties``() =
         Oak() {
             AnonymousModule() {
                 TypeDefn("Object3D", UnitPat()) {

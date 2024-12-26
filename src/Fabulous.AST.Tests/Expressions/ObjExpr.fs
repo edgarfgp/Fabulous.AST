@@ -14,14 +14,14 @@ module ObjExpr =
         Oak() {
             AnonymousModule() {
                 ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit())) {
-                    Member("x.ToString", [], ConstantExpr(String("F#")))
+                    Member("x.ToString", UnitPat(), ConstantExpr(String("F#")))
                 }
             }
         }
         |> produces
             """
 { new System.Object() with
-    member x.ToString = "F#" }
+    member x.ToString() = "F#" }
 """
 
     [<Fact>]

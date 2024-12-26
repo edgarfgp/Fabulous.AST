@@ -481,3 +481,155 @@ type Colors<'other> =
     static member Name = "name"
 
 """
+
+    [<Fact>]
+    let ``Property members getter expr``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter(ConstantExpr "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get () = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter constant``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter(Constant("_position")))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get () = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter string``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter("_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get () = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with exp parameters``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ ParenPat(ParameterPat("a", Int())) ], ConstantExpr "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get (a: int) = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with const parameters``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ Constant("a") ], ConstantExpr "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with const parameters and constant``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ Constant("a") ], Constant "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with string parameters and constant``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ "a" ], Constant "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with string parameters and string``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ "a" ], "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
+"""
