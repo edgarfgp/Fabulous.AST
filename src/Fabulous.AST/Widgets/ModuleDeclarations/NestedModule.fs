@@ -21,8 +21,6 @@ module NestedModule =
 
     let XmlDocs = Attributes.defineWidget "XmlDoc"
 
-    let IsTopLevel = Attributes.defineScalar<bool> "IsTopLevel"
-
     let WidgetKey =
         Widgets.register "NestedModule" (fun widget ->
             let name = Widgets.getScalarValue widget Name
@@ -34,9 +32,6 @@ module NestedModule =
 
             let isRecursive =
                 Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
-
-            let isTopLevel =
-                Widgets.tryGetScalarValue widget IsTopLevel |> ValueOption.defaultValue false
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility

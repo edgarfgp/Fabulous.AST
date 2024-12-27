@@ -204,10 +204,7 @@ type UnionModifiers =
         (this: WidgetBuilder<TypeDefnUnionNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
         this.AddScalar(
-            Union.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
+            Union.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak)
         )
 
     /// <summary>Sets the attributes for the current union definition.</summary>
