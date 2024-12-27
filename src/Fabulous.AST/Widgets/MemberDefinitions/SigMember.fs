@@ -7,27 +7,21 @@ open Fantomas.FCS.Text
 
 module SigMember =
     let Identifier = Attributes.defineWidget "Val"
-    let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
+    let HasGetter = Attributes.defineScalar<bool> "HasGetter"
+    let HasSetter = Attributes.defineScalar<bool> "HasSetter"
 
     let WidgetKey =
-        Widgets.register "AbstractMember" (fun widget ->
+        Widgets.register "SigMember" (fun widget ->
             let identifier = Widgets.getNodeFromWidget<ValNode> widget Identifier
-            let hasGetterSetter = Widgets.tryGetScalarValue widget HasGetterSetter
+            let hasGetter = Widgets.getScalarValue widget HasGetter
+            let hasSetter = Widgets.getScalarValue widget HasSetter
 
             let withGetSetText =
-                match hasGetterSetter with
-                | ValueSome(true, true) ->
-                    Some(
-                        MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``; SingleTextNode.Create("get,"); SingleTextNode.set ]
-                        )
-                    )
-                | ValueSome(true, false) ->
-                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
-                | ValueSome(false, true) ->
-                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
-                | ValueSome(false, false)
-                | ValueNone -> None
+                match hasGetter, hasSetter with
+                | true, true -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
+                | true, false -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
+                | false, true -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
+                | false, false -> None
 
             MemberDefnSigMemberNode(identifier, withGetSetText, Range.Zero))
 
@@ -35,6 +29,21 @@ module SigMember =
 module SigMemberBuilders =
     type Ast with
 
+        /// <summary>Creates a signature member.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TraitCallExpr(
+        ///             Paren(Or("^I", "^R")),
+        ///             SigMember(Val([ "static"; "member" ], "Map", Funs(Tuple([ "^I"; "^F" ]), "^R"))),
+        ///             TupleExpr([ "source"; "mapping" ])
+        ///        )
+        ///     }
+        /// }
+        /// </code>
         static member SigMember(identifier: WidgetBuilder<ValNode>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
@@ -42,7 +51,7 @@ module SigMemberBuilders =
             WidgetBuilder<MemberDefnSigMemberNode>(
                 SigMember.WidgetKey,
                 AttributesBundle(
-                    StackList.one(SigMember.HasGetterSetter.WithValue(hasGetter, hasSetter)),
+                    StackList.two(SigMember.HasGetter.WithValue(hasGetter), SigMember.HasSetter.WithValue(hasSetter)),
                     [| SigMember.Identifier.WithValue(identifier.Compile()) |],
                     Array.empty
                 )
