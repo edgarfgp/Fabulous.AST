@@ -203,9 +203,7 @@ type UnionModifiers =
     static member inline attributes
         (this: WidgetBuilder<TypeDefnUnionNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
-        this.AddScalar(
-            Union.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak)
-        )
+        this.AddScalar(Union.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current union definition.</summary>
     /// <param name="this">Current widget.</param>
