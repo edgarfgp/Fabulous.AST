@@ -103,7 +103,7 @@ Oak() {
     |> _.triviaAfter(Newline())
 
     Namespace("Outer") {
-        TypeDefn("MyClass", ParenPat()) {
+        TypeDefn("MyClass", UnitPat()) {
             Member("this.X", ParenPat(ParameterPat(ConstantPat(Constant "x"))), InfixAppExpr("p", "+", Int(1)))
         }
         |> _.triviaBefore(SingleLine("Full name: Outer.MyClass"))
@@ -111,11 +111,11 @@ Oak() {
     |> _.triviaBefore(SingleLine("Nested Namespaces"))
     |> _.triviaAfter(Newline())
 
-    Namespace("Outer.Inner") { TypeDefn("MyClass", ParenPat()) { Member("this.Prop1", String("X")) } }
+    Namespace("Outer.Inner") { TypeDefn("MyClass", UnitPat()) { Member("this.Prop1", String("X")) } }
     |> _.triviaBefore(SingleLine("Full name: Outer.Inner.MyClass"))
     |> _.triviaAfter(Newline())
 
-    GlobalNamespace() { TypeDefn("MyClass", ParenPat()) { Member("this.Prop1", String("X")) } }
+    GlobalNamespace() { TypeDefn("MyClass", UnitPat()) { Member("this.Prop1", String("X")) } }
     |> _.triviaBefore(SingleLine("Global Namespace"))
     |> _.triviaAfter(Newline())
 
@@ -143,10 +143,10 @@ Oak() {
             MemberVal("Sides", ListExpr([ "PeelState"; "Unpeeled" ]), true, true)
                 .returnType(LongIdent "PeelState list")
 
-            Member("self.Peel", ParenPat(), "BananaHelpers.peel")
+            Member("self.Peel", UnitPat(), "BananaHelpers.peel")
                 .triviaAfter(LineCommentAfterSourceCode("Note the dependency on the BananaHelpers module."))
 
-            Member("self.SqueezeJuiceOut", ParenPat(), "raise (DontSqueezeTheBananaException self)")
+            Member("self.SqueezeJuiceOut", UnitPat(), "raise (DontSqueezeTheBananaException self)")
                 .triviaAfter(LineCommentAfterSourceCode("This member depends on the exception above."))
         }
 
