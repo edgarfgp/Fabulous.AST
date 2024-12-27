@@ -22,6 +22,18 @@ module ExceptionDefn =
                 ExceptionDefn("Error3", Field("msg", String())).members() {
                     Member(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
                 }
+
+                ExceptionDefn(UnionCase("Error4", [ Field(String()); Field(Int()) ]))
+
+                ExceptionDefn("Error5", [ String(); Int() ])
+
+                ExceptionDefn("Error6", [ "string"; "int" ])
+
+                ExceptionDefn(UnionCase("Error7", [ ("a", String()); ("b", Int()) ]))
+
+                ExceptionDefn("Error8", [ ("a", String()); ("b", Int()) ])
+
+                ExceptionDefn("Error9", [ ("a", "string"); ("b", "int") ])
             }
         }
         |> produces
@@ -32,6 +44,13 @@ exception Error2 of string * int
 
 exception Error3 of msg: string with
     static member Message = ""
+
+exception Error4 of string * int
+exception Error5 of string * int
+exception Error6 of string * int
+exception Error7 of a: string * b: int
+exception Error8 of a: string * b: int
+exception Error9 of a: string * b: int
 """
 
     [<Fact>]
@@ -47,7 +66,7 @@ exception Error3 of msg: string with
 
                       AnyModuleDecl(
                           ExceptionDefn("Error3", Field("msg", String())).members() {
-                              Member(ConstantPat(Constant("Message")), ConstantExpr(String(""))).toStatic()
+                              Member("Message", String("")).toStatic()
                           }
                       ) ]
             }

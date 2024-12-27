@@ -58,7 +58,7 @@ type BindingNodeModifiers =
         this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
 
     [<Extension>]
-    static member inline returnType(this: WidgetBuilder<#BindingNode>, returnType: string) =
+    static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
         this.AddWidget(BindingNode.Return.WithValue(Ast.LongIdent(returnType).Compile()))
 
     [<Extension>]

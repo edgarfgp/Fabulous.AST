@@ -27,6 +27,8 @@ module ExprBuilders =
 
         static member NullExpr() = WidgetBuilder<Expr>(Expr.WidgetNullKey)
 
+        static member UnitExpr() = Ast.ConstantExpr(Ast.ConstantUnit())
+
 type ExprYieldExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, Expr>, x: WidgetBuilder<Expr>) : CollectionContent =

@@ -31,7 +31,7 @@ type DateTime with
             AnonymousModule() {
                 Open("Microsoft.FSharp.Core")
 
-                TypeDefn("A", Constructor(ParenPat(ParameterPat("x", AppPrefix(Int(), "'u"))))) {
+                TypeDefn("A", Constructor(ParameterPat("x", AppPrefix(Int(), "'u")))) {
                     Member("_.X", ConstantExpr("x"))
                 }
                 |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute "Measure")))
@@ -103,13 +103,12 @@ type A with
         Oak() {
             AnonymousModule() {
                 Augmentation("A") { Member("this.Y", "this.X") }
-                |> _.typeParams(PostfixList(TyparDecl("'T")))
-                |> _.constraints([ ConstraintSingle("'T", "equality") ])
+                |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
             }
         }
         |> produces
             """
-type A<'T> when 'T: equality with
+type A<'T when 'T: equality> with
     member this.Y = this.X
  """
 
@@ -125,4 +124,33 @@ type A<'T> when 'T: equality with
             """
 type A<'T when 'T: equality> with
     member this.Y = this.X
+ """
+
+    [<Fact>]
+    let ``Produces an augmentation with a type that you have not defined yourself``() =
+        Oak() {
+            Namespace("Extensions") {
+                Augmentation("IEnumerable") {
+                    Member(
+                        "xs.RepeatElements",
+                        ParenPat(ParameterPat("n", Int())),
+                        SeqExpr(ForEachDoExpr("x", "xs", ForEachArrowExpr("_", "1 .. n", "x")))
+                    )
+                        .xmlDocs([ "Repeat each element of the sequence n times" ])
+                }
+                |> _.typeParams(PostfixList(TyparDecl("'T")))
+            }
+            |> _.toImplicit()
+        }
+        |> produces
+            """
+module Extensions
+
+type IEnumerable<'T> with
+    /// Repeat each element of the sequence n times
+    member xs.RepeatElements(n: int) =
+        seq {
+            for x in xs do
+                for _ in 1 .. n -> x
+        }
  """

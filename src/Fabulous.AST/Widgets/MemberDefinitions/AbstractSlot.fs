@@ -119,6 +119,20 @@ module AbstractSlot =
 [<AutoOpen>]
 module AbstractMemberBuilders =
     type Ast with
+        /// <summary>Creates an abstract member.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///            AbstractMember("Area", Float(), true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (identifier: string, returnType: WidgetBuilder<Type>, ?hasGetter: bool, ?hasSetter: bool)
             =
@@ -137,11 +151,39 @@ module AbstractMemberBuilders =
                 )
             )
 
+        /// <summary>Creates an abstract member.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Area", "float", true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember(identifier: string, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
             Ast.AbstractMember(identifier, Ast.LongIdent(returnType), hasGetter, hasSetter)
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Add", [ LongIdent "int"; LongIdent "int" ], LongIdent "int", true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (identifier: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>, ?isTupled: bool) =
             let isTupled = defaultArg isTupled false
@@ -158,6 +200,20 @@ module AbstractMemberBuilders =
                 )
             )
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Add", [ "int"; "int" ], "int", true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (identifier: string, parameters: string list, returnType: WidgetBuilder<Type>, ?isTupled: bool)
             =
@@ -166,6 +222,20 @@ module AbstractMemberBuilders =
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Add", [ Int(); Int() ], "int")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (identifier: string, parameters: WidgetBuilder<Type> list, returnType: string, ?isTupled: bool)
             =
@@ -173,6 +243,20 @@ module AbstractMemberBuilders =
             let returnType = Ast.LongIdent(returnType)
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Add", [ "int"; "int" ], "int")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember(identifier: string, parameters: string list, returnType: string, ?isTupled: bool) =
             let parameters = parameters |> List.map Ast.LongIdent
             let isTupled = defaultArg isTupled false
@@ -180,6 +264,20 @@ module AbstractMemberBuilders =
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///              AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (
                 identifier: string,
@@ -201,6 +299,20 @@ module AbstractMemberBuilders =
                 )
             )
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Add", [ ("a", "int"); ("b", "int") ], Int())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (identifier: string, parameters: (string * string) list, returnType: WidgetBuilder<Type>, ?isTupled: bool) =
             let isTupled = defaultArg isTupled false
@@ -211,6 +323,20 @@ module AbstractMemberBuilders =
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], "int")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (identifier: string, parameters: (string * WidgetBuilder<Type>) list, returnType: string, ?isTupled: bool) =
             let isTupled = defaultArg isTupled false
@@ -218,6 +344,20 @@ module AbstractMemberBuilders =
 
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
+        /// <summary>Creates an abstract member with parameters.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="parameters">The parameters of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="isTupled">Whether the parameters are tupled.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("ICircle") {
+        ///             AbstractMember("Add", [ ("a", "int"); ("b", "int") ], "int")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member AbstractMember
             (identifier: string, parameters: (string * string) list, returnType: string, ?isTupled: bool)
             =
@@ -232,31 +372,91 @@ module AbstractMemberBuilders =
             Ast.AbstractMember(identifier, parameters, returnType, isTupled)
 
 type AbstractMemberModifiers =
+    /// <summary>Sets the XmlDocs for the current member.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ICircle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///                 .xmlDocs(Summary("This is the area"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(AbstractSlot.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current member.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ICircle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///                 .xmlDocs([ "This is the area" ])
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, xmlDocs: string list) =
         AbstractMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current member.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ICircle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///                 .attributes([ Attribute("Obsolete") ])
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
-        this.AddScalar(
-            AbstractSlot.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
-            )
-        )
+        this.AddScalar(AbstractSlot.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
+    /// <summary>Sets the attributes for the current member.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ICircle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///                 .attribute(Attribute("Obsolete"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<MemberDefnAbstractSlotNode>, attribute: WidgetBuilder<AttributeNode>)
         =
         AbstractMemberModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the type parameters for the current member.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("ICircle") {
+    ///             AbstractMember("Area", Float(), true)
+    ///                 .typeParams(PostfixList([ "'a" ]))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline typeParams
         (this: WidgetBuilder<MemberDefnAbstractSlotNode>, typeParams: WidgetBuilder<TyparDecls>)

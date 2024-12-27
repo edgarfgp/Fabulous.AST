@@ -3,75 +3,39 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.Core
 
 module MemberDefn =
-    let MemberDefn = Attributes.defineScalar<MemberDefn> "MemberDefn"
+    let MemberDefn = Attributes.defineWidget "MemberDefn"
 
     let WidgetKey =
         Widgets.register "MemberDefn" (fun widget ->
-            let modeDecl = Widgets.getScalarValue widget MemberDefn
-            modeDecl)
+            let modeDecl = Widgets.getNodeFromWidget<NodeBase> widget MemberDefn
+
+            match modeDecl with
+            | :? MemberDefnInterfaceNode as x -> SyntaxOak.MemberDefn.Interface(x)
+            | :? MemberDefnInheritNode as x -> SyntaxOak.MemberDefn.Inherit(x)
+            | :? FieldNode as x -> SyntaxOak.MemberDefn.ValField(x)
+            | :? BindingNode as x -> SyntaxOak.MemberDefn.Member(x)
+            | :? ExternBindingNode as x -> SyntaxOak.MemberDefn.ExternBinding(x)
+            | :? ExprSingleNode as x -> SyntaxOak.MemberDefn.DoExpr(x)
+            | :? BindingListNode as x -> SyntaxOak.MemberDefn.LetBinding(x)
+            | :? MemberDefnExplicitCtorNode as x -> SyntaxOak.MemberDefn.ExplicitCtor(x)
+            | :? MemberDefnAutoPropertyNode as x -> SyntaxOak.MemberDefn.AutoProperty(x)
+            | :? MemberDefnAbstractSlotNode as x -> SyntaxOak.MemberDefn.AbstractSlot(x)
+            | :? MemberDefnSigMemberNode as x -> SyntaxOak.MemberDefn.SigMember(x)
+            | :? MemberDefnPropertyGetSetNode as x -> SyntaxOak.MemberDefn.PropertyGetSet(x)
+            | x -> failwith $"Unexpected node type: {x}")
 
 [<AutoOpen>]
 module MemberDefnBuilders =
     type Ast with
 
-        static member private BaseAny(value: MemberDefn) =
-            WidgetBuilder<MemberDefn>(MemberDefn.WidgetKey, MemberDefn.MemberDefn.WithValue(value))
-
-        static member AnyMemberDefn(value: WidgetBuilder<InheritConstructor>) =
-            let memberDefn = MemberDefn.ImplicitInherit(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnInterfaceNode>) =
-            let memberDefn = MemberDefn.Interface(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnInheritNode>) =
-            let memberDefn = MemberDefn.Inherit(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<FieldNode>) =
-            let memberDefn = MemberDefn.ValField(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<BindingNode>) =
-            let memberDefn = MemberDefn.Member(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<ExternBindingNode>) =
-            let memberDefn = MemberDefn.ExternBinding(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<ExprSingleNode>) =
-            let memberDefn = MemberDefn.DoExpr(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<BindingListNode>) =
-            let memberDefn = MemberDefn.LetBinding(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnExplicitCtorNode>) =
-            let memberDefn = MemberDefn.ExplicitCtor(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnAutoPropertyNode>) =
-            let memberDefn = MemberDefn.AutoProperty(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnAbstractSlotNode>) =
-            let memberDefn = MemberDefn.AbstractSlot(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnSigMemberNode>) =
-            let memberDefn = MemberDefn.SigMember(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
-
-        static member AnyMemberDefn(value: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
-            let memberDefn = MemberDefn.PropertyGetSet(Gen.mkOak value)
-            Ast.BaseAny(memberDefn)
+        /// <summary>Create a MemberDefn widget which will accept any MemberDefn node.</summary>
+        /// <param name="value">The MemberDefn node to add to the widget.</param>
+        static member AnyMemberDefn(value: WidgetBuilder<#NodeBase>) =
+            WidgetBuilder<MemberDefn>(MemberDefn.WidgetKey, MemberDefn.MemberDefn.WithValue(value.Compile()))
 
 type MemberDefnCollectionBuilderExtensions =
     [<Extension>]

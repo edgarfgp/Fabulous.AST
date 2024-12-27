@@ -94,7 +94,7 @@ type MyRecord =
             AnonymousModule() {
                 TypeDefn("Meh") { AbstractMember("Name", String()) }
 
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     InterfaceWith(LongIdent "Meh") {
                         Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }
@@ -124,7 +124,7 @@ type Person() =
 
                 InterfaceEnd("IFoo4") { () }
 
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     InterfaceWith(LongIdent "IFoo") {
                         Member(ConstantPat(Constant("this.Name")), ConstantExpr(String("23")))
                     }

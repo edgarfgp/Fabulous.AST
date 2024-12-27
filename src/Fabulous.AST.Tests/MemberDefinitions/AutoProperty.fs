@@ -15,11 +15,9 @@ module AutoProperty =
                 TypeDefn(
                     "Person",
                     Constructor(
-                        ParenPat(
-                            TuplePat(
-                                [ ParameterPat(ConstantPat(Constant("name")), String())
-                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
-                            )
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant("name")), String())
+                              ParameterPat(ConstantPat(Constant("age")), Int()) ]
                         )
                     )
                 ) {
@@ -60,6 +58,3 @@ type Person(name: string, age: int) =
     [<System.Obsolete>]
     member val public E = "" with get, set
 """
-
-type Person(name: string, age: int) =
-    member val Name = name with get, set

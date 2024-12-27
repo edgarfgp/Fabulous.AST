@@ -15,7 +15,7 @@ module Class =
 
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) }
+                TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) }
             }
         }
         |> produces
@@ -30,7 +30,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
             }
         }
         |> produces
@@ -45,7 +45,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.toPrivate()
             }
         }
@@ -63,13 +63,13 @@ type private Person() =
                 TypeDefn(
                     "Person",
                     Constructor(
-                        ParenPat(
-                            TuplePat(
-                                [ ParameterPat(ConstantPat(Constant("name")))
-                                  ParameterPat(ConstantPat(Constant("lastName")))
-                                  ParameterPat(ConstantPat(Constant("age"))) ]
-                            )
+
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant("name")))
+                              ParameterPat(ConstantPat(Constant("lastName")))
+                              ParameterPat(ConstantPat(Constant("age"))) ]
                         )
+
                     )
                 ) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
@@ -90,13 +90,13 @@ type Person(name, lastName, age) =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ParenPat(
-                        TuplePat(
-                            [ ParameterPat(ConstantPat(Constant("name")))
-                              ParameterPat(ConstantPat(Constant("lastName")))
-                              ParameterPat(ConstantPat(Constant("age"))) ]
-                        )
+
+                    TuplePat(
+                        [ ParameterPat(ConstantPat(Constant("name")))
+                          ParameterPat(ConstantPat(Constant("lastName")))
+                          ParameterPat(ConstantPat(Constant("age"))) ]
                     )
+
                 ) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
@@ -117,12 +117,10 @@ type Person(name, lastName, age) =
                 TypeDefn(
                     "Person",
                     Constructor(
-                        ParenPat(
-                            TuplePat(
-                                [ ParameterPat(ConstantPat(Constant("name")), String())
-                                  ParameterPat(ConstantPat(Constant("lastName")), String())
-                                  ParameterPat(ConstantPat(Constant("?age")), Int()) ]
-                            )
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant("name")), String())
+                              ParameterPat(ConstantPat(Constant("lastName")), String())
+                              ParameterPat(ConstantPat(Constant("?age")), Int()) ]
                         )
                     )
                 ) {
@@ -143,11 +141,9 @@ type Person(name: string, lastName: string, ?age: int) =
                 TypeDefn(
                     "Person",
                     Constructor(
-                        ParenPat(
-                            TuplePat(
-                                [ ParameterPat(ConstantPat(Constant("name")), String())
-                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
-                            )
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant("name")), String())
+                              ParameterPat(ConstantPat(Constant("age")), Int()) ]
                         )
                     )
                 ) {
@@ -168,12 +164,12 @@ type Person(name: string, age: int) =
             AnonymousModule() {
                 TypeDefn(
                     "Person",
-                    ParenPat(
-                        TuplePat(
-                            [ ParameterPat(ConstantPat(Constant("name")), String())
-                              ParameterPat(ConstantPat(Constant("age")), Int()) ]
-                        )
+
+                    TuplePat(
+                        [ ParameterPat(ConstantPat(Constant("name")), String())
+                          ParameterPat(ConstantPat(Constant("age")), Int()) ]
                     )
+
                 ) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 }
@@ -190,7 +186,7 @@ type Person(name: string, age: int) =
     let ``Produces a TypeDefn marked as a Struct explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
-                (TypeDefn("Person", Constructor(ParenPat(ParameterPat(ConstantPat(Constant("name")), String())))) {
+                (TypeDefn("Person", Constructor((ParameterPat(ConstantPat(Constant("name")), String())))) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 })
                     .attribute(Attribute("Struct"))
@@ -208,7 +204,7 @@ type Person(name: string) =
     let ``Produces a TypeDefn marked as a Struct simplified explicit constructor with typed params``() =
         Oak() {
             AnonymousModule() {
-                (TypeDefn("Person", ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))) {
+                (TypeDefn("Person", ParameterPat(ConstantPat(Constant("name")), String())) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
                 })
                     .attribute(Attribute("Struct"))
@@ -228,7 +224,7 @@ type Person(name: string) =
 
         Oak() {
             AnonymousModule() {
-                (TypeDefn("Person", ParenPat()) { Member(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) })
+                (TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) })
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
             }
         }
@@ -245,7 +241,7 @@ module GenericClass =
     let ``Produces a generic class``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
             }
@@ -262,7 +258,7 @@ type Person<'a, 'b>() =
 
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
             }
@@ -278,7 +274,7 @@ type Person<'a, 'b>() =
     let ``Produces a struct generic class with a constructor``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+                TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
                 |> _.typeParams(PostfixList([ "'a"; "'b" ]))
                 |> _.attribute(Attribute("Struct"))
 

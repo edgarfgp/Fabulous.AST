@@ -57,6 +57,12 @@ module ImplicitConstructor =
 module ImplicitConstructorBuilders =
     type Ast with
         static member Constructor(pattern: WidgetBuilder<Pattern>) =
+            let pattern =
+                match Gen.mkOak pattern with
+                | Pattern.Paren _ -> pattern
+                | Pattern.Unit _ -> pattern
+                | _ -> Ast.ParenPat(pattern)
+
             WidgetBuilder<ImplicitConstructorNode>(
                 ImplicitConstructor.WidgetKey,
                 ImplicitConstructor.Pattern.WithValue(pattern.Compile())

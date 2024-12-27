@@ -21,12 +21,16 @@ module Delegate =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
             let returnType = Widgets.getNodeFromWidget<Type> widget Return
-            let parameters = Widgets.tryGetScalarValue widget Parameters
+
+            let parameters = Widgets.getScalarValue widget Parameters
 
             let parameters =
-                match parameters with
-                | ValueSome parameters -> parameters |> List.map(fun x -> (x, SingleTextNode.rightArrow))
-                | ValueNone -> []
+                parameters
+                |> List.mapi(fun i t ->
+                    if i = List.length parameters - 1 then
+                        (t, SingleTextNode.arrow)
+                    else
+                        (t, SingleTextNode.star))
 
             TypeDefnDelegateNode(
                 TypeNameNode(
@@ -53,38 +57,127 @@ module DelegateBuilders =
         static member private BaseDelegate
             (name: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>)
             =
-            let parameters = parameters |> List.map Gen.mkOak
-
             WidgetBuilder<TypeDefnDelegateNode>(
                 Delegate.WidgetKey,
                 AttributesBundle(
-                    StackList.two(Delegate.Name.WithValue(name), Delegate.Parameters.WithValue(parameters)),
+                    StackList.two(
+                        Delegate.Name.WithValue(name),
+                        Delegate.Parameters.WithValue(parameters |> List.map Gen.mkOak)
+                    ),
                     [| Delegate.Return.WithValue(returnType.Compile()) |],
                     Array.empty
                 )
             )
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameters">The parameters of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", [ Paren(Tuple([ Int(); Int() ])); Paren(Tuple([ Int(); Int() ])) ], Int())
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>) =
             Ast.BaseDelegate(name, parameters, returnType)
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameters">The parameters of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", [ "int" ; "int" ], Int())
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameters: string list, returnType: WidgetBuilder<Type>) =
             Ast.BaseDelegate(name, parameters |> List.map Ast.LongIdent, returnType)
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameters">The parameters of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", [ "int" ; "int" ], "int")
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameters: string list, returnType: string) =
             Ast.BaseDelegate(name, parameters |> List.map Ast.LongIdent, Ast.LongIdent returnType)
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameters">The parameters of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", [ Int(); Int() ], "int")
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameters: WidgetBuilder<Type> list, returnType: string) =
             Ast.BaseDelegate(name, parameters, Ast.LongIdent returnType)
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameter">The parameter of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", Int(), Int())
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameter: WidgetBuilder<Type>, returnType: WidgetBuilder<Type>) =
             Ast.BaseDelegate(name, [ parameter ], returnType)
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameter">The parameter of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", Int(), "int")
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameter: WidgetBuilder<Type>, returnType: string) =
             Ast.BaseDelegate(name, [ parameter ], Ast.LongIdent returnType)
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameter">The parameter of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", "int", Int())
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameter: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseDelegate(name, [ Ast.LongIdent parameter ], returnType)
 
+        /// <summary>Create a delegate type definition.</summary>
+        /// <param name="name">The name of the delegate.</param>
+        /// <param name="parameter">The parameter of the delegate.</param>
+        /// <param name="returnType">The return type of the delegate.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Delegate("Delegate", "int", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Delegate(name: string, parameter: string, returnType: string) =
             Ast.BaseDelegate(name, [ Ast.LongIdent parameter ], Ast.LongIdent returnType)
 

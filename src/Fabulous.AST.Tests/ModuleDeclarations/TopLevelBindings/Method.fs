@@ -222,9 +222,7 @@ type Colors =
     [<Fact>]
     let ``Produces a classes with a method member``() =
         Oak() {
-            AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)) }
-            }
+            AnonymousModule() { TypeDefn("Person", UnitPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)) } }
         }
         |> produces
             """
@@ -236,7 +234,7 @@ type Person() =
     let ``Produces a classes with a method member and parameter``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(
                         "this.Name",
                         ParenPat(ParameterPat(ConstantPat(Constant("p")), String())),
@@ -255,7 +253,7 @@ type Person() =
     let ``Produces a method member with tupled parameter``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(
                         "this.Name",
                         ParenPat(
@@ -279,7 +277,7 @@ type Person() =
     let ``Produces a method member with multiple parameter``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(
                         "this.Name",
                         LongIdentPat(
@@ -301,7 +299,7 @@ type Person() =
     let ``Need to add multiple bindings to method``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(
                         "GetPrimitiveReader",
                         ParenPat(
@@ -694,7 +692,7 @@ type Person() =
     let ``Produces a method member with attributes``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member("this.Name", UnitPat(), ConstantExpr(Int 23))
                         .attribute(Attribute "Obsolete")
                 }
@@ -712,7 +710,7 @@ type Person() =
     let ``Produces an inline method member``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)).toInlined() }
+                TypeDefn("Person", UnitPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)).toInlined() }
             }
         }
         |> produces
@@ -725,7 +723,7 @@ type Person() =
     let ``Produces an method member with type parameters``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member("this.Name", UnitPat(), ConstantExpr(Int 23))
                         .typeParams(PostfixList(TyparDecl("'other")))
                 }

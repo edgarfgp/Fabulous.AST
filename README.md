@@ -73,9 +73,7 @@ Oak() {
     }
 }
 |> Gen.mkOak
-|> CodeFormatter.FormatOakAsync
-|> Async.RunSynchronously
-|> printfn "%s"
+|> Gen.run
 ```
 
 Both examples produce the following F# code:

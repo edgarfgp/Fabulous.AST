@@ -201,10 +201,10 @@ application.
                 MemberVal("Sides", ListExpr([ "PeelState"; "Unpeeled" ]), true, true)
                     .returnType(LongIdent "PeelState list")
 
-                Member("self.Peel", ParenPat(), "BananaHelpers.peel")
+                Member("self.Peel", UnitPat(), "BananaHelpers.peel")
                     .triviaAfter(LineCommentAfterSourceCode("Note the dependency on the BananaHelpers module."))
 
-                Member("self.SqueezeJuiceOut", ParenPat(), "raise (DontSqueezeTheBananaException self)")
+                Member("self.SqueezeJuiceOut", UnitPat(), "raise (DontSqueezeTheBananaException self)")
                     .triviaAfter(LineCommentAfterSourceCode("This member depends on the exception above."))
             }
 

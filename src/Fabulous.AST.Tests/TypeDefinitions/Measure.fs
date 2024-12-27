@@ -116,3 +116,13 @@ type L
 type Ml = cm^3
 
 """
+
+    [<Fact>]
+    let ``Produces type Unit of measure with an extra attribute``() =
+        Oak() { AnonymousModule() { Measure("cm").xmlDocs([ "Cm, centimeters." ]).attribute(Attribute("Obsolete")) } }
+        |> produces
+            """
+/// Cm, centimeters.
+[<Measure; Obsolete>]
+type cm
+"""

@@ -12,10 +12,7 @@ module Inherit =
     let ``Produces a classes Inherit``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn(
-                    "Person",
-                    Constructor(ParenPat(TuplePat([ ParameterPat(ConstantPat(Constant("name")), String()) ])))
-                ) {
+                TypeDefn("Person", Constructor(TuplePat([ ParameterPat(ConstantPat(Constant("name")), String()) ]))) {
                     Inherit(LongIdent "BaseClass()")
 
                     Member(

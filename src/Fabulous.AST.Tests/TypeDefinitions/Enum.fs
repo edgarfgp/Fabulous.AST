@@ -52,6 +52,46 @@ type Colors =
 """
 
     [<Fact>]
+    let ``Produces an enum with value Constant``() =
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", Int(0))
+                    EnumCase("Green", Int(1))
+                    EnumCase("Blue", Int(2))
+                }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    | Red = 0
+    | Green = 1
+    | Blue = 2
+"""
+
+    [<Fact>]
+    let ``Produces an enum with field``() =
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", Int(0))
+                    EnumCase("Green", Int(1))
+                    EnumCase("Blue", Int(2))
+                }
+            }
+        }
+        |> produces
+            """
+
+type Colors =
+    | Red = 0
+    | Green = 1
+    | Blue = 2
+"""
+
+    [<Fact>]
     let ``Produces an enum with SingleTextNode``() =
         Oak() {
             AnonymousModule() {

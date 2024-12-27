@@ -12,14 +12,68 @@ module PropertyGetSet =
     let ``Produces a classes with get set members``() =
         Oak() {
             AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) { Member("this.Position", Getter(UnitExpr()), Setter(UnitExpr())) }
+
+                TypeDefn("Object3D", UnitPat()) { Member("this.Position", Setter(Constant("()"))) }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member(
+                        "this.Position",
+                        Setter([ ParenPat(ParameterPat("a", Int())) ], ConstantExpr "_position <- a")
+                    )
+                }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member("this.Position", Setter([ Constant("a") ], ConstantExpr "_position <- a"))
+                }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member("this.Position", Setter([ "a" ], ConstantExpr "_position <- a"))
+                }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member("this.Position", Setter([ ParenPat(ParameterPat("a", Int())) ], Constant "_position <- a"))
+                }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member("this.Position", Setter([ Constant("a") ], Constant "_position <- a"))
+                }
+
+                TypeDefn("Object3D", UnitPat()) { Member("this.Position", Setter([ "a" ], Constant "_position <- a")) }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member(
+                        "this.Position",
+                        Setter(
+                            ParenPat("index"),
+                            IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")))
+                        )
+                    )
+                }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member(
+                        "this.Position",
+                        Setter(
+                            Constant("index"),
+                            IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")))
+                        )
+                    )
+                }
+
+                TypeDefn("Object3D", UnitPat()) {
+                    Member(
+                        "this.Position",
+                        Setter("index", IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index"))))
+                    )
+                }
+
                 TypeDefn(
                     "Person",
                     Constructor(
-                        ParenPat(
-                            TuplePat(
-                                [ ParameterPat(ConstantPat(Constant("name")), String())
-                                  ParameterPat(ConstantPat(Constant("age")), Int()) ]
-                            )
+                        TuplePat(
+                            [ ParameterPat(ConstantPat(Constant("name")), String())
+                              ParameterPat(ConstantPat(Constant("age")), Int()) ]
                         )
                     )
                 ) {
@@ -79,6 +133,51 @@ module PropertyGetSet =
         }
         |> produces
             """
+type Object3D() =
+    member this.Position
+        with get () = ()
+        and set () = ()
+
+type Object3D() =
+    member this.Position
+        with set () = ()
+
+type Object3D() =
+    member this.Position
+        with set (a: int) = _position <- a
+
+type Object3D() =
+    member this.Position
+        with set a = _position <- a
+
+type Object3D() =
+    member this.Position
+        with set a = _position <- a
+
+type Object3D() =
+    member this.Position
+        with set (a: int) = _position <- a
+
+type Object3D() =
+    member this.Position
+        with set a = _position <- a
+
+type Object3D() =
+    member this.Position
+        with set a = _position <- a
+
+type Object3D() =
+    member this.Position
+        with set (index) = ordinals[index]
+
+type Object3D() =
+    member this.Position
+        with set index = ordinals[index]
+
+type Object3D() =
+    member this.Position
+        with set index = ordinals[index]
+
 type Person(name: string, age: int) =
     member this.Name
         with get () = name

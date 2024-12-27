@@ -28,7 +28,7 @@ module EnumCase =
 
             let xmlDocs =
                 Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
@@ -50,30 +50,117 @@ module EnumCase =
 module EnumCaseBuilders =
     type Ast with
 
-        static member EnumCase(name: string, value: WidgetBuilder<Expr>) =
+        /// <summary>Create an enum case with the given name and field.</summary>
+        /// <param name="name">The name of the enum case.</param>
+        /// <param name="field">The field of the enum case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Enum("Color") {
+        ///             EnumCase("Red", ConstantExpr(Int 0))
+        ///             EnumCase("Green", ConstantExpr(Int 1))
+        ///             EnumCase("Blue", ConstantExpr(Int 2))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member EnumCase(name: string, field: WidgetBuilder<Expr>) =
             WidgetBuilder<EnumCaseNode>(
                 EnumCase.WidgetKey,
                 AttributesBundle(
                     StackList.one(EnumCase.Name.WithValue(name)),
-                    [| EnumCase.Value.WithValue(value.Compile()) |],
+                    [| EnumCase.Value.WithValue(field.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member EnumCase(name: string, value: WidgetBuilder<Constant>) =
-            Ast.EnumCase(name, Ast.ConstantExpr(value))
+        /// <summary>Create an enum case with the given name and field.</summary>
+        /// <param name="name">The name of the enum case.</param>
+        /// <param name="field">The field of the enum case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Enum("Color") {
+        ///             EnumCase("Red", Int(0))
+        ///             EnumCase("Green", Int(1))
+        ///             EnumCase("Blue", Int(2))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member EnumCase(name: string, field: WidgetBuilder<Constant>) =
+            Ast.EnumCase(name, Ast.ConstantExpr(field))
 
-        static member EnumCase(name: string, value: string) = Ast.EnumCase(name, Ast.Constant(value))
+        /// <summary>Create an enum case with the given name and field.</summary>
+        /// <param name="name">The name of the enum case.</param>
+        /// <param name="field">The field of the enum case.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Enum("Color") {
+        ///             EnumCase("Red", "0")
+        ///             EnumCase("Green", "1")
+        ///             EnumCase("Blue", "2")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member EnumCase(name: string, field: string) = Ast.EnumCase(name, Ast.Constant(field))
 
 type EnumCaseModifiers =
+    /// <summary>Sets the XmlDocs for the current EnumCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///            EnumCase("Red", Int(0))
+    ///                .xmlDocs(Summary("This is the Red color."))
+    ///            EnumCase("Green", Int(1))
+    ///            EnumCase("Blue", Int(2))
+    ///        }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(EnumCase.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current EnumCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///             EnumCase("Red", Int(0))
+    ///                 .xmlDocs([ "This is the Red color." ])
+    ///             EnumCase("Green", Int(1))
+    ///             EnumCase("Blue", Int(2))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: string list) =
         EnumCaseModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current EnumCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///             EnumCase("Red", Int(0))
+    ///                 .attributes([ Attribute("Serializable") ])
+    ///             EnumCase("Green", Int(1))
+    ///             EnumCase("Blue", Int(2))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =
         this.AddScalar(
@@ -83,6 +170,21 @@ type EnumCaseModifiers =
             )
         )
 
+    /// <summary>Sets the attribute for the current EnumCase definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Enum("Color") {
+    ///             EnumCase("Red", Int(0))
+    ///                 .attribute(Attribute("Serializable"))
+    ///             EnumCase("Green", Int(1))
+    ///             EnumCase("Blue", Int(2))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<EnumCaseNode>, attribute: WidgetBuilder<AttributeNode>) =
         EnumCaseModifiers.attributes(this, [ attribute ])

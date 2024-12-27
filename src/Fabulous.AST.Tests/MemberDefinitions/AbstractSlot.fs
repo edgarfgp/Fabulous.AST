@@ -14,6 +14,7 @@ module AbstractMembers =
             AnonymousModule() {
                 TypeDefn("Meh") {
                     AbstractMember("Area", Float(), true)
+
                     AbstractMember("Area1", LongIdent "float", true)
 
                     AbstractMember("Area2", Float(), hasSetter = true)
@@ -70,6 +71,7 @@ type Meh =
                 TypeDefn("Meh") {
                     AbstractMember("Area", [ LongIdent "'a" ], Float())
                         .typeParams(PostfixList([ "'a" ]))
+                        .attributes([ Attribute("Obsolete") ])
 
                     AbstractMember("Area1", [ LongIdent "'b" ], Float())
                         .typeParams(PostfixList([ "'b" ]))
@@ -80,7 +82,9 @@ type Meh =
         |> produces
             """
 type Meh =
+    [<Obsolete>]
     abstract Area<'a> : 'a -> float
+
     abstract Area1<'b> : 'b -> float
 """
 
@@ -115,6 +119,8 @@ type Meh =
 
                     AbstractMember("Add8", [ ("a", LongIdent "int"); ("b", LongIdent "int") ], LongIdent "int")
 
+                    AbstractMember("Add9", [ Int(); Int() ], "int")
+
                 }
             }
         }
@@ -137,6 +143,7 @@ type Meh =
     abstract Add6: int -> int -> int
     abstract Add7: a: int -> b: int -> int
     abstract Add8: a: int -> b: int -> int
+    abstract Add9: int -> int -> int
 
 """
 

@@ -206,7 +206,7 @@ type Colors<'other> =
 
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
 
                     Member(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
@@ -225,7 +225,7 @@ type Person() =
     let ``Produces a generic class with a static and not static member property ``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(ConstantPat(Constant("this.Name1")), ConstantExpr(String "name"))
 
                     Member(ConstantPat(Constant("Name2")), ConstantExpr(String "name")).toStatic()
@@ -245,7 +245,7 @@ type Person<'other>() =
     let ``Produces a class with a member property with xml comments``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                         .xmlDocs([ "This is a comment" ])
                 }
@@ -269,7 +269,7 @@ type Person() =
 
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     for name, acc in data do
                         let widget =
                             Member(ConstantPat(Constant($"this.{name}")), ConstantExpr(String "name"))
@@ -296,7 +296,7 @@ type Person() =
     let ``Produces a class with a member property and return type``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
                     |> _.returnType(LongIdent "int")
                 }
@@ -313,7 +313,7 @@ type Person() =
     let ``Produces a class with a member property inlined``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
                         .toInlined()
                 }
@@ -330,7 +330,7 @@ type Person() =
     let ``Produces a class with property member with attributes``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", ParenPat()) {
+                TypeDefn("Person", UnitPat()) {
                     Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
                         .attribute(Attribute "Obsolete")
                 }
@@ -388,9 +388,7 @@ type Person<'other> =
     let ``Produces a union with a member property ``() =
         Oak() {
             AnonymousModule() {
-                (Union("Person") { UnionCase("Name") }).members() {
-                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
-                }
+                (Union("Person") { UnionCase("Name") }).members() { Member("this.Name", (String "name")) }
 
             }
         }
@@ -437,7 +435,7 @@ type Person =
                 })
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
-                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "name"))
+                    Member("this.Name", String "name")
                 }
 
             }
@@ -482,4 +480,156 @@ type Colors<'other> =
 
     static member Name = "name"
 
+"""
+
+    [<Fact>]
+    let ``Property members getter expr``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter(ConstantExpr "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get () = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter constant``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter(Constant("_position")))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get () = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter string``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter("_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get () = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with exp parameters``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ ParenPat(ParameterPat("a", Int())) ], ConstantExpr "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get (a: int) = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with const parameters``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ Constant("a") ], ConstantExpr "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with const parameters and constant``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ Constant("a") ], Constant "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with string parameters and constant``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ "a" ], Constant "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
+"""
+
+    [<Fact>]
+    let ``Property members getter with string parameters and string``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Value("_position", ConstantExpr(Float(0.0))).toMutable()
+                    Member("this.Position", Getter([ "a" ], "_position"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    let mutable _position = 0.0
+
+    member this.Position
+        with get a = _position
 """

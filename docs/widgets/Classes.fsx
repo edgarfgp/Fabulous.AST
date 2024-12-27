@@ -137,7 +137,7 @@ Oak() {
             Member(ConstantPat(Constant("this.Name")), ConstantExpr(Constant "name"))
         }
 
-        TypeDefn("Person3", ParenPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
+        TypeDefn("Person3", UnitPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
         |> _.typeParams(PostfixList([ "'a"; "'b" ]))
 
     }

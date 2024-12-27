@@ -8,11 +8,6 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
-[<RequireQualifiedAccess>]
-type TypeDefnAbbrev =
-    | Abbrev
-    | Measure
-
 module TypeDefnAbbrevNode =
 
     let Name = Attributes.defineScalar<string> "Name"
@@ -21,8 +16,6 @@ module TypeDefnAbbrevNode =
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
-
-    let TypeDefnAbbrev = Attributes.defineScalar<TypeDefnAbbrev> "TypeDefnAbbrev"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -39,54 +32,27 @@ module TypeDefnAbbrevNode =
 
             let aliasType = Widgets.getNodeFromWidget widget AliasType
 
-            let typeDefnAbbrev = Widgets.getScalarValue widget TypeDefnAbbrev
-
-            let attributeNode =
-                AttributeNode(
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.measure) ], Range.Zero),
-                    None,
-                    None,
-                    Range.Zero
-                )
-
-            let attributes =
-                match Widgets.tryGetScalarValue widget MultipleAttributes, typeDefnAbbrev with
-                | ValueNone, TypeDefnAbbrev.Abbrev -> None
-                | ValueNone, TypeDefnAbbrev.Measure -> Some(MultipleAttributeListNode.Create([ attributeNode ]))
-                | ValueSome attributeNodes, TypeDefnAbbrev.Abbrev ->
-                    Some(MultipleAttributeListNode.Create(attributeNodes))
-                | ValueSome attributeNodes, TypeDefnAbbrev.Measure ->
-                    Some(MultipleAttributeListNode.Create([ attributeNode ] @ attributeNodes))
-
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
-            let equals =
-                match typeDefnAbbrev with
-                | TypeDefnAbbrev.Abbrev -> Some(SingleTextNode.equals)
-                | TypeDefnAbbrev.Measure -> None
-
-            let identListNode, leadingNode =
-                match typeDefnAbbrev with
-                | TypeDefnAbbrev.Abbrev ->
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero), None
-                | TypeDefnAbbrev.Measure ->
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
-                    Some(SingleTextNode.Create(name))
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
 
             TypeDefnAbbrevNode(
                 TypeNameNode(
                     xmlDocs,
                     attributes,
                     SingleTextNode.``type``,
-                    leadingNode,
-                    identListNode,
+                    None,
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
                     [],
                     None,
-                    equals,
+                    Some(SingleTextNode.equals),
                     None,
                     Range.Zero
                 ),
@@ -99,50 +65,82 @@ module TypeDefnAbbrevNode =
 module TypeDefnAbbrevNodeBuilders =
     type Ast with
 
+        /// <summary>Create a type abbreviation with the given name and alias type.</summary>
+        /// <param name="name">The name of the type abbreviation.</param>
+        /// <param name="alias">The alias type of the type abbreviation.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Abbrev("SizeType", "uint32")
+        ///    }
+        /// }
+        /// </code>
         static member Abbrev(name: string, alias: WidgetBuilder<Type>) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
 
             WidgetBuilder<TypeDefnAbbrevNode>(
                 TypeDefnAbbrevNode.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
-                        TypeDefnAbbrevNode.Name.WithValue(name),
-                        TypeDefnAbbrevNode.TypeDefnAbbrev.WithValue(TypeDefnAbbrev.Abbrev)
-                    ),
+                    StackList.one(TypeDefnAbbrevNode.Name.WithValue(name)),
                     [| TypeDefnAbbrevNode.AliasType.WithValue(alias.Compile()) |],
                     Array.empty
                 )
             )
 
+        /// <summary>Create a type abbreviation with the given name and alias type.</summary>
+        /// <param name="name">The name of the type abbreviation.</param>
+        /// <param name="alias">The alias type of the type abbreviation.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Abbrev("SizeType", "uint32")
+        ///     }
+        /// }
+        /// </code>
         static member Abbrev(name: string, alias: string) = Ast.Abbrev(name, Ast.LongIdent(alias))
 
-        static member Measure(name: string, powerType: WidgetBuilder<Type>) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
-
-            WidgetBuilder<TypeDefnAbbrevNode>(
-                TypeDefnAbbrevNode.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        TypeDefnAbbrevNode.Name.WithValue(name),
-                        TypeDefnAbbrevNode.TypeDefnAbbrev.WithValue(TypeDefnAbbrev.Measure)
-                    ),
-                    [| TypeDefnAbbrevNode.AliasType.WithValue(powerType.Compile()) |],
-                    Array.empty
-                )
-            )
-
-        static member Measure(name: string, powerType: string) =
-            Ast.Measure(name, Ast.LongIdent(powerType))
-
 type TypeDefnAbbrevNodeModifiers =
+    /// <summary>Sets the XmlDocs for the current type abbreviation definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Abbrev("SizeType", "uint32")
+    ///             .xmlDocs(Summary("This is a size type"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(TypeDefnAbbrevNode.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current type abbreviation definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Abbrev("SizeType", "uint32")
+    ///             .xmlDocs([ "This is a size type" ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, xmlDocs: string list) =
         TypeDefnAbbrevNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current type abbreviation definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Abbrev("SizeType", "uint32")
+    ///             .attributes([ Attribute("Serializable") ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnAbbrevNode>, attributes: WidgetBuilder<AttributeNode> list)
@@ -154,10 +152,32 @@ type TypeDefnAbbrevNodeModifiers =
             )
         )
 
+    /// <summary>Sets the attributes for the current type abbreviation definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Abbrev("SizeType", "uint32")
+    ///             .attribute(Attribute("Serializable"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnAbbrevNode>, attribute: WidgetBuilder<AttributeNode>) =
         TypeDefnAbbrevNodeModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the type parameters for the current type abbreviation definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Abbrev("Transform", Funs("'a", "'a"))
+    ///             .typeParams(PostfixList("'a"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnAbbrevNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(TypeDefnAbbrevNode.TypeParams.WithValue(typeParams.Compile()))

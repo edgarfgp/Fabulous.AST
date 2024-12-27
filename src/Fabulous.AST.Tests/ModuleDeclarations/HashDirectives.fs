@@ -182,6 +182,9 @@ type HEX = { R: int; G: int; B: int }
                 HashDirective("else")
                 Value(ConstantPat(Constant("str")), ConstantExpr(String("Debugging!")))
                 HashDirective("endif")
+                HashDirective("help", [ String "List.map" ])
+                HashDirective("help", [ "List.map" ])
+                HashDirective("help")
             }
         }
         |> produces
@@ -191,4 +194,7 @@ let str = "Not debugging!"
 #else
 let str = "Debugging!"
 #endif
+#help "List.map"
+#help List.map
+#help
 """

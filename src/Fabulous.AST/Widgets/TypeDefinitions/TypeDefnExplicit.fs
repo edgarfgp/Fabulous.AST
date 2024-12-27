@@ -106,36 +106,162 @@ module TypeDefnExplicitBuilders =
                 )
             )
 
+        /// <summary>Create a class end with the given name.</summary>
+        /// <param name="name">The name of the class.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ClassEnd("EmptyClass") { }
+        ///
+        ///         ClassEnd("Class") {
+        ///             Member("this.Name", UnitPat(), UnitExpr())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member ClassEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``class``)
 
+        /// <summary>Create a class end with the given name and constructor.</summary>
+        /// <param name="name">The name of the class.</param>
+        /// <param name="constructor">The constructor of the class.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///    AnonymousModule() {
+        ///         ClassEnd("Class", Constructor(ParameterPat("name", String()))) {
+        ///            Member("this.Name", UnitPat(), String("name"))
+        ///        }
+        ///    }
+        /// }
+        /// </code>
         static member ClassEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``class``)
 
+        /// <summary>Create a class end with the given name and constructor.</summary>
+        /// <param name="name">The name of the class.</param>
+        /// <param name="constructor">The constructor of the class.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ClassEnd("Class", Constructor(ParameterPat("name", String()))) {
+        ///             Member("this.Name", UnitPat(), String("name"))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member ClassEnd(name: string, constructor: WidgetBuilder<Pattern>) =
             Ast.BaseClassEnd(name, ValueSome(Ast.Constructor(constructor)), SingleTextNode.``class``)
 
+        /// <summary>Create a struct end with the given name.</summary>
+        /// <param name="name">The name of the struct.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         StructEnd("EmptyStruct") { }
+        ///     }
+        /// }
+        /// </code>
         static member StructEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``struct``)
 
+        /// <summary>Create a struct end with the given name and constructor.</summary>
+        /// <param name="name">The name of the struct.</param>
+        /// <param name="constructor">The constructor of the struct.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+        ///            ValField("x", Int()).toMutable()
+        ///            Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+        ///        }
+        ///    }
+        /// }
+        /// </code>
         static member StructEnd(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>) =
             Ast.BaseClassEnd(name, ValueSome constructor, SingleTextNode.``struct``)
 
+        /// <summary>Create a struct end with the given name and constructor.</summary>
+        /// <param name="name">The name of the struct.</param>
+        /// <param name="constructor">The constructor of the struct.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         StructEnd("Struct", UnitPat()) {
+        ///            ValField("x", Int()).toMutable()
+        ///            Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+        ///        }
+        ///    }
+        /// }
+        /// </code>
         static member StructEnd(name: string, constructor: WidgetBuilder<Pattern>) =
             Ast.BaseClassEnd(name, ValueSome(Ast.Constructor(constructor)), SingleTextNode.``struct``)
 
+        /// <summary>Create an interface end with the given name.</summary>
+        /// <param name="name">The name of the interface.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterfaceEnd("IMarker") { }
+        ///         InterfaceEnd("IMarker") {
+        ///             AbstractMember("Name", String())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member InterfaceEnd(name: string) =
             Ast.BaseClassEnd(name, ValueNone, SingleTextNode.``interface``)
 
 type TypeDefnExplicitModifiers =
+    /// <summary>Sets the XmlDocs for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///            ValField("x", Int()).toMutable()
+    ///            Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///        }
+    ///        |> _.xmlDocs(Summary("This is a struct end"))
+    ///    }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(TypeDefnExplicit.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///             ValField("x", Int()).toMutable()
+    ///             Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///         }
+    ///         |> _.xmlDocs([ "This is a struct end" ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
         TypeDefnExplicitModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="values">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///             ValField("x", Int()).toMutable()
+    ///             Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///         }
+    ///         |> _.attributes([ Attribute("Obsolete") ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<TypeDefnExplicitNode>, values: WidgetBuilder<AttributeNode> list)
@@ -147,22 +273,88 @@ type TypeDefnExplicitModifiers =
             )
         )
 
+    /// <summary>Sets the attribute for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///             ValField("x", Int()).toMutable()
+    ///             Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<TypeDefnExplicitNode>, attribute: WidgetBuilder<AttributeNode>) =
         TypeDefnExplicitModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the type parameters for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///             ValField("x", Int()).toMutable()
+    ///             Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///         }
+    ///         |> _.typeParams(PostfixList([ "T" ]))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefnExplicitNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(TypeDefnExplicit.TypeParams.WithValue(typeParams.Compile()))
 
+    /// <summary>Sets the accessibility for the current widget to private.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///             ValField("x", Int()).toMutable()
+    ///             Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///         }
+    ///         |> _.toPrivate()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<TypeDefnExplicitNode>) =
         this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Private))
 
+    /// <summary>Sets the accessibility for the current widget to public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///             ValField("x", Int()).toMutable()
+    ///             Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///         }
+    ///         |> _.toPublic()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<TypeDefnExplicitNode>) =
         this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Public))
 
+    /// <summary>Sets the accessibility for the current widget to internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         StructEnd("Struct", Constructor(ParameterPat("x", Int()))) {
+    ///             ValField("x", Int()).toMutable()
+    ///             Constructor("x", RecordExpr([ RecordFieldExpr("x", "x") ]))
+    ///         }
+    ///         |> _.toInternal()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnExplicitNode>) =
         this.AddScalar(TypeDefnExplicit.Accessibility.WithValue(AccessControl.Internal))
