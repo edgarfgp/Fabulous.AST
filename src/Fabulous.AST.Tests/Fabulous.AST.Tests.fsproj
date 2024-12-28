@@ -14,6 +14,7 @@
         <Compile Include="TestHelpers.fs" />
         <Compile Include="WidgetTests.fs" />
         <Compile Include="Constant.fs" />
+        <Compile Include="XmlDocs.fs" />
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
         <Compile Include="ModuleDeclarations\Oak.fs" />
