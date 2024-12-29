@@ -96,6 +96,40 @@ module BindingFunctionBuilders =
             )
 
         static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list
+            ) =
+            Ast.Function(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr> list)
+            =
+            Ast.Function(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<BindingNode> list)
+            =
+            Ast.Function(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+
+        static member Function
+            (
+                name: string,
+                parameter: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list
+            ) =
+            Ast.Function(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+
+        static member Function(name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> list) =
+            Ast.Function(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+
+        static member Function
+            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<BindingNode> list)
+            =
+            Ast.Function(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+
+        static member Function
             (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>)
             =
             Ast.Function(name, parameters, Ast.ConstantExpr(bodyExpr))
