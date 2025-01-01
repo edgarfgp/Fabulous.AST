@@ -16,24 +16,20 @@ module ExternBindingPattern =
 
     let WidgetKey =
         Widgets.register "ExternBindingPattern" (fun widget ->
-            let pat = Widgets.tryGetNodeFromWidget widget PatternVal
+            let pat =
+                Widgets.tryGetNodeFromWidget widget PatternVal
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let tp = Widgets.tryGetNodeFromWidget widget TypeValue
-
             let tp =
-                match tp with
-                | ValueSome tp -> Some tp
-                | ValueNone -> None
-
-            let pat =
-                match pat with
-                | ValueSome value -> Some value
-                | ValueNone -> None
+                Widgets.tryGetNodeFromWidget widget TypeValue
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
 
             ExternBindingPatternNode(attributes, tp, pat, Range.Zero))
 
@@ -68,12 +64,7 @@ type ExternBindingPatternNodeModifiers =
     static member inline attributes
         (this: WidgetBuilder<ExternBindingPatternNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
-        this.AddScalar(
-            ExternBindingPattern.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
+        this.AddScalar(ExternBindingPattern.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
     [<Extension>]
     static member inline attribute

@@ -55,12 +55,8 @@ module ExternBinding =
 
             let name = Widgets.getScalarValue widget Identifier
 
-            let parameters = Widgets.tryGetScalarValue widget Parameters
-
             let parameters =
-                match parameters with
-                | ValueSome parameters -> parameters
-                | ValueNone -> []
+                Widgets.tryGetScalarValue widget Parameters |> ValueOption.defaultValue []
 
             ExternBindingNode(
                 xmlDocs,
@@ -79,6 +75,24 @@ module ExternBinding =
 [<AutoOpen>]
 module ExternBindingNodeBuilders =
     type Ast with
+        /// <summary>
+        /// Create an extern binding with the given type, name, and parameters.
+        /// </summary>
+        /// <param name="tp">The type of the extern binding.</param>
+        /// <param name="name">The name of the extern binding.</param>
+        /// <param name="parameters">The parameters of the extern binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///    AnonymousModule() {
+        ///        ExternBinding(
+        ///            LongIdent "void",
+        ///            "HelloWorld",
+        ///            [ ExternBindingPat("string", "x")
+        ///              ExternBindingPat(Int(), "y") ]
+        ///        )
+        ///    }
+        /// }
+        /// </code>
         static member ExternBinding
             (tp: WidgetBuilder<Type>, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> list)
             =
@@ -96,56 +110,230 @@ module ExternBindingNodeBuilders =
                 )
             )
 
+        /// <summary>
+        /// Create an extern binding with the given type, name, and parameters.
+        /// </summary>
+        /// <param name="tp">The type of the extern binding.</param>
+        /// <param name="name">The name of the extern binding.</param>
+        /// <param name="parameters">The parameters of the extern binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ExternBinding(
+        ///             "void",
+        ///             "HelloWorld",
+        ///             [ ExternBindingPat("string", "x")
+        ///               ExternBindingPat(Int(), "y") ]
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member ExternBinding
             (tp: string, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> list)
             =
             Ast.ExternBinding(Ast.LongIdent(tp), name, parameters)
 
+        /// <summary>
+        /// Create an extern binding with the given type and name.
+        /// </summary>
+        /// <param name="tp">The type of the extern binding.</param>
+        /// <param name="name">The name of the extern binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ExternBinding(LongIdent "void", "HelloWorld")
+        ///     }
+        /// }
+        /// </code>
         static member ExternBinding(tp: WidgetBuilder<Type>, name: string) = Ast.ExternBinding(tp, name, [])
 
+        /// <summary>
+        /// Create an extern binding with the given type and name.
+        /// </summary>
+        /// <param name="tp">The type of the extern binding.</param>
+        /// <param name="name">The name of the extern binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ExternBinding("void", "HelloWorld")
+        ///     }
+        /// }
+        /// </code>
         static member ExternBinding(tp: string, name: string) =
             Ast.ExternBinding(Ast.LongIdent(tp), name, [])
 
+        /// <summary>
+        /// Create an extern binding with the given type, name, and parameter.
+        /// </summary>
+        /// <param name="tp">The type of the extern binding.</param>
+        /// <param name="name">The name of the extern binding.</param>
+        /// <param name="parameter">The parameter of the extern binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ExternBinding(
+        ///             LongIdent "void",
+        ///             "HelloWorld",
+        ///             ExternBindingPat("string", "x")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member ExternBinding
             (tp: WidgetBuilder<Type>, name: string, parameter: WidgetBuilder<ExternBindingPatternNode>)
             =
             Ast.ExternBinding(tp, name, [ parameter ])
 
+        /// <summary>
+        /// Create an extern binding with the given type, name, and parameter.
+        /// </summary>
+        /// <param name="tp">The type of the extern binding.</param>
+        /// <param name="name">The name of the extern binding.</param>
+        /// <param name="parameter">The parameter of the extern binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ExternBinding(
+        ///             "void",
+        ///             "HelloWorld",
+        ///             ExternBindingPat("string", "x")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member ExternBinding(tp: string, name: string, parameter: WidgetBuilder<ExternBindingPatternNode>) =
             Ast.ExternBinding(Ast.LongIdent(tp), name, [ parameter ])
 
 type ExternBindingNodeModifiers =
+    /// <summary>Sets the XmlDocs for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding(
+    ///             "void",
+    ///             "HelloWorld",
+    ///             ExternBindingPat("string", "x")
+    ///         )
+    ///             .xmlDocs(Summary("This is an ExternBinding"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, comments: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(ExternBinding.XmlDocs.WithValue(comments.Compile()))
+    static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(ExternBinding.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding(
+    ///             "void",
+    ///             "HelloWorld",
+    ///             ExternBindingPat("string", "x")
+    ///         )
+    ///             .xmlDocs([ "This is an ExternBinding" ])
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, comments: string list) =
-        ExternBindingNodeModifiers.xmlDocs(this, Ast.XmlDocs(comments))
+    static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, xmlDocs: string list) =
+        ExternBindingNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding(
+    ///             "void",
+    ///             "HelloWorld",
+    ///             ExternBindingPat("string", "x")
+    ///         )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<ExternBindingNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
-        this.AddScalar(
-            ExternBinding.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
+        this.AddScalar(ExternBinding.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
+    /// <summary>
+    /// Sets the attribute for the current widget.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding(
+    ///             "void",
+    ///             "HelloWorld",
+    ///             ExternBindingPat("string", "x")
+    ///         )
+    ///             .attribute(Attribute("DllImport"))
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: WidgetBuilder<AttributeNode>) =
         ExternBindingNodeModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the accessibility to private for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding(
+    ///             "void",
+    ///             "HelloWorld",
+    ///             ExternBindingPat("string", "x")
+    ///         )
+    ///             .toPrivate()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<ExternBindingNode>) =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Private))
 
+    /// <summary>Sets the accessibility to private for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding(
+    ///             "void",
+    ///             "HelloWorld",
+    ///             ExternBindingPat("string", "x")
+    ///         )
+    ///             .toPublic()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<ExternBindingNode>) =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Public))
 
+    /// <summary>Sets the accessibility to private for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding(
+    ///             "void",
+    ///             "HelloWorld",
+    ///             ExternBindingPat("string", "x")
+    ///         )
+    ///             .toInternal()
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<ExternBindingNode>) =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Internal))

@@ -39,6 +39,7 @@
         <Compile Include="Widgets\Constant.fs" />
         <Compile Include="Widgets\Pattern.fs" />
         <Compile Include="Widgets\Expr.fs" />
+        <Compile Include="Widgets\LongIdent.fs" />
         <Compile Include="Widgets\AttributeNode.fs" />
         <Compile Include="Widgets\Trivia.fs" />
         <Compile Include="Widgets\Patterns\OptionalVal.fs" />
@@ -61,6 +62,7 @@
         <Compile Include="Widgets\Patterns\NamedParenStarIdent.fs" />
         <Compile Include="Widgets\Patterns\As.fs" />
         <Compile Include="Widgets\Patterns\ListCons.fs" />
+        <Compile Include="Widgets\Patterns\ExternBindingPattern.fs" />
         <Compile Include="Widgets\Expressions\Paren.fs" />
         <Compile Include="Widgets\Expressions\SingleNode.fs" />
         <Compile Include="Widgets\Expressions\Single.fs" />
@@ -130,7 +132,6 @@
         <Compile Include="Widgets\Expressions\IfThen.fs" />
         <Compile Include="Widgets\Expressions\IfThenElif.fs" />
         <Compile Include="Widgets\Expressions\IfThenElse.fs" />
-        <Compile Include="Widgets\Types\LongIdent.fs" />
         <Compile Include="Widgets\Types\HashConstraint.fs" />
         <Compile Include="Widgets\Types\StaticConstant.fs" />
         <Compile Include="Widgets\Types\StaticConstantExpr.fs" />
@@ -162,7 +163,6 @@
         <Compile Include="Widgets\MemberDefinitions\Function.fs" />
         <Compile Include="Widgets\MemberDefinitions\Property.fs" />
         <Compile Include="Widgets\MemberDefinitions\Method.fs" />
-        <Compile Include="Widgets\MemberDefinitions\ExternBindingPattern.fs" />
         <Compile Include="Widgets\MemberDefinitions\ExternBinding.fs" />
         <Compile Include="Widgets\MemberDefinitions\BindingList.fs" />
         <Compile Include="Widgets\MemberDefinitions\ExplicitConstructor.fs" />
