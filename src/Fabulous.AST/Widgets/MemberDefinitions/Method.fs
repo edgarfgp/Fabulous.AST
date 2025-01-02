@@ -21,7 +21,10 @@ module BindingMethodNode =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
+            let returnType =
+                Widgets.tryGetNodeFromWidget widget BindingNode.Return
+                |> ValueOption.map(fun value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero)))
+                |> ValueOption.defaultValue None
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -38,11 +41,6 @@ module BindingMethodNode =
                 Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
-
-            let returnType =
-                match returnType with
-                | ValueNone -> None
-                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
 
             let attributes =
                 Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
@@ -87,6 +85,26 @@ module BindingMethodNode =
 module BindingMethodBuilders =
     type Ast with
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="body">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                "this.Name",
+        ///                [ ParenPat(ParameterPat("name", String()))
+        ///                  ParenPat(ParameterPat("age", Int())) ],
+        ///                ConstantExpr(Int 23)
+        ///            )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern> list, body: WidgetBuilder<Expr>) =
             let parameters = parameters |> List.map Gen.mkOak
 
@@ -102,35 +120,254 @@ module BindingMethodBuilders =
                 )
             )
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameter">The parameter of the method.</param>
+        /// <param name="body">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 ParenPat(ParameterPat("name", String())),
+        ///                 ConstantExpr(Int 23)
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameter: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
             Ast.Member(name, [ parameter ], body)
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 [ ParenPat(ParameterPat("name", String()))
+        ///                   ParenPat(ParameterPat("age", Int())) ],
+        ///                 Int(23)
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>) =
             Ast.Member(name, parameters, Ast.ConstantExpr(bodyExpr))
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 [ ParenPat(ParameterPat("name", String()))
+        ///                   ParenPat(ParameterPat("age", Int())) ],
+        ///                 "23"
+        ///             )
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
             Ast.Member(name, parameters, Ast.Constant(bodyExpr))
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 [ "(name: string)"; "(age: int)" ],
+        ///                 Int(23)
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>) =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Member(name, parameters, bodyExpr)
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 [ "(name: string)"; "(age: int)" ],
+        ///                 ConstantExpr(Int 23)
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member Member(name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Member(name, parameters, bodyExpr)
+
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 [ "(name: string)"; "(age: int)" ],
+        ///                 "23"
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: string list, bodyExpr: string) =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Member(name, parameters, bodyExpr)
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 ParenPat(ParameterPat("name", String())),
+        ///                 Int(23)
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
             Ast.Member(name, [ parameters ], bodyExpr)
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 ParenPat(ParameterPat("name", String())),
+        ///                 "23"
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string) =
             Ast.Member(name, [ parameters ], bodyExpr)
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 "(name: string)",
+        ///                 Int(23)
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>) =
             Ast.Member(name, [ parameters ], bodyExpr)
 
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 "(name: string)",
+        ///                 "23"
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, parameters: string, bodyExpr: string) =
+            Ast.Member(name, [ parameters ], bodyExpr)
+
+        /// <summary>
+        /// Create a method member definition.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <param name="bodyExpr">The body of the method.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(
+        ///                 "this.Name",
+        ///                 "(name: string)",
+        ///                 ConstantExpr(Int 23)
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member Member(name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>) =
             Ast.Member(name, [ parameters ], bodyExpr)
