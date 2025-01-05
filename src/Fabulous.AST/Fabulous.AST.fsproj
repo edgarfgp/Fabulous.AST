@@ -161,6 +161,7 @@
         <Compile Include="Widgets\MemberDefinitions\_BindingNode.fs" />
         <Compile Include="Widgets\MemberDefinitions\Value.fs" />
         <Compile Include="Widgets\MemberDefinitions\Function.fs" />
+        <Compile Include="Widgets\MemberDefinitions\Default.fs" />
         <Compile Include="Widgets\MemberDefinitions\Property.fs" />
         <Compile Include="Widgets\MemberDefinitions\Method.fs" />
         <Compile Include="Widgets\MemberDefinitions\ExternBinding.fs" />

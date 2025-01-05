@@ -93,6 +93,8 @@ let x i =
                 Function("x", [ ParameterPat(ConstantPat(Constant "i")) ], ConstantExpr(ConstantUnit()))
                 Function("x2", ParameterPat(ConstantPat("i")), ConstantExpr("()"))
 
+                Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
+
                 Function(
                     "y",
                     [ ParameterPat(ConstantPat("i")); ParameterPat(ConstantPat("j")) ],
@@ -108,6 +110,7 @@ let x i =
 
 let x i = ()
 let x2 i = ()
+let add a b = a + b
 let y i j = ()
 let y2 i j = ()
 let z i j = ()
@@ -345,6 +348,14 @@ let inline x i = ()
 """
 
     [<Fact>]
+    let ``Produces an function with parameters and constant expr ``() =
+        Oak() { AnonymousModule() { Function("add", [ ParameterPat("a"); ParameterPat("b") ], Constant("a + b")) } }
+        |> produces
+            """
+let add a b = a + b
+"""
+
+    [<Fact>]
     let ``Produces a function with parameters and access controls``() =
         Oak() {
             AnonymousModule() {
@@ -365,18 +376,38 @@ let internal z i = ()
 """
 
     [<Fact>]
-    let ``Produces a default member``() =
+    let ``Produces a function with ComputationExpressionStatement``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", UnitPat()) {
-                    AbstractMember("GetValue", [ Unit() ], String())
-                    Default("this.GetValue", UnitPat(), ConstantExpr(String("")))
-                }
+                Function(
+                    "cylinderVolume",
+                    [ ParameterPat "radius"; ParameterPat "length" ],
+                    [ InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius"))) ]
+                )
             }
         }
         |> produces
             """
-type Person() =
-    abstract GetValue: unit -> string
-    default this.GetValue() = ""
+let cylinderVolume radius length = length * pi * radius * radius
+"""
+
+    [<Fact>]
+    let ``Produces a function with ParameterPat ComputationExpressionStatement``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "cylinderVolume",
+                    ParameterPat "radius",
+                    [ LetOrUseExpr(Value("pi", Double(3.14159)))
+                      OtherExpr(
+                          InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))
+                      ) ]
+                )
+            }
+        }
+        |> produces
+            """
+let cylinderVolume radius =
+    let pi = 3.14159
+    length * pi * radius * radius
 """

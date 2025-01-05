@@ -34,6 +34,7 @@
         <Compile Include="ModuleDeclarations\TopLevelBindings\Value.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Literal.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Function.fs" />
+        <Compile Include="ModuleDeclarations\TopLevelBindings\Default.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Property.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Method.fs" />
         <Compile Include="MemberDefinitions\Interface.fs" />
