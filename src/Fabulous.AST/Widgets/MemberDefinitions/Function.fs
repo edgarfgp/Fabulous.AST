@@ -354,7 +354,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", ParameterPat("a"), InfixAppExpr("a", "+", "b"))
+        ///         Function("add", ParameterPat("a b"), InfixAppExpr("a", "+", "b"))
         ///     }
         /// }
         /// </code>
@@ -370,7 +370,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", ParameterPat("a"), Constant("a + b"))
+        ///         Function("add", ParameterPat("a b"), Constant("a + b"))
         ///     }
         /// }
         /// </code>
@@ -386,7 +386,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", ParameterPat("a"), "a + b")
+        ///         Function("add", ParameterPat("a b"), "a + b")
         ///     }
         /// }
         /// </code>
@@ -402,7 +402,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", "a", InfixAppExpr("a", "+", "b"))
+        ///         Function("add", "a b", InfixAppExpr("a", "+", "b"))
         ///     }
         /// }
         /// </code>
@@ -418,7 +418,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", "a", Constant("a + b"))
+        ///         Function("add", "a b", Constant("a + b"))
         ///     }
         /// }
         /// </code>
@@ -434,7 +434,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", "a", "a + b")
+        ///         Function("add", "a b", "a + b")
         ///     }
         /// }
         /// </code>

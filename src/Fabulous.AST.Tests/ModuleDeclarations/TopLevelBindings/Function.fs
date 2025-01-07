@@ -21,6 +21,25 @@ let x i = ()
 """
 
     [<Fact>]
+    let ``Produces function with summary xml docs``() =
+        Oak() { AnonymousModule() { Function("add", [ "a"; "b" ], "a + b").xmlDocs(Summary("This is a comment")) } }
+        |> produces
+            """
+/// <summary>
+/// This is a comment
+/// </summary>
+let add a b = a + b
+"""
+
+    [<Fact>]
+    let ``Produces a function with type params``() =
+        Oak() { AnonymousModule() { Function("add", [ "a"; "b" ], "a + b").typeParams(PostfixList(TyparDecl("'a"))) } }
+        |> produces
+            """
+let add<'a> a b = a + b
+"""
+
+    [<Fact>]
     let ``Produces a function with a body ComputationExpressionStatement``() =
         Oak() {
             AnonymousModule() {
@@ -124,6 +143,7 @@ let z i j = ()
                 Function("x", "i", ConstantExpr(ConstantUnit()))
                 Function("y", "i", ConstantUnit())
                 Function("z", "i", "()")
+                Function("add", "a b", "a + b")
             }
         }
         |> produces
@@ -132,6 +152,7 @@ let z i j = ()
 let x i = ()
 let y i = ()
 let z i = ()
+let add a b = a + b
 
 """
 
