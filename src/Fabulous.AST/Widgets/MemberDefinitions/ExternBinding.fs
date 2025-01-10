@@ -32,13 +32,10 @@ module ExternBinding =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let attributesOfType =
+            let multipleAttributes =
                 Widgets.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
-
-            let multipleAttributesOfType =
-                match attributesOfType with
-                | ValueSome values -> Some(MultipleAttributeListNode([ values ], Range.Zero))
-                | ValueNone -> None
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode([ x ], Range.Zero)))
+                |> ValueOption.defaultValue None
 
             let tp = Widgets.getNodeFromWidget widget TypeVal
 
@@ -62,7 +59,7 @@ module ExternBinding =
                 xmlDocs,
                 attributes,
                 SingleTextNode.``extern``,
-                multipleAttributesOfType,
+                multipleAttributes,
                 tp,
                 accessControl,
                 IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
