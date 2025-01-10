@@ -28,11 +28,21 @@ let {{expected}} = 12
 
     [<Fact>]
     let ``Simple Let binding``() =
-        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } }
+        Oak() {
+            AnonymousModule() {
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                Value(Constant("x"), Int(12))
+                Use(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+                Use(ConstantPat(Constant("x")), Int(12))
+            }
+        }
         |> produces
             """
 
 let x = 12
+let x = 12
+use x = 12
+use x = 12
 
 """
 
