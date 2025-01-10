@@ -22,6 +22,8 @@ module AutoProperty =
                     )
                 ) {
                     MemberVal("Name", ConstantExpr(Constant("name")), true, true)
+                        .xmlDocs(Summary("The name of the person"))
+
                     MemberVal("Age", ConstantExpr(Constant("age")), true, true)
                     MemberVal("A", ConstantExpr(String("")), true)
                     MemberVal("B", ConstantExpr(String("")), true).toStatic()
@@ -45,6 +47,9 @@ module AutoProperty =
         |> produces
             """
 type Person(name: string, age: int) =
+    /// <summary>
+    /// The name of the person
+    /// </summary>
     member val Name = name with get, set
     member val Age = age with get, set
     member val A = "" with get

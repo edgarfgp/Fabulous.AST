@@ -19,12 +19,10 @@ module BindingProperty =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
-
             let returnType =
-                match returnType with
-                | ValueNone -> None
-                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
+                Widgets.tryGetNodeFromWidget widget BindingNode.Return
+                |> ValueOption.map(fun value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero)))
+                |> ValueOption.defaultValue None
 
             let accessControl =
                 Widgets.tryGetScalarValue widget BindingNode.Accessibility
@@ -50,7 +48,7 @@ module BindingProperty =
             let inlineNode =
                 match isInlined with
                 | ValueSome true -> Some(SingleTextNode.``inline``)
-                | ValueSome false -> None
+                | ValueSome false
                 | ValueNone -> None
 
             let typeParams =
@@ -84,6 +82,20 @@ module BindingProperty =
 [<AutoOpen>]
 module BindingPropertyBuilders =
     type Ast with
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///        TypeDefn("Person", UnitPat()) {
+        ///            Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
+        ///        }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
             WidgetBuilder<BindingNode>(
                 BindingProperty.WidgetKey,
@@ -94,25 +106,137 @@ module BindingPropertyBuilders =
                 )
             )
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(ConstantPat("this.Name"), Int(23))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>) =
             Ast.Member(name, Ast.ConstantExpr(body))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(ConstantPat("this.Name"), "23")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: string) =
             Ast.Member(name, Ast.ConstantExpr(Ast.Constant(body)))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(Constant("this.Name"), ConstantExpr(Int 23))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>) =
             Ast.Member(Ast.ConstantPat(name), body)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(Constant("this.Name"), Int(23))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
             Ast.Member(name, Ast.ConstantExpr(body))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member("this.Name", ConstantExpr(Int 23))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: WidgetBuilder<Expr>) = Ast.Member(Ast.Constant(name), body)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member(Constant("this.Name"), "23")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: string) =
             Ast.Member(name, Ast.ConstantExpr(Ast.Constant(body)))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member("this.Name", Int(23))
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: WidgetBuilder<Constant>) =
             Ast.Member(name, Ast.ConstantExpr(body))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             Member("this.Name", "23")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: string) =
             Ast.Member(Ast.Constant(name), Ast.Constant(body))

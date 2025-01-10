@@ -3,7 +3,6 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
@@ -15,7 +14,7 @@ module InterfaceMember =
 
     let WidgetKey =
         Widgets.register "InterfaceMember" (fun widget ->
-            let tp = Widgets.getNodeFromWidget widget TypeValue
+            let typeVal = Widgets.getNodeFromWidget widget TypeValue
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
@@ -27,12 +26,26 @@ module InterfaceMember =
                 else
                     Some(SingleTextNode.``with``)
 
-            MemberDefnInterfaceNode(SingleTextNode.``interface``, tp, withNode, members, Range.Zero))
+            MemberDefnInterfaceNode(SingleTextNode.``interface``, typeVal, withNode, members, Range.Zero))
 
 [<AutoOpen>]
 module InterfaceMemberBuilders =
     type Ast with
 
+        /// <summary>
+        /// Create an interface member with the given name.
+        /// </summary>
+        /// <param name="value">The name of the interface.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", ParenPat(ParameterPat("name"))) {
+        ///            InterfaceWith(LongIdent("IPrintable")) {
+        ///                Member("this.Print", AppExpr("printfn", [ String("%s"); Constant("name") ]))
+        ///            }
+        ///        }
+        /// }
+        /// </code>
         static member InterfaceWith(value: WidgetBuilder<Type>) =
             CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
                 InterfaceMember.WidgetKey,
@@ -40,6 +53,21 @@ module InterfaceMemberBuilders =
                 InterfaceMember.TypeValue.WithValue(value.Compile())
             )
 
+        /// <summary>
+        /// Create an interface member with the given name.
+        /// </summary>
+        /// <param name="name">The name of the interface.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", ParenPat(ParameterPat("name"))) {
+        ///             InterfaceWith("IPrintable") {
+        ///                 Member("this.Print", AppExpr("printfn", [ String("%s"); Constant("name") ]))
+        ///             }
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member InterfaceWith(name: string) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.InterfaceWith(Ast.LongIdent name)

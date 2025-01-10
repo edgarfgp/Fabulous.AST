@@ -14,6 +14,7 @@
         <Compile Include="TestHelpers.fs" />
         <Compile Include="WidgetTests.fs" />
         <Compile Include="Constant.fs" />
+        <Compile Include="XmlDocs.fs" />
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
         <Compile Include="ModuleDeclarations\Oak.fs" />
@@ -33,6 +34,7 @@
         <Compile Include="ModuleDeclarations\TopLevelBindings\Value.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Literal.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Function.fs" />
+        <Compile Include="ModuleDeclarations\TopLevelBindings\Default.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Property.fs" />
         <Compile Include="ModuleDeclarations\TopLevelBindings\Method.fs" />
         <Compile Include="MemberDefinitions\Interface.fs" />

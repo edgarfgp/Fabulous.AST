@@ -1,7 +1,6 @@
 namespace Fabulous.AST
 
 open Fabulous.AST
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -44,7 +43,7 @@ module CompExprBodyBuilders =
         static member CompExprBodyExpr(value: string) = Ast.CompExprBodyExpr([ value ])
 
         static member CompExprBodyExpr(values: WidgetBuilder<BindingNode> list) =
-            let values = values |> List.map(fun e -> Ast.LetOrUseExpr(e))
+            let values = values |> List.map(Ast.LetOrUseExpr)
             Ast.CompExprBodyExpr(values)
 
         static member CompExprBodyExpr(value: WidgetBuilder<BindingNode>) = Ast.CompExprBodyExpr([ value ])

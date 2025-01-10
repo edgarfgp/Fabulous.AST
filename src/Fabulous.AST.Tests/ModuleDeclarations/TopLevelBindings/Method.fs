@@ -280,13 +280,24 @@ type Person() =
                 TypeDefn("Person", UnitPat()) {
                     Member(
                         "this.Name",
-                        LongIdentPat(
-                            [ ParenPat(ParameterPat(ConstantPat(Constant("name")), String()))
-                              ParenPat(ParameterPat(ConstantPat(Constant("age")), Int())) ]
-                        ),
+                        [ ParenPat(ParameterPat("name", String()))
+                          ParenPat(ParameterPat("age", Int())) ],
                         ConstantExpr(Int 23)
                     )
                 }
+            }
+        }
+        |> produces
+            """
+type Person() =
+    member this.Name (name: string) (age: int) = 23
+"""
+
+    [<Fact>]
+    let ``Produces a method member with multiple parameter strings``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Person", UnitPat()) { Member("this.Name", [ "(name: string)"; "(age: int)" ], (Int 23)) }
             }
         }
         |> produces

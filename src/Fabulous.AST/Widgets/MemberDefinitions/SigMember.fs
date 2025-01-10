@@ -19,7 +19,11 @@ module SigMember =
             let withGetSetText =
                 match hasGetter, hasSetter with
                 | true, true ->
-                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get; SingleTextNode.set ]))
+                    Some(
+                        MultipleTextsNode.Create(
+                            [ SingleTextNode.``with``; SingleTextNode.Create("get,"); SingleTextNode.set ]
+                        )
+                    )
                 | true, false -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
                 | false, true -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
                 | false, false -> None

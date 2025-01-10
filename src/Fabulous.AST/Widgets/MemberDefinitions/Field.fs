@@ -59,11 +59,57 @@ module Field =
 [<AutoOpen>]
 module FieldBuilders =
     type Ast with
+        /// <summary>
+        /// Create a field with the give type.
+        /// </summary>
+        /// <param name="fieldType">The type of the field.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Record("HEX") {
+        ///            Field(Int())
+        ///            Field(Int())
+        ///            Field(Int())
+        ///        }
+        ///     }
+        /// }
+        /// </code>
         static member Field(fieldType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(Field.WidgetKey, Field.FieldType.WithValue(fieldType.Compile()))
 
+        /// <summary>
+        /// Create a field with the give type.
+        /// </summary>
+        /// <param name="fieldType">The type of the field.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Record("HEX") {
+        ///             Field("int")
+        ///             Field("int")
+        ///             Field("int")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Field(fieldType: string) = Ast.Field(Ast.LongIdent(fieldType))
 
+        /// <summary>
+        /// Create a field with the give a name and type.
+        /// </summary>
+        /// <param name="name">The name of the field.</param>
+        /// <param name="fieldType">The type of the field.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Record("HEX") {
+        ///             Field("R", Int())
+        ///             Field("G", Int())
+        ///             Field("B", Int())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Field(name: string, fieldType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
@@ -74,6 +120,39 @@ module FieldBuilders =
                 )
             )
 
+        /// <summary>
+        /// Create a field with the give a name and type.
+        /// </summary>
+        /// <param name="name">The name of the field.</param>
+        /// <param name="fieldType">The type of the field.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Record("HEX") {
+        ///             Field("R", "int")
+        ///             Field("G", "int")
+        ///             Field("B", "int")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member Field(name: string, fieldType: string) =
+            Ast.Field(name, Ast.LongIdent(fieldType))
+
+        /// <summary>
+        /// Create a Val field with the give a name and type.
+        /// </summary>
+        /// <param name="name">The name of the field.</param>
+        /// <param name="fieldType">The type of the field.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("X") {
+        ///            ValField("x", Int())
+        ///        }
+        ///     }
+        /// }
+        /// </code>
         static member ValField(name: string, fieldType: WidgetBuilder<Type>) =
             WidgetBuilder<FieldNode>(
                 Field.WidgetKey,
@@ -84,34 +163,106 @@ module FieldBuilders =
                 )
             )
 
+        /// <summary>
+        /// Create a Val field with the give a name and type.
+        /// </summary>
+        /// <param name="name">The name of the field.</param>
+        /// <param name="fieldType">The type of the field.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("X") {
+        ///             ValField("x", "int")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member ValField(name: string, fieldType: string) =
             Ast.ValField(name, Ast.LongIdent(fieldType))
 
-        static member Field(name: string, fieldType: string) =
-            Ast.Field(name, Ast.LongIdent(fieldType))
-
 type FieldModifiers =
+    /// <summary>Sets the XmlDocs for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("X") {
+    ///             ValField("x", "int")
+    ///                 .xmlDocs(Summary("This is a field"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<FieldNode>, comments: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(Field.XmlDocs.WithValue(comments.Compile()))
+    static member xmlDocs(this: WidgetBuilder<FieldNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Field.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>
+    /// Sets the XmlDocs for the current widget.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("X") {
+    ///             ValField("x", "int")
+    ///                 .xmlDocs(["This is a field"])
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<FieldNode>, comments: string list) =
-        FieldModifiers.xmlDocs(this, Ast.XmlDocs(comments))
+    static member xmlDocs(this: WidgetBuilder<FieldNode>, xmlDocs: string list) =
+        FieldModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the ValField to be mutable.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("X") {
+    ///             ValField("x", "int")
+    ///                 .toMutable()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member toMutable(this: WidgetBuilder<FieldNode>) =
         this.AddScalar(Field.Mutable.WithValue(true))
 
+    /// <summary>Sets the attributes for the current measure ValField definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("X") {
+    ///             ValField("x", "int")
+    ///                 .attributes([ Attribute "DefaultValue" ])
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: WidgetBuilder<AttributeNode> list) =
-        this.AddScalar(
-            Field.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
+        this.AddScalar(Field.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
+    /// <summary>Sets the attributes for the current measure ValField definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("X") {
+    ///             ValField("x", "int")
+    ///                 .attributes(Attribute("DefaultValue"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: WidgetBuilder<AttributeNode>) =
         FieldModifiers.attributes(this, [ attribute ])

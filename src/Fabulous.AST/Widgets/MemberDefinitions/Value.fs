@@ -31,7 +31,7 @@ module BindingValue =
 
             let xmlDocs =
                 Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
@@ -47,12 +47,10 @@ module BindingValue =
                 Widgets.tryGetScalarValue widget BindingNode.IsInlined
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
-
             let returnType =
-                match returnType with
-                | ValueNone -> None
-                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
+                Widgets.tryGetNodeFromWidget widget BindingNode.Return
+                |> ValueOption.map(fun x -> Some(BindingReturnInfoNode(SingleTextNode.colon, x, Range.Zero)))
+                |> ValueOption.defaultValue None
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams

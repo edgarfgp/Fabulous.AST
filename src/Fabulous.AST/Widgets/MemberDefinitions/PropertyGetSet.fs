@@ -3,7 +3,6 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
-open Fabulous.AST.WidgetDefinitionStore
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 

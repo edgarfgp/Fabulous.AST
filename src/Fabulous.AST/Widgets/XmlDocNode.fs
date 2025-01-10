@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System.Runtime.CompilerServices
+open System
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -18,44 +19,74 @@ module XmlDocNode =
 
     let WidgetKey =
         Widgets.register "XmlDocs" (fun widget ->
-            let lines = Widgets.tryGetScalarValue widget Lines |> ValueOption.defaultValue []
+            let lines =
+                Widgets.tryGetScalarValue widget Lines
+                |> ValueOption.map(fun lines -> lines |> List.map(fun x -> $"/// {x}"))
+                |> ValueOption.defaultValue []
 
-            let lines = lines |> List.map(fun x -> $"/// {x}") |> Array.ofList
+            let getEscapeSequence c =
+                match c with
+                | '<' -> "&lt;"
+                | '>' -> "&gt;"
+                | '\"' -> "&quot;"
+                | '\'' -> "&apos;"
+                | '&' -> "&amp;"
+                | ch -> ch.ToString()
 
-            let summary =
-                Widgets.tryGetScalarValue widget Summary |> ValueOption.defaultValue []
+            let escape str = String.collect getEscapeSequence str
 
-            let summary =
-                summary
-                |> List.mapi(fun i v ->
-                    if i = 0 then $"/// <summary>{v}"
-                    elif i = summary.Length - 1 then $"/// {v}</summary>"
-                    else $"/// {v}")
-                |> Array.ofList
+            let rec processLines(lines: string list) =
+                match lines with
+                | [] -> []
+                | lineA :: rest as lines ->
+                    let lineAT = lineA.TrimStart([| ' ' |])
 
-            let parameters =
-                Widgets.tryGetScalarValue widget Parameters |> ValueOption.defaultValue []
+                    if String.IsNullOrEmpty(lineAT) then
+                        processLines rest
+                    elif lineAT.StartsWith("<", StringComparison.Ordinal) then
+                        lines
+                    else
+                        [ "<summary>" ] @ (lines |> List.map escape) @ [ "</summary>" ]
 
-            let parameters =
+            let composeSummary(unprocessedLines: string list) =
+                processLines unprocessedLines |> List.map(fun x -> $"/// {x}")
+
+            let composeParameters(parameters: (string * string) list) =
                 parameters
                 |> List.map(fun (name, desc) -> $"/// <param name=\"{name}\">{desc}</param>")
-                |> Array.ofList
 
-            let returnInfo =
-                Widgets.tryGetScalarValue widget ReturnInfo |> ValueOption.defaultValue []
+            let composeReturnInfo(returnInfo: string list) =
+                returnInfo |> List.map(fun v -> $"/// <returns>{v}</returns>")
 
-            let returnInfo =
-                returnInfo |> List.map(fun v -> $"/// <returns>{v}</returns>") |> Array.ofList
-
-            let exceptionInfo =
-                Widgets.tryGetScalarValue widget ExceptionInfo |> ValueOption.defaultValue []
-
-            let exceptionInfo =
+            let composeExceptionInfo(exceptionInfo: (string * string) list) =
                 exceptionInfo
                 |> List.map(fun (name, desc) -> $"/// <exception cref=\"{name}\">{desc}</exception>")
+
+            let summary =
+                Widgets.tryGetScalarValue widget Summary
+                |> ValueOption.map composeSummary
+                |> ValueOption.defaultValue []
+
+            let parameters =
+                Widgets.tryGetScalarValue widget Parameters
+                |> ValueOption.map composeParameters
+                |> ValueOption.defaultValue []
+
+            let returnInfo =
+                Widgets.tryGetScalarValue widget ReturnInfo
+                |> ValueOption.map composeReturnInfo
+                |> ValueOption.defaultValue []
+
+            let exceptionInfo =
+                Widgets.tryGetScalarValue widget ExceptionInfo
+                |> ValueOption.map composeExceptionInfo
+                |> ValueOption.defaultValue []
+
+            let lines =
+                [ lines; summary; parameters; returnInfo; exceptionInfo ]
+                |> List.concat
                 |> Array.ofList
 
-            let lines = Array.concat [ lines; summary; parameters; returnInfo; exceptionInfo ]
             XmlDocNode(lines, Range.Zero))
 
 [<AutoOpen>]

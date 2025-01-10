@@ -11,7 +11,8 @@ module AutoPropertyMember =
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
-    let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
+    let HasGetter = Attributes.defineScalar<bool> "HasGetter"
+    let HasSetter = Attributes.defineScalar<bool> "HasSetter"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -23,7 +24,8 @@ module AutoPropertyMember =
     let WidgetKey =
         Widgets.register "AutoPropertyMember" (fun widget ->
             let identifier = Widgets.getScalarValue widget Identifier
-            let hasGetterSetter = Widgets.tryGetScalarValue widget HasGetterSetter
+            let hasGetter = Widgets.getScalarValue widget HasGetter
+            let hasSetter = Widgets.getScalarValue widget HasSetter
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -71,19 +73,16 @@ module AutoPropertyMember =
                 )
 
             let withGetSetText =
-                match hasGetterSetter with
-                | ValueSome(true, true) ->
+                match hasGetter, hasSetter with
+                | true, true ->
                     Some(
                         MultipleTextsNode.Create(
                             [ SingleTextNode.``with``; SingleTextNode.Create("get,"); SingleTextNode.set ]
                         )
                     )
-                | ValueSome(true, false) ->
-                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
-                | ValueSome(false, true) ->
-                    Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
-                | ValueSome(false, false)
-                | ValueNone -> None
+                | true, false -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
+                | false, true -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
+                | false, false -> None
 
             MemberDefnAutoPropertyNode(
                 xmlDocs,
@@ -101,6 +100,23 @@ module AutoPropertyMember =
 [<AutoOpen>]
 module AutoPropertyMemberBuilders =
     type Ast with
+        /// <summary>
+        /// Create an auto property member definition.
+        /// </summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", ConstantExpr(Constant("name")), true, true)
+        ///             MemberVal("Age", ConstantExpr(Constant("age")), true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
@@ -108,67 +124,223 @@ module AutoPropertyMemberBuilders =
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
-                    StackList.two(
+                    StackList.three(
                         AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetterSetter.WithValue(hasGetter, hasSetter)
+                        AutoPropertyMember.HasGetter.WithValue(hasGetter),
+                        AutoPropertyMember.HasSetter.WithValue(hasSetter)
                     ),
                     [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
                     Array.empty
                 )
             )
 
+        /// <summary>Create an auto property member definition.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", Constant("name"), true, true)
+        ///             MemberVal("Age", Constant("age"), true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal(identifier: string, expr: WidgetBuilder<Constant>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
             Ast.MemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
 
+        /// <summary>Create an auto property member definition.</summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", "name", true, true)
+        ///             MemberVal("Age", "age", true, true)
+        ///        }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
             Ast.MemberVal(identifier, Ast.Constant(expr), hasGetter, hasSetter)
 
 type AutoPropertyMemberModifiers =
+    /// <summary>Sets the XmlDocs for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .xmlDocs(Summary("The name of the person"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(AutoPropertyMember.XmlDocs.WithValue(xmlDocs.Compile()))
 
+    /// <summary>Sets the XmlDocs for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .xmlDocs([ "The name of the person" ])
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: string list) =
         AutoPropertyMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
+    /// <summary>Sets the attributes for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .attributes([ Attribute("Obsolete") ])
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<MemberDefnAutoPropertyNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<MemberDefnAutoPropertyNode>, attributes: WidgetBuilder<AttributeNode> list)
         =
-        this.AddScalar(
-            AutoPropertyMember.MultipleAttributes.WithValue(
-                [ for vals in values do
-                      Gen.mkOak vals ]
-            )
-        )
+        this.AddScalar(AutoPropertyMember.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
 
+    /// <summary>Sets the attribute for the current widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The attribute to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .attribute(Attribute("Obsolete"))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline attribute
         (this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: WidgetBuilder<AttributeNode>)
         =
         AutoPropertyMemberModifiers.attributes(this, [ value ])
 
+    /// <summary>Sets the member to be static.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .toStatic()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toStatic(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
         this.AddScalar(AutoPropertyMember.IsStatic.WithValue(true))
 
+    /// <summary>Sets the member to be private.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .toPrivate()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPrivate(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
         this.AddScalar(AutoPropertyMember.Accessibility.WithValue(AccessControl.Private))
 
+    /// <summary>Sets the member to be public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .toPublic()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toPublic(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
         this.AddScalar(AutoPropertyMember.Accessibility.WithValue(AccessControl.Public))
 
+    /// <summary>Sets the member to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .toInternal()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
         this.AddScalar(AutoPropertyMember.Accessibility.WithValue(AccessControl.Internal))
 
+    /// <summary>Sets the return type for the member.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The return type to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .returnType(String())
+    ///         }
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: WidgetBuilder<Type>) =
         this.AddWidget(AutoPropertyMember.ReturnType.WithValue(value.Compile()))
+
+    /// <summary>Sets the return type for the member.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The return type to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Person", UnitPat()) {
+    ///             MemberVal("Name", "name", true, true)
+    ///                 .returnType("string")
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: string) =
+        AutoPropertyMemberModifiers.returnType(this, Ast.LongIdent(value))
