@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.1.0] - 2025-01-12
+
+### Changed
+- `Oak` and `Namespaces` fixes by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/128
+- `MemberDefn` fixes by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/129
+
 ## [1.0.0] - 2024-12-15
 
 ### Changed
@@ -261,7 +267,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.0.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.1.0
 [1.0.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0
 [1.0.0-pre17]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre17
 [1.0.0-pre16]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre16
