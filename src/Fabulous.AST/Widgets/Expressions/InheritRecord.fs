@@ -41,3 +41,5 @@ module InheritRecordBuilders =
                     Array.empty
                 )
             )
+
+        static member InheritRecordExpr(value: WidgetBuilder<InheritConstructor>) = Ast.InheritRecordExpr(value, [])

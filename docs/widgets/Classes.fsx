@@ -18,8 +18,8 @@ See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fshar
 
 | Constructors                       | Description                                           |
 |------------------------------------| ----------------------------------------------------- |
-| TypeDefn(name: string, parameters: WidgetBuilder<Pattern>)                  | Creates a TypeDefnRegularNode AST node with the specified name and parameters. |
-| TypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode>)          | Creates a TypeDefnRegularNode AST node with the specified name and constructor. |
+| TypeDefn(name: string, parameters: WidgetBuilder&lt;Pattern&gt;)                  | Creates a TypeDefnRegularNode AST node with the specified name and parameters. |
+| TypeDefn(name: string, constructor: WidgetBuilder&lt;ImplicitConstructorNode&gt;)          | Creates a TypeDefnRegularNode AST node with the specified name and constructor. |
 | TypeDefn(name: string)                        | Creates a TypeDefnRegularNode AST node with the specified name. |
 *)
 

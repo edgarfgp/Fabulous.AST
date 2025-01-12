@@ -16,7 +16,32 @@ module Inherit =
 module InheritMemberBuilders =
     type Ast with
 
+        /// <summary>
+        /// Create inherit member with a given type.
+        /// </summary>
+        /// <param name="value">The type of the inherit member.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", Constructor(ParameterPat("name", String()))) {
+        ///             Inherit(LongIdent("BaseClass()"))
+        ///     }
+        /// }
+        /// </code>
         static member Inherit(value: WidgetBuilder<Type>) =
             WidgetBuilder<MemberDefnInheritNode>(Inherit.WidgetKey, Inherit.TypeValue.WithValue(value.Compile()))
 
+        /// <summary>
+        /// Create inherit member with a given type.
+        /// </summary>
+        /// <param name="value">The type of the inherit member.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", Constructor(ParameterPat("name", String()))) {
+        ///             Inherit("BaseClass()")
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Inherit(value: string) = Ast.Inherit(Ast.LongIdent(value))
