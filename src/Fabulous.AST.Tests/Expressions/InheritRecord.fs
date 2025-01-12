@@ -13,14 +13,12 @@ module InheritRecord =
     let ``let value with a InheritRecordExpr expression``() =
         Oak() {
             AnonymousModule() {
-                InheritRecordExpr(
-                    InheritType(LongIdent "BaseClass"),
-                    [ RecordFieldExpr("B", ConstantExpr(Int 1))
-                      RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
-                )
+                InheritRecordExpr(InheritType("Foo()"))
+                InheritRecordExpr(InheritUnit(LongIdent "Foo"))
+                InheritRecordExpr(InheritParen(LongIdent("Foo "), ConstantExpr(String("123"))))
 
                 InheritRecordExpr(
-                    InheritParen(LongIdent "BaseClass", ParenExpr(ConstantExpr(Constant "1"))),
+                    InheritParen(LongIdent "BaseClass", ConstantExpr(Constant "1")),
                     [ RecordFieldExpr("B", ConstantExpr(Constant "1"))
                       RecordFieldExpr("C", ConstantExpr(Constant "2")) ]
                 )
@@ -40,7 +38,9 @@ module InheritRecord =
         }
         |> produces
             """
-{ inherit BaseClass; B = 1; C = 2 }
+{ inherit Foo() }
+{ inherit Foo() }
+{ inherit Foo ("123") }
 { inherit BaseClass(1); B = 1; C = 2 }
 { inherit BaseClass(); B = 1; C = 2 }
 { inherit BaseClass (1); B = 1; C = 2 }

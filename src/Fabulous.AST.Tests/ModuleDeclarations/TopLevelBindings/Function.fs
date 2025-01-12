@@ -21,11 +21,98 @@ let x i = ()
 """
 
     [<Fact>]
+    let ``Produces function with summary xml docs``() =
+        Oak() { AnonymousModule() { Function("add", [ "a"; "b" ], "a + b").xmlDocs(Summary("This is a comment")) } }
+        |> produces
+            """
+/// <summary>
+/// This is a comment
+/// </summary>
+let add a b = a + b
+"""
+
+    [<Fact>]
+    let ``Produces a function with type params``() =
+        Oak() { AnonymousModule() { Function("add", [ "a"; "b" ], "a + b").typeParams(PostfixList(TyparDecl("'a"))) } }
+        |> produces
+            """
+let add<'a> a b = a + b
+"""
+
+    [<Fact>]
+    let ``Produces a function with a body ComputationExpressionStatement``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "x",
+                    ParameterPat("i"),
+                    [ LetOrUseExpr(Value("x", Int(0)))
+                      LetOrUseExpr(Value("y", Int(1)))
+                      LetOrUseExpr(Function("z", [ ParameterPat("i") ], [ Value("x", Int(0)); Value("y", Int(1)) ]))
+                      OtherExpr(AppExpr("z", "i")) ]
+                )
+            }
+        }
+        |> produces
+            """
+let x i =
+    let x = 0
+    let y = 1
+
+    let z i =
+        let x = 0
+        let y = 1
+
+    z i
+"""
+
+    [<Fact>]
+    let ``Produces a function with a body BindingNode expression``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "x",
+                    ParameterPat("i"),
+                    [ Value("x", Int(0))
+                      Value("y", Int(1))
+                      Function("z", ParameterPat("i"), [ Value("x", Int(0)); Value("y", Int(1)) ]) ]
+                )
+            }
+        }
+        |> produces
+            """
+let x i =
+    let x = 0
+    let y = 1
+
+    let z i =
+        let x = 0
+        let y = 1
+"""
+
+    [<Fact>]
+    let ``Produces a function with a body Expr``() =
+        Oak() {
+            AnonymousModule() {
+                Function("x", ParameterPat("i"), [ AppExpr("a", "i"); AppExpr("b", "i"); AppExpr("c", "i") ])
+            }
+        }
+        |> produces
+            """
+let x i =
+    a i
+    b i
+    c i
+"""
+
+    [<Fact>]
     let ``Produces a function with widget parameters``() =
         Oak() {
             AnonymousModule() {
                 Function("x", [ ParameterPat(ConstantPat(Constant "i")) ], ConstantExpr(ConstantUnit()))
                 Function("x2", ParameterPat(ConstantPat("i")), ConstantExpr("()"))
+
+                Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
 
                 Function(
                     "y",
@@ -42,6 +129,7 @@ let x i = ()
 
 let x i = ()
 let x2 i = ()
+let add a b = a + b
 let y i j = ()
 let y2 i j = ()
 let z i j = ()
@@ -55,6 +143,7 @@ let z i j = ()
                 Function("x", "i", ConstantExpr(ConstantUnit()))
                 Function("y", "i", ConstantUnit())
                 Function("z", "i", "()")
+                Function("add", "a b", "a + b")
             }
         }
         |> produces
@@ -63,6 +152,7 @@ let z i j = ()
 let x i = ()
 let y i = ()
 let z i = ()
+let add a b = a + b
 
 """
 
@@ -210,7 +300,7 @@ let x (i: int, j: string, k: bool) = ()
     let ``Produces a function with parameters and an attribute``() =
         Oak() {
             AnonymousModule() {
-                (Function("x", [ NamedPat("i") ], ConstantExpr(ConstantUnit())))
+                Function("x", [ NamedPat("i") ], ConstantExpr(ConstantUnit()))
                     .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(String "Use bar instead"))))
             }
         }
@@ -225,7 +315,7 @@ let x i = ()
     let ``Produces a function with parameters and Xml Doc``() =
         Oak() {
             AnonymousModule() {
-                (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())))
+                Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))
                     .xmlDocs([ "Im a function" ])
             }
         }
@@ -238,7 +328,7 @@ let x i = ()
 
     [<Fact>]
     let ``Produces a function with parameters and return type``() =
-        Oak() { AnonymousModule() { (Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))).returnType(Unit()) } }
+        Oak() { AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())).returnType(Unit()) } }
         |> produces
             """
 let x i : unit = ()
@@ -249,7 +339,7 @@ let x i : unit = ()
     let ``Produces a function with parameters, return type and typeParams ``() =
         Oak() {
             AnonymousModule() {
-                (Function(
+                Function(
                     "foo",
                     ParenPat(
                         TuplePat(
@@ -258,7 +348,7 @@ let x i : unit = ()
                         )
                     ),
                     ConstantExpr(ConstantUnit())
-                ))
+                )
                     .returnType(Unit())
             }
         }
@@ -276,6 +366,14 @@ let foo (x: 'T, i: 'U) : unit = ()
 
 let inline x i = ()
 
+"""
+
+    [<Fact>]
+    let ``Produces an function with parameters and constant expr ``() =
+        Oak() { AnonymousModule() { Function("add", [ ParameterPat("a"); ParameterPat("b") ], Constant("a + b")) } }
+        |> produces
+            """
+let add a b = a + b
 """
 
     [<Fact>]
@@ -299,18 +397,38 @@ let internal z i = ()
 """
 
     [<Fact>]
-    let ``Produces a default member``() =
+    let ``Produces a function with ComputationExpressionStatement``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("Person", UnitPat()) {
-                    AbstractMember("GetValue", [ Unit() ], String())
-                    Default("this.GetValue", UnitPat(), ConstantExpr(String("")))
-                }
+                Function(
+                    "cylinderVolume",
+                    [ ParameterPat "radius"; ParameterPat "length" ],
+                    [ InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius"))) ]
+                )
             }
         }
         |> produces
             """
-type Person() =
-    abstract GetValue: unit -> string
-    default this.GetValue() = ""
+let cylinderVolume radius length = length * pi * radius * radius
+"""
+
+    [<Fact>]
+    let ``Produces a function with ParameterPat ComputationExpressionStatement``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "cylinderVolume",
+                    ParameterPat "radius",
+                    [ LetOrUseExpr(Value("pi", Double(3.14159)))
+                      OtherExpr(
+                          InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))
+                      ) ]
+                )
+            }
+        }
+        |> produces
+            """
+let cylinderVolume radius =
+    let pi = 3.14159
+    length * pi * radius * radius
 """

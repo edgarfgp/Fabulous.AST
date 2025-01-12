@@ -1,7 +1,6 @@
 namespace Fabulous.AST
 
 open Fabulous.AST
-open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 
 module TypeStaticConstant =

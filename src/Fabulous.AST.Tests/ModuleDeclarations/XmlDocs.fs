@@ -44,9 +44,11 @@ val collect: char -> string -> string -> string
         }
         |> produces
             """
-/// <summary>Creates a new string whose characters are the result of applying
+/// <summary>
+/// Creates a new string whose characters are the result of applying
 /// the function mapping to each of the characters of the input string
-/// and concatenating the resulting strings.</summary>
+/// and concatenating the resulting strings.
+/// </summary>
 val collect: char -> string -> string -> string
 """
 
@@ -71,9 +73,11 @@ val collect: char -> string -> string -> string
         }
         |> produces
             """
-/// <summary>Builds a new string whose characters are the results of applying the function <c>mapping</c>
+/// <summary>
+/// Builds a new string whose characters are the results of applying the function &lt;c&gt;mapping&lt;/c&gt;
 /// to each of the characters of the input string and concatenating the resulting
-/// strings.</summary>
+/// strings.
+/// </summary>
 /// <param name="mapping">The function to produce a string from each character of the input string.</param>
 /// <param name="str">The input string.</param>
 val collect: char -> string -> string -> string
@@ -101,9 +105,11 @@ val collect: char -> string -> string -> string
         }
         |> produces
             """
-/// <summary>Builds a new string whose characters are the results of applying the function <c>mapping</c>
+/// <summary>
+/// Builds a new string whose characters are the results of applying the function &lt;c&gt;mapping&lt;/c&gt;
 /// to each of the characters of the input string and concatenating the resulting
-/// strings.</summary>
+/// strings.
+/// </summary>
 /// <param name="mapping">The function to produce a string from each character of the input string.</param>
 /// <param name="str">The input string.</param>
 /// <returns>The concatenated string.</returns>
@@ -136,9 +142,11 @@ val collect: char -> string -> string -> string
         }
         |> produces
             """
-/// <summary>Builds a new string whose characters are the results of applying the function <c>mapping</c>
+/// <summary>
+/// Builds a new string whose characters are the results of applying the function &lt;c&gt;mapping&lt;/c&gt;
 /// to each of the characters of the input string and concatenating the resulting
-/// strings.</summary>
+/// strings.
+/// </summary>
 /// <param name="mapping">The function to produce a string from each character of the input string.</param>
 /// <param name="str">The input string.</param>
 /// <returns>The concatenated string.</returns>
