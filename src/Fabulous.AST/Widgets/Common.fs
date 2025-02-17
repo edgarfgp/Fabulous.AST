@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Text
 open Fabulous.AST
 open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
@@ -66,3 +67,25 @@ module Gen =
 
     let runWith config oak =
         CodeFormatter.FormatOakAsync(oak, config) |> Async.RunSynchronously
+
+module String =
+    // Taken from https://github.com/dotnet/fsharp/blob/8e773e70700eea38f472950fd042ac0065dabae0/src/FSharp.Build/WriteCodeFragment.fs#L26-L44
+    let escape(str: string) =
+        let sb =
+            str.ToCharArray()
+            |> Seq.fold
+                (fun (sb: StringBuilder) (c: char) ->
+                    match c with
+                    | '\n'
+                    | '\u2028'
+                    | '\u2028' -> sb.Append("\\n")
+                    | '\r' -> sb.Append("\\r")
+                    | '\t' -> sb.Append("\\t")
+                    | '\'' -> sb.Append("\\'")
+                    | '\\' -> sb.Append("\\\\")
+                    | '"' -> sb.Append("\\\"")
+                    | '\u0000' -> sb.Append("\\0")
+                    | _ -> sb.Append(c))
+                (StringBuilder().Append("\""))
+
+        sb.Append("\"").ToString()

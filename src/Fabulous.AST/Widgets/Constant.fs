@@ -1,6 +1,7 @@
 namespace Fabulous.AST
 
 open System
+open System.Text
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -60,7 +61,7 @@ module ConstantBuilders =
 
         static member Char(value: char) = Ast.BaseConstant($"'{value}'")
 
-        static member String(value: string) = Ast.BaseConstant($"\"{value}\"")
+        static member String(value: string) = Ast.BaseConstant(String.escape value)
 
         static member Constant(value: string) = Ast.BaseConstant(value)
 
