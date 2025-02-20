@@ -77,7 +77,7 @@ module BindingValue =
 module BindingValueBuilders =
     type Ast with
         static member private BaseValue
-            (name: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>, leadingKeyword: SingleTextNode)
+            (name: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>, leadingKeyword: SingleTextNode, ?returnType: WidgetBuilder<Type>)
             =
             WidgetBuilder<BindingNode>(
                 BindingValue.WidgetKey,
@@ -86,7 +86,12 @@ module BindingValueBuilders =
                         BindingValue.Name.WithValue(Gen.mkOak name),
                         BindingValue.LeadingKeyword.WithValue(leadingKeyword)
                     ),
-                    [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
+                    [|
+                        BindingNode.BodyExpr.WithValue(bodyExpr.Compile())
+                        match returnType with
+                        | Some returnType -> BindingNode.Return.WithValue(returnType.Compile())
+                        | None -> ()
+                    |],
                     Array.empty
                 )
             )
@@ -111,6 +116,38 @@ module BindingValueBuilders =
         /// </summary>
         /// <param name="name">The name of the binding.</param>
         /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseValue(name, value, SingleTextNode.``let``, returnType)
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Value(name, value, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -120,6 +157,38 @@ module BindingValueBuilders =
         /// </code>
         static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>) =
             Ast.Value(name, Ast.ConstantExpr(value))
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(ConstantPat(Constant("x")), Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Value(name, Ast.ConstantExpr(value), returnType)
+
+      /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(ConstantPat(Constant("x")), Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Value(name, value, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -136,6 +205,39 @@ module BindingValueBuilders =
         static member Value(name: WidgetBuilder<Pattern>, value: string) =
             Ast.Value(name, Ast.ConstantExpr(Ast.Constant(value)))
 
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(ConstantPat(Constant("x")), "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Pattern>, value: string, returnType: WidgetBuilder<Type>) =
+            Ast.Value(name, Ast.ConstantExpr(Ast.Constant(value)), returnType)
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(ConstantPat(Constant("x")), "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Pattern>, value: string, returnType: string) =
+            Ast.Value(name, value, Ast.LongIdent(returnType))
+
         /// <summary>
         /// Create a binding with the given name and value.
         /// </summary>
@@ -150,6 +252,38 @@ module BindingValueBuilders =
         /// </code>
         static member Value(name: WidgetBuilder<Constant>, value: WidgetBuilder<Constant>) =
             Ast.Value(Ast.ConstantPat(name), Ast.ConstantExpr(value))
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(Constant("x"), Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Constant>, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Value(Ast.ConstantPat(name), Ast.ConstantExpr(value), returnType)
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value(Constant("x"), Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: WidgetBuilder<Constant>, value: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Value(name, value, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -172,6 +306,40 @@ module BindingValueBuilders =
         /// </summary>
         /// <param name="name">The name of the binding.</param>
         /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("x", ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: string, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(Ast.ConstantPat(Ast.Constant(name)), value, returnType)
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("x", ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: string, value: WidgetBuilder<Expr>, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(name, value, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -188,6 +356,40 @@ module BindingValueBuilders =
         /// </summary>
         /// <param name="name">The name of the binding.</param>
         /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("x", Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: string, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(value), returnType)
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("x", Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: string, value: WidgetBuilder<Constant>, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(name, value, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -198,6 +400,40 @@ module BindingValueBuilders =
         static member Value(name: string, value: string) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.Value(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(Ast.Constant(value)))
+
+        /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("x", "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: string, value: string, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(Ast.Constant(value)), returnType)
+
+            /// <summary>
+        /// Create a binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the binding.</param>
+        /// <param name="value">The value of the binding.</param>
+        /// <param name="returnType">The return type of the binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("x", "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Value(name: string, value: string, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Value(name, value, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -219,6 +455,38 @@ module BindingValueBuilders =
         /// </summary>
         /// <param name="name">The name of the use binding.</param>
         /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseValue(name, value, SingleTextNode.``use``, returnType)
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Use(name, value, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -234,6 +502,38 @@ module BindingValueBuilders =
         /// </summary>
         /// <param name="name">The name of the use binding.</param>
         /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use(ConstantPat(Constant("x")), Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseValue(name, Ast.ConstantExpr(value), SingleTextNode.``use``, returnType)
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use(ConstantPat(Constant("x")), Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Use(name, value, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -242,6 +542,38 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: WidgetBuilder<Pattern>, value: string) = Ast.Use(name, Ast.Constant(value))
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use(ConstantPat(Constant("x")), "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: WidgetBuilder<Pattern>, value: string, returnType: WidgetBuilder<Type>) =
+            Ast.Use(name, Ast.Constant(value), returnType)
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use(ConstantPat(Constant("x")), "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: WidgetBuilder<Pattern>, value: string, returnType: string) =
+            Ast.Use(name, value, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -264,6 +596,40 @@ module BindingValueBuilders =
         /// </summary>
         /// <param name="name">The name of the use binding.</param>
         /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use("x", ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: string, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Use(Ast.ConstantPat(name), value, returnType)
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use("x", ConstantExpr(Int(12)))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: string, value: WidgetBuilder<Expr>, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            Ast.Use(name, value, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -271,7 +637,40 @@ module BindingValueBuilders =
         ///     }
         /// }
         /// </code>
-        static member Use(name: string, value: WidgetBuilder<Constant>) = Ast.Use(name, Ast.ConstantExpr(value))
+        static member Use(name: string, value: WidgetBuilder<Constant>) =
+            Ast.Use(name, Ast.ConstantExpr(value))
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use("x", Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: string, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Use(name, Ast.ConstantExpr(value), returnType)
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use("x", Int(12))
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: string, value: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Use(name, value, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -286,3 +685,35 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: string) = Ast.Use(name, Ast.Constant(value))
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use("x", "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: string, value: string, returnType: WidgetBuilder<Type>) =
+            Ast.Use(name, Ast.Constant(value), returnType)
+
+        /// <summary>
+        /// Create a use binding with the given name and value.
+        /// </summary>
+        /// <param name="name">The name of the use binding.</param>
+        /// <param name="value">The value of the use binding.</param>
+        /// <param name="returnType">The return type of the use binding.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Use("x", "12")
+        ///     }
+        /// }
+        /// </code>
+        static member Use(name: string, value: string, returnType: string) =
+            Ast.Use(name, value, Ast.LongIdent(returnType))

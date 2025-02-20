@@ -38,6 +38,24 @@ let x = 10
 """
 
     [<Fact>]
+    let ```zxxzx``() =
+        Oak() {
+            Namespace("Motivity.Thoth.Json.Tests") {
+
+                Open(["Motivity.Thoth.Json"])
+
+                Module("Generated") {
+                    Value("x", Int 32)
+                }
+                //|> _.triviaBefore(Newline())
+            }
+        }
+        |> produces
+            """
+
+"""
+
+    [<Fact>]
     let ``Produces line comment before with a new line before``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaBefore([ Newline(); SingleLine("Comment before") ]) } }
         |> produces

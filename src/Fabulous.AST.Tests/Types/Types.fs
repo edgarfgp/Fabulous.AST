@@ -250,20 +250,16 @@ let n: string[][] = false
     let ``Value with AppPrefix widget``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix(Option(), [ String() ]))
+                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)), AppPrefix(Option(), [ String() ]))
 
-                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("option", [ String() ]))
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)), AppPrefix("option", [ String() ]))
+                   // .returnType(AppPrefix("option", [ String() ]))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix(List(), [ String() ]))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)),AppPrefix(List(), [ String() ]) )
 
-                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("list", [ String() ]))
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)), AppPrefix("list", [ String() ]) )
 
-                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("list", [ "string" ]))
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)), AppPrefix("list", [ "string" ]) )
 
                 Value(ConstantPat(Constant("e")), ConstantExpr(Bool(false)))
                     .returnType(AppPrefix(Seq(), [ String(); String() ]))
@@ -292,35 +288,30 @@ let n: string[][] = false
                 Value(ConstantPat(Constant("m")), ConstantExpr(Bool(false)))
                     .returnType(ListPrefix(String()))
 
-                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)))
-                    .returnType(ListPrefix("string"))
+                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)), ListPrefix("string"))
 
-                Value(ConstantPat(Constant("o")), ConstantExpr(Bool(false)))
-                    .returnType(SeqPrefix(String()))
 
-                Value(ConstantPat(Constant("p")), ConstantExpr(Bool(false)))
-                    .returnType(SeqPrefix("string"))
+                Value(ConstantPat(Constant("o")), ConstantExpr(Bool(false)), SeqPrefix(String()))
 
-                Value(ConstantPat(Constant("q")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix(String(), String()))
 
-                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix("string", "string"))
+                Value(ConstantPat(Constant("p")), ConstantExpr(Bool(false)), SeqPrefix("string"))
 
-                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix("string", String()))
 
-                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix(String(), "string"))
+                Value(ConstantPat(Constant("q")), ConstantExpr(Bool(false)), ResultPrefix(String(), String()))
 
-                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)))
-                    .returnType(ArrayPrefix(String()))
 
-                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)))
-                    .returnType(ArrayPrefix("string"))
+                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)), ResultPrefix("string", "string"))
 
-                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)))
-                    .returnType(ArrayPrefix(ArrayPrefix(String())))
+                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)), ResultPrefix("string", String()))
+
+
+                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)), ResultPrefix(String(), "string"))
+
+                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)), ArrayPrefix(String()))
+
+                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)), ArrayPrefix("string"))
+
+                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)), ArrayPrefix(ArrayPrefix(String())))
             }
         }
         |> produces
