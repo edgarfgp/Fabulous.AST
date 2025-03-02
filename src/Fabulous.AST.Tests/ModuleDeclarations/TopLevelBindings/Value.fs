@@ -3,6 +3,7 @@ namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 open Fabulous.AST
 open Fabulous.AST.Tests
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Xunit
 
@@ -19,6 +20,8 @@ module Value =
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
     let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
+        let value = PrettyNaming.NormalizeIdentifierBackticks value
+
         Oak() { AnonymousModule() { Value(value, ConstantExpr(Int(12))) } }
         |> produces
             $$"""
@@ -115,7 +118,11 @@ let z = \"\"\"12\"\"\"
 
                 Value(ConstantPat(Constant("y")), ConstantExpr(Int(12)), LongIdent("int"))
 
-                Value(ConstantPat(Constant("z")), ConstantExpr(Int(12)), returnType = Funs([ LongIdent("int") ], LongIdent("string")))
+                Value(
+                    ConstantPat(Constant("z")),
+                    ConstantExpr(Int(12)),
+                    returnType = Funs([ LongIdent("int") ], LongIdent("string"))
+                )
 
                 Value(ConstantPat(Constant("a")), ConstantExpr(Int(12)), Funs([ LongIdent("int") ], LongIdent "string"))
 
@@ -346,12 +353,7 @@ let mutable x = 12
 
     [<Fact>]
     let ``Produces a top level mutable let binding with return type``() =
-        Oak() {
-            AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)), Int())
-                    .toMutable()
-            }
-        }
+        Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)), Int()).toMutable() } }
         |> produces
             """
 

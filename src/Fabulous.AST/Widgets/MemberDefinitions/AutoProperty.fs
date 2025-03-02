@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -100,6 +101,33 @@ module AutoPropertyMember =
 [<AutoOpen>]
 module AutoPropertyMemberBuilders =
     type Ast with
+        static member private BaseMemberVal
+            (
+                identifier: string,
+                expr: WidgetBuilder<Expr>,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?returnType: WidgetBuilder<Type>
+            ) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+
+            WidgetBuilder<MemberDefnAutoPropertyNode>(
+                AutoPropertyMember.WidgetKey,
+                AttributesBundle(
+                    StackList.three(
+                        AutoPropertyMember.Identifier.WithValue(identifier),
+                        AutoPropertyMember.HasGetter.WithValue(hasGetter),
+                        AutoPropertyMember.HasSetter.WithValue(hasSetter)
+                    ),
+                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile())
+                       match returnType with
+                       | None -> ()
+                       | Some returnType -> AutoPropertyMember.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
+                )
+            )
+
         /// <summary>
         /// Create an auto property member definition.
         /// </summary>
@@ -120,19 +148,25 @@ module AutoPropertyMemberBuilders =
         static member MemberVal(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
+            Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter)
 
-            WidgetBuilder<MemberDefnAutoPropertyNode>(
-                AutoPropertyMember.WidgetKey,
-                AttributesBundle(
-                    StackList.three(
-                        AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetter.WithValue(hasGetter),
-                        AutoPropertyMember.HasSetter.WithValue(hasSetter)
-                    ),
-                    [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
+        static member MemberVal
+            (
+                identifier: string,
+                expr: WidgetBuilder<Expr>,
+                returnType: WidgetBuilder<Type>,
+                ?hasGetter: bool,
+                ?hasSetter: bool
+            ) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter, returnType)
+
+        static member MemberVal
+            (identifier: string, expr: WidgetBuilder<Expr>, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter, Ast.LongIdent(returnType))
 
         /// <summary>Create an auto property member definition.</summary>
         /// <param name="identifier">The identifier of the member.</param>
@@ -154,6 +188,24 @@ module AutoPropertyMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             Ast.MemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
 
+        static member MemberVal
+            (
+                identifier: string,
+                expr: WidgetBuilder<Constant>,
+                returnType: WidgetBuilder<Type>,
+                ?hasGetter: bool,
+                ?hasSetter: bool
+            ) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, returnType)
+
+        static member MemberVal
+            (identifier: string, expr: WidgetBuilder<Constant>, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, Ast.LongIdent(returnType))
+
         /// <summary>Create an auto property member definition.</summary>
         /// <param name="identifier">The identifier of the member.</param>
         /// <param name="expr">The expression of the member.</param>
@@ -173,6 +225,19 @@ module AutoPropertyMemberBuilders =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
             Ast.MemberVal(identifier, Ast.Constant(expr), hasGetter, hasSetter)
+
+        static member MemberVal
+            (identifier: string, expr: string, returnType: WidgetBuilder<Type>, ?hasGetter: bool, ?hasSetter: bool) =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, returnType)
+
+        static member MemberVal
+            (identifier: string, expr: string, returnType: string, ?hasGetter: bool, ?hasSetter: bool)
+            =
+            let hasGetter = defaultArg hasGetter false
+            let hasSetter = defaultArg hasSetter false
+            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, Ast.LongIdent(returnType))
 
 type AutoPropertyMemberModifiers =
     /// <summary>Sets the XmlDocs for the current widget.</summary>
@@ -325,6 +390,7 @@ type AutoPropertyMemberModifiers =
     /// }
     /// </code>
     [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
     static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: WidgetBuilder<Type>) =
         this.AddWidget(AutoPropertyMember.ReturnType.WithValue(value.Compile()))
 
@@ -342,5 +408,6 @@ type AutoPropertyMemberModifiers =
     /// }
     /// </code>
     [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
     static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: string) =
         AutoPropertyMemberModifiers.returnType(this, Ast.LongIdent(value))

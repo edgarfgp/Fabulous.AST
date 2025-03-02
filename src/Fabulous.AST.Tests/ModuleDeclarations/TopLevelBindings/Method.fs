@@ -37,26 +37,34 @@ module MethodMembers =
                     Member(
                         "this.E",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                        ConstantExpr(String "")
+                        ConstantExpr(String ""),
+                        String()
                     )
-                    |> _.returnType(String())
 
                     Member(
                         "this.F",
                         ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
-                        ConstantExpr(String "")
+                        ConstantExpr(String ""),
+                        String()
                     )
                         .toInlined()
-                    |> _.returnType(String())
 
-                    Member("G", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                    Member(
+                        "G",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String ""),
+                        String()
+                    )
                         .toStatic()
-                    |> _.returnType(String())
 
-                    Member("H", ParenPat(ParameterPat(ConstantPat(Constant "p"), String())), ConstantExpr(String ""))
+                    Member(
+                        "H",
+                        ParenPat(ParameterPat(ConstantPat(Constant "p"), String())),
+                        ConstantExpr(String ""),
+                        String()
+                    )
                         .toStatic()
                         .toInlined()
-                    |> _.returnType(String())
 
                     Member(
                         "this.I",

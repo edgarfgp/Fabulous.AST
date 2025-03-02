@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -78,6 +79,19 @@ module PropertyGetSetBinding =
 module PropertyGetSetBindingBuilders =
     type Ast with
 
+        static member private BaseGetter(expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>) =
+            WidgetBuilder<PropertyGetSetBindingNode>(
+                PropertyGetSetBinding.WidgetKey,
+                AttributesBundle(
+                    StackList.one(PropertyGetSetBinding.IsSetter.WithValue(false)),
+                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile())
+                       match returnType with
+                       | None -> ()
+                       | Some returnType -> PropertyGetSetBinding.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
+                )
+            )
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="expr">The expression to return.</param>
         /// <code language="fsharp">
@@ -92,15 +106,13 @@ module PropertyGetSetBindingBuilders =
         ///    }
         ///}
         /// </code>
-        static member Getter(expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<PropertyGetSetBindingNode>(
-                PropertyGetSetBinding.WidgetKey,
-                AttributesBundle(
-                    StackList.one(PropertyGetSetBinding.IsSetter.WithValue(false)),
-                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
+        static member Getter(expr: WidgetBuilder<Expr>) = Ast.BaseGetter(expr)
+
+        static member Getter(expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseGetter(expr, returnType)
+
+        static member Getter(expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.BaseGetter(expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="expr">The expression to return.</param>
@@ -116,7 +128,13 @@ module PropertyGetSetBindingBuilders =
         ///    }
         ///}
         /// </code>
-        static member Getter(expr: WidgetBuilder<Constant>) = Ast.Getter(Ast.ConstantExpr(expr))
+        static member Getter(expr: WidgetBuilder<Constant>) = Ast.BaseGetter(Ast.ConstantExpr(expr))
+
+        static member Getter(expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseGetter(Ast.ConstantExpr(expr), returnType)
+
+        static member Getter(expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.BaseGetter(Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="expr">The expression to return.</param>
@@ -132,7 +150,10 @@ module PropertyGetSetBindingBuilders =
         ///    }
         ///}
         /// </code>
-        static member Getter(expr: string) = Ast.Getter(Ast.Constant(expr))
+        static member Getter(expr: string) = Ast.BaseGetter(Ast.ConstantExpr(expr))
+
+        static member Getter(expr: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseGetter(Ast.ConstantExpr(expr), returnType)
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameters">The parameters to the getter.</param>
@@ -149,7 +170,8 @@ module PropertyGetSetBindingBuilders =
         ///     }
         /// }
         ///</code>
-        static member Getter(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>) =
+        static member Getter
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
                 AttributesBundle(
@@ -157,10 +179,20 @@ module PropertyGetSetBindingBuilders =
                         PropertyGetSetBinding.Parameters.WithValue(parameters |> List.map(Gen.mkOak)),
                         PropertyGetSetBinding.IsSetter.WithValue(false)
                     ),
-                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile()) |],
+                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile())
+                       match returnType with
+                       | None -> ()
+                       | Some returnType -> PropertyGetSetBinding.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member Getter
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(parameters, expr, returnType)
+
+        static member Getter(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Getter(parameters, expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameters">The parameters to the getter.</param>
@@ -181,6 +213,15 @@ module PropertyGetSetBindingBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr)
 
+        static member Getter
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Getter(parameters, expr, returnType)
+
+        static member Getter(parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: string) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Getter(parameters, expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameters">The parameters to the getter.</param>
         /// <param name="expr">The expression to return.</param>
@@ -199,6 +240,12 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameters: string list, expr: WidgetBuilder<Expr>) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr)
 
+        static member Getter(parameters: string list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(parameters |> List.map Ast.Constant, expr, returnType)
+
+        static member Getter(parameters: string list, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Getter(parameters |> List.map Ast.Constant, expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameters">The parameters to the getter.</param>
         /// <param name="expr">The expression to return.</param>
@@ -216,6 +263,15 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>) =
             Ast.Getter(parameters, Ast.ConstantExpr(expr))
+
+        static member Getter
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(parameters, Ast.ConstantExpr(expr), returnType)
+
+        static member Getter
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: string)
+            =
+            Ast.Getter(parameters, Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameters">The parameters to the getter.</param>
@@ -236,6 +292,17 @@ module PropertyGetSetBindingBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr)
 
+        static member Getter
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Getter(parameters, expr, returnType)
+
+        static member Getter
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: string)
+            =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Getter(parameters, expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameters">The parameters to the getter.</param>
         /// <param name="expr">The expression to return.</param>
@@ -251,6 +318,12 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(parameters: string list, expr: WidgetBuilder<Constant>) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr)
+
+        static member Getter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(parameters |> List.map Ast.Constant, expr, returnType)
+
+        static member Getter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Getter(parameters |> List.map Ast.Constant, expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameters">The parameters to the getter.</param>
@@ -269,6 +342,12 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(parameters: string list, expr: string) =
             Ast.Getter(parameters, Ast.Constant(expr))
+
+        static member Getter(parameters: string list, expr: string, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(parameters, Ast.Constant(expr), returnType)
+
+        static member Getter(parameters: string list, expr: string, returnType: string) =
+            Ast.Getter(parameters, Ast.Constant(expr), Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
@@ -301,6 +380,25 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
+        static member Getter
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            WidgetBuilder<PropertyGetSetBindingNode>(
+                PropertyGetSetBinding.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        PropertyGetSetBinding.Parameters.WithValue([ parameter ] |> List.map(Gen.mkOak)),
+                        PropertyGetSetBinding.IsSetter.WithValue(false)
+                    ),
+                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile())
+                       PropertyGetSetBinding.ReturnType.WithValue(returnType.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member Getter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Getter(parameter, expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
         /// <param name="expr">The expression to return.</param>
@@ -322,6 +420,14 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
             Ast.Getter(Ast.ConstantPat(parameter), expr)
 
+        static member Getter
+            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.Getter(Ast.ConstantPat(parameter), expr, returnType)
+
+        static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Getter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
         /// <param name="expr">The expression to return.</param>
@@ -339,6 +445,12 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(parameter: string, expr: WidgetBuilder<Expr>) =
             Ast.Getter(Ast.Constant(parameter), expr)
+
+        static member Getter(parameter: string, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(Ast.Constant(parameter), expr, returnType)
+
+        static member Getter(parameter: string, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Getter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
@@ -361,6 +473,13 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
             Ast.Getter(parameter, Ast.ConstantExpr(expr))
 
+        static member Getter
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(parameter, Ast.ConstantExpr(expr), returnType)
+
+        static member Getter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Getter(parameter, Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
         /// <param name="expr">The expression to return.</param>
@@ -378,6 +497,13 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.Getter(Ast.ConstantPat(parameter), expr)
+
+        static member Getter
+            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(Ast.ConstantPat(parameter), expr, returnType)
+
+        static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Getter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
@@ -397,6 +523,12 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: string, expr: WidgetBuilder<Constant>) =
             Ast.Getter(Ast.Constant(parameter), expr)
 
+        static member Getter(parameter: string, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(Ast.Constant(parameter), expr, returnType)
+
+        static member Getter(parameter: string, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Getter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
         /// <param name="expr">The expression to return.</param>
@@ -415,8 +547,15 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: string, expr: string) =
             Ast.Getter(parameter, Ast.Constant(expr))
 
+        static member Getter(parameter: string, expr: string, returnType: WidgetBuilder<Type>) =
+            Ast.Getter(parameter, Ast.Constant(expr), returnType)
+
+        static member Getter(parameter: string, expr: string, returnType: string) =
+            Ast.Getter(parameter, Ast.Constant(expr), Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -429,15 +568,21 @@ module PropertyGetSetBindingBuilders =
         ///     }
         /// }
         /// </code>
-        static member Setter(expr: WidgetBuilder<Expr>) =
+        static member Setter(expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
                 AttributesBundle(
                     StackList.one(PropertyGetSetBinding.IsSetter.WithValue(true)),
-                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile()) |],
+                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile())
+                       match returnType with
+                       | None -> ()
+                       | Some returnType -> PropertyGetSetBinding.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member Setter(expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Setter(expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a setter for a property.</summary>
         /// <param name="expr">The expression to set.</param>
@@ -455,6 +600,12 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Setter(expr: WidgetBuilder<Constant>) = Ast.Setter(expr |> Ast.ConstantExpr)
 
+        static member Setter(expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(expr |> Ast.ConstantExpr, returnType)
+
+        static member Setter(expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Setter(expr |> Ast.ConstantExpr, Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="expr">The expression to set.</param>
         /// <code language="fsharp">
@@ -471,9 +622,13 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Setter(expr: string) = Ast.Setter(Ast.Constant(expr))
 
+        static member Setter(expr: string, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(Ast.Constant(expr), returnType)
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameters">The parameters to the setter.</param>
         /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -486,7 +641,8 @@ module PropertyGetSetBindingBuilders =
         ///     }
         /// }
         /// </code>
-        static member Setter(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>) =
+        static member Setter
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>) =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
                 AttributesBundle(
@@ -494,7 +650,10 @@ module PropertyGetSetBindingBuilders =
                         PropertyGetSetBinding.Parameters.WithValue(parameters |> List.map(Gen.mkOak)),
                         PropertyGetSetBinding.IsSetter.WithValue(true)
                     ),
-                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile()) |],
+                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile())
+                       match returnType with
+                       | None -> ()
+                       | Some returnType -> PropertyGetSetBinding.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
                 )
             )
@@ -518,6 +677,15 @@ module PropertyGetSetBindingBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Setter(parameters, expr)
 
+        static member Setter
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Setter(parameters, expr, returnType)
+
+        static member Setter(parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: string) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Setter(parameters, expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameters">The parameters to the setter.</param>
         /// <param name="expr">The expression to set.</param>
@@ -536,6 +704,12 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameters: string list, expr: WidgetBuilder<Expr>) =
             Ast.Setter(parameters |> List.map Ast.Constant, expr)
 
+        static member Setter(parameters: string list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(parameters |> List.map Ast.Constant, expr, returnType)
+
+        static member Setter(parameters: string list, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Setter(parameters |> List.map Ast.Constant, expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameters">The parameters to the setter.</param>
         /// <param name="expr">The expression to set.</param>
@@ -553,6 +727,15 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Setter(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>) =
             Ast.Setter(parameters, Ast.ConstantExpr(expr))
+
+        static member Setter
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(parameters, Ast.ConstantExpr(expr), returnType)
+
+        static member Setter
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: string)
+            =
+            Ast.Setter(parameters, Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
 
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameters">The parameters to the setter.</param>
@@ -573,6 +756,17 @@ module PropertyGetSetBindingBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Setter(parameters, expr)
 
+        static member Setter
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Setter(parameters, expr, returnType)
+
+        static member Setter
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: string)
+            =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.Setter(parameters, expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameters">The parameters to the setter.</param>
         /// <param name="expr">The expression to set.</param>
@@ -590,6 +784,12 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Setter(parameters: string list, expr: WidgetBuilder<Constant>) =
             Ast.Setter(parameters |> List.map Ast.Constant, expr)
+
+        static member Setter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(parameters |> List.map Ast.Constant, expr, returnType)
+
+        static member Setter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Setter(parameters |> List.map Ast.Constant, expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameters">The parameters to the setter.</param>
@@ -609,6 +809,12 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameters: string list, expr: string) =
             Ast.Setter(parameters, Ast.Constant(expr))
 
+        static member Setter(parameters: string list, expr: string, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(parameters, Ast.Constant(expr), returnType)
+
+        static member Setter(parameters: string list, expr: string, returnType: string) =
+            Ast.Setter(parameters, Ast.Constant(expr), Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameter">The parameter to the setter.</param>
         /// <param name="expr">The expression to set.</param>
@@ -625,18 +831,15 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<PropertyGetSetBindingNode>(
-                PropertyGetSetBinding.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        PropertyGetSetBinding.Parameters.WithValue([ parameter ] |> List.map(Gen.mkOak)),
-                        PropertyGetSetBinding.IsSetter.WithValue(true)
+            Ast.Setter([ parameter ], expr)
 
-                    ),
-                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
+        static member Setter
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.Setter([ parameter ], expr, returnType)
+
+        static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Setter([ parameter ], expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameter">The parameter to the setter.</param>
@@ -656,6 +859,14 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
             Ast.Setter(Ast.ConstantPat(parameter), expr)
 
+        static member Setter
+            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.Setter(Ast.ConstantPat(parameter), expr, returnType)
+
+        static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Setter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameter">The parameter to the setter.</param>
         /// <param name="expr">The expression to set.</param>
@@ -673,6 +884,12 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Setter(parameter: string, expr: WidgetBuilder<Expr>) =
             Ast.Setter(Ast.Constant(parameter), expr)
+
+        static member Setter(parameter: string, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(Ast.Constant(parameter), expr, returnType)
+
+        static member Setter(parameter: string, expr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Setter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameter">The parameter to the setter.</param>
@@ -692,6 +909,13 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
             Ast.Setter(parameter, Ast.ConstantExpr(expr))
 
+        static member Setter
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(parameter, Ast.ConstantExpr(expr), returnType)
+
+        static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Setter(parameter, Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameter">The parameter to the setter.</param>
         /// <param name="expr">The expression to set.</param>
@@ -709,6 +933,13 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.Setter(Ast.ConstantPat(parameter), expr)
+
+        static member Setter
+            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(Ast.ConstantPat(parameter), expr, returnType)
+
+        static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Setter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
 
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameter">The parameter to the setter.</param>
@@ -728,6 +959,12 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: string, expr: WidgetBuilder<Constant>) =
             Ast.Setter(Ast.Constant(parameter), expr)
 
+        static member Setter(parameter: string, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(Ast.Constant(parameter), expr, returnType)
+
+        static member Setter(parameter: string, expr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Setter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
+
         /// <summary>Create a setter for a property.</summary>
         /// <param name="parameter">The parameter to the setter.</param>
         /// <param name="expr">The expression to set.</param>
@@ -746,6 +983,12 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: string, expr: string) =
             Ast.Setter(parameter, Ast.Constant(expr))
 
+        static member Setter(parameter: string, expr: string, returnType: WidgetBuilder<Type>) =
+            Ast.Setter(parameter, Ast.Constant(expr), returnType)
+
+        static member Setter(parameter: string, expr: string, returnType: string) =
+            Ast.Setter(parameter, Ast.Constant(expr), Ast.LongIdent(returnType))
+
 type PropertyGetSetBindingModifiers =
     [<Extension>]
     static member inline toInlined(this: WidgetBuilder<PropertyGetSetBindingNode>) =
@@ -763,9 +1006,15 @@ type PropertyGetSetBindingModifiers =
     static member inline toInternal(this: WidgetBuilder<PropertyGetSetBindingNode>) =
         this.AddScalar(PropertyGetSetBinding.Accessibility.WithValue(AccessControl.Internal))
 
-    [<Extension>]
-    static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: WidgetBuilder<Type>) =
-        this.AddWidget(PropertyGetSetBinding.ReturnType.WithValue(value.Compile()))
+    // [<Extension>]
+    // [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    // static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: WidgetBuilder<Type>) =
+    //     this.AddWidget(PropertyGetSetBinding.ReturnType.WithValue(value.Compile()))
+    //
+    // [<Extension>]
+    // [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    // static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: string) =
+    //     PropertyGetSetBindingModifiers.returnType(this, Ast.LongIdent(value))
 
     [<Extension>]
     static member inline attributes

@@ -79,6 +79,31 @@ module BindingFunction =
 [<AutoOpen>]
 module BindingFunctionBuilders =
     type Ast with
+        static member private BaseFunction
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Expr>,
+                ?returnType: WidgetBuilder<Type>
+            ) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            let parameters = parameters |> List.map Gen.mkOak
+
+            WidgetBuilder<BindingNode>(
+                BindingFunction.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        BindingFunction.Name.WithValue(name),
+                        BindingFunction.Parameters.WithValue(parameters)
+                    ),
+                    [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile())
+                       match returnType with
+                       | Some rt -> BindingNode.Return.WithValue(rt.Compile())
+                       | None -> () |],
+                    Array.empty
+                )
+            )
+
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
         /// </summary>
@@ -93,20 +118,48 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
-            let parameters = parameters |> List.map Gen.mkOak
+            Ast.BaseFunction(name, parameters, bodyExpr)
 
-            WidgetBuilder<BindingNode>(
-                BindingFunction.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        BindingFunction.Name.WithValue(name),
-                        BindingFunction.Parameters.WithValue(parameters)
-                    ),
-                    [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
-                    Array.empty
-                )
-            )
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Expr>,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, parameters, bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.BaseFunction(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -134,7 +187,69 @@ module BindingFunctionBuilders =
                 parameters: WidgetBuilder<Pattern> list,
                 bodyExpr: WidgetBuilder<ComputationExpressionStatement> list
             ) =
-            Ast.Function(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             [ ParameterPat "radius"; ParameterPat "length" ],
+        ///             [ LetOrUseExpr(Value("pi", Double(3.14159)))
+        ///               OtherExpr(
+        ///                 InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))
+        ///             ) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             [ ParameterPat "radius"; ParameterPat "length" ],
+        ///             [ LetOrUseExpr(Value("pi", Double(3.14159)))
+        ///               OtherExpr(
+        ///                 InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))
+        ///             ) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                returnType: string
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -156,7 +271,63 @@ module BindingFunctionBuilders =
         static member Function
             (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr> list)
             =
-            Ast.Function(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             [ ParameterPat "radius"; ParameterPat "length" ],
+        ///             [ InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius"))) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Expr> list,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             [ ParameterPat "radius"; ParameterPat "length" ],
+        ///             [ InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius"))) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Expr> list,
+                returnType: string
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -180,7 +351,67 @@ module BindingFunctionBuilders =
         static member Function
             (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<BindingNode> list)
             =
-            Ast.Function(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             [ ParameterPat "radius" ],
+        ///             [ Value("pi", Double(3.14159))
+        ///               Value("length", Int(23))
+        ///               Value("radius", Int(23)) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<BindingNode> list,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             [ ParameterPat "radius" ],
+        ///             [ Value("pi", Double(3.14159))
+        ///               Value("length", Int(23))
+        ///               Value("radius", Int(23)) ],
+        ///             "double"
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<BindingNode> list,
+                returnType: string
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -207,7 +438,67 @@ module BindingFunctionBuilders =
                 parameter: WidgetBuilder<Pattern>,
                 bodyExpr: WidgetBuilder<ComputationExpressionStatement> list
             ) =
-            Ast.Function(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameter">The parameter of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             ParameterPat "radius",
+        ///             [ LetOrUseExpr(Value("pi", Double(3.14159)))
+        ///               OtherExpr(
+        ///                 InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameter: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameter">The parameter of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             ParameterPat "radius",
+        ///             [ LetOrUseExpr(Value("pi", Double(3.14159)))
+        ///               OtherExpr(
+        ///                 InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameter: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                returnType: string
+            ) =
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -227,7 +518,58 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function(name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> list) =
-            Ast.Function(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameter">The parameter of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             ParameterPat "radius",
+        ///             [ InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius"))) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameter: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<Expr> list,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameter">The parameter of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             ParameterPat "radius",
+        ///             [ InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius"))) ],
+        ///             "double"
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> list, returnType: string) =
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -251,7 +593,67 @@ module BindingFunctionBuilders =
         static member Function
             (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<BindingNode> list)
             =
-            Ast.Function(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameter">The parameter of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             ParameterPat "radius",
+        ///             [ Value("pi", Double(3.14159))
+        ///               Value("length", Int(23))
+        ///               Value("radius", Int(23)) ],
+        ///             LongIdent("double")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameter: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<BindingNode> list,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameter">The parameter of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function(
+        ///             "cylinderVolume",
+        ///             ParameterPat "radius",
+        ///             [ Value("pi", Double(3.14159))
+        ///               Value("length", Int(23))
+        ///               Value("radius", Int(23)) ],
+        ///             "double"
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameter: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<BindingNode> list,
+                returnType: string
+            ) =
+            Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -269,7 +671,53 @@ module BindingFunctionBuilders =
         static member Function
             (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>)
             =
-            Ast.Function(name, parameters, Ast.ConstantExpr(bodyExpr))
+            Ast.BaseFunction(name, parameters, Ast.ConstantExpr(bodyExpr))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], Constant("a + b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Constant>,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.ConstantExpr(bodyExpr), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], Constant("a + b"), "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Constant>,
+                returnType: string
+            ) =
+            Ast.BaseFunction(name, parameters, Ast.ConstantExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -285,7 +733,44 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
-            Ast.Function(name, parameters, Ast.Constant(bodyExpr))
+            Ast.BaseFunction(name, parameters, Ast.ConstantExpr(Ast.Constant(bodyExpr)))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], "a + b", Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseFunction(name, parameters, Ast.ConstantExpr(Ast.Constant(bodyExpr)), returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], "a + b", "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: string)
+            =
+            Ast.BaseFunction(name, parameters, Ast.ConstantExpr(Ast.Constant(bodyExpr)), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -305,7 +790,52 @@ module BindingFunctionBuilders =
                 parameters
                 |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
 
-            Ast.Function(name, parameters, bodyExpr)
+            Ast.BaseFunction(name, parameters, bodyExpr)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ "a"; "b" ], InfixAppExpr("a", "+", "b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let parameters =
+                parameters
+                |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
+
+            Ast.Function(name, parameters, bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ "a"; "b" ], InfixAppExpr("a", "+", "b"), "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: string)
+            =
+            let parameters =
+                parameters
+                |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
+
+            Ast.Function(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -332,6 +862,49 @@ module BindingFunctionBuilders =
         /// <param name="name">The name of the function.</param>
         /// <param name="parameters">The parameters of the function.</param>
         /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ "a"; "b" ], Constant("a + b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Function(name, parameters, bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ "a"; "b" ], Constant("a + b"), "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: string)
+            =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Function(name, parameters, bodyExpr, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -344,6 +917,48 @@ module BindingFunctionBuilders =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Function(name, parameters, bodyExpr)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ "a"; "b" ], "a + b", Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string list, bodyExpr: string, returnType: WidgetBuilder<Type>)
+            =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Function(name, parameters, bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", [ "a"; "b" ], "a + b", "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function(name: string, parameters: string list, bodyExpr: string, returnType: string) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.Function(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -367,6 +982,47 @@ module BindingFunctionBuilders =
         /// <param name="name">The name of the function.</param>
         /// <param name="parameters">The parameters of the function.</param>
         /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", ParameterPat("a b"), InfixAppExpr("a", "+", "b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<Expr>,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.Function(name, [ parameters ], bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", ParameterPat("a b"), InfixAppExpr("a", "+", "b"), "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -376,6 +1032,47 @@ module BindingFunctionBuilders =
         /// </code>
         static member Function(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
             Ast.Function(name, [ parameters ], bodyExpr)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", ParameterPat("a b"), Constant("a + b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<Constant>,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.Function(name, [ parameters ], bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", ParameterPat("a b"), Constant("a + b"), "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -399,6 +1096,41 @@ module BindingFunctionBuilders =
         /// <param name="name">The name of the function.</param>
         /// <param name="parameters">The parameters of the function.</param>
         /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", ParameterPat("a b"), "a + b", Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            Ast.Function(name, [ parameters ], bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", ParameterPat("a b"), "a + b", "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string, returnType: string) =
+            Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -408,6 +1140,42 @@ module BindingFunctionBuilders =
         /// </code>
         static member Function(name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>) =
             Ast.Function(name, [ parameters ], bodyExpr)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", "a b", InfixAppExpr("a", "+", "b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.Function(name, [ parameters ], bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", "a b", InfixAppExpr("a", "+", "b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function(name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a function with the given name, parameters, and body expression.
@@ -431,6 +1199,43 @@ module BindingFunctionBuilders =
         /// <param name="name">The name of the function.</param>
         /// <param name="parameters">The parameters of the function.</param>
         /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", "a b", Constant("a + b"), Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.Function(name, [ parameters ], bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", "a b", Constant("a + b"), "int")
+        ///     }
+        /// }
+        /// </code>
+        static member Function
+            (name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>, returnType: string)
+            =
+            Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -440,3 +1245,37 @@ module BindingFunctionBuilders =
         /// </code>
         static member Function(name: string, parameters: string, bodyExpr: string) =
             Ast.Function(name, [ parameters ], bodyExpr)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", "a b", "a + b", Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function(name: string, parameters: string, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            Ast.Function(name, [ parameters ], bodyExpr, returnType)
+
+        /// <summary>
+        /// Create a function with the given name, parameters, and body expression.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
+        /// <param name="parameters">The parameters of the function.</param>
+        /// <param name="bodyExpr">The body expression of the function.</param>
+        /// <param name="returnType">The return type of the function.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Function("add", "a b", "a + b", Int())
+        ///     }
+        /// }
+        /// </code>
+        static member Function(name: string, parameters: string, bodyExpr: string, returnType: string) =
+            Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))

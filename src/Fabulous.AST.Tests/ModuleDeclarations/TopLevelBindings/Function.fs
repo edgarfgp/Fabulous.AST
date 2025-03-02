@@ -328,7 +328,7 @@ let x i = ()
 
     [<Fact>]
     let ``Produces a function with parameters and return type``() =
-        Oak() { AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())).returnType(Unit()) } }
+        Oak() { AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()), Unit()) } }
         |> produces
             """
 let x i : unit = ()
@@ -347,9 +347,9 @@ let x i : unit = ()
                               ParameterPat(NamedPat("i"), LongIdent "'U") ]
                         )
                     ),
-                    ConstantExpr(ConstantUnit())
+                    ConstantExpr(ConstantUnit()),
+                    Unit()
                 )
-                    .returnType(Unit())
             }
         }
         |> produces

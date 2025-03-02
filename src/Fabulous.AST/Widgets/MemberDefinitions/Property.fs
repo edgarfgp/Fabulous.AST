@@ -82,6 +82,21 @@ module BindingProperty =
 [<AutoOpen>]
 module BindingPropertyBuilders =
     type Ast with
+        static member private BaseMember
+            (name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>)
+            =
+            WidgetBuilder<BindingNode>(
+                BindingProperty.WidgetKey,
+                AttributesBundle(
+                    StackList.one(BindingProperty.Name.WithValue(Gen.mkOak name)),
+                    [| BindingNode.BodyExpr.WithValue(body.Compile())
+                       match returnType with
+                       | None -> ()
+                       | Some returnType -> BindingNode.Return.WithValue(returnType.Compile()) |],
+                    Array.empty
+                )
+            )
+
         /// <summary>
         /// Create a member property with the given name and body.
         /// </summary>
@@ -96,15 +111,13 @@ module BindingPropertyBuilders =
         ///     }
         /// }
         /// </code>
-        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
-            WidgetBuilder<BindingNode>(
-                BindingProperty.WidgetKey,
-                AttributesBundle(
-                    StackList.one(BindingProperty.Name.WithValue(Gen.mkOak name)),
-                    [| BindingNode.BodyExpr.WithValue(body.Compile()) |],
-                    Array.empty
-                )
-            )
+        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) = Ast.BaseMember(name, body)
+
+        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(name, body, returnType)
+
+        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, returnType: string) =
+            Ast.BaseMember(name, body, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -121,7 +134,15 @@ module BindingPropertyBuilders =
         /// }
         /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>) =
-            Ast.Member(name, Ast.ConstantExpr(body))
+            Ast.BaseMember(name, Ast.ConstantExpr(body))
+
+        static member Member
+            (name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.BaseMember(name, Ast.ConstantExpr(body), returnType)
+
+        static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>, returnType: string) =
+            Ast.BaseMember(name, Ast.ConstantExpr(body), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -138,7 +159,13 @@ module BindingPropertyBuilders =
         /// }
         /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: string) =
-            Ast.Member(name, Ast.ConstantExpr(Ast.Constant(body)))
+            Ast.BaseMember(name, Ast.ConstantExpr(Ast.Constant(body)))
+
+        static member Member(name: WidgetBuilder<Pattern>, body: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(name, Ast.ConstantExpr(Ast.Constant(body)), returnType)
+
+        static member Member(name: WidgetBuilder<Pattern>, body: string, returnType: string) =
+            Ast.BaseMember(name, Ast.ConstantExpr(Ast.Constant(body)), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -155,7 +182,15 @@ module BindingPropertyBuilders =
         /// }
         /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>) =
-            Ast.Member(Ast.ConstantPat(name), body)
+            Ast.BaseMember(Ast.ConstantPat(name), body)
+
+        static member Member
+            (name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.BaseMember(Ast.ConstantPat(name), body, returnType)
+
+        static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>, returnType: string) =
+            Ast.BaseMember(Ast.ConstantPat(name), body, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -172,7 +207,15 @@ module BindingPropertyBuilders =
         /// }
         /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
-            Ast.Member(name, Ast.ConstantExpr(body))
+            Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(body))
+
+        static member Member
+            (name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(body), returnType)
+
+        static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>, returnType: string) =
+            Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(body), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -188,7 +231,14 @@ module BindingPropertyBuilders =
         ///     }
         /// }
         /// </code>
-        static member Member(name: string, body: WidgetBuilder<Expr>) = Ast.Member(Ast.Constant(name), body)
+        static member Member(name: string, body: WidgetBuilder<Expr>) =
+            Ast.BaseMember(Ast.ConstantPat(name), body)
+
+        static member Member(name: string, body: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(Ast.ConstantPat(name), body, returnType)
+
+        static member Member(name: string, body: WidgetBuilder<Expr>, returnType: string) =
+            Ast.BaseMember(Ast.ConstantPat(name), body, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -205,7 +255,13 @@ module BindingPropertyBuilders =
         /// }
         /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: string) =
-            Ast.Member(name, Ast.ConstantExpr(Ast.Constant(body)))
+            Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(Ast.Constant(body)))
+
+        static member Member(name: WidgetBuilder<Constant>, body: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(Ast.Constant(body)), returnType)
+
+        static member Member(name: WidgetBuilder<Constant>, body: string, returnType: string) =
+            Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(Ast.Constant(body)), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -222,7 +278,13 @@ module BindingPropertyBuilders =
         /// }
         /// </code>
         static member Member(name: string, body: WidgetBuilder<Constant>) =
-            Ast.Member(name, Ast.ConstantExpr(body))
+            Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(body))
+
+        static member Member(name: string, body: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(body), returnType)
+
+        static member Member(name: string, body: WidgetBuilder<Constant>, returnType: string) =
+            Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(body), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a member property with the given name and body.
@@ -239,4 +301,14 @@ module BindingPropertyBuilders =
         /// }
         /// </code>
         static member Member(name: string, body: string) =
-            Ast.Member(Ast.Constant(name), Ast.Constant(body))
+            Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(Ast.Constant(body)))
+
+        static member Member(name: string, body: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(Ast.Constant(body)), returnType)
+
+        static member Member(name: string, body: string, returnType: string) =
+            Ast.BaseMember(
+                Ast.ConstantPat(Ast.Constant(name)),
+                Ast.ConstantExpr(Ast.Constant(body)),
+                Ast.LongIdent(returnType)
+            )

@@ -32,9 +32,8 @@ module AutoProperty =
                         .toPrivate()
                         .xmlDocs([ "Im a private property" ])
 
-                    MemberVal("D", ConstantExpr(String("")), true, true)
+                    MemberVal("D", ConstantExpr(String("")), String(), true, true)
                         .toInternal()
-                        .returnType(String())
                         .xmlDocs([ "Im an internal property with a return type" ])
 
                     MemberVal("E", ConstantExpr(String("")), true, true)

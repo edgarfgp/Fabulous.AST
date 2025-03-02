@@ -137,40 +137,41 @@ type BindingNodeModifiers =
     static member inline toInternal(this: WidgetBuilder<BindingNode>) =
         this.AddScalar(BindingNode.Accessibility.WithValue(AccessControl.Internal))
 
-    // /// <summary>
-    // /// Sets the return type for the current widget.
-    // /// </summary>
-    // /// <param name="this">Current widget.</param>
-    // /// <param name="returnType">The return type to set.</param>
-    // /// <code language="fsharp">
-    // /// Oak() {
-    // ///     AnonymousModule() {
-    // ///         Function("add", ["a"; "b"], "a + b")
-    // ///             .returnType(Int())
-    // ///     }
-    // /// }
-    // /// </code>
-    // [<Extension>]
-    // static member returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) =
-    //     this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
+    /// <summary>
+    /// Sets the return type for the current widget.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="returnType">The return type to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Function("add", ["a"; "b"], "a + b")
+    ///             .returnType(Int())
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) =
+        this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
 
-    // /// <summary>
-    // /// Sets the return type for the current widget.
-    // /// </summary>
-    // /// <param name="this">Current widget.</param>
-    // /// <param name="returnType">The return type to set.</param>
-    // /// <code language="fsharp">
-    // /// Oak() {
-    // ///     AnonymousModule() {
-    // ///         Function("add", ["a"; "b"], "a + b")
-    // ///             .returnType("int")
-    // ///     }
-    // /// }
-    // /// </code>
-    // [<Extension>]
-    // [<Obsolete("Use this now in the widget constructor")>] // Remove in 1.0
-    // static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
-    //     this.AddWidget(BindingNode.Return.WithValue(Ast.LongIdent(returnType).Compile()))
+    /// <summary>
+    /// Sets the return type for the current widget.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="returnType">The return type to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Function("add", ["a"; "b"], "a + b")
+    ///             .returnType("int")
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
+        this.AddWidget(BindingNode.Return.WithValue(Ast.LongIdent(returnType).Compile()))
 
     /// <summary>
     /// Sets the current widget to be mutable.
