@@ -39,3 +39,28 @@ match [ 1; 2 ] with
 match [ 1; 2 ] with
 | a -> 3
 """
+
+    [<Fact>]
+    let ``Match expression with multiple clauses``() =
+        Oak() {
+            AnonymousModule() {
+                MatchExpr(
+                    "value",
+                    [ MatchClauseExpr(
+                          LongIdentPat("Member.C.C7b7df1dc", "arg1"),
+                          ConstantExpr("failwith \"Not implemented\"")
+                      )
+
+                      MatchClauseExpr(
+                          LongIdentPat("Member.C.C7b7df1dc", ParenPat(TuplePat([ "arg1"; "arg2" ]))),
+                          ConstantExpr("failwith \"Not implemented\"")
+                      ) ]
+                )
+            }
+        }
+        |> produces
+            """
+match value with
+| Member.C.C7b7df1dc arg1 -> failwith "Not implemented"
+| Member.C.C7b7df1dc(arg1, arg2) -> failwith "Not implemented"
+"""
