@@ -9,11 +9,13 @@ permissions: write-all
 env:
   CONFIG: Release
   SLN_FILE: Fabulous.AST.sln
-  NUPKG_FOLDER: nupkgs
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          runs-on: [ ubuntu-latest ]
+    runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
