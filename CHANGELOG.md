@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
-## [1.2.0] - 2025-03-03
+## [1.2.0] - 2025-03-05
 ### Fixed
-- Avoid using `NormalizeIdentifierBackticks` when generating `IdentifierOrDot` by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/128
+- Avoid using `NormalizeIdentifierBackticks` when generating `IdentifierOrDot` by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/137
 
 ## [1.1.0] - 2025-01-12
 
@@ -271,7 +271,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.1.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.2.0
 [1.1.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.1.0
 [1.0.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0
 [1.0.0-pre17]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.0.0-pre17
