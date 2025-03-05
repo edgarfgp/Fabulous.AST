@@ -31,14 +31,10 @@ module LongIdentPattern =
                     |> Some
                 | ValueNone -> None
 
-            let identifier = Widgets.tryGetScalarValue widget Identifiers
-
             let identifier =
-                match identifier with
-                | ValueSome value ->
-                    [ let value = PrettyNaming.NormalizeIdentifierBackticks value
-                      IdentifierOrDot.Ident(SingleTextNode.Create(value)) ]
-                | ValueNone -> []
+                Widgets.tryGetScalarValue widget Identifiers
+                |> ValueOption.map(fun value -> [ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ])
+                |> ValueOption.defaultValue []
 
             Pattern.LongIdent(
                 PatLongIdentNode(None, IdentListNode(identifier, Range.Zero), typeParams, items, Range.Zero)
