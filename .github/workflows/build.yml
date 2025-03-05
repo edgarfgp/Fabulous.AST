@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Packages
+          name: Packages-${{ matrix.runs-on }}
           path: nupkgs/
       - name: Upload docs
         uses: actions/upload-pages-artifact@v1
