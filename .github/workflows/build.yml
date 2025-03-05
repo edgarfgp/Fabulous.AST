@@ -42,7 +42,7 @@ jobs:
           name: Packages-${{ matrix.runs-on }}
           path: nupkgs/
       - name: Upload docs
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: output/
       - name: Push
