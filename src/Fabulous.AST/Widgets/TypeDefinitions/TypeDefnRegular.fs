@@ -42,7 +42,7 @@ module TypeDefnRegular =
 
             let xmlDocs =
                 Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
@@ -66,14 +66,10 @@ module TypeDefnRegular =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            let isRecursive =
-                Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
-
             let leadingKeyword =
-                if isRecursive then
-                    SingleTextNode.``and``
-                else
-                    SingleTextNode.``type``
+                Widgets.tryGetScalarValue widget IsRecursive
+                |> ValueOption.map(fun _ -> SingleTextNode.``and``)
+                |> ValueOption.defaultValue SingleTextNode.``type``
 
             TypeDefnRegularNode(
                 TypeNameNode(
