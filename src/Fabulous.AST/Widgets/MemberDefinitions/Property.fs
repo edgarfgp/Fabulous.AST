@@ -113,9 +113,35 @@ module BindingPropertyBuilders =
         /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) = Ast.BaseMember(name, body)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23), Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             Ast.BaseMember(name, body, returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23), "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, returnType: string) =
             Ast.BaseMember(name, body, Ast.LongIdent(returnType))
 
@@ -136,11 +162,37 @@ module BindingPropertyBuilders =
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>) =
             Ast.BaseMember(name, Ast.ConstantExpr(body))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(ConstantPat("this.Name"), Int(23), Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member
             (name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
             =
             Ast.BaseMember(name, Ast.ConstantExpr(body), returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(ConstantPat("this.Name"), Int(23), "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: WidgetBuilder<Constant>, returnType: string) =
             Ast.BaseMember(name, Ast.ConstantExpr(body), Ast.LongIdent(returnType))
 
@@ -161,9 +213,35 @@ module BindingPropertyBuilders =
         static member Member(name: WidgetBuilder<Pattern>, body: string) =
             Ast.BaseMember(name, Ast.ConstantExpr(Ast.Constant(body)))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(ConstantPat("this.Name"), "23", Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseMember(name, Ast.ConstantExpr(Ast.Constant(body)), returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(ConstantPat("this.Name"), "23", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Pattern>, body: string, returnType: string) =
             Ast.BaseMember(name, Ast.ConstantExpr(Ast.Constant(body)), Ast.LongIdent(returnType))
 
@@ -184,11 +262,37 @@ module BindingPropertyBuilders =
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>) =
             Ast.BaseMember(Ast.ConstantPat(name), body)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(Constant("this.Name"), ConstantExpr(Int 23), Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member
             (name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
             =
             Ast.BaseMember(Ast.ConstantPat(name), body, returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(Constant("this.Name"), ConstantExpr(Int 23), "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Expr>, returnType: string) =
             Ast.BaseMember(Ast.ConstantPat(name), body, Ast.LongIdent(returnType))
 
@@ -209,11 +313,37 @@ module BindingPropertyBuilders =
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>) =
             Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(body))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(Constant("this.Name"), Int(23), Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member
             (name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
             =
             Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(body), returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(Constant("this.Name"), Int(23), "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: WidgetBuilder<Constant>, returnType: string) =
             Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(body), Ast.LongIdent(returnType))
 
@@ -234,9 +364,35 @@ module BindingPropertyBuilders =
         static member Member(name: string, body: WidgetBuilder<Expr>) =
             Ast.BaseMember(Ast.ConstantPat(name), body)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member("this.Name", ConstantExpr(Int 23), Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             Ast.BaseMember(Ast.ConstantPat(name), body, returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member("this.Name", ConstantExpr(Int 23), "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: WidgetBuilder<Expr>, returnType: string) =
             Ast.BaseMember(Ast.ConstantPat(name), body, Ast.LongIdent(returnType))
 
@@ -257,9 +413,35 @@ module BindingPropertyBuilders =
         static member Member(name: WidgetBuilder<Constant>, body: string) =
             Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(Ast.Constant(body)))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(Constant("this.Name"), "23", Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(Ast.Constant(body)), returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member(Constant("this.Name"), "23", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: WidgetBuilder<Constant>, body: string, returnType: string) =
             Ast.BaseMember(Ast.ConstantPat(name), Ast.ConstantExpr(Ast.Constant(body)), Ast.LongIdent(returnType))
 
@@ -280,9 +462,35 @@ module BindingPropertyBuilders =
         static member Member(name: string, body: WidgetBuilder<Constant>) =
             Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(body))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member("this.Name", Int(23), Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(body), returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member("this.Name", Int(23), "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: WidgetBuilder<Constant>, returnType: string) =
             Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(body), Ast.LongIdent(returnType))
 
@@ -303,9 +511,35 @@ module BindingPropertyBuilders =
         static member Member(name: string, body: string) =
             Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(Ast.Constant(body)))
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member("this.Name", "23", Int())
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseMember(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(Ast.Constant(body)), returnType)
 
+        /// <summary>
+        /// Create a member property with the given name and body.
+        /// </summary>
+        /// <param name="name">The name of the member property.</param>
+        /// <param name="body">The body of the member property.</param>
+        /// <param name="returnType">The return type of the member property.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     TypeDefn("Person", UnitPat()) {
+        ///         Member("this.Name", "23", "int")
+        ///     }
+        /// }
+        /// </code>
         static member Member(name: string, body: string, returnType: string) =
             Ast.BaseMember(
                 Ast.ConstantPat(Ast.Constant(name)),

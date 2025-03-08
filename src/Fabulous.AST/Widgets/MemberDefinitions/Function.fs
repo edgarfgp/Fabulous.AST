@@ -130,7 +130,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"), Int())
         ///     }
         /// }
         /// </code>
@@ -153,7 +153,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
+        ///         Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"), "int")
         ///     }
         /// }
         /// </code>
@@ -237,7 +237,7 @@ module BindingFunctionBuilders =
         ///               OtherExpr(
         ///                 InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))
         ///             ) ],
-        ///             LongIdent("double")
+        ///             "double"
         ///         )
         ///     }
         /// }
@@ -315,7 +315,7 @@ module BindingFunctionBuilders =
         ///             "cylinderVolume",
         ///             [ ParameterPat "radius"; ParameterPat "length" ],
         ///             [ InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius"))) ],
-        ///             LongIdent("double")
+        ///             "double"
         ///         )
         ///     }
         /// }
@@ -486,7 +486,7 @@ module BindingFunctionBuilders =
         ///             [ LetOrUseExpr(Value("pi", Double(3.14159)))
         ///               OtherExpr(
         ///                 InfixAppExpr("length", "*", InfixAppExpr("pi", "*", InfixAppExpr("radius", "*", "radius")))) ],
-        ///             LongIdent("double")
+        ///             "double"
         ///         )
         ///     }
         /// }
@@ -1170,7 +1170,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", "a b", InfixAppExpr("a", "+", "b"), Int())
+        ///         Function("add", "a b", InfixAppExpr("a", "+", "b"), "int")
         ///     }
         /// }
         /// </code>
@@ -1273,7 +1273,7 @@ module BindingFunctionBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Function("add", "a b", "a + b", Int())
+        ///         Function("add", "a b", "a + b", "int")
         ///     }
         /// }
         /// </code>

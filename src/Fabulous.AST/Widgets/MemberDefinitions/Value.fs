@@ -122,7 +122,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+        ///         Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)), Int())
         ///     }
         /// }
         /// </code>
@@ -138,7 +138,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
+        ///         Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)), "int")
         ///     }
         /// }
         /// </code>
@@ -169,7 +169,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(ConstantPat(Constant("x")), Int(12))
+        ///         Value(ConstantPat(Constant("x")), Int(12), Int())
         ///     }
         /// }
         /// </code>
@@ -187,7 +187,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(ConstantPat(Constant("x")), Int(12))
+        ///         Value(ConstantPat(Constant("x")), Int(12), "int")
         ///     }
         /// }
         /// </code>
@@ -218,7 +218,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(ConstantPat(Constant("x")), "12")
+        ///         Value(ConstantPat(Constant("x")), "12", Int())
         ///     }
         /// }
         /// </code>
@@ -234,7 +234,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(ConstantPat(Constant("x")), "12")
+        ///         Value(ConstantPat(Constant("x")), "12", "int")
         ///     }
         /// }
         /// </code>
@@ -270,7 +270,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(Constant("x"), Int(12))
+        ///         Value(Constant("x"), Int(12), Int())
         ///     }
         /// }
         /// </code>
@@ -288,7 +288,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value(Constant("x"), Int(12))
+        ///         Value(Constant("x"), Int(12), "int")
         ///     }
         /// }
         /// </code>
@@ -324,7 +324,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value("x", ConstantExpr(Int(12)))
+        ///         Value("x", ConstantExpr(Int(12)), Int())
         ///     }
         /// }
         /// </code>
@@ -340,7 +340,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value("x", ConstantExpr(Int(12)))
+        ///         Value("x", ConstantExpr(Int(12)), "int")
         ///     }
         /// }
         /// </code>
@@ -371,7 +371,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value("x", Int(12))
+        ///         Value("x", Int(12), Int())
         ///     }
         /// }
         /// </code>
@@ -392,7 +392,7 @@ module BindingValueBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         Value("x", Int(12))
+        ///         Value("x", Int(12), "int")
         ///     }
         /// }
         /// </code>
