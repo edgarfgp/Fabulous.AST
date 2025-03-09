@@ -150,6 +150,23 @@ module AutoPropertyMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter)
 
+        /// <summary>
+        /// Create an auto property member definition.
+        /// </summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", ConstantExpr(Constant("name")), String(), true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal
             (
                 identifier: string,
@@ -162,6 +179,23 @@ module AutoPropertyMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter, returnType)
 
+        /// <summary>
+        /// Create an auto property member definition.
+        /// </summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", ConstantExpr(Constant("name")), "string", true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal
             (identifier: string, expr: WidgetBuilder<Expr>, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
@@ -188,6 +222,23 @@ module AutoPropertyMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             Ast.MemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
 
+        /// <summary>
+        /// Create an auto property member definition.
+        /// </summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", Constant("name"), String(), true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal
             (
                 identifier: string,
@@ -200,6 +251,23 @@ module AutoPropertyMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, returnType)
 
+        /// <summary>
+        /// Create an auto property member definition.
+        /// </summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", Constant("name"), "string", true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal
             (identifier: string, expr: WidgetBuilder<Constant>, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
@@ -226,12 +294,46 @@ module AutoPropertyMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             Ast.MemberVal(identifier, Ast.Constant(expr), hasGetter, hasSetter)
 
+        /// <summary>
+        /// Create an auto property member definition.
+        /// </summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", "name", String(), true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal
             (identifier: string, expr: string, returnType: WidgetBuilder<Type>, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
             Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, returnType)
 
+        /// <summary>
+        /// Create an auto property member definition.
+        /// </summary>
+        /// <param name="identifier">The identifier of the member.</param>
+        /// <param name="expr">The expression of the member.</param>
+        /// <param name="returnType">The return type of the member.</param>
+        /// <param name="hasGetter">Whether the member has a getter.</param>
+        /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Person", UnitPat()) {
+        ///             MemberVal("Name", "name", "string", true, true)
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member MemberVal
             (identifier: string, expr: string, returnType: string, ?hasGetter: bool, ?hasSetter: bool)
             =

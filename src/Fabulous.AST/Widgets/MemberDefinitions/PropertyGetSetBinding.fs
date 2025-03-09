@@ -108,9 +108,43 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(expr: WidgetBuilder<Expr>) = Ast.BaseGetter(expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(ConstantExpr "_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             Ast.BaseGetter(expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(ConstantExpr "_position", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.BaseGetter(expr, Ast.LongIdent(returnType))
 
@@ -130,9 +164,43 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(expr: WidgetBuilder<Constant>) = Ast.BaseGetter(Ast.ConstantExpr(expr))
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("_position"), LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.BaseGetter(Ast.ConstantExpr(expr), returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("_position"), "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.BaseGetter(Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
 
@@ -152,19 +220,37 @@ module PropertyGetSetBindingBuilders =
         /// </code>
         static member Getter(expr: string) = Ast.BaseGetter(Ast.ConstantExpr(expr))
 
-        static member Getter(expr: string, returnType: WidgetBuilder<Type>) =
-            Ast.BaseGetter(Ast.ConstantExpr(expr), returnType)
-
-        /// <summary>Create a getter for a property.</summary>
-        /// <param name="parameters">The parameters to the getter.</param>
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
         /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
         ///         TypeDefn("Object3D", UnitPat()) {
         ///             Member(
         ///                 "this.Position",
-        ///                 Getter([ ParenPat(ParameterPat("a", Int())) ], ConstantExpr "_position")
+        ///                 Getter("_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member Getter(expr: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseGetter(Ast.ConstantExpr(expr), returnType)
+
+        /// <summary>Create a getter for a property.</summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ ParenPat(ParameterPat("a", Int())) ], ConstantExpr "_position", returnType = LongIdent("Vector3"))
         ///             )
         ///         }
         ///     }
@@ -187,10 +273,42 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
+        /// <summary>Create a getter for a property.</summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ ParenPat(ParameterPat("a", Int())) ], ConstantExpr "_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        ///</code>
         static member Getter
             (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(parameters, expr, returnType)
 
+        /// <summary>Create a getter for a property.</summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ ParenPat(ParameterPat("a", Int())) ], ConstantExpr "_position", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        ///</code>
         static member Getter(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Getter(parameters, expr, Ast.LongIdent(returnType))
 
@@ -213,11 +331,47 @@ module PropertyGetSetBindingBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ Constant("a") ], ConstantExpr "_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ Constant("a") ], ConstantExpr "_position", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: string) =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr, Ast.LongIdent(returnType))
@@ -240,9 +394,43 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameters: string list, expr: WidgetBuilder<Expr>) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        /// AnonymousModule() {
+        ///     TypeDefn("Object3D", UnitPat()) {
+        ///         Member(
+        ///             "this.Position",
+        ///             Getter([ "a" ], ConstantExpr "_position", LongIdent("Vector3"))
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameters: string list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        /// AnonymousModule() {
+        ///     TypeDefn("Object3D", UnitPat()) {
+        ///         Member(
+        ///             "this.Position",
+        ///             Getter([ "a" ], ConstantExpr "_position", "Vector3")
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameters: string list, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr, Ast.LongIdent(returnType))
 
@@ -264,10 +452,46 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>) =
             Ast.Getter(parameters, Ast.ConstantExpr(expr))
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ Constant("a") ], Constant "_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(parameters, Ast.ConstantExpr(expr), returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ Constant("a") ], Constant "_position", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: string)
             =
@@ -292,11 +516,47 @@ module PropertyGetSetBindingBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ Constant("a") ], Constant "_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ Constant("a") ], Constant "_position", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: string)
             =
@@ -319,9 +579,45 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameters: string list, expr: WidgetBuilder<Constant>) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ "a" ], Constant "_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ "a" ], Constant "_position", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Getter(parameters |> List.map Ast.Constant, expr, Ast.LongIdent(returnType))
 
@@ -343,15 +639,52 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameters: string list, expr: string) =
             Ast.Getter(parameters, Ast.Constant(expr))
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ "a" ], "_position", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameters: string list, expr: string, returnType: WidgetBuilder<Type>) =
             Ast.Getter(parameters, Ast.Constant(expr), returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter([ "a" ], "_position", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameters: string list, expr: string, returnType: string) =
             Ast.Getter(parameters, Ast.Constant(expr), Ast.LongIdent(returnType))
 
         /// <summary>Create a getter for a property.</summary>
         /// <param name="parameter">The parameter to the getter.</param>
         /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -360,28 +693,15 @@ module PropertyGetSetBindingBuilders =
         ///                 "this.Position",
         ///                 Getter(
         ///                    ParenPat("index"),
-        ///                    IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")))
+        ///                    IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), returnType = LongIdent("Vector3"))
         ///                )
         ///             )
         ///         }
         ///     }
         /// }
         /// </code>
-        static member Getter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
-            WidgetBuilder<PropertyGetSetBindingNode>(
-                PropertyGetSetBinding.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        PropertyGetSetBinding.Parameters.WithValue([ parameter ] |> List.map(Gen.mkOak)),
-                        PropertyGetSetBinding.IsSetter.WithValue(false)
-                    ),
-                    [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile()) |],
-                    Array.empty
-                )
-            )
-
         static member Getter
-            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>)
             =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
@@ -391,11 +711,56 @@ module PropertyGetSetBindingBuilders =
                         PropertyGetSetBinding.IsSetter.WithValue(false)
                     ),
                     [| PropertyGetSetBinding.BodyExpr.WithValue(expr.Compile())
-                       PropertyGetSetBinding.ReturnType.WithValue(returnType.Compile()) |],
+                       match returnType with
+                       | None -> ()
+                       | Some returnType -> PropertyGetSetBinding.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
                 )
             )
 
+        /// <summary>Create a getter for a property.</summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(
+        ///                    ParenPat("index"),
+        ///                    IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), LongIdent("Vector3"))
+        ///                )
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member Getter
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.Getter(parameter, expr, returnType)
+
+        /// <summary>Create a getter for a property.</summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(
+        ///                    ParenPat("index"),
+        ///                    IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), "Vector3")
+        ///                )
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Getter(parameter, expr, Ast.LongIdent(returnType))
 
@@ -420,11 +785,47 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
             Ast.Getter(Ast.ConstantPat(parameter), expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("index"), IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), LongIdent("Vector3")))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
             =
             Ast.Getter(Ast.ConstantPat(parameter), expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("index"), IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), "Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Getter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
 
@@ -446,9 +847,45 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: string, expr: WidgetBuilder<Expr>) =
             Ast.Getter(Ast.Constant(parameter), expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter("index", IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), LongIdent("Vector3")))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: string, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(Ast.Constant(parameter), expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter("index", IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), "Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: string, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Getter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
 
@@ -473,10 +910,46 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
             Ast.Getter(parameter, Ast.ConstantExpr(expr))
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("index"), Constant("ordinals"), LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(parameter, Ast.ConstantExpr(expr), returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("index"), Constant("ordinals"), "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Getter(parameter, Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
 
@@ -498,10 +971,46 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.Getter(Ast.ConstantPat(parameter), expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("index"), Constant("ordinals"), LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter
             (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(Ast.ConstantPat(parameter), expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter(Constant("index"), Constant("ordinals"), "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Getter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
 
@@ -523,9 +1032,45 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: string, expr: WidgetBuilder<Constant>) =
             Ast.Getter(Ast.Constant(parameter), expr)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter("index", Constant("ordinals"), LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: string, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Getter(Ast.Constant(parameter), expr, returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter("index", Constant("ordinals"), "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: string, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Getter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
 
@@ -547,9 +1092,45 @@ module PropertyGetSetBindingBuilders =
         static member Getter(parameter: string, expr: string) =
             Ast.Getter(parameter, Ast.Constant(expr))
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter("index", "ordinals", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: string, expr: string, returnType: WidgetBuilder<Type>) =
             Ast.Getter(parameter, Ast.Constant(expr), returnType)
 
+        /// <summary>
+        /// Create a getter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the getter.</param>
+        /// <param name="expr">The expression to return.</param>
+        /// <param name="returnType">The return type of the getter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Getter("index", "ordinals", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Getter(parameter: string, expr: string, returnType: string) =
             Ast.Getter(parameter, Ast.Constant(expr), Ast.LongIdent(returnType))
 
@@ -562,7 +1143,7 @@ module PropertyGetSetBindingBuilders =
         ///         TypeDefn("Object3D", UnitPat()) {
         ///             Member(
         ///                 "this.Position",
-        ///                 Setter(UnitExpr())
+        ///                 Setter(UnitExpr(), returnType = LongIdent("Vector3"))
         ///             )
         ///         }
         ///     }
@@ -581,6 +1162,21 @@ module PropertyGetSetBindingBuilders =
                 )
             )
 
+        /// <summary>Create a setter for a property.</summary>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(UnitExpr(), "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Setter(expr, Ast.LongIdent(returnType))
 
@@ -756,11 +1352,47 @@ module PropertyGetSetBindingBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Setter(parameters, expr)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter([ Constant("a") ], Constant "_position &lt;- a", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter
             (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Setter(parameters, expr, returnType)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter([ Constant("a") ], Constant "_position &lt;- a", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter
             (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: string)
             =
@@ -785,9 +1417,45 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameters: string list, expr: WidgetBuilder<Constant>) =
             Ast.Setter(parameters |> List.map Ast.Constant, expr)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter([ "a" ], Constant "_position &lt;- a", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Setter(parameters |> List.map Ast.Constant, expr, returnType)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter([ "a" ], Constant "_position &lt;- a", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameters: string list, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Setter(parameters |> List.map Ast.Constant, expr, Ast.LongIdent(returnType))
 
@@ -809,9 +1477,45 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameters: string list, expr: string) =
             Ast.Setter(parameters, Ast.Constant(expr))
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter([ "a" ], "_position &lt;- a", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameters: string list, expr: string, returnType: WidgetBuilder<Type>) =
             Ast.Setter(parameters, Ast.Constant(expr), returnType)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameters">The parameters to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter([ "a" ], "_position &lt;- a", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameters: string list, expr: string, returnType: string) =
             Ast.Setter(parameters, Ast.Constant(expr), Ast.LongIdent(returnType))
 
@@ -833,11 +1537,47 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             Ast.Setter([ parameter ], expr)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(ParenPat("index"), IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), LongIdent("Vector3")))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter
             (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
             =
             Ast.Setter([ parameter ], expr, returnType)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(ParenPat("index"), IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), "Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Setter([ parameter ], expr, Ast.LongIdent(returnType))
 
@@ -859,11 +1599,47 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
             Ast.Setter(Ast.ConstantPat(parameter), expr)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(Constant("index"), IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), LongIdent("Vector3")))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter
             (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
             =
             Ast.Setter(Ast.ConstantPat(parameter), expr, returnType)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(Constant("index"), IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), "Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Setter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
 
@@ -885,9 +1661,45 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: string, expr: WidgetBuilder<Expr>) =
             Ast.Setter(Ast.Constant(parameter), expr)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter("index", IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), LongIdent("Vector3")))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: string, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
             Ast.Setter(Ast.Constant(parameter), expr, returnType)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter("index", IndexWithoutDotExpr(Constant("ordinals"), ConstantExpr(Constant("index")), "Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: string, expr: WidgetBuilder<Expr>, returnType: string) =
             Ast.Setter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
 
@@ -909,10 +1721,46 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>) =
             Ast.Setter(parameter, Ast.ConstantExpr(expr))
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(ParenPat("index"), Constant("ordinals[index]"), LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter
             (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Setter(parameter, Ast.ConstantExpr(expr), returnType)
 
+        /// <summary>
+        /// Create a setter for a property.
+        /// </summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(ParenPat("index"), Constant("ordinals[index]"), "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Setter(parameter, Ast.ConstantExpr(expr), Ast.LongIdent(returnType))
 
@@ -934,10 +1782,42 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.Setter(Ast.ConstantPat(parameter), expr)
 
+        /// <summary>Create a setter for a property.</summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///    AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(Constant("index"), Constant("ordinals[index]") LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter
             (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Setter(Ast.ConstantPat(parameter), expr, returnType)
 
+        /// <summary>Create a setter for a property.</summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///    AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter(Constant("index"), Constant("ordinals[index]") "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Setter(Ast.ConstantPat(parameter), expr, Ast.LongIdent(returnType))
 
@@ -959,9 +1839,41 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: string, expr: WidgetBuilder<Constant>) =
             Ast.Setter(Ast.Constant(parameter), expr)
 
+        /// <summary>Create a setter for a property.</summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter("index", Constant("ordinals[index]") LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: string, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
             Ast.Setter(Ast.Constant(parameter), expr, returnType)
 
+        /// <summary>Create a setter for a property.</summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter("index", Constant("ordinals[index]") "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: string, expr: WidgetBuilder<Constant>, returnType: string) =
             Ast.Setter(Ast.Constant(parameter), expr, Ast.LongIdent(returnType))
 
@@ -983,9 +1895,41 @@ module PropertyGetSetBindingBuilders =
         static member Setter(parameter: string, expr: string) =
             Ast.Setter(parameter, Ast.Constant(expr))
 
+        /// <summary>Create a setter for a property.</summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter("index", "ordinals[index]", LongIdent("Vector3"))
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: string, expr: string, returnType: WidgetBuilder<Type>) =
             Ast.Setter(parameter, Ast.Constant(expr), returnType)
 
+        /// <summary>Create a setter for a property.</summary>
+        /// <param name="parameter">The parameter to the setter.</param>
+        /// <param name="expr">The expression to set.</param>
+        /// <param name="returnType">The return type of the setter.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TypeDefn("Object3D", UnitPat()) {
+        ///             Member(
+        ///                 "this.Position",
+        ///                 Setter("index", "ordinals[index]", "Vector3")
+        ///             )
+        ///         }
+        ///     }
+        /// }
+        /// </code>
         static member Setter(parameter: string, expr: string, returnType: string) =
             Ast.Setter(parameter, Ast.Constant(expr), Ast.LongIdent(returnType))
 
@@ -1006,15 +1950,15 @@ type PropertyGetSetBindingModifiers =
     static member inline toInternal(this: WidgetBuilder<PropertyGetSetBindingNode>) =
         this.AddScalar(PropertyGetSetBinding.Accessibility.WithValue(AccessControl.Internal))
 
-    // [<Extension>]
-    // [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
-    // static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: WidgetBuilder<Type>) =
-    //     this.AddWidget(PropertyGetSetBinding.ReturnType.WithValue(value.Compile()))
-    //
-    // [<Extension>]
-    // [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
-    // static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: string) =
-    //     PropertyGetSetBindingModifiers.returnType(this, Ast.LongIdent(value))
+    [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: WidgetBuilder<Type>) =
+        this.AddWidget(PropertyGetSetBinding.ReturnType.WithValue(value.Compile()))
+
+    [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: string) =
+        PropertyGetSetBindingModifiers.returnType(this, Ast.LongIdent(value))
 
     [<Extension>]
     static member inline attributes
