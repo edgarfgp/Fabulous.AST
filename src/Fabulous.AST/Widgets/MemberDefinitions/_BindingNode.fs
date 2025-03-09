@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections
@@ -150,6 +151,7 @@ type BindingNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: WidgetBuilder<Type>) =
         this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
 
@@ -167,6 +169,7 @@ type BindingNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
     static member inline returnType(this: WidgetBuilder<BindingNode>, returnType: string) =
         this.AddWidget(BindingNode.Return.WithValue(Ast.LongIdent(returnType).Compile()))
 

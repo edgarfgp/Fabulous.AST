@@ -105,12 +105,12 @@ module PropertyGetSet =
 
                     Member(
                         "this.LastName",
-                        Getter(ConstantExpr(Constant("lastName"))).returnType(String()),
+                        Getter(ConstantExpr(Constant("lastName")), String()),
                         Setter(
                             ParenPat(ParameterPat(ConstantPat(Constant("value")), String())),
-                            ConstantExpr(ConstantUnit())
+                            ConstantExpr(ConstantUnit()),
+                            Unit()
                         )
-                            .returnType(Unit())
                     )
 
                     Member(
