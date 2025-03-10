@@ -33,50 +33,43 @@ module Types =
     let ``Value with return primitive types``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant "a"), ConstantExpr(Bool false)).returnType(Boolean())
+                Value(ConstantPat(Constant "a"), ConstantExpr(Bool false), Boolean())
 
-                Value(ConstantPat(Constant "b"), ConstantExpr(Byte 0uy)).returnType(Byte())
-                Value(ConstantPat(Constant "c"), ConstantExpr(SByte 1y)).returnType(SByte())
-                Value(ConstantPat(Constant "d"), ConstantExpr(Int16 1s)).returnType(Int16())
+                Value(ConstantPat(Constant "b"), ConstantExpr(Byte 0uy), Byte())
+                Value(ConstantPat(Constant "c"), ConstantExpr(SByte 1y), SByte())
+                Value(ConstantPat(Constant "d"), ConstantExpr(Int16 1s), Int16())
 
-                Value(ConstantPat(Constant "e"), ConstantExpr(UInt16 1us)).returnType(UInt16())
+                Value(ConstantPat(Constant "e"), ConstantExpr(UInt16 1us), UInt16())
 
-                Value(ConstantPat(Constant "f"), ConstantExpr(Int(1))).returnType(Int())
+                Value(ConstantPat(Constant "f"), ConstantExpr(Int(1)), Int())
 
-                Value(ConstantPat(Constant "g"), ConstantExpr(UInt32 1u)).returnType(UInt32())
+                Value(ConstantPat(Constant "g"), ConstantExpr(UInt32 1u), UInt32())
 
-                Value(ConstantPat(Constant "h"), ConstantExpr(Int64 1L)).returnType(Int64())
+                Value(ConstantPat(Constant "h"), ConstantExpr(Int64 1L), Int64())
 
-                Value(ConstantPat(Constant "i"), ConstantExpr(UInt64 1UL)).returnType(UInt64())
+                Value(ConstantPat(Constant "i"), ConstantExpr(UInt64 1UL), UInt64())
 
-                Value(ConstantPat(Constant "j"), ConstantExpr(IntPtr(nativeint 1)))
-                    .returnType(IntPtr())
+                Value(ConstantPat(Constant "j"), ConstantExpr(IntPtr(nativeint 1)), IntPtr())
 
-                Value(ConstantPat(Constant "k"), ConstantExpr(UIntPtr(unativeint 1)))
-                    .returnType(UIntPtr())
+                Value(ConstantPat(Constant "k"), ConstantExpr(UIntPtr(unativeint 1)), UIntPtr())
 
-                Value(ConstantPat(Constant "l"), ConstantExpr(Decimal 1.0m))
-                    .returnType(Decimal())
+                Value(ConstantPat(Constant "l"), ConstantExpr(Decimal 1.0m), Decimal())
 
-                Value(ConstantPat(Constant "m"), ConstantExpr(Constant "1.0"))
-                    .returnType(Double())
+                Value(ConstantPat(Constant "m"), ConstantExpr(Constant "1.0"), Double())
 
-                Value(ConstantPat(Constant "n"), ConstantExpr(Single 1.0f)).returnType(Single())
+                Value(ConstantPat(Constant "n"), ConstantExpr(Single 1.0f), Single())
 
-                Value(ConstantPat(Constant "o"), ConstantExpr(Char 'c')).returnType(Char())
+                Value(ConstantPat(Constant "o"), ConstantExpr(Char 'c'), Char())
 
-                Value(ConstantPat(Constant "p"), ConstantExpr(String("str")))
-                    .returnType(String())
+                Value(ConstantPat(Constant "p"), ConstantExpr(String("str")), String())
 
-                Value(ConstantPat(Constant "q"), ConstantExpr(Constant("()")))
-                    .returnType(Unit())
+                Value(ConstantPat(Constant "q"), ConstantExpr(Constant("()")), Unit())
 
-                Value(ConstantPat(Constant "r"), ConstantExpr(Float 1.)).returnType(Float())
+                Value(ConstantPat(Constant "r"), ConstantExpr(Float 1.), Float())
 
-                Value(ConstantPat(Constant "s"), ConstantExpr(Float32 1.f))
-                    .returnType(Float32())
+                Value(ConstantPat(Constant "s"), ConstantExpr(Float32 1.f), Float32())
 
-                Value(ConstantPat(Constant "t"), ConstantExpr(Constant "obj")).returnType(Obj())
+                Value(ConstantPat(Constant "t"), ConstantExpr(Constant "obj"), Obj())
             }
         }
         |> produces
@@ -107,56 +100,47 @@ let t: obj = obj
     let ``Value with return non primitive types``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
-                    .returnType(StructTuple([ String(); String() ]))
+                Value(
+                    ConstantPat(Constant("a")),
+                    ConstantExpr(Bool(false)),
+                    returnType = StructTuple([ String(); String() ])
+                )
 
-                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
-                    .returnType(HashConstraint(String()))
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)), HashConstraint(String()))
 
-                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
-                    .returnType(StaticConstant(String("A")))
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)), StaticConstant(String("A")))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(StaticConstantExpr("A", "B"))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), StaticConstantExpr("A", "B"))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AnonRecord([ "a", String(); "b", String() ]))
+                Value(
+                    ConstantPat(Constant("c")),
+                    ConstantExpr(Bool(false)),
+                    AnonRecord([ "a", String(); "b", String() ])
+                )
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(StaticConstantNamed(String(), String()))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), StaticConstantNamed(String(), String()))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(Anon("A"))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), Anon("A"))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(Var("A"))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), Var("A"))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(Array("string", 2))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), Array("string", 2))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(StructTuple([ String(); String() ]))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), StructTuple([ String(); String() ]))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AppPostfix(String(), String()))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), AppPostfix(String(), String()))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AppPostfix("string", "string"))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), AppPostfix("string", "string"))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("Map", [ String(); String() ]))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), AppPrefix("Map", [ String(); String() ]))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("A", "a", [ String() ]))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), AppPrefix("A", "a", [ String() ]))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(Tuple([ String(); String() ]))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), Tuple([ String(); String() ]))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(MeasurePower("cm", Integer(2)))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), MeasurePower("cm", Integer(2)))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(Funs([ Int() ], String()))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), Funs([ Int() ], String()))
             }
         }
         |> produces
@@ -184,47 +168,33 @@ let c: int -> string = false
     let ``Value with AppPostfix widget``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
-                    .returnType(AppPostfix(String(), Option()))
+                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)), AppPostfix(String(), Option()))
 
-                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
-                    .returnType(AppPostfix("string", "option"))
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)), AppPostfix("string", "option"))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AppPostfix(String(), "option"))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), AppPostfix(String(), "option"))
 
-                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
-                    .returnType(AppPostfix("string", Option()))
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)), AppPostfix("string", Option()))
 
-                Value(ConstantPat(Constant("e")), ConstantExpr(Bool(false)))
-                    .returnType(OptionPostfix(String()))
+                Value(ConstantPat(Constant("e")), ConstantExpr(Bool(false)), OptionPostfix(String()))
 
-                Value(ConstantPat(Constant("f")), ConstantExpr(Bool(false)))
-                    .returnType(OptionPostfix("string"))
+                Value(ConstantPat(Constant("f")), ConstantExpr(Bool(false)), OptionPostfix("string"))
 
-                Value(ConstantPat(Constant("g")), ConstantExpr(Bool(false)))
-                    .returnType(VOptionPostfix(String()))
+                Value(ConstantPat(Constant("g")), ConstantExpr(Bool(false)), VOptionPostfix(String()))
 
-                Value(ConstantPat(Constant("h")), ConstantExpr(Bool(false)))
-                    .returnType(VOptionPostfix("string"))
+                Value(ConstantPat(Constant("h")), ConstantExpr(Bool(false)), VOptionPostfix("string"))
 
-                Value(ConstantPat(Constant("i")), ConstantExpr(Bool(false)))
-                    .returnType(ListPostfix(String()))
+                Value(ConstantPat(Constant("i")), ConstantExpr(Bool(false)), ListPostfix(String()))
 
-                Value(ConstantPat(Constant("j")), ConstantExpr(Bool(false)))
-                    .returnType(ListPostfix("string"))
+                Value(ConstantPat(Constant("j")), ConstantExpr(Bool(false)), ListPostfix("string"))
 
-                Value(ConstantPat(Constant("k")), ConstantExpr(Bool(false)))
-                    .returnType(SeqPostfix(String()))
+                Value(ConstantPat(Constant("k")), ConstantExpr(Bool(false)), SeqPostfix(String()))
 
-                Value(ConstantPat(Constant("l")), ConstantExpr(Bool(false)))
-                    .returnType(SeqPostfix("string"))
+                Value(ConstantPat(Constant("l")), ConstantExpr(Bool(false)), SeqPostfix("string"))
 
-                Value(ConstantPat(Constant("m")), ConstantExpr(Bool(false)))
-                    .returnType(Array(String()))
+                Value(ConstantPat(Constant("m")), ConstantExpr(Bool(false)), Array(String()))
 
-                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)))
-                    .returnType(Array(Array(String())))
+                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)), Array(Array(String())))
 
             }
         }
@@ -250,77 +220,53 @@ let n: string[][] = false
     let ``Value with AppPrefix widget``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix(Option(), [ String() ]))
+                Value(ConstantPat(Constant("a")), ConstantExpr(Bool(false)), AppPrefix(Option(), [ String() ]))
 
-                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("option", [ String() ]))
+                Value(ConstantPat(Constant("b")), ConstantExpr(Bool(false)), AppPrefix("option", [ String() ]))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix(List(), [ String() ]))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), AppPrefix(List(), [ String() ]))
 
-                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("list", [ String() ]))
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)), AppPrefix("list", [ String() ]))
 
-                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("list", [ "string" ]))
+                Value(ConstantPat(Constant("d")), ConstantExpr(Bool(false)), AppPrefix("list", [ "string" ]))
 
-                Value(ConstantPat(Constant("e")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix(Seq(), [ String(); String() ]))
+                Value(ConstantPat(Constant("e")), ConstantExpr(Bool(false)), AppPrefix(Seq(), [ String(); String() ]))
 
-                Value(ConstantPat(Constant("f")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix(Option(), String()))
+                Value(ConstantPat(Constant("f")), ConstantExpr(Bool(false)), AppPrefix(Option(), [ String() ]))
 
-                Value(ConstantPat(Constant("g")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix("option", String()))
+                Value(ConstantPat(Constant("g")), ConstantExpr(Bool(false)), AppPrefix("option", String()))
 
-                Value(ConstantPat(Constant("h")), ConstantExpr(Bool(false)))
-                    .returnType(AppPrefix(List(), String()))
+                Value(ConstantPat(Constant("h")), ConstantExpr(Bool(false)), AppPrefix(List(), String()))
 
-                Value(ConstantPat(Constant("i")), ConstantExpr(Bool(false)))
-                    .returnType(OptionPrefix(String()))
+                Value(ConstantPat(Constant("i")), ConstantExpr(Bool(false)), OptionPrefix(String()))
 
-                Value(ConstantPat(Constant("j")), ConstantExpr(Bool(false)))
-                    .returnType(OptionPrefix("string"))
+                Value(ConstantPat(Constant("j")), ConstantExpr(Bool(false)), OptionPrefix("string"))
 
-                Value(ConstantPat(Constant("k")), ConstantExpr(Bool(false)))
-                    .returnType(VOptionPrefix(String()))
+                Value(ConstantPat(Constant("k")), ConstantExpr(Bool(false)), VOptionPrefix(String()))
 
-                Value(ConstantPat(Constant("l")), ConstantExpr(Bool(false)))
-                    .returnType(VOptionPrefix("string"))
+                Value(ConstantPat(Constant("l")), ConstantExpr(Bool(false)), VOptionPrefix("string"))
 
-                Value(ConstantPat(Constant("m")), ConstantExpr(Bool(false)))
-                    .returnType(ListPrefix(String()))
+                Value(ConstantPat(Constant("m")), ConstantExpr(Bool(false)), ListPrefix(String()))
 
-                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)))
-                    .returnType(ListPrefix("string"))
+                Value(ConstantPat(Constant("n")), ConstantExpr(Bool(false)), ListPrefix("string"))
 
-                Value(ConstantPat(Constant("o")), ConstantExpr(Bool(false)))
-                    .returnType(SeqPrefix(String()))
+                Value(ConstantPat(Constant("o")), ConstantExpr(Bool(false)), SeqPrefix(String()))
 
-                Value(ConstantPat(Constant("p")), ConstantExpr(Bool(false)))
-                    .returnType(SeqPrefix("string"))
+                Value(ConstantPat(Constant("p")), ConstantExpr(Bool(false)), SeqPrefix("string"))
 
-                Value(ConstantPat(Constant("q")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix(String(), String()))
+                Value(ConstantPat(Constant("q")), ConstantExpr(Bool(false)), ResultPrefix(String(), String()))
 
-                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix("string", "string"))
+                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)), ResultPrefix("string", "string"))
 
-                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix("string", String()))
+                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)), ResultPrefix("string", String()))
 
-                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)))
-                    .returnType(ResultPrefix(String(), "string"))
+                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)), ResultPrefix(String(), "string"))
 
-                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)))
-                    .returnType(ArrayPrefix(String()))
+                Value(ConstantPat(Constant("r")), ConstantExpr(Bool(false)), ArrayPrefix(String()))
 
-                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)))
-                    .returnType(ArrayPrefix("string"))
+                Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)), ArrayPrefix("string"))
 
-                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)))
-                    .returnType(ArrayPrefix(ArrayPrefix(String())))
+                Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)), ArrayPrefix(ArrayPrefix(String())))
             }
         }
         |> produces

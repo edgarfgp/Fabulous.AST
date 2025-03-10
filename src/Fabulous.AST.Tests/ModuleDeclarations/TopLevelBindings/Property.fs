@@ -24,19 +24,16 @@ module PropertyMember =
                         .toStatic()
                         .toInlined()
 
-                    Member(ConstantPat(Constant("this.E")), ConstantExpr(String ""))
-                    |> _.returnType(String())
+                    Member(ConstantPat(Constant("this.E")), ConstantExpr(String ""), String())
 
-                    Member(ConstantPat(Constant("this.F")), ConstantExpr(String "")).toInlined()
-                    |> _.returnType(String())
+                    Member(ConstantPat(Constant("this.F")), ConstantExpr(String ""), String())
+                        .toInlined()
 
-                    Member(ConstantPat(Constant("G")), ConstantExpr(String "")).toStatic()
-                    |> _.returnType(String())
+                    Member(ConstantPat(Constant("G")), ConstantExpr(String ""), String()).toStatic()
 
-                    Member(ConstantPat(Constant("H")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("H")), ConstantExpr(String ""), String())
                         .toStatic()
                         .toInlined()
-                    |> _.returnType(String())
                 }
             }
         }
@@ -73,19 +70,16 @@ type Colors =
                         .toStatic()
                         .toInlined()
 
-                    Member(ConstantPat(Constant("this.E")), ConstantExpr(String ""))
-                    |> _.returnType(String())
+                    Member(ConstantPat(Constant("this.E")), ConstantExpr(String ""), String())
 
-                    Member(ConstantPat(Constant("this.F")), ConstantExpr(String "")).toInlined()
-                    |> _.returnType(String())
+                    Member(ConstantPat(Constant("this.F")), ConstantExpr(String ""), String())
+                        .toInlined()
 
-                    Member(ConstantPat(Constant("G")), ConstantExpr(String "")).toStatic()
-                    |> _.returnType(String())
+                    Member(ConstantPat(Constant("G")), ConstantExpr(String ""), String()).toStatic()
 
-                    Member(ConstantPat(Constant("H")), ConstantExpr(String ""))
+                    Member(ConstantPat(Constant("H")), ConstantExpr(String ""), String())
                         .toStatic()
                         .toInlined()
-                    |> _.returnType(String())
                 }
             }
         }
@@ -297,8 +291,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 TypeDefn("Person", UnitPat()) {
-                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23))
-                    |> _.returnType(LongIdent "int")
+                    Member(ConstantPat(Constant("this.Name")), ConstantExpr(Int 23), LongIdent "int")
                 }
 
             }

@@ -84,6 +84,29 @@ module BindingMethodNode =
 [<AutoOpen>]
 module BindingMethodBuilders =
     type Ast with
+        static member private BaseMember
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                body: WidgetBuilder<Expr>,
+                ?returnType: WidgetBuilder<Type>
+            ) =
+            let parameters = parameters |> List.map Gen.mkOak
+
+            WidgetBuilder<BindingNode>(
+                BindingMethodNode.WidgetKey,
+                AttributesBundle(
+                    StackList.two(
+                        BindingMethodNode.Name.WithValue(name),
+                        BindingMethodNode.Parameters.WithValue(parameters)
+                    ),
+                    [| BindingNode.BodyExpr.WithValue(body.Compile())
+                       match returnType with
+                       | Some returnType -> BindingNode.Return.WithValue(returnType.Compile())
+                       | None -> () |],
+                    Array.empty
+                )
+            )
 
         /// <summary>
         /// Create a method member definition.
@@ -106,19 +129,20 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern> list, body: WidgetBuilder<Expr>) =
-            let parameters = parameters |> List.map Gen.mkOak
+            Ast.BaseMember(name, parameters, body)
 
-            WidgetBuilder<BindingNode>(
-                BindingMethodNode.WidgetKey,
-                AttributesBundle(
-                    StackList.two(
-                        BindingMethodNode.Name.WithValue(name),
-                        BindingMethodNode.Parameters.WithValue(parameters)
-                    ),
-                    [| BindingNode.BodyExpr.WithValue(body.Compile()) |],
-                    Array.empty
-                )
-            )
+        static member Member
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                body: WidgetBuilder<Expr>,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseMember(name, parameters, body, returnType)
+
+        static member Member
+            (name: string, parameters: WidgetBuilder<Pattern> list, body: WidgetBuilder<Expr>, returnType: string) =
+            Ast.BaseMember(name, parameters, body, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -140,7 +164,16 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameter: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>) =
-            Ast.Member(name, [ parameter ], body)
+            Ast.BaseMember(name, [ parameter ], body)
+
+        static member Member
+            (name: string, parameter: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(name, [ parameter ], body, returnType)
+
+        static member Member
+            (name: string, parameter: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, returnType: string)
+            =
+            Ast.BaseMember(name, [ parameter ], body, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -163,7 +196,25 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>) =
-            Ast.Member(name, parameters, Ast.ConstantExpr(bodyExpr))
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr))
+
+        static member Member
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Constant>,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), returnType)
+
+        static member Member
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern> list,
+                bodyExpr: WidgetBuilder<Constant>,
+                returnType: string
+            ) =
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -185,7 +236,16 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
-            Ast.Member(name, parameters, Ast.Constant(bodyExpr))
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr))
+
+        static member Member
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), returnType)
+
+        static member Member
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: string)
+            =
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -210,7 +270,22 @@ module BindingMethodBuilders =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
-            Ast.Member(name, parameters, bodyExpr)
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr))
+
+        static member Member
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), returnType)
+
+        static member Member
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: string)
+            =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -235,7 +310,20 @@ module BindingMethodBuilders =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
-            Ast.Member(name, parameters, bodyExpr)
+            Ast.BaseMember(name, parameters, bodyExpr)
+
+        static member Member
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.BaseMember(name, parameters, bodyExpr, returnType)
+
+        static member Member(name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: string) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.BaseMember(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -260,7 +348,19 @@ module BindingMethodBuilders =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
-            Ast.Member(name, parameters, bodyExpr)
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr))
+
+        static member Member(name: string, parameters: string list, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), returnType)
+
+        static member Member(name: string, parameters: string list, bodyExpr: string, returnType: string) =
+            let parameters =
+                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+
+            Ast.BaseMember(name, parameters, Ast.ConstantExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -282,7 +382,20 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
-            Ast.Member(name, [ parameters ], bodyExpr)
+            Ast.BaseMember(name, [ parameters ], Ast.ConstantExpr bodyExpr)
+
+        static member Member
+            (
+                name: string,
+                parameters: WidgetBuilder<Pattern>,
+                bodyExpr: WidgetBuilder<Constant>,
+                returnType: WidgetBuilder<Type>
+            ) =
+            Ast.BaseMember(name, [ parameters ], Ast.ConstantExpr bodyExpr, returnType)
+
+        static member Member
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.BaseMember(name, [ parameters ], Ast.ConstantExpr bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -304,7 +417,14 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string) =
-            Ast.Member(name, [ parameters ], bodyExpr)
+            Ast.BaseMember(name, [ parameters ], Ast.ConstantExpr bodyExpr)
+
+        static member Member
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(name, [ parameters ], Ast.ConstantExpr bodyExpr, returnType)
+
+        static member Member(name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string, returnType: string) =
+            Ast.BaseMember(name, [ parameters ], Ast.ConstantExpr bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -326,7 +446,14 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>) =
-            Ast.Member(name, [ parameters ], bodyExpr)
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], Ast.ConstantExpr bodyExpr)
+
+        static member Member
+            (name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], Ast.ConstantExpr bodyExpr, returnType)
+
+        static member Member(name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>, returnType: string) =
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], Ast.ConstantExpr bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -348,7 +475,13 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: string, bodyExpr: string) =
-            Ast.Member(name, [ parameters ], bodyExpr)
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], Ast.ConstantExpr bodyExpr)
+
+        static member Member(name: string, parameters: string, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], Ast.ConstantExpr bodyExpr, returnType)
+
+        static member Member(name: string, parameters: string, bodyExpr: string, returnType: string) =
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], Ast.ConstantExpr bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a method member definition.
@@ -370,4 +503,12 @@ module BindingMethodBuilders =
         /// }
         /// </code>
         static member Member(name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>) =
-            Ast.Member(name, [ parameters ], bodyExpr)
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], bodyExpr)
+
+        static member Member
+            (name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], bodyExpr, returnType)
+
+        static member Member(name: string, parameters: string, bodyExpr: WidgetBuilder<Expr>, returnType: string) =
+            Ast.BaseMember(name, [ Ast.ConstantPat parameters ], bodyExpr, Ast.LongIdent(returnType))
