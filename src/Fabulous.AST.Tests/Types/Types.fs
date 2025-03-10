@@ -267,6 +267,10 @@ let n: string[][] = false
                 Value(ConstantPat(Constant("s")), ConstantExpr(Bool(false)), ArrayPrefix("string"))
 
                 Value(ConstantPat(Constant("t")), ConstantExpr(Bool(false)), ArrayPrefix(ArrayPrefix(String())))
+
+                Value(ConstantPat(Constant("u")), ConstantExpr(Bool(false)), AsyncPrefix(String()))
+
+                Value(ConstantPat(Constant("v")), ConstantExpr(Bool(false)), TaskPrefix(String()))
             }
         }
         |> produces
@@ -295,6 +299,8 @@ let t: Result<string, string> = false
 let r: array<string> = false
 let s: array<string> = false
 let t: array<array<string>> = false
+let u: Async<string> = false
+let v: Task<string> = false
 """
 
     [<Fact>]
