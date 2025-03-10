@@ -179,3 +179,13 @@ module TypeAppPrefixBuilders =
 
         static member ResultPrefix(first: string, last: string) =
             Ast.AppPrefix("Result", [ Ast.LongIdent(first); Ast.LongIdent(last) ])
+
+        static member AsyncPrefix(first: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("Async"), [ first ])
+
+        static member AsyncPrefix(first: string) = Ast.AsyncPrefix(Ast.LongIdent(first))
+
+        static member TaskPrefix(first: WidgetBuilder<Type>) =
+            Ast.AppPrefix(Ast.LongIdent("Task"), [ first ])
+
+        static member TaskPrefix(first: string) = Ast.TaskPrefix(Ast.LongIdent(first))
