@@ -114,6 +114,10 @@ Oak() {
 
         AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String("a")))
 
+        InterpolatedRawStringExpr([ "12"; "12"; "12" ])
+
+        InterpolatedRawStringExpr("$$", [ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ])
+
     }
 }
 |> Gen.mkOak

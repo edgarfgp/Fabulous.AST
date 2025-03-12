@@ -5,11 +5,16 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
+type FormatSpec =
+    { Alignment: int option
+      FormatString: string option }
+
 module InterpolatedString =
     let Dollars = Attributes.defineScalar<string> "Dollars"
     let Quotes = Attributes.defineScalar<SingleTextNode> "Quotes"
 
-    let Parts = Attributes.defineScalar<string list * FillExprNode list> "Parts"
+    let Parts =
+        Attributes.defineScalar<string list * ((FillExprNode * int option) * FormatSpec option) list> "Parts"
 
     let WidgetKey =
         Widgets.register "InterpolatedString" (fun widget ->
@@ -17,50 +22,136 @@ module InterpolatedString =
             let quotes = Widgets.getScalarValue widget Quotes
             let parts = Widgets.tryGetScalarValue widget Parts
 
-            let parts =
-                parts
-                |> ValueOption.map(fun exprs ->
-                    exprs
-                    |> (fun (values, exprs) ->
-                        [ yield Choice1Of2(SingleTextNode.Create(dollars))
-                          yield Choice1Of2(quotes)
+            let textParts, expressionParts =
+                match parts with
+                | ValueSome(texts, exprs) -> texts, exprs
+                | ValueNone -> [], []
 
-                          match values, exprs with
-                          | [], [] -> ()
-                          | values, [] ->
-                              for value in values do
-                                  yield Choice1Of2(SingleTextNode.Create(value))
+            let nodeList = ResizeArray<Choice<SingleTextNode, FillExprNode>>()
 
-                          | [], exprs ->
-                              for expr in exprs do
-                                  yield Choice1Of2(SingleTextNode.leftCurlyBrace)
-                                  yield Choice2Of2(expr)
-                                  yield Choice1Of2(SingleTextNode.rightCurlyBrace)
+            nodeList.Add(Choice1Of2(SingleTextNode.Create(dollars)))
 
-                          | values, exprs ->
-                              let createNodes(value: string, expr: FillExprNode) =
-                                  [ yield Choice1Of2(SingleTextNode.Create(value))
-                                    yield Choice1Of2(SingleTextNode.leftCurlyBrace)
-                                    yield Choice2Of2(expr)
-                                    yield Choice1Of2(SingleTextNode.rightCurlyBrace) ]
+            let isRawString = quotes.Text.Contains("\"\"\"")
 
-                              let nodes = Seq.zip values exprs |> Seq.collect createNodes
-                              yield! nodes
+            nodeList.Add(Choice1Of2(quotes))
 
-                          yield Choice1Of2(quotes) ]))
-                |> ValueOption.defaultValue []
+            let mutable textIndex = 0
+            let mutable exprIndex = 0
 
-            Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(parts, Range.Zero)))
+            if textParts.Length > 0 then
+                nodeList.Add(Choice1Of2(SingleTextNode.Create(textParts[textIndex])))
+                textIndex <- textIndex + 1
+
+            while exprIndex < expressionParts.Length do
+                let (expr, numberOfBraces), formatSpec = expressionParts[exprIndex]
+
+                match numberOfBraces with
+                | None -> nodeList.Add(Choice1Of2(SingleTextNode.leftCurlyBrace))
+                | Some numberOfBraces ->
+                    for _ in 1..numberOfBraces do
+                        nodeList.Add(Choice1Of2(SingleTextNode.leftCurlyBrace))
+
+                nodeList.Add(Choice2Of2(expr))
+
+                let formatPrefix =
+                    match formatSpec with
+                    | Some spec ->
+                        let alignStr =
+                            match spec.Alignment with
+                            | Some align ->
+                                if align >= 0 then
+                                    "," + string align
+                                else
+                                    "," + string align
+                            | None -> ""
+
+                        let formatStr =
+                            match spec.FormatString with
+                            | Some format -> ":" + format
+                            | None -> ""
+
+                        alignStr + formatStr
+                    | None -> ""
+
+                if not(System.String.IsNullOrEmpty(formatPrefix)) then
+                    nodeList.Add(Choice1Of2(SingleTextNode.Create(formatPrefix)))
+
+                match numberOfBraces with
+                | None -> nodeList.Add(Choice1Of2(SingleTextNode.rightCurlyBrace))
+                | Some numberOfBraces ->
+                    for _ in 1..numberOfBraces do
+                        nodeList.Add(Choice1Of2(SingleTextNode.rightCurlyBrace))
+
+                exprIndex <- exprIndex + 1
+
+                if textIndex < textParts.Length then
+                    nodeList.Add(Choice1Of2(SingleTextNode.Create(textParts[textIndex])))
+                    textIndex <- textIndex + 1
+
+            if isRawString then
+                nodeList.Add(Choice1Of2(SingleTextNode.Create("\"\"\"")))
+            else
+                nodeList.Add(Choice1Of2(SingleTextNode.Create("\"")))
+
+            let processedParts = nodeList.ToArray() |> List.ofArray
+
+            Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.Zero)))
 
 [<AutoOpen>]
 module InterpolatedStringBuilders =
     type Ast with
+        static member private ParseFormatSpec(formatStr: string) =
+            if formatStr.Contains(",") then
+                let parts = formatStr.Split([| ',' |], 2)
+                let alignStr = parts[1].TrimStart()
+
+                let alignment =
+                    if alignStr.StartsWith("-") then
+                        let success, value = System.Int32.TryParse(alignStr)
+                        if success then Some value else None
+                    else
+                        let success, value = System.Int32.TryParse(alignStr)
+                        if success then Some value else None
+
+                let formatString =
+                    if parts[0].Contains(":") || (parts.Length > 1 && parts[1].Contains(":")) then
+                        let formatPart = if parts[0].Contains(":") then parts[0] else parts[1]
+                        let formatIndex = formatPart.IndexOf(":")
+
+                        if formatIndex >= 0 then
+                            Some(formatPart.Substring(formatIndex + 1))
+                        else
+                            None
+                    else
+                        None
+
+                { Alignment = alignment
+                  FormatString = formatString }
+            else if formatStr.Contains(":") then
+                let formatIndex = formatStr.IndexOf(":")
+
+                { Alignment = None
+                  FormatString = Some(formatStr.Substring(formatIndex + 1)) }
+            else
+                { Alignment = None
+                  FormatString = None }
 
         static member private BaseInterpolatedStringExpr
-            (values: string list, parts: WidgetBuilder<FillExprNode> list, ?dollars: string, ?quote: SingleTextNode) =
+            (
+                textParts: string list,
+                exprParts: ((WidgetBuilder<FillExprNode> * int option) * string option) list,
+                ?dollars: string,
+                ?quote: SingleTextNode
+            ) =
             let dollars = defaultArg dollars "$"
             let quote = defaultArg quote SingleTextNode.doubleQuote
-            let parts = parts |> List.map(Gen.mkOak)
+
+            let processedExpressions =
+                exprParts
+                |> List.map(fun ((expr, numberOfBraces), format) ->
+                    let node = Gen.mkOak expr
+                    let formatSpec = format |> Option.map Ast.ParseFormatSpec
+                    ((node, numberOfBraces), formatSpec))
 
             WidgetBuilder<Expr>(
                 InterpolatedString.WidgetKey,
@@ -68,7 +159,7 @@ module InterpolatedStringBuilders =
                     StackList.three(
                         InterpolatedString.Dollars.WithValue(dollars),
                         InterpolatedString.Quotes.WithValue(quote),
-                        InterpolatedString.Parts.WithValue((values, (parts)))
+                        InterpolatedString.Parts.WithValue((textParts, processedExpressions))
                     ),
                     Array.empty,
                     Array.empty
@@ -76,142 +167,252 @@ module InterpolatedStringBuilders =
             )
 
         static member InterpolatedStringExpr(exprs: WidgetBuilder<FillExprNode> list) =
-            Ast.BaseInterpolatedStringExpr(List.empty, exprs)
+            let exprPairs = exprs |> List.map(fun e -> ((e, None), None))
+            Ast.BaseInterpolatedStringExpr([], exprPairs)
 
-        static member InterpolatedStringExpr(expr: WidgetBuilder<FillExprNode>) = Ast.InterpolatedStringExpr([ expr ])
+        static member InterpolatedStringExpr(expr: WidgetBuilder<FillExprNode>) =
+            Ast.BaseInterpolatedStringExpr([], [ ((expr, None), None) ])
 
         static member InterpolatedStringExpr(expr: WidgetBuilder<Expr>) =
-            Ast.InterpolatedStringExpr(Ast.FillExpr expr)
+            Ast.BaseInterpolatedStringExpr([], [ ((Ast.FillExpr(expr), None), None) ])
 
         static member InterpolatedStringExpr(expr: WidgetBuilder<Constant>) =
-            Ast.InterpolatedStringExpr(Ast.ConstantExpr(expr))
+            Ast.BaseInterpolatedStringExpr([], [ ((Ast.FillExpr(expr), None), None) ])
 
         static member InterpolatedStringExpr(expr: string) =
-            Ast.InterpolatedStringExpr(Ast.Constant(expr))
+            Ast.BaseInterpolatedStringExpr([], [ ((Ast.FillExpr(expr), None), None) ])
 
         static member InterpolatedStringExpr(exprs: WidgetBuilder<Expr> list) =
-            let exprs = exprs |> List.map Ast.FillExpr
-            Ast.InterpolatedStringExpr(exprs)
+            let exprPairs = exprs |> List.map(fun e -> ((Ast.FillExpr(e), None), None))
+            Ast.BaseInterpolatedStringExpr([], exprPairs)
 
         static member InterpolatedStringExpr(exprs: WidgetBuilder<Constant> list) =
-            let exprs = exprs |> List.map Ast.ConstantExpr
-            Ast.InterpolatedStringExpr(exprs)
+            let exprPairs = exprs |> List.map(fun e -> ((Ast.FillExpr(e), None), None))
+            Ast.BaseInterpolatedStringExpr([], exprPairs)
 
         static member InterpolatedStringExpr(exprs: string list) =
-            let exprs = exprs |> List.map Ast.Constant
-            Ast.InterpolatedStringExpr(exprs)
+            let exprPairs = exprs |> List.map(fun e -> ((Ast.FillExpr(e), None), None))
+            Ast.BaseInterpolatedStringExpr([], exprPairs)
 
-        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<FillExprNode> list) =
-            Ast.BaseInterpolatedStringExpr(List.empty, exprs, quote = SingleTextNode.tripleQuote)
+        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<FillExprNode> list, ?numberOfBraces: int) =
+            let exprPairs = exprs |> List.map(fun e -> ((e, numberOfBraces), None))
+            Ast.BaseInterpolatedStringExpr([], exprPairs, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedRawStringExpr(expr: WidgetBuilder<FillExprNode>) =
-            Ast.InterpolatedRawStringExpr([ expr ])
+        static member InterpolatedRawStringExpr(expr: WidgetBuilder<FillExprNode>, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr([], [ ((expr, numberOfBraces), None) ], quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedRawStringExpr(expr: WidgetBuilder<Expr>) =
-            Ast.InterpolatedRawStringExpr(Ast.FillExpr(expr))
+        static member InterpolatedRawStringExpr(expr: WidgetBuilder<Expr>, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((Ast.FillExpr(expr), numberOfBraces), None) ],
+                quote = SingleTextNode.tripleQuote
+            )
 
-        static member InterpolatedRawStringExpr(expr: WidgetBuilder<Constant>) =
-            Ast.InterpolatedRawStringExpr(Ast.ConstantExpr(expr))
+        static member InterpolatedRawStringExpr(expr: WidgetBuilder<Constant>, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((Ast.FillExpr(expr), numberOfBraces), None) ],
+                quote = SingleTextNode.tripleQuote
+            )
 
-        static member InterpolatedRawStringExpr(expr: string) =
-            Ast.InterpolatedRawStringExpr(Ast.Constant(expr))
+        static member InterpolatedRawStringExpr(expr: string, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((Ast.FillExpr(expr), numberOfBraces), None) ],
+                quote = SingleTextNode.tripleQuote
+            )
 
-        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<Expr> list) =
-            let exprs = exprs |> List.map Ast.FillExpr
-            Ast.InterpolatedRawStringExpr(exprs)
+        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<Expr> list, ?numberOfBraces: int) =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
 
-        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<Constant> list) =
-            let exprs = exprs |> List.map Ast.ConstantExpr
-            Ast.InterpolatedRawStringExpr(exprs)
+            Ast.BaseInterpolatedStringExpr([], exprPairs, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedRawStringExpr(exprs: string list) =
-            let exprs = exprs |> List.map Ast.Constant
-            Ast.InterpolatedRawStringExpr(exprs)
+        static member InterpolatedRawStringExpr(exprs: WidgetBuilder<Constant> list, ?numberOfBraces: int) =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
 
-        static member InterpolatedRawStringExpr(dollars: string, exprs: WidgetBuilder<FillExprNode> list) =
-            Ast.BaseInterpolatedStringExpr(List.empty, exprs, dollars = dollars, quote = SingleTextNode.tripleQuote)
+            Ast.BaseInterpolatedStringExpr([], exprPairs, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedRawStringExpr(dollars: string, exprs: WidgetBuilder<Expr> list) =
-            let exprs = exprs |> List.map Ast.FillExpr
-            Ast.InterpolatedRawStringExpr(dollars, exprs)
+        static member InterpolatedRawStringExpr(exprs: string list, ?numberOfBraces: int) =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
 
-        static member InterpolatedRawStringExpr(dollars: string, exprs: WidgetBuilder<Constant> list) =
-            let exprs = exprs |> List.map Ast.ConstantExpr
-            Ast.InterpolatedRawStringExpr(dollars, exprs)
+            Ast.BaseInterpolatedStringExpr([], exprPairs, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedRawStringExpr(dollars: string, expr: string list) =
-            let exprs = expr |> List.map Ast.Constant
-            Ast.InterpolatedRawStringExpr(dollars, exprs)
+        static member InterpolatedRawStringExpr
+            (dollars: string, exprs: WidgetBuilder<FillExprNode> list, ?numberOfBraces: int)
+            =
+            let exprPairs = exprs |> List.map(fun e -> ((e, numberOfBraces), None))
+            Ast.BaseInterpolatedStringExpr([], exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedRawStringExpr(dollars: string, expr: WidgetBuilder<FillExprNode>) =
-            Ast.InterpolatedRawStringExpr(dollars, [ expr ])
+        static member InterpolatedRawStringExpr
+            (dollars: string, exprs: WidgetBuilder<Expr> list, ?numberOfBraces: int)
+            =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
 
-        static member InterpolatedRawStringExpr(dollars: string, expr: WidgetBuilder<Expr>) =
-            Ast.InterpolatedRawStringExpr(dollars, Ast.FillExpr expr)
+            Ast.BaseInterpolatedStringExpr([], exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedRawStringExpr(dollars: string, expr: WidgetBuilder<Constant>) =
-            Ast.InterpolatedRawStringExpr(dollars, Ast.ConstantExpr expr)
+        static member InterpolatedRawStringExpr
+            (dollars: string, exprs: WidgetBuilder<Constant> list, ?numberOfBraces: int)
+            =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
 
-        static member InterpolatedRawStringExpr(dollars: string, expr: string) =
-            Ast.InterpolatedRawStringExpr(dollars, Ast.Constant expr)
+            Ast.BaseInterpolatedStringExpr([], exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedStringExpr(values: string list, expr: WidgetBuilder<FillExprNode> list) =
-            Ast.BaseInterpolatedStringExpr(values, expr)
+        static member InterpolatedRawStringExpr(dollars: string, expr: string list, ?numberOfBraces: int) =
+            let exprPairs = expr |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
+            Ast.BaseInterpolatedStringExpr([], exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
-        static member InterpolatedStringExpr(values: string list, exprs: WidgetBuilder<Expr> list) =
-            let exprs = exprs |> List.map Ast.FillExpr
-            Ast.InterpolatedStringExpr(values, exprs)
+        static member InterpolatedRawStringExpr
+            (dollars: string, expr: WidgetBuilder<FillExprNode>, ?numberOfBraces: int)
+            =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((expr, numberOfBraces), None) ],
+                dollars = dollars,
+                quote = SingleTextNode.tripleQuote
+            )
 
-        static member InterpolatedStringExpr(values: string list, exprs: WidgetBuilder<Constant> list) =
-            let exprs = exprs |> List.map Ast.ConstantExpr
-            Ast.InterpolatedStringExpr(values, exprs)
+        static member InterpolatedRawStringExpr(dollars: string, expr: WidgetBuilder<Expr>, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((Ast.FillExpr(expr), numberOfBraces), None) ],
+                dollars = dollars,
+                quote = SingleTextNode.tripleQuote
+            )
 
-        static member InterpolatedStringExpr(values: string list, exprs: string list) =
-            let exprs = exprs |> List.map Ast.Constant
-            Ast.InterpolatedStringExpr(values, exprs)
+        static member InterpolatedRawStringExpr(dollars: string, expr: WidgetBuilder<Constant>, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((Ast.FillExpr(expr), numberOfBraces), None) ],
+                dollars = dollars,
+                quote = SingleTextNode.tripleQuote
+            )
 
-        static member InterpolatedRawStringExpr(values: string list, exprs: WidgetBuilder<FillExprNode> list) =
-            Ast.BaseInterpolatedStringExpr(values, exprs, quote = SingleTextNode.tripleQuote)
+        static member InterpolatedRawStringExpr(dollars: string, expr: string, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((Ast.FillExpr(expr), numberOfBraces), None) ],
+                dollars = dollars,
+                quote = SingleTextNode.tripleQuote
+            )
 
-        static member InterpolatedRawStringExpr(values: string list, exprs: WidgetBuilder<Expr> list) =
-            let exprs = exprs |> List.map Ast.FillExpr
-            Ast.InterpolatedRawStringExpr(values, exprs)
+        static member InterpolatedStringExpr
+            (values: string list, expr: WidgetBuilder<FillExprNode> list, ?numberOfBraces: int)
+            =
+            let exprPairs = expr |> List.map(fun e -> ((e, numberOfBraces), None))
+            Ast.BaseInterpolatedStringExpr(values, exprPairs)
 
-        static member InterpolatedRawStringExpr(values: string list, exprs: WidgetBuilder<Constant> list) =
-            let exprs = exprs |> List.map Ast.ConstantExpr
-            Ast.InterpolatedRawStringExpr(values, exprs)
+        static member InterpolatedStringExpr(expr: WidgetBuilder<FillExprNode>, format: string, ?numberOfBraces: int) =
+            Ast.BaseInterpolatedStringExpr([], [ ((expr, numberOfBraces), Some format) ])
 
-        static member InterpolatedRawStringExpr(values: string list, exprs: string list) =
-            let exprs = exprs |> List.map Ast.Constant
-            Ast.InterpolatedRawStringExpr(values, exprs)
+        static member InterpolatedStringExpr
+            (exprFormats: (WidgetBuilder<FillExprNode> * string) list, ?numberOfBraces: int)
+            =
+            let exprPairs = exprFormats |> List.map(fun (e, f) -> ((e, numberOfBraces), Some f))
+            Ast.BaseInterpolatedStringExpr([], exprPairs)
+
+        static member InterpolatedRawStringExpr
+            (expr: WidgetBuilder<FillExprNode>, format: string, ?numberOfBraces: int)
+            =
+            Ast.BaseInterpolatedStringExpr(
+                [],
+                [ ((expr, numberOfBraces), Some format) ],
+                quote = SingleTextNode.tripleQuote
+            )
+
+        static member InterpolatedStringExpr
+            (values: string list, exprFormats: (WidgetBuilder<FillExprNode> * string) list, ?numberOfBraces: int) =
+            let exprPairs = exprFormats |> List.map(fun (e, f) -> ((e, numberOfBraces), Some f))
+            Ast.BaseInterpolatedStringExpr(values, exprPairs)
+
+        static member InterpolatedStringExpr
+            (values: string list, exprs: WidgetBuilder<Expr> list, ?numberOfBraces: int)
+            =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
+
+            Ast.BaseInterpolatedStringExpr(values, exprPairs)
+
+        static member InterpolatedStringExpr
+            (values: string list, exprs: WidgetBuilder<Constant> list, ?numberOfBraces: int)
+            =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
+
+            Ast.BaseInterpolatedStringExpr(values, exprPairs)
+
+        static member InterpolatedStringExpr(values: string list, exprs: string list, ?numberOfBraces: int) =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
+
+            Ast.BaseInterpolatedStringExpr(values, exprPairs)
+
+        static member InterpolatedRawStringExpr
+            (values: string list, exprs: WidgetBuilder<FillExprNode> list, ?numberOfBraces: int)
+            =
+            let exprPairs = exprs |> List.map(fun e -> ((e, numberOfBraces), None))
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr
+            (values: string list, exprs: WidgetBuilder<Expr> list, ?numberOfBraces: int)
+            =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
+
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr
+            (values: string list, exprs: WidgetBuilder<Constant> list, ?numberOfBraces: int)
+            =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
+
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, quote = SingleTextNode.tripleQuote)
+
+        static member InterpolatedRawStringExpr(values: string list, exprs: string list, ?numberOfBraces: int) =
+            let exprPairs =
+                exprs |> List.map(fun e -> ((Ast.FillExpr(e), numberOfBraces), None))
+
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, quote = SingleTextNode.tripleQuote)
 
         static member InterpolatedStringExpr(value: string, expr: WidgetBuilder<Expr>) =
-            Ast.InterpolatedStringExpr([ value ], [ Ast.FillExpr(expr) ])
+            Ast.BaseInterpolatedStringExpr([ value ], [ ((Ast.FillExpr(expr), None), None) ])
 
         static member InterpolatedStringExpr(value: string, expr: WidgetBuilder<Constant>) =
-            Ast.InterpolatedStringExpr(value, Ast.ConstantExpr(expr))
+            Ast.BaseInterpolatedStringExpr([ value ], [ ((Ast.FillExpr(expr), None), None) ])
 
         static member InterpolatedStringExpr(value: string, expr: string) =
-            Ast.InterpolatedStringExpr(value, Ast.Constant(expr))
+            Ast.BaseInterpolatedStringExpr([ value ], [ ((Ast.FillExpr(expr), None), None) ])
 
         static member InterpolatedRawStringExpr
             (dollars: string, values: string list, exprs: WidgetBuilder<FillExprNode> list)
             =
-            Ast.BaseInterpolatedStringExpr(values, exprs, dollars = dollars, quote = SingleTextNode.tripleQuote)
+            let exprPairs = exprs |> List.map(fun e -> ((e, None), None))
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
         static member InterpolatedRawStringExpr(dollars: string, values: string list, exprs: WidgetBuilder<Expr> list) =
-            let exprs = exprs |> List.map Ast.FillExpr
-            Ast.InterpolatedRawStringExpr(dollars, values, exprs)
+            let exprPairs = exprs |> List.map(fun e -> ((Ast.FillExpr(e), None), None))
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
         static member InterpolatedRawStringExpr
             (dollars: string, values: string list, exprs: WidgetBuilder<Constant> list)
             =
-            let exprs = exprs |> List.map Ast.ConstantExpr
-            Ast.InterpolatedRawStringExpr(dollars, values, exprs)
+            let exprPairs = exprs |> List.map(fun e -> ((Ast.FillExpr(e), None), None))
+
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
         static member InterpolatedRawStringExpr(dollars: string, values: string list, exprs: string list) =
-            let exprs = exprs |> List.map Ast.Constant
-            Ast.InterpolatedRawStringExpr(dollars, values, exprs)
+            let exprPairs = exprs |> List.map(fun e -> ((Ast.FillExpr(e), None), None))
+            Ast.BaseInterpolatedStringExpr(values, exprPairs, dollars = dollars, quote = SingleTextNode.tripleQuote)
 
         static member InterpolatedRawStringExpr(dollars: string, value: string, expr: string) =
-            Ast.InterpolatedRawStringExpr(dollars, [ value ], [ expr ])
+            Ast.BaseInterpolatedStringExpr(
+                [ value ],
+                [ ((Ast.FillExpr(expr), None), None) ],
+                dollars = dollars,
+                quote = SingleTextNode.tripleQuote
+            )
