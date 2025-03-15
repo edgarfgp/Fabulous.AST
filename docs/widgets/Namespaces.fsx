@@ -140,8 +140,13 @@ Oak() {
             MemberVal("IsPeeled", Bool(false), true, true)
             MemberVal("Orientation", "orientation", true, true)
 
-            MemberVal("Sides", ListExpr([ "PeelState"; "Unpeeled" ]), true, true)
-                .returnType(LongIdent "PeelState list")
+            MemberVal(
+                "Sides",
+                ListExpr([ "PeelState"; "Unpeeled" ]),
+                returnType = LongIdent("PeelState list"),
+                hasGetter = true,
+                hasSetter = true
+            )
 
             Member("self.Peel", UnitPat(), "BananaHelpers.peel")
                 .triviaAfter(LineCommentAfterSourceCode("Note the dependency on the BananaHelpers module."))

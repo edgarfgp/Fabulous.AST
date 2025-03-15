@@ -72,6 +72,87 @@ $"{{{{{12}}}}}"
 """
 
     [<Fact>]
+    let ``Verbatim interpolation Aligning expressions in interpolated strings``() =
+        let source =
+            Oak() {
+                AnonymousModule() {
+                    // $"""|{"Left",-7}|{"Right",7}|"""
+                    InterpolatedStringExpr(
+                        [ Text("|")
+                          Expr(FillExpr(TupleExpr([ String("Left"); Constant("-7") ])), 1)
+                          Text("|")
+                          Expr(FillExpr(TupleExpr([ String("Right"); Constant("7") ])), 1)
+                          Text("|") ],
+                        isVerbatim = true
+                    )
+                }
+            }
+
+        (*
+$"""|{"Left",-7}|{"Right",7}|"""
+*)
+
+        let res = Gen.mkOak source |> Gen.run
+
+        Assert.NotNull(res)
+
+    [<Fact>]
+    let ``Interpolated strings and FormattableString formatting``() =
+        let source =
+            Oak() {
+                AnonymousModule() {
+                    // $"The speed of light is {speedOfLight:N3} km/s."
+                    InterpolatedStringExpr(
+                        [ Text("The speed of light is ")
+                          Expr(FillExpr("speedOfLight", "N3"), 1)
+                          Text(" km/s.") ]
+                    )
+                }
+            }
+
+        (*
+$"The speed of light is {speedOfLight:N3} km/s."
+*)
+
+        let res = Gen.mkOak source |> Gen.run
+
+        Assert.NotNull(res)
+
+    [<Fact>]
+    let ``Basic interpolation expressions with format specifiers``() =
+        Oak() {
+            AnonymousModule() {
+                // $"%0.3f{System.Math.PI}"
+                InterpolatedStringExpr([ Text("%0.3f"); Expr(FillExpr("System.Math.PI"), 1) ])
+
+                // $"0x%08x{43962}"
+                InterpolatedStringExpr([ Text("0x%08x"); Expr(FillExpr(Int(43962)), 1) ])
+
+                // $"The data is %A{data}"
+                InterpolatedStringExpr([ Text("The data is %A"); Expr(FillExpr("data"), 1) ])
+
+                // $"{System.Math.PI:N4}"
+                InterpolatedStringExpr([ Expr(FillExpr("System.Math.PI", "N4"), 1) ])
+
+                // $"{System.DateTime.UtcNow:yyyyMMdd}"
+                InterpolatedStringExpr([ Expr(FillExpr("System.DateTime.UtcNow", "``yyyyMMdd``"), 1) ])
+
+                // $"{System.DateTime.UtcNow:``yyyy-MM-dd``}"
+                InterpolatedStringExpr([ Expr(FillExpr("System.DateTime.UtcNow", "``yyyy-MM-dd``"), 1) ])
+
+            }
+        }
+        |> produces
+            """
+$"%0.3f{System.Math.PI}"
+$"0x%08x{43962}"
+$"The data is %A{data}"
+$"{System.Math.PI:N4}"
+$"{System.DateTime.UtcNow:``yyyyMMdd``}"
+$"{System.DateTime.UtcNow:``yyyy-MM-dd``}"
+"""
+
+    [<Fact>]
     let ``Text with expression interpolation``() =
         Oak() {
             AnonymousModule() {
