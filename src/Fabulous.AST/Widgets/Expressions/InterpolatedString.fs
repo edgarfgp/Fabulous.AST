@@ -5,15 +5,14 @@ open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
-type InterpolatedString =
+type TextSegment =
     | Text of string
     | Expr of WidgetBuilder<FillExprNode> * int
 
 module InterpolatedString =
     let Dollars = Attributes.defineScalar<string * bool> "Dollars"
-    let Parts = Attributes.defineScalar<InterpolatedString list> "Parts"
+    let Parts = Attributes.defineScalar<TextSegment list> "Parts"
 
-    // Helper functions for creating nodes
     let private createBraces count braceFn =
         List.replicate count braceFn |> List.map Choice1Of2
 
@@ -28,7 +27,7 @@ module InterpolatedString =
 
     let private processPart =
         function
-        | Text text -> [ Choice1Of2(SingleTextNode.Create text) ]
+        | Text text -> [ Choice1Of2(SingleTextNode.Create(text)) ]
         | Expr(expr, braceCount) ->
             [ yield! createBraces braceCount SingleTextNode.leftCurlyBrace
               yield Choice2Of2(Gen.mkOak expr)
@@ -54,7 +53,7 @@ module InterpolatedString =
 module InterpolatedStringBuilders =
     type Ast with
         static member private BaseInterpolatedStringExpr
-            (parts: InterpolatedString list, isVerbatim: bool option, dollars: string option)
+            (parts: TextSegment list, isVerbatim: bool option, dollars: string option)
             =
             let dollars = defaultArg dollars "$"
             let isVerbatim = defaultArg isVerbatim false
@@ -72,29 +71,151 @@ module InterpolatedStringBuilders =
                 )
             )
 
-        static member InterpolatedStringExpr(parts: InterpolatedString list, ?isVerbatim: bool, ?dollars: string) =
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="parts">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr([ Text("Hello "); Expr(FillExpr(Int(12)), 1); Text(" world") ])
+        ///         InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ])
+        ///         InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true)
+        ///         InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = "$$")
+        ///
+        ///     }
+        /// }
+        /// </code>
+        static member InterpolatedStringExpr(parts: TextSegment list, ?isVerbatim: bool, ?dollars: string) =
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
-        static member InterpolatedStringExpr(part: InterpolatedString, ?isVerbatim: bool, ?dollars: string) =
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="part">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ])
+        ///         InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true)
+        ///         InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = "$$")
+        ///     }
+        /// }
+        /// </code>
+        static member InterpolatedStringExpr(part: TextSegment, ?isVerbatim: bool, ?dollars: string) =
             Ast.BaseInterpolatedStringExpr([ part ], isVerbatim, dollars)
 
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="parts">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr([ ConstantExpr("12") ])
+        ///         InterpolatedStringExpr([ ConstantExpr("12") ], isVerbatim = true)
+        ///         InterpolatedStringExpr([ ConstantExpr("12") ], dollars = "$$")
+        ///     }
+        /// }
+        /// </code>
         static member InterpolatedStringExpr(parts: WidgetBuilder<Expr> list, ?isVerbatim: bool, ?dollars: string) =
-            let parts = parts |> List.map(fun x -> InterpolatedString.Expr(Ast.FillExpr(x), 1))
+            let parts = parts |> List.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="part">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr(ConstantExpr("12"))
+        ///         InterpolatedStringExpr(ConstantExpr("12"), isVerbatim = true)
+        ///         InterpolatedStringExpr(ConstantExpr("12"), dollars = "$$")
+        ///     }
+        /// }
+        /// </code>
         static member InterpolatedStringExpr(part: WidgetBuilder<Expr>, ?isVerbatim: bool, ?dollars: string) =
-            Ast.BaseInterpolatedStringExpr([ InterpolatedString.Expr(Ast.FillExpr(part), 1) ], isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr([ TextSegment.Expr(Ast.FillExpr(part), 1) ], isVerbatim, dollars)
 
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="parts">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr([ Int(12) ])
+        ///         InterpolatedStringExpr([ Int(12) ], isVerbatim = true)
+        ///         InterpolatedStringExpr([ Int(12) ], dollars = "$$")
+        ///     }
+        /// }
+        /// </code>
         static member InterpolatedStringExpr(parts: WidgetBuilder<Constant> list, ?isVerbatim: bool, ?dollars: string) =
-            let parts = parts |> List.map(fun x -> InterpolatedString.Expr(Ast.FillExpr(x), 1))
+            let parts = parts |> List.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="part">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr(Int(12))
+        ///         InterpolatedStringExpr(Int(12), isVerbatim = true)
+        ///         InterpolatedStringExpr(Int(12), dollars = "$$")
+        ///     }
+        /// }
+        /// </code>
         static member InterpolatedStringExpr(part: WidgetBuilder<Constant>, ?isVerbatim: bool, ?dollars: string) =
-            Ast.BaseInterpolatedStringExpr([ InterpolatedString.Expr(Ast.FillExpr(part), 1) ], isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr([ TextSegment.Expr(Ast.FillExpr(part), 1) ], isVerbatim, dollars)
 
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="parts">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr([ "12" ])
+        ///         InterpolatedStringExpr([ "12" ], isVerbatim = true)
+        ///         InterpolatedStringExpr([ "12" ], dollars = "$$")
+        ///     }
+        /// }
+        /// </code>
         static member InterpolatedStringExpr(parts: string list, ?isVerbatim: bool, ?dollars: string) =
-            let parts = parts |> List.map(fun x -> InterpolatedString.Expr(Ast.FillExpr(x), 1))
+            let parts = parts |> List.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
+        /// <summary>
+        /// Create an interpolated string expression.
+        /// </summary>
+        /// <param name="part">The parts of the interpolated string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim.</param>
+        /// <param name="dollars">The number of dollars in the string.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         InterpolatedStringExpr("12")
+        ///         InterpolatedStringExpr("12", isVerbatim = true)
+        ///         InterpolatedStringExpr("12", dollars = "$$")
+        ///     }
+        /// }
+        /// </code>
         static member InterpolatedStringExpr(part: string, ?isVerbatim: bool, ?dollars: string) =
-            Ast.BaseInterpolatedStringExpr([ InterpolatedString.Text(part) ], isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr([ TextSegment.Text(part) ], isVerbatim, dollars)
