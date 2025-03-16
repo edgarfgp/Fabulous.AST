@@ -454,3 +454,195 @@ $$"""'{a}' is not a valid number"""
         let res = Gen.mkOak source |> Gen.run
 
         Assert.NotNull(res)
+
+    [<Fact>]
+    let ``Mixed Text and Expression with escape sequences``() =
+        Oak() {
+            AnonymousModule() {
+                // $"Line 1\nLine 2 {value}"
+                InterpolatedStringExpr([ Text("Line 1\nLine 2 "); Expr(FillExpr("value"), 1) ])
+
+                // $"Tab\tSeparated {value}"
+                InterpolatedStringExpr([ Text("Tab\tSeparated "); Expr(FillExpr("value"), 1) ])
+
+                // $"Quote\"in string {value}"
+                InterpolatedStringExpr([ Text("Quote\"in string "); Expr(FillExpr("value"), 1) ])
+            }
+        }
+        |> produces
+            """
+$"Line 1
+Line 2 {value}"
+
+$"Tab	Separated {value}"
+$"Quote"in string {value}"
+"""
+
+    [<Fact>]
+    let ``Empty interpolated string``() =
+        let source =
+            Oak() {
+                AnonymousModule() {
+                    // $""
+                    InterpolatedStringExpr([ Text("") ])
+
+                    // $""
+                    InterpolatedStringExpr([ String("") ])
+
+                    // $""""""
+                    InterpolatedStringExpr([ Text("") ], isVerbatim = true)
+
+                    // $""""""
+                    InterpolatedStringExpr([ String("") ], isVerbatim = true)
+
+                    // $$""
+                    InterpolatedStringExpr([ Text("") ], dollars = "$$")
+
+                    // $$""
+                    InterpolatedStringExpr([ String("") ], dollars = "$$")
+
+                    // $$""""""
+                    InterpolatedStringExpr([ Text("") ], isVerbatim = true, dollars = "$$")
+
+                    // $$""""""
+                    InterpolatedStringExpr([ String("") ], isVerbatim = true, dollars = "$$")
+                }
+            }
+
+        (*
+$""
+$"{""}"
+$""""""
+$"""{""}"""
+$$""""""
+$$"""{""}"""
+$$""""""
+$$"""{""}"""
+*)
+        let res = Gen.mkOak source |> Gen.run
+
+        Assert.NotNull(res)
+
+    [<Fact>]
+    let ``Triple dollar expressions``() =
+        let source =
+            Oak() {
+                AnonymousModule() {
+                    // $$$"{{{12}}}"
+                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = "$$$")
+
+                    // $$$"""{{{12}}}"""
+                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true, dollars = "$$$")
+
+                    // $$$"Text with {{{value}}}"
+                    InterpolatedStringExpr([ Text("Text with "); Expr(FillExpr("value"), 1) ], dollars = "$$$")
+                }
+            }
+
+        (*
+$$$"""{12}"""
+$$$"""{12}"""
+$$$"""Text with {value}"""
+*)
+        let res = Gen.mkOak source |> Gen.run
+
+        Assert.NotNull(res)
+
+    [<Fact>]
+    let ``Nested curly braces in text segments``() =
+        Oak() {
+            AnonymousModule() {
+                // $"Outer {Inner {value}}"
+                InterpolatedStringExpr([ Text("Outer {Inner "); Expr(FillExpr("value"), 1); Text("}") ])
+
+                // $"JSON-like { \"prop\": {value} }"
+                InterpolatedStringExpr([ Text("JSON-like { \"prop\": "); Expr(FillExpr("value"), 1); Text(" }") ])
+
+                // $"Multiple {{{{nested}}}} braces with {value}"
+                InterpolatedStringExpr([ Text("Multiple {{{{nested}}}} braces with "); Expr(FillExpr("value"), 1) ])
+            }
+        }
+        |> produces
+            """
+$"Outer {Inner {value}}"
+$"JSON-like { "prop": {value} }"
+$"Multiple {{{{nested}}}} braces with {value}"
+"""
+
+    [<Fact>]
+    let ``Alignment with non-literal values``() =
+        Oak() {
+            AnonymousModule() {
+                // $"{value,10}"
+                InterpolatedStringExpr([ Expr(FillExpr(TupleExpr([ "value"; "10" ])), 1) ])
+
+                // $"{value,-10}"
+                InterpolatedStringExpr([ Expr(FillExpr(TupleExpr([ "value"; "-10" ])), 1) ])
+
+                // $"{value,10:F2}"
+                InterpolatedStringExpr([ Expr(FillExpr(TupleExpr([ "value"; "10" ]), "F2"), 1) ])
+            }
+        }
+        |> produces
+            """
+$"{value, 10}"
+$"{value, -10}"
+$"{value, 10:F2}"
+"""
+
+    [<Fact>]
+    let ``Complex expressions in interpolation``() =
+        Oak() {
+            AnonymousModule() {
+                // $"Result: {1 + 2 * 3}"
+                InterpolatedStringExpr(
+                    [ Text("Result: ")
+                      Expr(FillExpr(InfixAppExpr(Int(1), "+", InfixAppExpr(Int(2), "*", Int(3)))), 1) ]
+                )
+
+                // $"Items: {items |> List.length}"
+                InterpolatedStringExpr([ Text("Items: "); Expr(FillExpr(PipeRightExpr("items", "List.length")), 1) ])
+
+                // $"Conditional: {if condition then "Yes" else "No"}"
+                InterpolatedStringExpr(
+                    [ Text("Conditional: ")
+                      Expr(FillExpr(IfThenElseExpr("condition", String("Yes"), String("No"))), 1) ]
+                )
+            }
+        }
+        |> produces
+            """
+$"Result: {1 + 2 * 3}"
+$"Items: {items |> List.length}"
+$"Conditional: {if condition then "Yes" else "No"}"
+"""
+
+    [<Fact>]
+    let ``Multiple interpolated strings in sequence``() =
+        Oak() {
+            AnonymousModule() {
+                // Sequential interpolated strings
+                Value("message1", InterpolatedStringExpr([ Text("Hello "); Expr(FillExpr("name"), 1) ]))
+                Value("message2", InterpolatedStringExpr([ Text("Age: "); Expr(FillExpr("age"), 1) ]))
+
+                // Concatenating interpolated strings
+                Value(
+                    "combined",
+                    InfixAppExpr(
+                        InfixAppExpr(
+                            InterpolatedStringExpr([ Text("Hello "); Expr(FillExpr("name"), 1) ]),
+                            "+",
+                            String(" ")
+                        ),
+                        "+",
+                        InterpolatedStringExpr([ Text("Age: "); Expr(FillExpr("age"), 1) ])
+                    )
+                )
+            }
+        }
+        |> produces
+            """
+let message1 = $"Hello {name}"
+let message2 = $"Age: {age}"
+let combined = $"Hello {name}" + " " + $"Age: {age}"
+"""
