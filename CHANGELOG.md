@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.3.0] - 2025-03-16
+
+### Changed
+* Return type changes by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/138
+
+### Added
+- Add AsyncPrefix and TaskPrefix by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/139
+- Add PipeRightExpr and PipeLeftExpr widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/143
+
+### Fixed
+- Fix string interpolation widgets by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/142
+
 ## [1.2.0] - 2025-03-05
 ### Fixed
 - Avoid using `NormalizeIdentifierBackticks` when generating `IdentifierOrDot` by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/137
