@@ -14,44 +14,42 @@ module InterpolatedString =
     let Parts = Attributes.defineScalar<InterpolatedString list> "Parts"
 
     // Helper functions for creating nodes
-    let private createBraces count braceFn = List.replicate count braceFn |> List.map Choice1Of2
-
+    let private createBraces count braceFn =
+        List.replicate count braceFn |> List.map Choice1Of2
 
     let private getQuotes isVerbatim =
-        let quote = if isVerbatim then SingleTextNode.tripleQuote else SingleTextNode.doubleQuote
+        let quote =
+            if isVerbatim then
+                SingleTextNode.tripleQuote
+            else
+                SingleTextNode.doubleQuote
+
         (Choice1Of2 quote, Choice1Of2 quote)
 
-    let private processPart = function
+    let private processPart =
+        function
         | Text text -> [ Choice1Of2(SingleTextNode.Create text) ]
         | Expr(expr, braceCount) ->
-            [
-                yield! createBraces braceCount SingleTextNode.leftCurlyBrace
-                yield Choice2Of2(Gen.mkOak expr)
-                yield! createBraces braceCount SingleTextNode.rightCurlyBrace
-            ]
+            [ yield! createBraces braceCount SingleTextNode.leftCurlyBrace
+              yield Choice2Of2(Gen.mkOak expr)
+              yield! createBraces braceCount SingleTextNode.rightCurlyBrace ]
 
     let WidgetKey =
         Widgets.register "InterpolatedString" (fun widget ->
             let dollars, isVerbatim = Widgets.getScalarValue widget Dollars
-            let parts =
-                Widgets.tryGetScalarValue widget Parts
-                |> ValueOption.defaultValue []
+            let parts = Widgets.tryGetScalarValue widget Parts |> ValueOption.defaultValue []
 
             let isVerbatim = isVerbatim || dollars.Length > 1
             let openQuote, closeQuote = getQuotes isVerbatim
 
             let processedParts =
-                [
-                    yield Choice1Of2(SingleTextNode.Create dollars)
-                    yield openQuote
-                    yield! parts |> List.collect processPart
-                    yield closeQuote
-                ]
+                [ yield Choice1Of2(SingleTextNode.Create dollars)
+                  yield openQuote
+                  yield! parts |> List.collect processPart
+                  yield closeQuote ]
 
-            Expr.InterpolatedStringExpr(
-                ExprInterpolatedStringExprNode(processedParts, Range.Zero)
-            )
-        )
+            Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.Zero)))
+
 [<AutoOpen>]
 module InterpolatedStringBuilders =
     type Ast with
