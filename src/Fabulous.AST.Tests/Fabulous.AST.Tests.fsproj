@@ -132,6 +132,8 @@
     <ItemGroup>
         <PackageReference Include="FsCheck.Xunit" />
         <PackageReference Include="FsUnit.xUnit" />
+        <PackageReference Include="Verify.XunitV3" />
+        <PackageReference Include="xunit.v3.extensibility.core" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Update="FSharp.Core" />
         <PackageReference Include="xunit.runner.console" />
