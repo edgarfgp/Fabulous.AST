@@ -1,0 +1,1 @@
+﻿$"The speed of light is {speedOfLight:N3} km/s."
