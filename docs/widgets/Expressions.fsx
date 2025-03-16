@@ -23,7 +23,7 @@ Oak() {
 
         InterpolatedStringExpr(ConstantExpr("12"))
 
-        InterpolatedRawStringExpr(ConstantExpr("12"))
+        InterpolatedStringExpr(ConstantExpr("12"), isVerbatim = true)
 
         LazyExpr(Int(12))
 
@@ -113,6 +113,14 @@ Oak() {
         }
 
         AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String("a")))
+
+        InterpolatedStringExpr([ "12"; "12"; "12" ], isVerbatim = true)
+
+        InterpolatedStringExpr(
+            [ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ],
+            isVerbatim = true,
+            dollars = 1
+        )
 
     }
 }
