@@ -407,22 +407,20 @@ $"'{a}' is not a valid number"
         Oak() {
             AnonymousModule() {
                 // $"Line 1\nLine 2 {value}"
-                InterpolatedStringExpr([ Text("Line 1\nLine 2 "); Expr(FillExpr("value"), 1) ])
+                InterpolatedStringExpr([ Text(String.escape "Line 1\nLine 2 "); Expr(FillExpr("value"), 1) ])
 
                 // $"Tab\tSeparated {value}"
-                InterpolatedStringExpr([ Text("Tab\tSeparated "); Expr(FillExpr("value"), 1) ])
+                InterpolatedStringExpr([ Text(String.escape "Tab\tSeparated "); Expr(FillExpr("value"), 1) ])
 
                 // $"Quote\"in string {value}"
-                InterpolatedStringExpr([ Text("Quote\"in string "); Expr(FillExpr("value"), 1) ])
+                InterpolatedStringExpr([ Text(String.escape "Quote\"in string "); Expr(FillExpr("value"), 1) ])
             }
         }
         |> produces
             """
-$"Line 1
-Line 2 {value}"
-
-$"Tab	Separated {value}"
-$"Quote"in string {value}"
+$""Line 1\nLine 2 "{value}"
+$""Tab\tSeparated "{value}"
+$""Quote\"in string "{value}"
 """
 
     [<Fact>]
