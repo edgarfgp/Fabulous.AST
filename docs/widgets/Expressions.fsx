@@ -119,7 +119,7 @@ Oak() {
         InterpolatedStringExpr(
             [ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ],
             isVerbatim = true,
-            dollars = "$"
+            dollars = 1
         )
 
     }
