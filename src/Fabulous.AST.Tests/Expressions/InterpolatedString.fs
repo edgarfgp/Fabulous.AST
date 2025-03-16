@@ -19,10 +19,11 @@ module InterpolatedString =
                 InterpolatedStringExpr([ "12" ])
 
                 // $"{12}"
-                InterpolatedStringExpr([ ConstantExpr("12") ], dollars = "$")
-                InterpolatedStringExpr([ Int(12) ], dollars = "$")
-                InterpolatedStringExpr([ "12" ], dollars = "$")
+                InterpolatedStringExpr([ ConstantExpr("12") ])
+                InterpolatedStringExpr([ Int(12) ])
+                InterpolatedStringExpr([ "12" ])
                 InterpolatedStringExpr([ Text("{12}") ])
+                InterpolatedStringExpr([ Text("{12}"); Text("{12}"); Text("{12}") ])
 
                 // $"{12}{12}{12}"
                 InterpolatedStringExpr(
@@ -46,6 +47,7 @@ $"{12}"
 $"{12}"
 $"{12}"
 $"{12}"
+$"{12}{12}{12}"
 $"{12}{12}{12}"
 $"{12}{12}{12}"
 $"{12}{12}{12}"
@@ -351,10 +353,10 @@ $"""'{a}' is not a valid number"""
             Oak() {
                 AnonymousModule() {
                     // $$"""{{12}}"""
-                    InterpolatedStringExpr([ ConstantExpr("12") ], dollars = "$$")
-                    InterpolatedStringExpr([ Int(12) ], dollars = "$$")
-                    InterpolatedStringExpr([ "12" ], dollars = "$$")
-                    InterpolatedStringExpr([ Text("{{12}}") ], isVerbatim = true, dollars = "$$")
+                    InterpolatedStringExpr([ ConstantExpr("12") ], dollars = 2)
+                    InterpolatedStringExpr([ Int(12) ], dollars = 2)
+                    InterpolatedStringExpr([ "12" ], dollars = 2)
+                    InterpolatedStringExpr([ Text("{{12}}") ], isVerbatim = true, dollars = 2)
 
                 }
             }
@@ -375,21 +377,18 @@ $$"""{{12}}"""
             Oak() {
                 AnonymousModule() {
                     // $$"""{12}{12}{12}"""
-                    InterpolatedStringExpr(
-                        [ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ],
-                        dollars = "$$"
-                    )
+                    InterpolatedStringExpr([ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ], dollars = 2)
 
                     InterpolatedStringExpr(
                         [ Expr(FillExpr(Int(12)), 3)
                           Expr(FillExpr(Int(12)), 2)
                           Expr(FillExpr(Int(12)), 1) ],
-                        dollars = "$$"
+                        dollars = 2
                     )
 
-                    InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], dollars = "$$")
-                    InterpolatedStringExpr([ "12"; "12"; "12" ], dollars = "$$")
-                    InterpolatedStringExpr([ Text("{12}"); Text("{12}"); Text("{12}") ], dollars = "$$")
+                    InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], dollars = 2)
+                    InterpolatedStringExpr([ "12"; "12"; "12" ], dollars = 2)
+                    InterpolatedStringExpr([ Text("{12}"); Text("{12}"); Text("{12}") ], dollars = 2)
                 }
             }
         (*
@@ -416,7 +415,7 @@ $$"""{12}{12}{12}"""
                           Text(" This is a test: ")
                           Expr(FillExpr(ConstantExpr("12")), 1) ],
                         isVerbatim = true,
-                        dollars = "$$"
+                        dollars = 2
                     )
 
                     InterpolatedStringExpr(
@@ -425,7 +424,7 @@ $$"""{12}{12}{12}"""
                           Text(" This is a test: ")
                           Expr(FillExpr(Int(12)), 1) ],
                         isVerbatim = true,
-                        dollars = "$$"
+                        dollars = 2
                     )
 
                     InterpolatedStringExpr(
@@ -434,13 +433,13 @@ $$"""{12}{12}{12}"""
                           Text(" This is a test: ")
                           Expr(FillExpr("12"), 1) ],
                         isVerbatim = true,
-                        dollars = "$$"
+                        dollars = 2
                     )
 
                     InterpolatedStringExpr(
                         [ Text("'{a}'"); Text(" is not a valid number") ],
                         isVerbatim = true,
-                        dollars = "$$"
+                        dollars = 2
                     )
                 }
             }
@@ -496,16 +495,16 @@ $"Quote"in string {value}"
                     InterpolatedStringExpr([ String("") ], isVerbatim = true)
 
                     // $$""
-                    InterpolatedStringExpr([ Text("") ], dollars = "$$")
+                    InterpolatedStringExpr([ Text("") ], dollars = 2)
 
                     // $$""
-                    InterpolatedStringExpr([ String("") ], dollars = "$$")
+                    InterpolatedStringExpr([ String("") ], dollars = 2)
 
                     // $$""""""
-                    InterpolatedStringExpr([ Text("") ], isVerbatim = true, dollars = "$$")
+                    InterpolatedStringExpr([ Text("") ], isVerbatim = true, dollars = 2)
 
                     // $$""""""
-                    InterpolatedStringExpr([ String("") ], isVerbatim = true, dollars = "$$")
+                    InterpolatedStringExpr([ String("") ], isVerbatim = true, dollars = 2)
                 }
             }
 
@@ -529,13 +528,13 @@ $$"""{""}"""
             Oak() {
                 AnonymousModule() {
                     // $$$"{{{12}}}"
-                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = "$$$")
+                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = 3)
 
                     // $$$"""{{{12}}}"""
-                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true, dollars = "$$$")
+                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true, dollars = 3)
 
                     // $$$"Text with {{{value}}}"
-                    InterpolatedStringExpr([ Text("Text with "); Expr(FillExpr("value"), 1) ], dollars = "$$$")
+                    InterpolatedStringExpr([ Text("Text with "); Expr(FillExpr("value"), 1) ], dollars = 3)
                 }
             }
 
