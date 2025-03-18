@@ -75,50 +75,39 @@ $"{{{{{12}}}}}"
 
     [<Fact>]
     let ``Verbatim interpolation Aligning expressions in interpolated strings``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $"""|{"Left",-7}|{"Right",7}|"""
-                    InterpolatedStringExpr(
-                        [ Text("|")
-                          Expr(FillExpr(TupleExpr([ String("Left"); Constant("-7") ])), 1)
-                          Text("|")
-                          Expr(FillExpr(TupleExpr([ String("Right"); Constant("7") ])), 1)
-                          Text("|") ],
-                        isVerbatim = true
-                    )
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $"""|{"Left",-7}|{"Right",7}|"""
+                        InterpolatedStringExpr(
+                            [ Text("|")
+                              Expr(FillExpr(TupleExpr([ String("Left"); Constant("-7") ])), 1)
+                              Text("|")
+                              Expr(FillExpr(TupleExpr([ String("Right"); Constant("7") ])), 1)
+                              Text("|") ],
+                            isVerbatim = true
+                        )
+                    }
                 }
-            }
-
-        (*
-$"""|{"Left",-7}|{"Right",7}|"""
-*)
-
-        let res = Gen.mkOak source |> Gen.run
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Interpolated strings and FormattableString formatting``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $"The speed of light is {speedOfLight:N3} km/s."
-                    InterpolatedStringExpr(
-                        [ Text("The speed of light is ")
-                          Expr(FillExpr("speedOfLight", "N3"), 1)
-                          Text(" km/s.") ]
-                    )
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $"The speed of light is {speedOfLight:N3} km/s."
+                        InterpolatedStringExpr(
+                            [ Text("The speed of light is ")
+                              Expr(FillExpr("speedOfLight", "N3"), 1)
+                              Text(" km/s.") ]
+                        )
+                    }
                 }
-            }
 
-        (*
-$"The speed of light is {speedOfLight:N3} km/s."
-*)
-
-        let res = Gen.mkOak source |> Gen.run
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Basic interpolation expressions with format specifiers``() =
@@ -262,290 +251,229 @@ $"'{a}' is not a valid number"
 
     [<Fact>]
     let ``Verbatim string interpolation expressions``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $"""{12}"""
-                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true)
-                    InterpolatedStringExpr([ ConstantExpr(Int(12)) ], isVerbatim = true)
-                    InterpolatedStringExpr([ Int(12) ], isVerbatim = true)
-                    InterpolatedStringExpr([ "12" ], isVerbatim = true)
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $"""{12}"""
+                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true)
+                        InterpolatedStringExpr([ ConstantExpr(Int(12)) ], isVerbatim = true)
+                        InterpolatedStringExpr([ Int(12) ], isVerbatim = true)
+                        InterpolatedStringExpr([ "12" ], isVerbatim = true)
 
-                    // $"""{12}{12}{12}"""
-                    InterpolatedStringExpr(
-                        [ Expr(FillExpr(Int(12)), 1)
-                          Expr(FillExpr(Int(12)), 1)
-                          Expr(FillExpr(Int(12)), 1) ],
-                        isVerbatim = true
-                    )
+                        // $"""{12}{12}{12}"""
+                        InterpolatedStringExpr(
+                            [ Expr(FillExpr(Int(12)), 1)
+                              Expr(FillExpr(Int(12)), 1)
+                              Expr(FillExpr(Int(12)), 1) ],
+                            isVerbatim = true
+                        )
 
-                    InterpolatedStringExpr(
-                        [ ConstantExpr(Int(12)); ConstantExpr(Int(12)); ConstantExpr(Int(12)) ],
-                        isVerbatim = true
-                    )
+                        InterpolatedStringExpr(
+                            [ ConstantExpr(Int(12)); ConstantExpr(Int(12)); ConstantExpr(Int(12)) ],
+                            isVerbatim = true
+                        )
 
-                    InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], isVerbatim = true)
-                    InterpolatedStringExpr([ "12"; "12"; "12" ], isVerbatim = true)
+                        InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], isVerbatim = true)
+                        InterpolatedStringExpr([ "12"; "12"; "12" ], isVerbatim = true)
+                    }
                 }
-            }
-
-        let res = Gen.mkOak source |> Gen.run
-        (*
-$"""{12}"""
-$"""{12}"""
-$"""{12}"""
-$"""{12}"""
-$"""{12}{12}{12}"""
-$"""{12}{12}{12}"""
-$"""{12}{12}{12}"""
-$"""{12}{12}{12}"""
-*)
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Text with verbatim string interpolation expressions``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $"""This is a test: {12} This is a test: {12}"""
-                    InterpolatedStringExpr(
-                        [ Text("This is a test: ")
-                          Expr(FillExpr(ConstantExpr("12")), 1)
-                          Text(" This is a test: ")
-                          Expr(FillExpr(ConstantExpr("12")), 1) ],
-                        isVerbatim = true
-                    )
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $"""This is a test: {12} This is a test: {12}"""
+                        InterpolatedStringExpr(
+                            [ Text("This is a test: ")
+                              Expr(FillExpr(ConstantExpr("12")), 1)
+                              Text(" This is a test: ")
+                              Expr(FillExpr(ConstantExpr("12")), 1) ],
+                            isVerbatim = true
+                        )
 
-                    InterpolatedStringExpr(
-                        [ Text("This is a test: ")
-                          Expr(FillExpr(Int(12)), 1)
-                          Text(" This is a test: ")
-                          Expr(FillExpr(Int(12)), 1) ],
-                        isVerbatim = true
-                    )
+                        InterpolatedStringExpr(
+                            [ Text("This is a test: ")
+                              Expr(FillExpr(Int(12)), 1)
+                              Text(" This is a test: ")
+                              Expr(FillExpr(Int(12)), 1) ],
+                            isVerbatim = true
+                        )
 
-                    InterpolatedStringExpr(
-                        [ Text("This is a test: ")
-                          Expr(FillExpr("12"), 1)
-                          Text(" This is a test: ")
-                          Expr(FillExpr("12"), 1) ],
-                        isVerbatim = true
-                    )
+                        InterpolatedStringExpr(
+                            [ Text("This is a test: ")
+                              Expr(FillExpr("12"), 1)
+                              Text(" This is a test: ")
+                              Expr(FillExpr("12"), 1) ],
+                            isVerbatim = true
+                        )
 
-                    InterpolatedStringExpr([ Text("'{a}'"); Text(" is not a valid number") ], isVerbatim = true)
+                        InterpolatedStringExpr([ Text("'{a}'"); Text(" is not a valid number") ], isVerbatim = true)
+                    }
                 }
-            }
-
-        let res = Gen.mkOak source |> Gen.run
-        (*
-$"""This is a test: {12} This is a test: {12}"""
-$"""This is a test: {12} This is a test: {12}"""
-$"""This is a test: {12} This is a test: {12}"""
-$"""'{a}' is not a valid number"""
-*)
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Multiple dollar single expressions``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $$"""{{12}}"""
-                    InterpolatedStringExpr([ ConstantExpr("12") ], dollars = 2)
-                    InterpolatedStringExpr([ Int(12) ], dollars = 2)
-                    InterpolatedStringExpr([ "12" ], dollars = 2)
-                    InterpolatedStringExpr([ Text("{{12}}") ], isVerbatim = true, dollars = 2)
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $$"""{{12}}"""
+                        InterpolatedStringExpr([ ConstantExpr("12") ], dollars = 2)
+                        InterpolatedStringExpr([ Int(12) ], dollars = 2)
+                        InterpolatedStringExpr([ "12" ], dollars = 2)
+                        InterpolatedStringExpr([ Text("{{12}}") ], isVerbatim = true, dollars = 2)
 
+                    }
                 }
-            }
-        (*
-$$"""{{12}}"""
-$$"""{{12}}"""
-$$"""{{12}}"""
-$$"""{{12}}"""
-*)
 
-        let res = Gen.mkOak source |> Gen.run
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Multiple dollar multiple expressions``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $$"""{12}{12}{12}"""
-                    InterpolatedStringExpr([ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ], dollars = 2)
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $$"""{12}{12}{12}"""
+                        InterpolatedStringExpr(
+                            [ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ],
+                            dollars = 2
+                        )
 
-                    InterpolatedStringExpr(
-                        [ Expr(FillExpr(Int(12)), 3)
-                          Expr(FillExpr(Int(12)), 2)
-                          Expr(FillExpr(Int(12)), 1) ],
-                        dollars = 2
-                    )
+                        InterpolatedStringExpr(
+                            [ Expr(FillExpr(Int(12)), 3)
+                              Expr(FillExpr(Int(12)), 2)
+                              Expr(FillExpr(Int(12)), 1) ],
+                            dollars = 2
+                        )
 
-                    InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], dollars = 2)
-                    InterpolatedStringExpr([ "12"; "12"; "12" ], dollars = 2)
-                    InterpolatedStringExpr([ Text("{12}"); Text("{12}"); Text("{12}") ], dollars = 2)
+                        InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], dollars = 2)
+                        InterpolatedStringExpr([ "12"; "12"; "12" ], dollars = 2)
+                        InterpolatedStringExpr([ Text("{12}"); Text("{12}"); Text("{12}") ], dollars = 2)
+                    }
                 }
-            }
-        (*
-$$"""{12}{12}{12}"""
-$$"""{{{12}}}{{12}}{12}"""
-$$"""{12}{12}{12}"""
-$$"""{12}{12}{12}"""
-$$"""{12}{12}{12}"""
-*)
-
-        let res = Gen.mkOak source |> Gen.run
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Text with multiple dollar multiple expressions``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $$"""This is a test: {12} This is a test: {12}"""
-                    InterpolatedStringExpr(
-                        [ Text("This is a test: ")
-                          Expr(FillExpr(ConstantExpr("12")), 1)
-                          Text(" This is a test: ")
-                          Expr(FillExpr(ConstantExpr("12")), 1) ],
-                        isVerbatim = true,
-                        dollars = 2
-                    )
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $$"""This is a test: {12} This is a test: {12}"""
+                        InterpolatedStringExpr(
+                            [ Text("This is a test: ")
+                              Expr(FillExpr(ConstantExpr("12")), 1)
+                              Text(" This is a test: ")
+                              Expr(FillExpr(ConstantExpr("12")), 1) ],
+                            isVerbatim = true,
+                            dollars = 2
+                        )
 
-                    InterpolatedStringExpr(
-                        [ Text("This is a test: ")
-                          Expr(FillExpr(Int(12)), 1)
-                          Text(" This is a test: ")
-                          Expr(FillExpr(Int(12)), 1) ],
-                        isVerbatim = true,
-                        dollars = 2
-                    )
+                        InterpolatedStringExpr(
+                            [ Text("This is a test: ")
+                              Expr(FillExpr(Int(12)), 1)
+                              Text(" This is a test: ")
+                              Expr(FillExpr(Int(12)), 1) ],
+                            isVerbatim = true,
+                            dollars = 2
+                        )
 
-                    InterpolatedStringExpr(
-                        [ Text("This is a test: ")
-                          Expr(FillExpr("12"), 1)
-                          Text(" This is a test: ")
-                          Expr(FillExpr("12"), 1) ],
-                        isVerbatim = true,
-                        dollars = 2
-                    )
+                        InterpolatedStringExpr(
+                            [ Text("This is a test: ")
+                              Expr(FillExpr("12"), 1)
+                              Text(" This is a test: ")
+                              Expr(FillExpr("12"), 1) ],
+                            isVerbatim = true,
+                            dollars = 2
+                        )
 
-                    InterpolatedStringExpr(
-                        [ Text("'{a}'"); Text(" is not a valid number") ],
-                        isVerbatim = true,
-                        dollars = 2
-                    )
+                        InterpolatedStringExpr(
+                            [ Text("'{a}'"); Text(" is not a valid number") ],
+                            isVerbatim = true,
+                            dollars = 2
+                        )
+                    }
                 }
-            }
-        (*
-$$"""This is a test: {12} This is a test: {12}"""
-$$"""This is a test: {12} This is a test: {12}"""
-$$"""This is a test: {12} This is a test: {12}"""
-$$"""'{a}' is not a valid number"""
-*)
-
-        let res = Gen.mkOak source |> Gen.run
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Mixed Text and Expression with escape sequences``() =
         Oak() {
             AnonymousModule() {
                 // $"Line 1\nLine 2 {value}"
-                InterpolatedStringExpr([ Text("Line 1\nLine 2 "); Expr(FillExpr("value"), 1) ])
+                InterpolatedStringExpr([ Text(String.escape "Line 1\nLine 2 "); Expr(FillExpr("value"), 1) ])
 
                 // $"Tab\tSeparated {value}"
-                InterpolatedStringExpr([ Text("Tab\tSeparated "); Expr(FillExpr("value"), 1) ])
+                InterpolatedStringExpr([ Text(String.escape "Tab\tSeparated "); Expr(FillExpr("value"), 1) ])
 
                 // $"Quote\"in string {value}"
-                InterpolatedStringExpr([ Text("Quote\"in string "); Expr(FillExpr("value"), 1) ])
+                InterpolatedStringExpr([ Text(String.escape "Quote\"in string "); Expr(FillExpr("value"), 1) ])
             }
         }
         |> produces
             """
-$"Line 1
-Line 2 {value}"
-
-$"Tab	Separated {value}"
-$"Quote"in string {value}"
+$""Line 1\nLine 2 "{value}"
+$""Tab\tSeparated "{value}"
+$""Quote\"in string "{value}"
 """
 
     [<Fact>]
     let ``Empty interpolated string``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $""
-                    InterpolatedStringExpr([ Text("") ])
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $""
+                        InterpolatedStringExpr([ Text("") ])
 
-                    // $""
-                    InterpolatedStringExpr([ String("") ])
+                        // $""
+                        InterpolatedStringExpr([ String("") ])
 
-                    // $""""""
-                    InterpolatedStringExpr([ Text("") ], isVerbatim = true)
+                        // $""""""
+                        InterpolatedStringExpr([ Text("") ], isVerbatim = true)
 
-                    // $""""""
-                    InterpolatedStringExpr([ String("") ], isVerbatim = true)
+                        // $""""""
+                        InterpolatedStringExpr([ String("") ], isVerbatim = true)
 
-                    // $$""
-                    InterpolatedStringExpr([ Text("") ], dollars = 2)
+                        // $$""
+                        InterpolatedStringExpr([ Text("") ], dollars = 2)
 
-                    // $$""
-                    InterpolatedStringExpr([ String("") ], dollars = 2)
+                        // $$""
+                        InterpolatedStringExpr([ String("") ], dollars = 2)
 
-                    // $$""""""
-                    InterpolatedStringExpr([ Text("") ], isVerbatim = true, dollars = 2)
+                        // $$""""""
+                        InterpolatedStringExpr([ Text("") ], isVerbatim = true, dollars = 2)
 
-                    // $$""""""
-                    InterpolatedStringExpr([ String("") ], isVerbatim = true, dollars = 2)
+                        // $$""""""
+                        InterpolatedStringExpr([ String("") ], isVerbatim = true, dollars = 2)
+                    }
                 }
-            }
 
-        (*
-$""
-$"{""}"
-$""""""
-$"""{""}"""
-$$""""""
-$$"""{""}"""
-$$""""""
-$$"""{""}"""
-*)
-        let res = Gen.mkOak source |> Gen.run
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Triple dollar expressions``() =
-        let source =
-            Oak() {
-                AnonymousModule() {
-                    // $$$"{{{12}}}"
-                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = 3)
+        verify "InterpolatedString" {
+            return
+                Oak() {
+                    AnonymousModule() {
+                        // $$$"{{{12}}}"
+                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = 3)
 
-                    // $$$"""{{{12}}}"""
-                    InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true, dollars = 3)
+                        // $$$"""{{{12}}}"""
+                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true, dollars = 3)
 
-                    // $$$"Text with {{{value}}}"
-                    InterpolatedStringExpr([ Text("Text with "); Expr(FillExpr("value"), 1) ], dollars = 3)
+                        // $$$"Text with {{{value}}}"
+                        InterpolatedStringExpr([ Text("Text with "); Expr(FillExpr("value"), 1) ], dollars = 3)
+                    }
                 }
-            }
-
-        (*
-$$$"""{12}"""
-$$$"""{12}"""
-$$$"""Text with {value}"""
-*)
-        let res = Gen.mkOak source |> Gen.run
-
-        Assert.NotNull(res)
+        }
 
     [<Fact>]
     let ``Nested curly braces in text segments``() =

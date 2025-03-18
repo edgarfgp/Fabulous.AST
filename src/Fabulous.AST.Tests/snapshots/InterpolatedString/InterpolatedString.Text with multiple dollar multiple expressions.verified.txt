@@ -1,0 +1,4 @@
+﻿$$"""This is a test: {12} This is a test: {12}"""
+$$"""This is a test: {12} This is a test: {12}"""
+$$"""This is a test: {12} This is a test: {12}"""
+$$"""'{a}' is not a valid number"""
