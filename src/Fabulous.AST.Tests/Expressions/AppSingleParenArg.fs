@@ -20,18 +20,15 @@ module AppSingleParenArg =
             AnonymousModule() {
                 AppSingleParenArgExpr("MyClass", ParenExpr(TupleExpr([ "0"; "0"; "0" ])))
 
-                Value(
-                    "asdasd",
-                    AppSingleParenArgExpr(
-                        DynamicExpr(
-                            AppSingleParenArgExpr(
-                                DynamicExpr(AppSingleParenArgExpr(DynamicExpr("x?", "a()"), "a"), "a"),
-                                "a"
-                            ),
-                            "c"
+                AppSingleParenArgExpr(
+                    DynamicExpr(
+                        AppSingleParenArgExpr(
+                            DynamicExpr(AppSingleParenArgExpr(DynamicExpr("x", "a"), ParenExpr("")), "b"),
+                            ParenExpr("t")
                         ),
-                        ParenExpr("t")
-                    )
+                        "b"
+                    ),
+                    ParenExpr("t")
                 )
             }
         }
@@ -39,5 +36,5 @@ module AppSingleParenArg =
             config
             """
 MyClass (0, 0, 0)
-x?a ("")?b (t)?b (t)
+x?a("")?b(t)?b(t)
 """
