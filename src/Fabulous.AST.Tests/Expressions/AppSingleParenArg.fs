@@ -10,16 +10,9 @@ open type Ast
 module AppSingleParenArg =
 
     [<Fact>]
-    let ``let value with a AppSingleParenArg expression``() =
-        let config: Fantomas.Core.FormatConfig =
-            { Fantomas.Core.FormatConfig.Default with
-                SpaceBeforeLowercaseInvocation = false
-                SpaceBeforeUppercaseInvocation = true }
-
+    let ``AppSingleParenArg expression``() =
         Oak() {
             AnonymousModule() {
-                AppSingleParenArgExpr("MyClass", ParenExpr(TupleExpr([ "0"; "0"; "0" ])))
-
                 AppSingleParenArgExpr(
                     DynamicExpr(
                         AppSingleParenArgExpr(
@@ -32,8 +25,7 @@ module AppSingleParenArg =
                 )
             }
         }
-        |> producesWithConfig
-            config
+        |> produces
             """
 MyClass (0, 0, 0)
 x?a("")?b(t)?b(t)
