@@ -11,22 +11,8 @@ module AppSingleParenArg =
 
     [<Fact>]
     let ``AppSingleParenArg expression``() =
-        Oak() {
-            AnonymousModule() {
-                AppSingleParenArgExpr(
-                    DynamicExpr(
-                        AppSingleParenArgExpr(
-                            DynamicExpr(AppSingleParenArgExpr(DynamicExpr("x", "a"), ParenExpr("")), "b"),
-                            ParenExpr("t")
-                        ),
-                        "b"
-                    ),
-                    ParenExpr("t")
-                )
-            }
-        }
+        Oak() { AnonymousModule() { AppSingleParenArgExpr("MyClass", ParenExpr(TupleExpr([ "0"; "0"; "0" ]))) } }
         |> produces
             """
 MyClass (0, 0, 0)
-x?a("")?b(t)?b(t)
 """

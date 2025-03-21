@@ -97,6 +97,7 @@
         <Compile Include="Widgets\Expressions\ChainLink.fs" />
         <Compile Include="Widgets\Expressions\Chain.fs" />
         <Compile Include="Widgets\Expressions\AppSingleParenArg.fs" />
+        <Compile Include="Widgets\Expressions\AppLongIdentAndSingleParenArg.fs" />
         <Compile Include="Widgets\Expressions\ExprBeginEnd.fs" />
         <Compile Include="Widgets\Expressions\ExplicitConstructorThen.fs" />
         <Compile Include="Widgets\Expressions\DotLambda.fs" />
@@ -122,7 +123,6 @@
         <Compile Include="Widgets\Expressions\StructTuple.fs" />
         <Compile Include="Widgets\Expressions\ArrayOrList.fs" />
         <Compile Include="Widgets\Expressions\App.fs" />
-        <Compile Include="Widgets\Expressions\AppLongIdentAndSingleParenArg.fs" />
         <Compile Include="Widgets\Expressions\MatchClause.fs" />
         <Compile Include="Widgets\Expressions\Match.fs" />
         <Compile Include="Widgets\Expressions\InfixApp.fs" />
