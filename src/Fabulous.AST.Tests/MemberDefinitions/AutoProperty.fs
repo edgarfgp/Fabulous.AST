@@ -62,3 +62,103 @@ type Person(name: string, age: int) =
     [<System.Obsolete>]
     member val public E = "" with get, set
 """
+
+    [<Fact>]
+    let ``public get, private set``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X", UnitPat()) {
+                    MemberVal("Y", Int(7), Int(), true, true, AccessControl.Public, AccessControl.Private)
+                }
+            }
+        }
+        |> produces
+            """
+type X() =
+    member val Y: int = 7 with public get, private set
+"""
+
+    [<Fact>]
+    let ``plain get, private set``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X", UnitPat()) {
+                    MemberVal("Y", Int(7), Int(), true, true, setterAccessibility = AccessControl.Private)
+                }
+            }
+        }
+        |> produces
+            """
+type X() =
+    member val Y: int = 7 with get, private set
+"""
+//
+// [<Test>]
+// let ``plain get, private set`` () =
+//     formatSourceString
+//         """
+// type X() =
+//     member val Y: int = 7 with get, private set
+// """
+//         config
+//     |> prepend newline
+//     |> should
+//         equal
+//         """
+// type X() =
+//     member val Y: int = 7 with get, private set
+// """
+//
+// [<Test>]
+// let ``internal get, plain set`` () =
+//     formatSourceString
+//         """
+// type X() =
+//     member val Y: int = 7 with internal get,  set
+// """
+//         config
+//     |> prepend newline
+//     |> should
+//         equal
+//         """
+// type X() =
+//     member val Y: int = 7 with internal get, set
+// """
+//
+// [<Test>]
+// let ``public get, private set in signature`` () =
+//     formatSignatureString
+//         """
+// module A
+// type X =
+//     new: unit -> X
+//     member internal Y: int with public get, private set
+// """
+//         config
+//     |> prepend newline
+//     |> should
+//         equal
+//         """
+// module A
+// type X =
+//     new: unit -> X
+//     member internal Y: int with public get, private set
+// """
+//
+// [<Test>]
+// let ``abstract member with public get, private set`` () =
+//     formatSignatureString
+//         """
+// namespace Meh
+// type X =
+//     abstract Y: int with public  get,  private set
+// """
+//         config
+//     |> prepend newline
+//     |> should
+//         equal
+//         """
+// namespace Meh
+// type X =
+//     abstract Y: int with public get, private set
+// """

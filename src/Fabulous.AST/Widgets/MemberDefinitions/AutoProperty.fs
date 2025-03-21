@@ -12,8 +12,8 @@ module AutoPropertyMember =
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
-    let HasGetter = Attributes.defineScalar<bool> "HasGetter"
-    let HasSetter = Attributes.defineScalar<bool> "HasSetter"
+    let HasGetter = Attributes.defineScalar<bool * AccessControl> "HasGetter"
+    let HasSetter = Attributes.defineScalar<bool * AccessControl> "HasSetter"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -75,15 +75,51 @@ module AutoPropertyMember =
 
             let withGetSetText =
                 match hasGetter, hasSetter with
-                | true, true ->
+                | (true, getterAccessibility), (true, setterAccessibility) ->
                     Some(
                         MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``; SingleTextNode.Create("get,"); SingleTextNode.set ]
+                            [ SingleTextNode.``with``
+                              // Getter
+                              match getterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.Create("get,")
+                              // Setter
+                              match setterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.set ]
                         )
                     )
-                | true, false -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
-                | false, true -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
-                | false, false -> None
+                | (true, getterAccessibility), (false, _) ->
+                    Some(
+                        MultipleTextsNode.Create(
+                            [ SingleTextNode.``with``
+                              match getterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.get ]
+                        )
+                    )
+                | (false, _), (true, setterAccessibility) ->
+                    Some(
+                        MultipleTextsNode.Create(
+                            [ SingleTextNode.``with``
+                              match setterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.set ]
+                        )
+                    )
+                | (false, _), (false, _) -> None
 
             MemberDefnAutoPropertyNode(
                 xmlDocs,
@@ -113,14 +149,16 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
                     StackList.three(
                         AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetter.WithValue(hasGetter),
-                        AutoPropertyMember.HasSetter.WithValue(hasSetter)
+                        AutoPropertyMember.HasGetter.WithValue(hasGetter, getterAccessibility),
+                        AutoPropertyMember.HasSetter.WithValue(hasSetter, setterAccessibility)
                     ),
                     [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile())
                        match returnType with
@@ -160,8 +198,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter, getterAccessibility, setterAccessibility)
 
         /// <summary>
@@ -195,8 +233,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.BaseMemberVal(
                 identifier,
@@ -239,8 +277,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.BaseMemberVal(
                 identifier,
@@ -280,8 +318,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.MemberVal(
                 identifier,
@@ -323,8 +361,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.BaseMemberVal(
                 identifier,
@@ -367,8 +405,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.BaseMemberVal(
                 identifier,
@@ -408,8 +446,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.MemberVal(
                 identifier,
@@ -451,8 +489,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.BaseMemberVal(
                 identifier,
@@ -495,8 +533,8 @@ module AutoPropertyMemberBuilders =
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Public
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Public
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             Ast.BaseMemberVal(
                 identifier,
