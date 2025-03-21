@@ -10,7 +10,7 @@ open type Ast
 module AppSingleParenArg =
 
     [<Fact>]
-    let ``let value with a AppSingleParenArg expression``() =
+    let ``AppSingleParenArg expression``() =
         Oak() { AnonymousModule() { AppSingleParenArgExpr("MyClass", ParenExpr(TupleExpr([ "0"; "0"; "0" ]))) } }
         |> produces
             """

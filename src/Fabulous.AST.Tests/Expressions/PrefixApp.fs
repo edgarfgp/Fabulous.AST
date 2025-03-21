@@ -9,18 +9,19 @@ open type Ast
 
 module PrefixApp =
 
+    // See https://github.com/fsprojects/fantomas/issues/2998
     [<Fact>]
     let ``PrefixApp expression``() =
         Oak() {
             AnonymousModule() {
-                PrefixAppExpr("a", ConstantExpr(Constant("b")))
-                PrefixAppExpr("a", Constant("b"))
-                PrefixAppExpr("a", "b")
+                PrefixAppExpr("?getPropertyValue", ConstantExpr(Constant("--statusBarHeight")))
+                PrefixAppExpr("?getPropertyValue", Constant("--statusBarHeight"))
+                PrefixAppExpr("?getPropertyValue", "--statusBarHeight")
             }
         }
         |> produces
             """
-a b
-a b
-a b
+?getPropertyValue --statusBarHeight
+?getPropertyValue --statusBarHeight
+?getPropertyValue --statusBarHeight
 """
