@@ -105,22 +105,3 @@ type X() =
 type X() =
     member val Y: int = 7 with internal get, set
 """
-
-//
-// [<Test>]
-// let ``abstract member with public get, private set`` () =
-//     formatSignatureString
-//         """
-// namespace Meh
-// type X =
-//     abstract Y: int with public  get,  private set
-// """
-//         config
-//     |> prepend newline
-//     |> should
-//         equal
-//         """
-// namespace Meh
-// type X =
-//     abstract Y: int with public get, private set
-// """

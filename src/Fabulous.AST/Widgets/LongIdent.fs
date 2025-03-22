@@ -71,3 +71,5 @@ module LongIdentTypeBuilders =
         static member List() = Ast.LongIdent("list")
 
         static member Seq() = Ast.LongIdent("seq")
+
+        static member Null() = Ast.LongIdent("null")
