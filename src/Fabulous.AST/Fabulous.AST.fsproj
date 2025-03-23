@@ -78,7 +78,6 @@
         <Compile Include="Widgets\Expressions\DotIndexedGet.fs" />
         <Compile Include="Widgets\Expressions\Lazy.fs" />
         <Compile Include="Widgets\Expressions\PrefixApp.fs" />
-        <Compile Include="Widgets\Expressions\TryWith.fs" />
         <Compile Include="Widgets\Expressions\FillExprNode.fs" />
         <Compile Include="Widgets\Expressions\InterpolatedString.fs" />
         <Compile Include="Widgets\Expressions\TryFinally.fs" />
@@ -125,6 +124,7 @@
         <Compile Include="Widgets\Expressions\App.fs" />
         <Compile Include="Widgets\Expressions\MatchClause.fs" />
         <Compile Include="Widgets\Expressions\Match.fs" />
+        <Compile Include="Widgets\Expressions\TryWith.fs" />
         <Compile Include="Widgets\Expressions\InfixApp.fs" />
         <Compile Include="Widgets\Expressions\RecordField.fs" />
         <Compile Include="Widgets\Expressions\Record.fs" />

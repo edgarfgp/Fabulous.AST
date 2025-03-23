@@ -19,7 +19,26 @@ module TryWith =
 [<AutoOpen>]
 module TryWithBuilders =
     type Ast with
-
+        /// <summary>
+        /// Create a try-with expression.
+        /// </summary>
+        /// <param name="value">The expression to try.</param>
+        /// <param name="clauses">The match clauses for exception handling.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TryWithExpr(
+        ///             ConstantExpr(Int(1)),
+        ///             [
+        ///                 MatchClause(
+        ///                     PatternExpr(PatternVar("e")),
+        ///                     ConstantExpr(Int(0))
+        ///                 )
+        ///             ]
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member TryWithExpr(value: WidgetBuilder<Expr>, clauses: WidgetBuilder<MatchClauseNode> list) =
             let clauses = clauses |> List.map Gen.mkOak
 
@@ -32,8 +51,110 @@ module TryWithBuilders =
                 )
             )
 
+        /// <summary>
+        /// Create a try-with expression with a constant value.
+        /// </summary>
+        /// <param name="value">The constant value to try.</param>
+        /// <param name="clauses">The match clauses for exception handling.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TryWithExpr(
+        ///             Int(1),
+        ///             [
+        ///                 MatchClause(
+        ///                     PatternExpr(PatternVar("e")),
+        ///                     ConstantExpr(Int(0))
+        ///                 )
+        ///             ]
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member TryWithExpr(value: WidgetBuilder<Constant>, clauses: WidgetBuilder<MatchClauseNode> list) =
             Ast.TryWithExpr(Ast.ConstantExpr(value), clauses)
 
+        /// <summary>
+        /// Create a try-with expression with a string literal value.
+        /// </summary>
+        /// <param name="value">The string literal to try.</param>
+        /// <param name="clauses">The match clauses for exception handling.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TryWithExpr(
+        ///             "someFunction()",
+        ///             [
+        ///                 MatchClause(
+        ///                     PatternExpr(PatternVar("e")),
+        ///                     ConstantExpr(Int(0))
+        ///                 )
+        ///             ]
+        ///         )
+        ///     }
+        /// }
+        /// </code>
         static member TryWithExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> list) =
             Ast.TryWithExpr(Ast.ConstantExpr(value), clauses)
+
+        /// <summary>
+        /// Create a try-with expression with a single match clause for catching all exceptions.
+        /// </summary>
+        /// <param name="value">The expression to try.</param>
+        /// <param name="exceptionName">The name to bind the exception to.</param>
+        /// <param name="handler">The expression to handle the exception.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TryWithExpr(
+        ///             ConstantExpr(Int(1)),
+        ///             "ex",
+        ///             ConstantExpr(Int(0))
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member TryWithExpr(value: WidgetBuilder<Expr>, exceptionName: string, handler: WidgetBuilder<Expr>) =
+            let clause = Ast.MatchClauseExpr(Ast.NamedPat(exceptionName), handler)
+
+            Ast.TryWithExpr(value, [ clause ])
+
+        /// <summary>
+        /// Create a try-with expression with a constant value and a single match clause for catching all exceptions.
+        /// </summary>
+        /// <param name="value">The constant value to try.</param>
+        /// <param name="exceptionName">The name to bind the exception to.</param>
+        /// <param name="handler">The expression to handle the exception.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TryWithExpr(
+        ///             Int(1),
+        ///             "ex",
+        ///             ConstantExpr(Int(0))
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member TryWithExpr(value: WidgetBuilder<Constant>, exceptionName: string, handler: WidgetBuilder<Expr>) =
+            Ast.TryWithExpr(Ast.ConstantExpr(value), exceptionName, handler)
+
+        /// <summary>
+        /// Create a try-with expression with a string literal value and a single match clause for catching all exceptions.
+        /// </summary>
+        /// <param name="value">The string literal to try.</param>
+        /// <param name="exceptionName">The name to bind the exception to.</param>
+        /// <param name="handler">The expression to handle the exception.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         TryWithExpr(
+        ///             "someFunction()",
+        ///             "ex",
+        ///             ConstantExpr(Int(0))
+        ///         )
+        ///     }
+        /// }
+        /// </code>
+        static member TryWithExpr(value: string, exceptionName: string, handler: WidgetBuilder<Expr>) =
+            Ast.TryWithExpr(Ast.ConstantExpr(value), exceptionName, handler)
