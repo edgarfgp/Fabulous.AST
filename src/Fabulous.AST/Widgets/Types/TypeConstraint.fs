@@ -91,6 +91,12 @@ module TypeConstraintBuilders =
                 TypeConstraint.Single.WithValue((typar, kind))
             )
 
+        static member ConstraintNotStruct(typar: string) =
+            WidgetBuilder<TypeConstraint>(
+                TypeConstraint.WidgetSingleKey,
+                TypeConstraint.Single.WithValue((typar, "not struct"))
+            )
+
         static member DefaultsTo(def: string, typar: string, tp: WidgetBuilder<Type>) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetDefaultsToTypeKey,

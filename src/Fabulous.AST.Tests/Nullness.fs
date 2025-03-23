@@ -9,7 +9,7 @@ open type Ast
 module NullnessTests =
     [<Fact>]
     let ``du case of string or null``() =
-        Oak() { AnonymousModule() { Union("DU") { UnionCase("MyCase", Field(Paren(Nullness(String())))) } } }
+        Oak() { AnonymousModule() { Union("DU") { UnionCase("MyCase", Field(Paren(TypeOrNull(String())))) } } }
         |> produces
             """
 type DU = MyCase of (string | null)
@@ -40,45 +40,47 @@ match x with
 type C<'T when 'T: not null> = class end
 """
 
-// [<Test>]
-//  let ``multiple or type`` () =
-//      formatSourceString
-//          """
-//  let myFunc ("abc" | "" : string | null | "123") = 15
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  let myFunc ("abc" | "": string | null | "123") = 15
-//  """
-//
-//  [<Test>]
-//  let ``null type constraint`` () =
-//      formatSourceString
-//          """
-//  let myFunc() : 'T when 'T : not struct and 'T:null = null
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  let myFunc () : 'T when 'T: not struct and 'T: null = null
-//  """
-//
-//  [<Test>]
-//  let ``not null type constraint`` () =
-//      formatSourceString
-//          """
-//  let myFunc (x: 'T when 'T: not null) = 42
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  let myFunc (x: 'T when 'T: not null) = 42
-//  """
-//
+    [<Fact>]
+    let ``multiple or type``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "myFunc",
+                    ParenPat(OrPat(String("abc"), OrPat(ParameterPat(String(""), TypeOrNull(String())), String("123")))),
+                    Int(15)
+                )
+            }
+        }
+        |> produces
+            """
+let myFunc ("abc" | "": string | null | "123") = 15
+"""
+
+    [<Fact>]
+    let ``null type constraint``() =
+        Oak() {
+            AnonymousModule() {
+                Function(
+                    "myFunc",
+                    UnitPat(),
+                    NullExpr(),
+                    WithGlobal("'T", [ ConstraintNotStruct("'T"); ConstraintSingle("'T", "null") ])
+                )
+            }
+        }
+        |> produces
+            """
+let myFunc () : 'T when 'T: not struct and 'T: null = null
+"""
+
+    [<Fact>]
+    let ``not null type constraint``() =
+        Oak() {
+            AnonymousModule() {
+                Function("myFunc", ParenPat(ParameterPat("x", WithGlobal("'T", WhereNotSupportsNull("'T")))), Int(42))
+            }
+        }
+        |> produces
+            """
+let myFunc (x: 'T when 'T: not null) = 42
+"""

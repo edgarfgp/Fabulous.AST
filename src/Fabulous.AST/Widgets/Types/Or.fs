@@ -37,8 +37,8 @@ module OrTypeBuilders =
         static member Or(lhs: string, rhs: string) =
             Ast.BaseOr(Ast.LongIdent(lhs), SingleTextNode.``or``, Ast.LongIdent(rhs))
 
-        static member Nullness(lhs: WidgetBuilder<Type>) =
+        static member TypeOrNull(lhs: WidgetBuilder<Type>) =
             Ast.BaseOr(lhs, SingleTextNode.bar, Ast.Null())
 
-        static member Nullness(lhs: string) =
+        static member TypeOrNull(lhs: string) =
             Ast.BaseOr(Ast.LongIdent(lhs), SingleTextNode.bar, Ast.Null())
