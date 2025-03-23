@@ -99,3 +99,4 @@ module SingleTextNode =
     let tripleQuote = SingleTextNode.Create "\"\"\""
     let ``default`` = SingleTextNode.Create "default"
     let ``delegate`` = SingleTextNode.Create("delegate")
+    let not = SingleTextNode.Create "not"

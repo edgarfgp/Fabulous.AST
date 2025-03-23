@@ -31,3 +31,5 @@ module IsInstPatBuilders =
                     Array.empty
                 )
             )
+
+        static member IsInstPat(value: string) = Ast.IsInstPat(Ast.LongIdent(value))

@@ -15,6 +15,31 @@ module NullnessTests =
 type DU = MyCase of (string | null)
 """
 
+    [<Fact>]
+    let ``or null pattern``() =
+        Oak() {
+            AnonymousModule() { MatchExpr("x", [ MatchClauseExpr(OrPat(IsInstPat(String()), NullPat()), UnitExpr()) ]) }
+        }
+        |> produces
+            """
+match x with
+| :? string
+| null -> ()
+"""
+
+    [<Fact>]
+    let ``not null in type constraints``() =
+        Oak() {
+            AnonymousModule() {
+                ClassEnd("C") { () }
+                |> _.typeParams(PostfixList(TyparDecl("'T"), WhereNotSupportsNull("'T")))
+            }
+        }
+        |> produces
+            """
+type C<'T when 'T: not null> = class end
+"""
+
 // [<Test>]
 //  let ``multiple or type`` () =
 //      formatSourceString
@@ -57,89 +82,3 @@ type DU = MyCase of (string | null)
 //  let myFunc (x: 'T when 'T: not null) = 42
 //  """
 //
-//  [<Test>]
-//  let ``not null in type constraints`` () =
-//      formatSourceString
-//          """
-//  type C<'T when 'T: not null> = class end
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  type C<'T when 'T: not null> = class end
-//  """
-//
-//  [<Test>]
-//  let ``or null pattern`` () =
-//      formatSourceString
-//          """
-//  match x with
-//  | :? string | null -> ()
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  match x with
-//  | :? string
-//  | null -> ()
-//  """
-//
-//  [<Test>]
-//  let ``nullness in signature file`` () =
-//      formatSignatureString
-//          """
-//  namespace Meh
-//  type DU = MyCase of (string | null)
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  namespace Meh
-//  type DU = MyCase of (string | null)
-//  """
-//
-//  [<Test>]
-//  let ``trivia in SynType.WithNull`` () =
-//      formatSourceString
-//          """
-//  type DU = MyCase of (string
-//                          | // but why?
-//                              null)
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  type DU =
-//      | MyCase of
-//          (string | // but why?
-//              null)
-//  """
-//
-//  [<Test>]
-//  let ``trivia in SynTypeConstraint.WhereTyparNotSupportsNull`` () =
-//      formatSourceString
-//          """
-//  type C<'T when
-//                  'T
-//                      : // comment 1
-//                      not // comment 2
-//                          null> = class end
-//  """
-//          config
-//      |> prepend newline
-//      |> should
-//          equal
-//          """
-//  type C<'T
-//      when 'T: // comment 1
-//          not // comment 2
-//          null> = class end
-//  """
