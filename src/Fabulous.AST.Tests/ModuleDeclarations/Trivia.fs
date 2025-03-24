@@ -405,6 +405,8 @@ Another comment
         =
         Oak() {
             AnonymousModule() {
+                Value("x", "1").triviaBefore(TriviaNode(SingleLine("Comment before")))
+
                 Value("x", "10")
                     .triviaAfter(Newline())
                     .triviaAfter(BlockComment("Comment after", newlineBefore = true, newlineAfter = true))
@@ -417,6 +419,8 @@ Another comment
         }
         |> produces
             """
+// Comment before
+let x = 1
 #r "nuget: Fantomas.Core.SyntaxOak"
 let x = 10
 

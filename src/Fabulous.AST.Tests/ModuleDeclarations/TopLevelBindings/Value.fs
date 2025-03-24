@@ -101,7 +101,7 @@ let x, y, z = 1, 2, 3
             AnonymousModule() {
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)), Int())
 
-                Value(ConstantPat(Constant("z")), ConstantExpr(RawString(Int(12))))
+                Value(ConstantPat(Constant("z")), ConstantExpr(VerbatimString(Int(12))))
             }
         }
         |> produces

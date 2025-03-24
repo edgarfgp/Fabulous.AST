@@ -92,41 +92,183 @@ module XmlDocNode =
 [<AutoOpen>]
 module XmlDocsBuilders =
     type Ast with
+        /// <summary>Creates XML documentation with the specified lines.</summary>
+        /// <param name="lines">The list of documentation lines.</param>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("x", "int")
+        ///             .xmlDocs(XmlDocs(["This is a value"; "It represents an integer"]))
+        ///     }
+        /// }
+        /// </code>
         static member inline XmlDocs(lines: string list) =
             WidgetBuilder<XmlDocNode>(XmlDocNode.WidgetKey, XmlDocNode.Lines.WithValue(lines))
 
+        /// <summary>Creates XML documentation with a single line.</summary>
+        /// <param name="lines">The documentation text.</param>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("x", "int")
+        ///             .xmlDocs(XmlDocs("This is a value"))
+        ///     }
+        /// }
+        /// </code>
         static member inline XmlDocs(lines: string) = Ast.XmlDocs [ lines ]
 
+        /// <summary>Creates a summary XML documentation with the specified lines.</summary>
+        /// <param name="lines">The list of summary lines.</param>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("x", "int")
+        ///             .xmlDocs(Summary(["This is a value"; "It represents an integer"]))
+        ///     }
+        /// }
+        /// </code>
         static member inline Summary(lines: string list) =
             WidgetBuilder<XmlDocNode>(XmlDocNode.WidgetKey, XmlDocNode.Summary.WithValue(lines))
 
+        /// <summary>Creates a summary XML documentation with a single line.</summary>
+        /// <param name="summary">The summary text.</param>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Val("x", "int")
+        ///             .xmlDocs(Summary("This is a value"))
+        ///     }
+        /// }
+        /// </code>
         static member inline Summary(summary: string) = Ast.Summary [ summary ]
 
 type XmlDocsModifiers =
+    /// <summary>Adds parameter documentation to XML documentation.</summary>
+    /// <param name="this">Current XML documentation widget.</param>
+    /// <param name="parameters">List of parameter name and description pairs.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("add", "int -> int -> int")
+    ///             .xmlDocs(
+    ///                 Summary("Adds two integers")
+    ///                     .parameters([("x", "First integer"); ("y", "Second integer")])
+    ///             )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline parameters(this: WidgetBuilder<XmlDocNode>, parameters: (string * string) list) =
         this.AddScalar(XmlDocNode.Parameters.WithValue(parameters))
 
+    /// <summary>Adds a single parameter documentation to XML documentation.</summary>
+    /// <param name="this">Current XML documentation widget.</param>
+    /// <param name="returnInfo">Parameter name and description pair.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("getValue", "unit -> int")
+    ///             .xmlDocs(
+    ///                 Summary("Gets a value")
+    ///                     .parameters(("unit", "No parameters"))
+    ///             )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline parameters(this: WidgetBuilder<XmlDocNode>, returnInfo: string * string) =
         XmlDocsModifiers.parameters(this, [ returnInfo ])
 
+    /// <summary>Adds a single parameter documentation to XML documentation.</summary>
+    /// <param name="this">Current XML documentation widget.</param>
+    /// <param name="returnInfo">Parameter name.</param>
+    /// <param name="desc">Parameter description.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("getValue", "unit -> int")
+    ///             .xmlDocs(
+    ///                 Summary("Gets a value")
+    ///                     .parameters("unit", "No parameters")
+    ///             )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline parameters(this: WidgetBuilder<XmlDocNode>, returnInfo: string, desc: string) =
         XmlDocsModifiers.parameters(this, [ returnInfo, desc ])
 
+    /// <summary>Adds return value documentation to XML documentation.</summary>
+    /// <param name="this">Current XML documentation widget.</param>
+    /// <param name="returnInfo">List of return value description lines.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("getValue", "unit -> int")
+    ///             .xmlDocs(
+    ///                 Summary("Gets a value")
+    ///                     .returnInfo(["The integer value"; "Can be positive or negative"])
+    ///             )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline returnInfo(this: WidgetBuilder<XmlDocNode>, returnInfo: string list) =
         this.AddScalar(XmlDocNode.ReturnInfo.WithValue(returnInfo))
 
+    /// <summary>Adds return value documentation to XML documentation.</summary>
+    /// <param name="this">Current XML documentation widget.</param>
+    /// <param name="returnInfo">Return value description.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("getValue", "unit -> int")
+    ///             .xmlDocs(
+    ///                 Summary("Gets a value")
+    ///                     .returnInfo("The integer value")
+    ///             )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline returnInfo(this: WidgetBuilder<XmlDocNode>, returnInfo: string) =
         XmlDocsModifiers.returnInfo(this, [ returnInfo ])
 
+    /// <summary>Adds exception information to XML documentation.</summary>
+    /// <param name="this">Current XML documentation widget.</param>
+    /// <param name="exceptionInfo">List of exception type and description pairs.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("divide", "int -> int -> int")
+    ///             .xmlDocs(
+    ///                 Summary("Divides two integers")
+    ///                     .parameters([("x", "Numerator"); ("y", "Denominator")])
+    ///                     .exceptionInfo([("System.DivideByZeroException", "Thrown when denominator is zero")])
+    ///             )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline exceptionInfo(this: WidgetBuilder<XmlDocNode>, exceptionInfo: (string * string) list) =
         this.AddScalar(XmlDocNode.ExceptionInfo.WithValue(exceptionInfo))
 
+    /// <summary>Adds exception information to XML documentation.</summary>
+    /// <param name="this">Current XML documentation widget.</param>
+    /// <param name="exceptionInfo">Exception type.</param>
+    /// <param name="desc">Exception description.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Val("divide", "int -> int -> int")
+    ///             .xmlDocs(
+    ///                 Summary("Divides two integers")
+    ///                     .parameters([("x", "Numerator"); ("y", "Denominator")])
+    ///                     .exceptionInfo("System.DivideByZeroException", "Thrown when denominator is zero")
+    ///             )
+    ///     }
+    /// }
+    /// </code>
     [<Extension>]
     static member inline exceptionInfo(this: WidgetBuilder<XmlDocNode>, exceptionInfo: string, desc: string) =
         XmlDocsModifiers.exceptionInfo(this, [ exceptionInfo, desc ])

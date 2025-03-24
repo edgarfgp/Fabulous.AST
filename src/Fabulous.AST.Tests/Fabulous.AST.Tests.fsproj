@@ -18,6 +18,7 @@
         <Compile Include="Nullness.fs" />
         <Compile Include="Core\APISketchTests.fs" />
         <Compile Include="Core\ArrayTests.fs" />
+        <Compile Include="Core\TriviaTests.fs" />
         <Compile Include="ModuleDeclarations\Oak.fs" />
         <Compile Include="ModuleDeclarations\XmlDocs.fs" />
         <Compile Include="ModuleDeclarations\Trivia.fs" />
@@ -109,7 +110,9 @@
         <Compile Include="Expressions\Record.fs" />
         <Compile Include="Expressions\AnonStructRecord.fs" />
         <Compile Include="Expressions\Conditionals.fs" />
+        <Compile Include="Expressions\BasicExprTests.fs" />
         <Compile Include="Patterns\Or.fs" />
+        <Compile Include="Patterns\BasicPatterns.fs" />
         <Compile Include="Patterns\As.fs" />
         <Compile Include="Patterns\OptionalVal.fs" />
         <Compile Include="Patterns\Paren.fs" />
@@ -127,6 +130,7 @@
         <Compile Include="Patterns\ListCons.fs" />
         <Compile Include="Attributes\Attributes.fs" />
         <Compile Include="Types\Types.fs" />
+        <Compile Include="Types\LongIdentTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
