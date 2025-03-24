@@ -65,6 +65,23 @@ module TypeConstraint =
             let tp = Widgets.getNodeFromWidget<Type> widget WhereSelfConstrained
             TypeConstraint.WhereSelfConstrained(tp))
 
+    let ConstraintWhereNotSupportsNull =
+        Attributes.defineScalar<string> "ConstraintWhereNotSupportsNull"
+
+    let WidgetKeyWhereNotSupportsNull =
+        Widgets.register "TypeConstraintWhereNotSupportsNull" (fun widget ->
+            let typar = Widgets.getScalarValue widget ConstraintWhereNotSupportsNull
+
+            TypeConstraint.WhereNotSupportsNull(
+                TypeConstraintWhereNotSupportsNull(
+                    SingleTextNode.Create(typar),
+                    SingleTextNode.colon,
+                    SingleTextNode.not,
+                    SingleTextNode.``null``,
+                    Range.Zero
+                )
+            ))
+
 [<AutoOpen>]
 module TypeConstraintBuilders =
     type Ast with
@@ -72,6 +89,12 @@ module TypeConstraintBuilders =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetSingleKey,
                 TypeConstraint.Single.WithValue((typar, kind))
+            )
+
+        static member ConstraintNotStruct(typar: string) =
+            WidgetBuilder<TypeConstraint>(
+                TypeConstraint.WidgetSingleKey,
+                TypeConstraint.Single.WithValue((typar, "not struct"))
             )
 
         static member DefaultsTo(def: string, typar: string, tp: WidgetBuilder<Type>) =
@@ -113,6 +136,12 @@ module TypeConstraintBuilders =
             )
 
         static member WhereSelf(tp: string) = Ast.WhereSelf(Ast.LongIdent tp)
+
+        static member WhereNotSupportsNull(typar: string) =
+            WidgetBuilder<TypeConstraint>(
+                TypeConstraint.WidgetKeyWhereNotSupportsNull,
+                TypeConstraint.ConstraintWhereNotSupportsNull.WithValue(typar)
+            )
 
         static member private BaseSupports(tp: WidgetBuilder<Type>, memberDefn: MemberDefn) =
             WidgetBuilder<TypeConstraint>(

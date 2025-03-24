@@ -62,3 +62,46 @@ type Person(name: string, age: int) =
     [<System.Obsolete>]
     member val public E = "" with get, set
 """
+
+    [<Fact>]
+    let ``public get, private set``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X", UnitPat()) {
+                    MemberVal("Y", Int(7), Int(), true, true, AccessControl.Public, AccessControl.Private)
+                }
+            }
+        }
+        |> produces
+            """
+type X() =
+    member val Y: int = 7 with public get, private set
+"""
+
+    [<Fact>]
+    let ``plain get, private set``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X", UnitPat()) {
+                    MemberVal("Y", Int(7), Int(), true, true, setterAccessibility = AccessControl.Private)
+                }
+            }
+        }
+        |> produces
+            """
+type X() =
+    member val Y: int = 7 with get, private set
+"""
+
+    [<Fact>]
+    let ``internal get, plain set``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X", UnitPat()) { MemberVal("Y", Int(7), Int(), true, true, AccessControl.Internal) }
+            }
+        }
+        |> produces
+            """
+type X() =
+    member val Y: int = 7 with internal get, set
+"""

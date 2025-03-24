@@ -19,13 +19,39 @@ module Expr =
 [<AutoOpen>]
 module ExprBuilders =
     type Ast with
+        /// <summary>Creates a constant expression.</summary>
+        /// <param name="value">The constant value.</param>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     ConstantExpr(String("Hello, world!"))
+        /// }
+        /// </code>
         static member ConstantExpr(value: WidgetBuilder<Constant>) =
             WidgetBuilder<Expr>(Expr.WidgetKey, Expr.Value.WithValue(value.Compile()))
 
+        /// <summary>Creates a constant expression from a string value.</summary>
+        /// <param name="value">The constant value as a string.</param>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     ConstantExpr("42")
+        /// }
+        /// </code>
         static member ConstantExpr(value: string) = Ast.ConstantExpr(Ast.Constant(value))
 
+        /// <summary>Creates a null expression.</summary>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     NullExpr()
+        /// }
+        /// </code>
         static member NullExpr() = WidgetBuilder<Expr>(Expr.WidgetNullKey)
 
+        /// <summary>Creates a unit expression ().</summary>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     UnitExpr()
+        /// }
+        /// </code>
         static member UnitExpr() = Ast.ConstantExpr(Ast.ConstantUnit())
 
 type ExprYieldExtensions =

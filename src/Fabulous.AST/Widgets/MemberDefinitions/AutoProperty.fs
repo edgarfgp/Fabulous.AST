@@ -12,8 +12,8 @@ module AutoPropertyMember =
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
-    let HasGetter = Attributes.defineScalar<bool> "HasGetter"
-    let HasSetter = Attributes.defineScalar<bool> "HasSetter"
+    let HasGetter = Attributes.defineScalar<bool * AccessControl> "HasGetter"
+    let HasSetter = Attributes.defineScalar<bool * AccessControl> "HasSetter"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
@@ -75,15 +75,51 @@ module AutoPropertyMember =
 
             let withGetSetText =
                 match hasGetter, hasSetter with
-                | true, true ->
+                | (true, getterAccessibility), (true, setterAccessibility) ->
                     Some(
                         MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``; SingleTextNode.Create("get,"); SingleTextNode.set ]
+                            [ SingleTextNode.``with``
+                              // Getter
+                              match getterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.Create("get,")
+                              // Setter
+                              match setterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.set ]
                         )
                     )
-                | true, false -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.get ]))
-                | false, true -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
-                | false, false -> None
+                | (true, getterAccessibility), (false, _) ->
+                    Some(
+                        MultipleTextsNode.Create(
+                            [ SingleTextNode.``with``
+                              match getterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.get ]
+                        )
+                    )
+                | (false, _), (true, setterAccessibility) ->
+                    Some(
+                        MultipleTextsNode.Create(
+                            [ SingleTextNode.``with``
+                              match setterAccessibility with
+                              | Public -> SingleTextNode.``public``
+                              | Private -> SingleTextNode.``private``
+                              | Internal -> SingleTextNode.``internal``
+                              | Unknown -> ()
+                              SingleTextNode.set ]
+                        )
+                    )
+                | (false, _), (false, _) -> None
 
             MemberDefnAutoPropertyNode(
                 xmlDocs,
@@ -107,18 +143,22 @@ module AutoPropertyMemberBuilders =
                 expr: WidgetBuilder<Expr>,
                 ?hasGetter: bool,
                 ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl,
                 ?returnType: WidgetBuilder<Type>
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             WidgetBuilder<MemberDefnAutoPropertyNode>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
                     StackList.three(
                         AutoPropertyMember.Identifier.WithValue(identifier),
-                        AutoPropertyMember.HasGetter.WithValue(hasGetter),
-                        AutoPropertyMember.HasSetter.WithValue(hasSetter)
+                        AutoPropertyMember.HasGetter.WithValue(hasGetter, getterAccessibility),
+                        AutoPropertyMember.HasSetter.WithValue(hasSetter, setterAccessibility)
                     ),
                     [| AutoPropertyMember.BodyExpr.WithValue(expr.Compile())
                        match returnType with
@@ -135,6 +175,8 @@ module AutoPropertyMemberBuilders =
         /// <param name="expr">The expression of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -145,10 +187,20 @@ module AutoPropertyMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member MemberVal(identifier: string, expr: WidgetBuilder<Expr>, ?hasGetter: bool, ?hasSetter: bool) =
+        static member MemberVal
+            (
+                identifier: string,
+                expr: WidgetBuilder<Expr>,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
+            ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter)
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+            Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter, getterAccessibility, setterAccessibility)
 
         /// <summary>
         /// Create an auto property member definition.
@@ -158,6 +210,8 @@ module AutoPropertyMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -173,11 +227,24 @@ module AutoPropertyMemberBuilders =
                 expr: WidgetBuilder<Expr>,
                 returnType: WidgetBuilder<Type>,
                 ?hasGetter: bool,
-                ?hasSetter: bool
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter, returnType)
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.BaseMemberVal(
+                identifier,
+                expr,
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility,
+                returnType
+            )
 
         /// <summary>
         /// Create an auto property member definition.
@@ -187,6 +254,8 @@ module AutoPropertyMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -197,16 +266,37 @@ module AutoPropertyMemberBuilders =
         /// }
         /// </code>
         static member MemberVal
-            (identifier: string, expr: WidgetBuilder<Expr>, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
+            (
+                identifier: string,
+                expr: WidgetBuilder<Expr>,
+                returnType: string,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
+            ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.BaseMemberVal(identifier, expr, hasGetter, hasSetter, Ast.LongIdent(returnType))
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.BaseMemberVal(
+                identifier,
+                expr,
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility,
+                Ast.LongIdent(returnType)
+            )
 
         /// <summary>Create an auto property member definition.</summary>
         /// <param name="identifier">The identifier of the member.</param>
         /// <param name="expr">The expression of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -217,10 +307,28 @@ module AutoPropertyMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member MemberVal(identifier: string, expr: WidgetBuilder<Constant>, ?hasGetter: bool, ?hasSetter: bool) =
+        static member MemberVal
+            (
+                identifier: string,
+                expr: WidgetBuilder<Constant>,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
+            ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.MemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter)
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.MemberVal(
+                identifier,
+                Ast.ConstantExpr(expr),
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility
+            )
 
         /// <summary>
         /// Create an auto property member definition.
@@ -230,6 +338,8 @@ module AutoPropertyMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -245,11 +355,24 @@ module AutoPropertyMemberBuilders =
                 expr: WidgetBuilder<Constant>,
                 returnType: WidgetBuilder<Type>,
                 ?hasGetter: bool,
-                ?hasSetter: bool
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
             ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, returnType)
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.BaseMemberVal(
+                identifier,
+                Ast.ConstantExpr(expr),
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility,
+                returnType
+            )
 
         /// <summary>
         /// Create an auto property member definition.
@@ -259,6 +382,8 @@ module AutoPropertyMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -269,16 +394,37 @@ module AutoPropertyMemberBuilders =
         /// }
         /// </code>
         static member MemberVal
-            (identifier: string, expr: WidgetBuilder<Constant>, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
+            (
+                identifier: string,
+                expr: WidgetBuilder<Constant>,
+                returnType: string,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
+            ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, Ast.LongIdent(returnType))
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.BaseMemberVal(
+                identifier,
+                Ast.ConstantExpr(expr),
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility,
+                Ast.LongIdent(returnType)
+            )
 
         /// <summary>Create an auto property member definition.</summary>
         /// <param name="identifier">The identifier of the member.</param>
         /// <param name="expr">The expression of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -289,10 +435,28 @@ module AutoPropertyMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member MemberVal(identifier: string, expr: string, ?hasGetter: bool, ?hasSetter: bool) =
+        static member MemberVal
+            (
+                identifier: string,
+                expr: string,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
+            ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.MemberVal(identifier, Ast.Constant(expr), hasGetter, hasSetter)
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.MemberVal(
+                identifier,
+                Ast.Constant(expr),
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility
+            )
 
         /// <summary>
         /// Create an auto property member definition.
@@ -302,6 +466,8 @@ module AutoPropertyMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -312,10 +478,29 @@ module AutoPropertyMemberBuilders =
         /// }
         /// </code>
         static member MemberVal
-            (identifier: string, expr: string, returnType: WidgetBuilder<Type>, ?hasGetter: bool, ?hasSetter: bool) =
+            (
+                identifier: string,
+                expr: string,
+                returnType: WidgetBuilder<Type>,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
+            ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, returnType)
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.BaseMemberVal(
+                identifier,
+                Ast.ConstantExpr(expr),
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility,
+                returnType
+            )
 
         /// <summary>
         /// Create an auto property member definition.
@@ -325,6 +510,8 @@ module AutoPropertyMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
+        /// <param name="getterAccessibility">The accessibility of the getter.</param>
+        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -335,11 +522,29 @@ module AutoPropertyMemberBuilders =
         /// }
         /// </code>
         static member MemberVal
-            (identifier: string, expr: string, returnType: string, ?hasGetter: bool, ?hasSetter: bool)
-            =
+            (
+                identifier: string,
+                expr: string,
+                returnType: string,
+                ?hasGetter: bool,
+                ?hasSetter: bool,
+                ?getterAccessibility: AccessControl,
+                ?setterAccessibility: AccessControl
+            ) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            Ast.BaseMemberVal(identifier, Ast.ConstantExpr(expr), hasGetter, hasSetter, Ast.LongIdent(returnType))
+            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
+            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            Ast.BaseMemberVal(
+                identifier,
+                Ast.ConstantExpr(expr),
+                hasGetter,
+                hasSetter,
+                getterAccessibility,
+                setterAccessibility,
+                Ast.LongIdent(returnType)
+            )
 
 type AutoPropertyMemberModifiers =
     /// <summary>Sets the XmlDocs for the current widget.</summary>

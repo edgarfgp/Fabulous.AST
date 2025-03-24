@@ -44,6 +44,9 @@ module DynamicBuilders =
         static member DynamicExpr(value: WidgetBuilder<Expr>, expr: WidgetBuilder<Constant>) =
             Ast.DynamicExpr(value, Ast.ConstantExpr(expr))
 
+        static member DynamicExpr(value: WidgetBuilder<Expr>, expr: string) =
+            Ast.DynamicExpr(value, Ast.Constant(expr))
+
         static member DynamicExpr(value: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.DynamicExpr(Ast.ConstantExpr(value), Ast.ConstantExpr(expr))
 

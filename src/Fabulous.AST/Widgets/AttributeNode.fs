@@ -37,9 +37,14 @@ module AttributeNode =
 module AttributeNodeBuilders =
     type Ast with
 
+        /// <summary>Creates an attribute with the specified name.</summary>
+        /// <param name="value">The name of the attribute.</param>
         static member Attribute(value: string) =
             WidgetBuilder<AttributeNode>(AttributeNode.WidgetKey, AttributeNode.TypeName.WithValue(value))
 
+        /// <summary>Creates an attribute with a specified target.</summary>
+        /// <param name="value">The name of the attribute.</param>
+        /// <param name="target">The target of the attribute.</param>
         static member AttributeTarget(value: string, target: string) =
             WidgetBuilder<AttributeNode>(
                 AttributeNode.WidgetKey,
@@ -50,6 +55,9 @@ module AttributeNodeBuilders =
                 )
             )
 
+        /// <summary>Creates an attribute with the specified name and expression value.</summary>
+        /// <param name="value">The name of the attribute.</param>
+        /// <param name="expr">The expression value of the attribute.</param>
         static member Attribute(value: string, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<AttributeNode>(
                 AttributeNode.WidgetKey,
@@ -60,12 +68,22 @@ module AttributeNodeBuilders =
                 )
             )
 
+        /// <summary>Creates an attribute with the specified name and constant value.</summary>
+        /// <param name="value">The name of the attribute.</param>
+        /// <param name="expr">The constant value of the attribute.</param>
         static member Attribute(value: string, expr: WidgetBuilder<Constant>) =
             Ast.Attribute(value, Ast.ConstantExpr(expr))
 
+        /// <summary>Creates an attribute with the specified name and string value.</summary>
+        /// <param name="value">The name of the attribute.</param>
+        /// <param name="expr">The string value of the attribute.</param>
         static member Attribute(value: string, expr: string) =
             Ast.Attribute(value, Ast.Constant(expr))
 
+        /// <summary>Creates an attribute with a specified target and expression value.</summary>
+        /// <param name="value">The name of the attribute.</param>
+        /// <param name="expr">The expression value of the attribute.</param>
+        /// <param name="target">The target of the attribute.</param>
         static member AttributeTarget(value: string, expr: WidgetBuilder<Expr>, target: string) =
             WidgetBuilder<AttributeNode>(
                 AttributeNode.WidgetKey,
@@ -76,8 +94,16 @@ module AttributeNodeBuilders =
                 )
             )
 
+        /// <summary>Creates an attribute with a specified target and constant value.</summary>
+        /// <param name="value">The name of the attribute.</param>
+        /// <param name="expr">The constant value of the attribute.</param>
+        /// <param name="target">The target of the attribute.</param>
         static member AttributeTarget(value: string, expr: WidgetBuilder<Constant>, target: string) =
             Ast.AttributeTarget(value, Ast.ConstantExpr(expr), target)
 
+        /// <summary>Creates an attribute with a specified target and string value.</summary>
+        /// <param name="value">The name of the attribute.</param>
+        /// <param name="expr">The string value of the attribute.</param>
+        /// <param name="target">The target of the attribute.</param>
         static member AttributeTarget(value: string, expr: string, target: string) =
             Ast.AttributeTarget(value, Ast.Constant(expr), target)
