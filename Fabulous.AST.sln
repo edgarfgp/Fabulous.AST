@@ -21,6 +21,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution items", "_Solutio
 		CONTRIBUTING.md = CONTRIBUTING.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{272B82D3-B8F4-4D4E-A62B-CFCA65F108F0}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Playground", "samples\Playground\Playground.fsproj", "{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,5 +42,12 @@ Global
 		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D72AD946-A5DB-45F8-A6B0-652BF1CEB942}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A} = {272B82D3-B8F4-4D4E-A62B-CFCA65F108F0}
 	EndGlobalSection
 EndGlobal

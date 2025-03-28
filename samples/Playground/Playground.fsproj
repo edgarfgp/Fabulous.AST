@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Common.fs" Watch="false"/>
+        <Compile Include="Generator.fs" Watch="true" />
+        <Compile Include="Program.fs"  Watch="false" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Fabulous.AST\Fabulous.AST.fsproj" />
+    </ItemGroup>
+
+</Project>
