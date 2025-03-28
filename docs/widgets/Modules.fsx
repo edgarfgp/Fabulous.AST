@@ -79,7 +79,7 @@ Named modules explicitly define a module with a name:
 Oak() {
     AnonymousModule() {
         Module("MathModule") {
-            Value("pi", Float("3.14159"))
+            Value("pi", Float(3.14159))
             Function("square", ParameterPat("x"), InfixAppExpr("x", "*", "x"))
         }
     }
@@ -175,7 +175,7 @@ Oak() {
                 ParameterPat("tree"),
                 MatchExpr(
                     "tree",
-                    [ MatchClauseExpr(ConstantPat("Leaf(n)"), "n")
+                    [ MatchClauseExpr(("Leaf(n)"), "n")
                       MatchClauseExpr(
                           ConstantPat("Node(v, l, r)"),
                           InfixAppExpr("v", "+", ParenExpr(InfixAppExpr(AppExpr("sum", "l"), "+", AppExpr("sum", "r"))))
@@ -201,9 +201,9 @@ Add values to modules with the `Value` widget:
 Oak() {
     AnonymousModule() {
         Module("Constants") {
-            Value("pi", Float("3.14159"))
-            Value("e", Float("2.71828"))
-            Value("phi", Float("1.61803"))
+            Value("pi", Float(3.14159))
+            Value("e", Float(2.71828))
+            Value("phi", Float(1.61803))
         }
     }
 }
@@ -253,7 +253,10 @@ Oak() {
                 UnionCase("Square", Float())
             }
 
-            TypeDefn("Point", Constructor(ParenPat([ ParameterPat("x"); ParameterPat("y") ]))) {
+            TypeDefn(
+                "Point",
+                Constructor(ParenPat(TuplePat([ ParameterPat("x", Float()); ParameterPat("y", Float()) ])))
+            ) {
                 Member("this.X", ConstantExpr("x"))
                 Member("this.Y", ConstantExpr("y"))
             }
