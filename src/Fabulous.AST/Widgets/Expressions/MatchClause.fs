@@ -131,6 +131,9 @@ module MatchClauseBuilders =
         static member MatchClauseExpr(pattern: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
             Ast.MatchClauseExpr(Ast.ConstantPat(pattern), bodyExpr)
 
+        static member MatchClauseExpr(pattern: WidgetBuilder<Constant>, bodyExpr: string) =
+            Ast.MatchClauseExpr(Ast.ConstantPat(pattern), Ast.ConstantExpr bodyExpr)
+
         static member MatchClauseExpr(pattern: string, bodyExpr: WidgetBuilder<Expr>) =
             Ast.MatchClauseExpr(Ast.Constant(pattern), bodyExpr)
 
