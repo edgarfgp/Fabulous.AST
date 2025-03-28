@@ -158,7 +158,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>, returnType: string) =
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>, returnType: string)
+            =
             Ast.BaseFunction(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
@@ -568,7 +569,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> list, returnType: string) =
+            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> list, returnType: string)
+            =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
@@ -750,7 +752,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: WidgetBuilder<Type>)
+            =
             Ast.BaseFunction(name, parameters, Ast.ConstantExpr(Ast.Constant(bodyExpr)), returnType)
 
         /// <summary>
@@ -807,7 +810,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
             let parameters =
                 parameters
                 |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
@@ -871,7 +875,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             let parameters =
                 parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
@@ -1014,7 +1019,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>, returnType: string) =
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>, returnType: string)
+            =
             Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
@@ -1071,7 +1077,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>, returnType: string) =
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>, returnType: string)
+            =
             Ast.Function(name, [ parameters ], bodyExpr, Ast.LongIdent(returnType))
 
         /// <summary>
@@ -1105,7 +1112,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string, returnType: WidgetBuilder<Type>) =
+            (name: string, parameters: WidgetBuilder<Pattern>, bodyExpr: string, returnType: WidgetBuilder<Type>)
+            =
             Ast.Function(name, [ parameters ], bodyExpr, returnType)
 
         /// <summary>
@@ -1208,7 +1216,8 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (name: string, parameters: string, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Function(name, [ parameters ], bodyExpr, returnType)
 
         /// <summary>

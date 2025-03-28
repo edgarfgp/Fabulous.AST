@@ -72,7 +72,8 @@ module AppWithLambdaBuilders =
             )
 
         static member AppWithLambdaExpr
-            (funcName: WidgetBuilder<Expr>, parameters: WidgetBuilder<Pattern> list, value: WidgetBuilder<Expr>) =
+            (funcName: WidgetBuilder<Expr>, parameters: WidgetBuilder<Pattern> list, value: WidgetBuilder<Expr>)
+            =
             Ast.AppWithLambdaExpr(funcName, [], parameters, value)
 
         static member AppWithLambdaExpr
@@ -148,7 +149,8 @@ module AppWithLambdaBuilders =
             )
 
         static member AppWithMatchLambdaExpr
-            (funcName: string, arguments: WidgetBuilder<Expr> list, clauses: WidgetBuilder<MatchClauseNode> list) =
+            (funcName: string, arguments: WidgetBuilder<Expr> list, clauses: WidgetBuilder<MatchClauseNode> list)
+            =
             Ast.AppWithMatchLambdaExpr(Ast.ConstantExpr(funcName), arguments, clauses)
 
         static member AppWithMatchLambdaExpr

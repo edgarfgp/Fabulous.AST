@@ -271,7 +271,8 @@ type ModuleDeclAttributeCollectionBuilderExtensions =
 
     [<Extension>]
     static member inline Yield
-        (this: AttributeCollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnPropertyGetSetNode>) : CollectionContent =
+        (this: AttributeCollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnPropertyGetSetNode>)
+        : CollectionContent =
         let node = Gen.mkOak x
         ModuleDeclAttributeCollectionBuilderExtensions.Yield(this, node)
 

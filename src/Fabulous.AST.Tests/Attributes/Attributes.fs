@@ -13,8 +13,7 @@ module AttributesNodes =
     let ``Simple AttributeNode``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .attribute(Attribute "Obsolete")
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).attribute(Attribute "Obsolete")
             }
         }
         |> produces
@@ -55,8 +54,7 @@ let x = 12
     let ``Simple AttributeNode type name and target``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .attribute(AttributeTarget("Struct", "return"))
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).attribute(AttributeTarget("Struct", "return"))
             }
         }
         |> produces

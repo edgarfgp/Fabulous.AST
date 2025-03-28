@@ -257,7 +257,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         ///</code>
         static member Getter
-            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>)
+            =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
                 AttributesBundle(
@@ -290,7 +291,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         ///</code>
         static member Getter
-            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Getter(parameters, expr, returnType)
 
         /// <summary>Create a getter for a property.</summary>
@@ -350,7 +352,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Getter
-            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr, returnType)
 
@@ -471,7 +474,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Getter
-            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Getter(parameters, Ast.ConstantExpr(expr), returnType)
 
         /// <summary>
@@ -535,7 +539,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Getter
-            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Getter(parameters, expr, returnType)
 
@@ -929,7 +934,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Getter
-            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Getter(parameter, Ast.ConstantExpr(expr), returnType)
 
         /// <summary>
@@ -990,7 +996,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Getter
-            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Getter(Ast.ConstantPat(parameter), expr, returnType)
 
         /// <summary>
@@ -1238,7 +1245,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Setter
-            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>)
+            =
             WidgetBuilder<PropertyGetSetBindingNode>(
                 PropertyGetSetBinding.WidgetKey,
                 AttributesBundle(
@@ -1274,7 +1282,8 @@ module PropertyGetSetBindingBuilders =
             Ast.Setter(parameters, expr)
 
         static member Setter
-            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Setter(parameters, expr, returnType)
 
@@ -1325,7 +1334,8 @@ module PropertyGetSetBindingBuilders =
             Ast.Setter(parameters, Ast.ConstantExpr(expr))
 
         static member Setter
-            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Pattern> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Setter(parameters, Ast.ConstantExpr(expr), returnType)
 
         static member Setter
@@ -1371,7 +1381,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Setter
-            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameters: WidgetBuilder<Constant> list, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.Setter(parameters, expr, returnType)
 
@@ -1740,7 +1751,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Setter
-            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameter: WidgetBuilder<Pattern>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Setter(parameter, Ast.ConstantExpr(expr), returnType)
 
         /// <summary>
@@ -1799,7 +1811,8 @@ module PropertyGetSetBindingBuilders =
         /// }
         /// </code>
         static member Setter
-            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            (parameter: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            =
             Ast.Setter(Ast.ConstantPat(parameter), expr, returnType)
 
         /// <summary>Create a setter for a property.</summary>

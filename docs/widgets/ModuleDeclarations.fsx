@@ -38,8 +38,7 @@ Oak() {
         })
             .attribute(Attribute("Obsolete"))
 
-        ModuleDeclAttribute(ConstantExpr(Constant "do printfn \"Executing...\""))
-            .attribute(Attribute("Test"))
+        ModuleDeclAttribute(ConstantExpr(Constant "do printfn \"Executing...\"")).attribute(Attribute("Test"))
 
         ExternBinding(LongIdent "void", "HelloWorld")
 

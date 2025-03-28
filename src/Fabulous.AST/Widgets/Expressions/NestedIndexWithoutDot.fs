@@ -27,7 +27,8 @@ module NestedIndexWithoutDotBuilders =
     type Ast with
 
         static member NestedIndexWithoutDotExpr
-            (identifierExpr: WidgetBuilder<Expr>, indexExpr: WidgetBuilder<Expr>, argumentExpr: WidgetBuilder<Expr>) =
+            (identifierExpr: WidgetBuilder<Expr>, indexExpr: WidgetBuilder<Expr>, argumentExpr: WidgetBuilder<Expr>)
+            =
             WidgetBuilder<Expr>(
                 NestedIndexWithoutDot.WidgetKey,
                 AttributesBundle(
@@ -55,19 +56,23 @@ module NestedIndexWithoutDotBuilders =
             Ast.NestedIndexWithoutDotExpr(objExpr, indexExpr, Ast.ConstantExpr valueExpr)
 
         static member NestedIndexWithoutDotExpr
-            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Expr>) =
+            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Expr>)
+            =
             Ast.NestedIndexWithoutDotExpr(Ast.ConstantExpr objExpr, Ast.ConstantExpr indexExpr, valueExpr)
 
         static member NestedIndexWithoutDotExpr
-            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Expr>, valueExpr: WidgetBuilder<Constant>) =
+            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Expr>, valueExpr: WidgetBuilder<Constant>)
+            =
             Ast.NestedIndexWithoutDotExpr(Ast.ConstantExpr objExpr, indexExpr, Ast.ConstantExpr valueExpr)
 
         static member NestedIndexWithoutDotExpr
-            (objExpr: WidgetBuilder<Expr>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>) =
+            (objExpr: WidgetBuilder<Expr>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>)
+            =
             Ast.NestedIndexWithoutDotExpr(objExpr, Ast.ConstantExpr indexExpr, Ast.ConstantExpr valueExpr)
 
         static member NestedIndexWithoutDotExpr
-            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>) =
+            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>)
+            =
             Ast.NestedIndexWithoutDotExpr(
                 Ast.ConstantExpr objExpr,
                 Ast.ConstantExpr indexExpr,

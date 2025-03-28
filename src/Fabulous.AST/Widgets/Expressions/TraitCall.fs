@@ -44,14 +44,16 @@ module TraitCallBuilders =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<InheritConstructor>, expr: WidgetBuilder<Constant>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<InheritConstructor>, expr: WidgetBuilder<Constant>)
+            =
             Ast.TraitCallExpr(t, memberDef, Ast.ConstantExpr(expr))
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<InheritConstructor>, expr: string) =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.Constant expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnInheritNode>, expr: WidgetBuilder<Expr>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnInheritNode>, expr: WidgetBuilder<Expr>)
+            =
             let memberDef = Gen.mkOak memberDef |> MemberDefn.Inherit
 
             WidgetBuilder<Expr>(
@@ -204,7 +206,8 @@ module TraitCallBuilders =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnExplicitCtorNode>, expr: WidgetBuilder<Expr>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnExplicitCtorNode>, expr: WidgetBuilder<Expr>)
+            =
             let memberDef = Gen.mkOak memberDef |> MemberDefn.ExplicitCtor
 
             WidgetBuilder<Expr>(
@@ -231,7 +234,8 @@ module TraitCallBuilders =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnInterfaceNode>, expr: WidgetBuilder<Expr>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnInterfaceNode>, expr: WidgetBuilder<Expr>)
+            =
             let memberDef = Gen.mkOak memberDef |> MemberDefn.Interface
 
             WidgetBuilder<Expr>(
@@ -258,7 +262,8 @@ module TraitCallBuilders =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnAutoPropertyNode>, expr: WidgetBuilder<Expr>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnAutoPropertyNode>, expr: WidgetBuilder<Expr>)
+            =
             let memberDef = Gen.mkOak memberDef |> MemberDefn.AutoProperty
 
             WidgetBuilder<Expr>(
@@ -285,7 +290,8 @@ module TraitCallBuilders =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnAbstractSlotNode>, expr: WidgetBuilder<Expr>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnAbstractSlotNode>, expr: WidgetBuilder<Expr>)
+            =
             let memberDef = Gen.mkOak memberDef |> MemberDefn.AbstractSlot
 
             WidgetBuilder<Expr>(
@@ -312,7 +318,8 @@ module TraitCallBuilders =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnPropertyGetSetNode>, expr: WidgetBuilder<Expr>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnPropertyGetSetNode>, expr: WidgetBuilder<Expr>)
+            =
             let memberDef = Gen.mkOak memberDef |> MemberDefn.PropertyGetSet
 
             WidgetBuilder<Expr>(
@@ -339,7 +346,8 @@ module TraitCallBuilders =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
 
         static member TraitCallExpr
-            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnSigMemberNode>, expr: WidgetBuilder<Expr>) =
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefnSigMemberNode>, expr: WidgetBuilder<Expr>)
+            =
             let memberDef = Gen.mkOak memberDef |> MemberDefn.SigMember
 
             WidgetBuilder<Expr>(

@@ -42,7 +42,8 @@ module ForBuilders =
     type Ast with
 
         static member ForToExpr
-            (identifier: string, start: WidgetBuilder<Expr>, toBody: WidgetBuilder<Expr>, doBody: WidgetBuilder<Expr>) =
+            (identifier: string, start: WidgetBuilder<Expr>, toBody: WidgetBuilder<Expr>, doBody: WidgetBuilder<Expr>)
+            =
             WidgetBuilder<Expr>(
                 For.WidgetKey,
                 AttributesBundle(
@@ -143,7 +144,8 @@ module ForBuilders =
             Ast.ForToExpr(identifier, Ast.ConstantExpr(start), Ast.ConstantExpr(toBody), doBody)
 
         static member ForToExpr
-            (identifier: string, start: WidgetBuilder<Constant>, toBody: string, doBody: WidgetBuilder<Constant>) =
+            (identifier: string, start: WidgetBuilder<Constant>, toBody: string, doBody: WidgetBuilder<Constant>)
+            =
             Ast.ForToExpr(identifier, Ast.ConstantExpr(start), Ast.ConstantExpr(toBody), Ast.ConstantExpr(doBody))
 
         static member ForToExpr(identifier: string, start: WidgetBuilder<Constant>, toBody: string, doBody: string) =
@@ -267,15 +269,18 @@ module ForBuilders =
             Ast.ForDownToExpr(identifier, Ast.ConstantExpr(start), downtoBody, Ast.ConstantExpr(doBody))
 
         static member ForDownToExpr
-            (identifier: string, start: WidgetBuilder<Constant>, downtoBody: WidgetBuilder<Expr>, doBody: string) =
+            (identifier: string, start: WidgetBuilder<Constant>, downtoBody: WidgetBuilder<Expr>, doBody: string)
+            =
             Ast.ForDownToExpr(identifier, Ast.ConstantExpr(start), downtoBody, Ast.Constant(doBody))
 
         static member ForDownToExpr
-            (identifier: string, start: WidgetBuilder<Constant>, downtoBody: string, doBody: WidgetBuilder<Expr>) =
+            (identifier: string, start: WidgetBuilder<Constant>, downtoBody: string, doBody: WidgetBuilder<Expr>)
+            =
             Ast.ForDownToExpr(identifier, Ast.ConstantExpr(start), Ast.ConstantExpr(downtoBody), doBody)
 
         static member ForDownToExpr
-            (identifier: string, start: WidgetBuilder<Constant>, downtoBody: string, doBody: WidgetBuilder<Constant>) =
+            (identifier: string, start: WidgetBuilder<Constant>, downtoBody: string, doBody: WidgetBuilder<Constant>)
+            =
             Ast.ForDownToExpr(
                 identifier,
                 Ast.ConstantExpr(start),
@@ -289,7 +294,8 @@ module ForBuilders =
             Ast.ForDownToExpr(identifier, start, downtoBody, Ast.Constant(doBody))
 
         static member ForDownToExpr
-            (identifier: string, start: string, downtoBody: WidgetBuilder<Expr>, doBody: WidgetBuilder<Constant>) =
+            (identifier: string, start: string, downtoBody: WidgetBuilder<Expr>, doBody: WidgetBuilder<Constant>)
+            =
             Ast.ForDownToExpr(identifier, Ast.Constant(start), downtoBody, Ast.ConstantExpr(doBody))
 
         static member ForDownToExpr
@@ -298,7 +304,8 @@ module ForBuilders =
             Ast.ForDownToExpr(identifier, Ast.Constant(start), downtoBody, Ast.Constant(doBody))
 
         static member ForDownToExpr
-            (identifier: string, start: string, downtoBody: WidgetBuilder<Constant>, doBody: WidgetBuilder<Expr>) =
+            (identifier: string, start: string, downtoBody: WidgetBuilder<Constant>, doBody: WidgetBuilder<Expr>)
+            =
             Ast.ForDownToExpr(identifier, Ast.Constant(start), Ast.ConstantExpr(downtoBody), doBody)
 
         static member ForDownToExpr

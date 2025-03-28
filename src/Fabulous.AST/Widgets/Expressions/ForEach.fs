@@ -65,21 +65,24 @@ module ForEachBuilders =
             Ast.ForEachDoExpr(pattern, enumExpr, Ast.ConstantExpr(bodyExpr))
 
         static member ForEachDoExpr
-            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>)
+            =
             Ast.ForEachDoExpr(pattern, Ast.ConstantExpr(enumExpr), bodyExpr)
 
         static member ForEachDoExpr(pattern: WidgetBuilder<Pattern>, enumExpr: string, bodyExpr: WidgetBuilder<Expr>) =
             Ast.ForEachDoExpr(pattern, Ast.Constant(enumExpr), bodyExpr)
 
         static member ForEachDoExpr
-            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>)
+            =
             Ast.ForEachDoExpr(pattern, enumExpr, Ast.ConstantExpr(bodyExpr))
 
         static member ForEachDoExpr(pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: string) =
             Ast.ForEachDoExpr(pattern, enumExpr, Ast.Constant(bodyExpr))
 
         static member ForEachDoExpr
-            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>)
+            =
             Ast.ForEachDoExpr(Ast.ConstantPat(pattern), enumExpr, bodyExpr)
 
         static member ForEachDoExpr(pattern: WidgetBuilder<Constant>, enumExpr: string, bodyExpr: WidgetBuilder<Expr>) =
@@ -105,7 +108,8 @@ module ForEachBuilders =
             Ast.ForEachArrowExpr(Ast.Constant(pattern), enumExpr, bodyExpr)
 
         static member ForEachArrowExpr
-            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>)
+            =
             Ast.ForEachArrowExpr(pattern, Ast.ConstantExpr(enumExpr), bodyExpr)
 
         static member ForEachArrowExpr
@@ -114,7 +118,8 @@ module ForEachBuilders =
             Ast.ForEachArrowExpr(pattern, Ast.Constant(enumExpr), bodyExpr)
 
         static member ForEachArrowExpr
-            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            (pattern: WidgetBuilder<Pattern>, enumExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>)
+            =
             Ast.ForEachArrowExpr(pattern, enumExpr, Ast.ConstantExpr(bodyExpr))
 
         static member ForEachArrowExpr
@@ -123,11 +128,13 @@ module ForEachBuilders =
             Ast.ForEachArrowExpr(pattern, enumExpr, Ast.Constant(bodyExpr))
 
         static member ForEachArrowExpr
-            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>)
+            =
             Ast.ForEachArrowExpr(Ast.ConstantPat(pattern), enumExpr, bodyExpr)
 
         static member ForEachArrowExpr
-            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Constant>) =
+            (pattern: WidgetBuilder<Constant>, enumExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Constant>)
+            =
             Ast.ForEachArrowExpr(Ast.ConstantPat(pattern), enumExpr, Ast.ConstantExpr(bodyExpr))
 
         static member ForEachArrowExpr

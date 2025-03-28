@@ -233,8 +233,7 @@ type Colors =
         Oak() {
             AnonymousModule() {
                 (Enum("Colors") {
-                    EnumCase("Red", ConstantExpr(Int 0))
-                        .attributes([ Attribute "Obsolete"; Attribute "MyAttribute" ])
+                    EnumCase("Red", ConstantExpr(Int 0)).attributes([ Attribute "Obsolete"; Attribute "MyAttribute" ])
 
                     EnumCase("Green", ConstantExpr(Int 1))
                     EnumCase("Blue", ConstantExpr(Int 2))

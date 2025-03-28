@@ -65,11 +65,9 @@ Oak() {
 
         Value("y", AppExpr("Some", Int(1))).returnType(OptionPostfix(Int()))
 
-        Value("z", StructTupleExpr([ Int(1); String("") ]))
-            .returnType(StructTuple([ Int(); String() ]))
+        Value("z", StructTupleExpr([ Int(1); String("") ])).returnType(StructTuple([ Int(); String() ]))
 
-        Value("funs", LambdaExpr(UnitPat(), ConstantUnit()))
-            .returnType(Funs(Unit(), Unit()))
+        Value("funs", LambdaExpr(UnitPat(), ConstantUnit())).returnType(Funs(Unit(), Unit()))
 
         Value("anonRecord", AnonRecordExpr([ RecordFieldExpr("A", ConstantExpr(Int 1)) ]))
             .returnType(AnonRecord([ "A", Int() ]))

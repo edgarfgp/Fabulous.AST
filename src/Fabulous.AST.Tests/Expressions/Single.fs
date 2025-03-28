@@ -14,11 +14,7 @@ module Single =
             AnonymousModule() {
                 Value(
                     ConstantPat(Constant("x")),
-                    SingleExpr(
-                        SingleNode("a", ConstantExpr(Constant("b")))
-                            .addSpace(true)
-                            .supportsStroustrup(false)
-                    )
+                    SingleExpr(SingleNode("a", ConstantExpr(Constant("b"))).addSpace(true).supportsStroustrup(false))
 
                 )
 

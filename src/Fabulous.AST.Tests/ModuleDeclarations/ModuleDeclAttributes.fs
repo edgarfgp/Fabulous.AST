@@ -41,8 +41,7 @@ do printfn "Executing..."
     let ``Produces a do expr string``() =
         Oak() {
             AnonymousModule() {
-                ModuleDeclAttribute((" printfn \"Executing...\""))
-                    .attribute(Attribute "MyCustomModuleAttribute")
+                ModuleDeclAttribute((" printfn \"Executing...\"")).attribute(Attribute "MyCustomModuleAttribute")
             }
         }
         |> produces

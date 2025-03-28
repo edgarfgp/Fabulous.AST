@@ -36,7 +36,8 @@ module DotNamedIndexedPropertySetBuilders =
     type Ast with
 
         static member DotNamedIndexedPropertySetExpr
-            (identifier: WidgetBuilder<Expr>, name: string, property: WidgetBuilder<Expr>, setter: WidgetBuilder<Expr>) =
+            (identifier: WidgetBuilder<Expr>, name: string, property: WidgetBuilder<Expr>, setter: WidgetBuilder<Expr>)
+            =
             WidgetBuilder<Expr>(
                 DotNamedIndexedPropertySet.WidgetKey,
                 AttributesBundle(
@@ -162,7 +163,8 @@ module DotNamedIndexedPropertySetBuilders =
             Ast.DotNamedIndexedPropertySetExpr(identifier, name, Ast.ConstantExpr property, Ast.ConstantExpr setter)
 
         static member DotNamedIndexedPropertySetExpr
-            (identifier: WidgetBuilder<Constant>, name: string, property: WidgetBuilder<Constant>, setter: string) =
+            (identifier: WidgetBuilder<Constant>, name: string, property: WidgetBuilder<Constant>, setter: string)
+            =
             Ast.DotNamedIndexedPropertySetExpr(
                 Ast.ConstantExpr identifier,
                 name,
@@ -171,7 +173,8 @@ module DotNamedIndexedPropertySetBuilders =
             )
 
         static member DotNamedIndexedPropertySetExpr
-            (identifier: WidgetBuilder<Constant>, name: string, property: string, setter: WidgetBuilder<Constant>) =
+            (identifier: WidgetBuilder<Constant>, name: string, property: string, setter: WidgetBuilder<Constant>)
+            =
             Ast.DotNamedIndexedPropertySetExpr(
                 Ast.ConstantExpr identifier,
                 name,
@@ -195,7 +198,8 @@ module DotNamedIndexedPropertySetBuilders =
             Ast.DotNamedIndexedPropertySetExpr(Ast.ConstantExpr identifier, name, property, Ast.ConstantExpr setter)
 
         static member DotNamedIndexedPropertySetExpr
-            (identifier: string, name: string, property: WidgetBuilder<Constant>, setter: WidgetBuilder<Constant>) =
+            (identifier: string, name: string, property: WidgetBuilder<Constant>, setter: WidgetBuilder<Constant>)
+            =
             Ast.DotNamedIndexedPropertySetExpr(
                 Ast.ConstantExpr identifier,
                 name,

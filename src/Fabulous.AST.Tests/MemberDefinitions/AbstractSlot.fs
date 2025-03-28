@@ -73,8 +73,7 @@ type Meh =
                         .typeParams(PostfixList([ "'a" ]))
                         .attributes([ Attribute("Obsolete") ])
 
-                    AbstractMember("Area1", [ LongIdent "'b" ], Float())
-                        .typeParams(PostfixList([ "'b" ]))
+                    AbstractMember("Area1", [ LongIdent "'b" ], Float()).typeParams(PostfixList([ "'b" ]))
 
                 }
             }

@@ -373,8 +373,7 @@ open type Fabulous.AST.Ast
 Oak() {
     AnonymousModule() {
         Union("Option") {
-            UnionCase("Some", "'a")
-                .triviaBefore(SingleLine("Represents the Some case with a value."))
+            UnionCase("Some", "'a").triviaBefore(SingleLine("Represents the Some case with a value."))
 
             UnionCase("None").triviaBefore(SingleLine("Represents the None case."))
         }
@@ -382,8 +381,7 @@ Oak() {
         |> _.xmlDocs([ "Represents the option type." ])
 
         Union("Option") {
-            UnionCase("Some", "'a")
-                .triviaBefore(SingleLine("Represents the Some case with a value."))
+            UnionCase("Some", "'a").triviaBefore(SingleLine("Represents the Some case with a value."))
 
             UnionCase("None").triviaBefore(SingleLine("Represents the None case."))
         }
@@ -451,8 +449,7 @@ Oak() {
     AnonymousModule() {
         Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-        Measure("ml", MeasurePower(LongIdent "cm", Integer "3"))
-            .xmlDocs([ "Ml, milliliters." ])
+        Measure("ml", MeasurePower(LongIdent "cm", Integer "3")).xmlDocs([ "Ml, milliliters." ])
 
         Measure("m").xmlDocs([ "Distance, meters." ])
 

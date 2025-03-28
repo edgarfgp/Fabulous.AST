@@ -26,8 +26,7 @@ let x = 10
     let ``Produces line comment before with multiple values``() =
         Oak() {
             AnonymousModule() {
-                Value("x", "10")
-                    .triviaBefore([ SingleLine("Comment before"); SingleLine("Another comment") ])
+                Value("x", "10").triviaBefore([ SingleLine("Comment before"); SingleLine("Another comment") ])
             }
         }
         |> produces
@@ -60,10 +59,7 @@ let x = 10
     [<Fact>]
     let ``Produces line comment before with a new line before and after``() =
         Oak() {
-            AnonymousModule() {
-                Value("x", "10")
-                    .triviaBefore([ Newline(); SingleLine("Comment before"); Newline() ])
-            }
+            AnonymousModule() { Value("x", "10").triviaBefore([ Newline(); SingleLine("Comment before"); Newline() ]) }
         }
         |> produces
             """
@@ -77,8 +73,7 @@ let x = 10
     let ``Produces line comment after source code``() =
         Oak() {
             AnonymousModule() {
-                Value("x", "10")
-                    .triviaBefore([ LineCommentAfterSourceCode("Comment after source code") ])
+                Value("x", "10").triviaBefore([ LineCommentAfterSourceCode("Comment after source code") ])
             }
         }
         |> produces
@@ -99,8 +94,7 @@ let x =// Comment after source code
     let ``Produces block comment before with new line before``() =
         Oak() {
             AnonymousModule() {
-                Value("x", "10")
-                    .triviaBefore([ BlockComment("Comment before", newlineBefore = true) ])
+                Value("x", "10").triviaBefore([ BlockComment("Comment before", newlineBefore = true) ])
             }
         }
         |> produces
@@ -112,10 +106,7 @@ Comment before*) let x = 10
     [<Fact>]
     let ``Produces block comment before with new line after``() =
         Oak() {
-            AnonymousModule() {
-                Value("x", "10")
-                    .triviaBefore([ BlockComment("Comment before", newlineAfter = true) ])
-            }
+            AnonymousModule() { Value("x", "10").triviaBefore([ BlockComment("Comment before", newlineAfter = true) ]) }
         }
         |> produces
             """
@@ -206,8 +197,7 @@ let x = 10
     let ``Produces line comment after with multiple values``() =
         Oak() {
             AnonymousModule() {
-                Value("x", "10")
-                    .triviaAfter([ SingleLine("Comment after"); SingleLine("Another comment") ])
+                Value("x", "10").triviaAfter([ SingleLine("Comment after"); SingleLine("Another comment") ])
             }
         }
         |> produces
@@ -240,10 +230,7 @@ let x = 10
     [<Fact>]
     let ``Produces line comment after with a new line before and after``() =
         Oak() {
-            AnonymousModule() {
-                Value("x", "10")
-                    .triviaAfter([ Newline(); SingleLine("Comment after"); Newline() ])
-            }
+            AnonymousModule() { Value("x", "10").triviaAfter([ Newline(); SingleLine("Comment after"); Newline() ]) }
         }
         |> produces
             """
@@ -257,8 +244,7 @@ let x = 10
     let ``Produces line comment after source code(commentsAfter)``() =
         Oak() {
             AnonymousModule() {
-                Value("x", "10")
-                    .triviaAfter([ LineCommentAfterSourceCode("Comment after source code") ])
+                Value("x", "10").triviaAfter([ LineCommentAfterSourceCode("Comment after source code") ])
             }
         }
         |> produces
@@ -277,10 +263,7 @@ let x = 10 (*Comment after*)
     [<Fact>]
     let ``Produces block comment after with new line before``() =
         Oak() {
-            AnonymousModule() {
-                Value("x", "10")
-                    .triviaAfter([ BlockComment("Comment after", newlineBefore = true) ])
-            }
+            AnonymousModule() { Value("x", "10").triviaAfter([ BlockComment("Comment after", newlineBefore = true) ]) }
         }
         |> produces
             """
@@ -292,10 +275,7 @@ Comment after*)
     [<Fact>]
     let ``Produces block comment after with new line after``() =
         Oak() {
-            AnonymousModule() {
-                Value("x", "10")
-                    .triviaAfter([ BlockComment("Comment after", newlineAfter = true) ])
-            }
+            AnonymousModule() { Value("x", "10").triviaAfter([ BlockComment("Comment after", newlineAfter = true) ]) }
         }
         |> produces
             """

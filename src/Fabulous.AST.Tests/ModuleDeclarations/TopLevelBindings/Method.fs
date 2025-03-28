@@ -712,8 +712,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 TypeDefn("Person", UnitPat()) {
-                    Member("this.Name", UnitPat(), ConstantExpr(Int 23))
-                        .attribute(Attribute "Obsolete")
+                    Member("this.Name", UnitPat(), ConstantExpr(Int 23)).attribute(Attribute "Obsolete")
                 }
             }
         }
@@ -743,8 +742,7 @@ type Person() =
         Oak() {
             AnonymousModule() {
                 TypeDefn("Person", UnitPat()) {
-                    Member("this.Name", UnitPat(), ConstantExpr(Int 23))
-                        .typeParams(PostfixList(TyparDecl("'other")))
+                    Member("this.Name", UnitPat(), ConstantExpr(Int 23)).typeParams(PostfixList(TyparDecl("'other")))
                 }
             }
         }

@@ -12,10 +12,7 @@ module TriviaTests =
     [<Fact>]
     let ``Single line comment before``() =
         Oak() {
-            AnonymousModule() {
-                Value("x", ConstantExpr(Int(42)), "int")
-                    .triviaBefore(SingleLine("This is a comment"))
-            }
+            AnonymousModule() { Value("x", ConstantExpr(Int(42)), "int").triviaBefore(SingleLine("This is a comment")) }
         }
         |> produces
             """
@@ -27,8 +24,7 @@ let x: int = 42
     let ``Line comment after source code``() =
         Oak() {
             AnonymousModule() {
-                Value("x", ConstantExpr(Int(42)), "int")
-                    .triviaAfter(LineCommentAfterSourceCode("This is a comment"))
+                Value("x", ConstantExpr(Int(42)), "int").triviaAfter(LineCommentAfterSourceCode("This is a comment"))
             }
         }
         |> produces
@@ -40,8 +36,7 @@ let x: int = 42 // This is a comment
     let ``Block comment without newlines``() =
         Oak() {
             AnonymousModule() {
-                Value("x", ConstantExpr(Int(42)), "int")
-                    .triviaBefore(BlockComment("This is a block comment"))
+                Value("x", ConstantExpr(Int(42)), "int").triviaBefore(BlockComment("This is a block comment"))
             }
         }
         |> produces

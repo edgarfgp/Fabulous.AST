@@ -14,8 +14,7 @@ module UnitsOfMeasure =
             AnonymousModule() {
                 Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-                Measure("ml", MeasurePower(LongIdent "cm", Integer "3"))
-                    .xmlDocs([ "Ml, milliliters." ])
+                Measure("ml", MeasurePower(LongIdent "cm", Integer "3")).xmlDocs([ "Ml, milliliters." ])
 
                 Measure("g").xmlDocs([ "Mass, grams." ])
                 Measure("kg").xmlDocs([ "Mass, kilograms." ])

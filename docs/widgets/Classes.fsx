@@ -86,8 +86,7 @@ Oak() {
         TypeDefn("Folder", ParenPat(ParameterPat("pathIn", String()))) {
             LetBindings(
                 [ Value("path", "pathIn")
-                  Value("filenameArray", AppExpr("Directory.GetFiles", ParenExpr("path")))
-                      .returnType(Array(String())) ]
+                  Value("filenameArray", AppExpr("Directory.GetFiles", ParenExpr("path"))).returnType(Array(String())) ]
             )
 
             Member(

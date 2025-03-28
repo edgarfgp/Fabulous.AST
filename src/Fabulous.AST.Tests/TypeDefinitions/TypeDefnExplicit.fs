@@ -47,8 +47,7 @@ type MyClass() = class end
     let ``Produces a class end with constructor and attributes``() =
         Oak() {
             AnonymousModule() {
-                (ClassEnd("MyClass") { () })
-                    .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
+                (ClassEnd("MyClass") { () }).attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
 
             }
         }

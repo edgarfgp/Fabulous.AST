@@ -53,19 +53,23 @@ module DotIndexedSetBuilders =
             Ast.DotIndexedSetExpr(objExpr, indexExpr, Ast.ConstantExpr valueExpr)
 
         static member DotIndexedSetExpr
-            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Expr>) =
+            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Expr>)
+            =
             Ast.DotIndexedSetExpr(Ast.ConstantExpr objExpr, Ast.ConstantExpr indexExpr, valueExpr)
 
         static member DotIndexedSetExpr
-            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Expr>, valueExpr: WidgetBuilder<Constant>) =
+            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Expr>, valueExpr: WidgetBuilder<Constant>)
+            =
             Ast.DotIndexedSetExpr(Ast.ConstantExpr objExpr, indexExpr, Ast.ConstantExpr valueExpr)
 
         static member DotIndexedSetExpr
-            (objExpr: WidgetBuilder<Expr>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>) =
+            (objExpr: WidgetBuilder<Expr>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>)
+            =
             Ast.DotIndexedSetExpr(objExpr, Ast.ConstantExpr indexExpr, Ast.ConstantExpr valueExpr)
 
         static member DotIndexedSetExpr
-            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>) =
+            (objExpr: WidgetBuilder<Constant>, indexExpr: WidgetBuilder<Constant>, valueExpr: WidgetBuilder<Constant>)
+            =
             Ast.DotIndexedSetExpr(Ast.ConstantExpr objExpr, Ast.ConstantExpr indexExpr, Ast.ConstantExpr valueExpr)
 
         static member DotIndexedSetExpr

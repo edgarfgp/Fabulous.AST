@@ -80,7 +80,8 @@ module LibraryOnlyStaticOptimizationBuilders =
             Ast.LibraryOnlyStaticOptimizationExpr(Ast.ConstantExpr optExpr, [], Ast.ConstantExpr expr)
 
         static member LibraryOnlyStaticOptimizationExpr
-            (optExpr: string, constraints: WidgetBuilder<StaticOptimizationConstraint> list, expr: WidgetBuilder<Expr>) =
+            (optExpr: string, constraints: WidgetBuilder<StaticOptimizationConstraint> list, expr: WidgetBuilder<Expr>)
+            =
             Ast.LibraryOnlyStaticOptimizationExpr(Ast.ConstantExpr optExpr, constraints, expr)
 
         static member LibraryOnlyStaticOptimizationExpr
@@ -92,7 +93,8 @@ module LibraryOnlyStaticOptimizationBuilders =
             Ast.LibraryOnlyStaticOptimizationExpr(optExpr, constraints, Ast.ConstantExpr expr)
 
         static member LibraryOnlyStaticOptimizationExpr
-            (optExpr: WidgetBuilder<Expr>, constraints: WidgetBuilder<StaticOptimizationConstraint> list, expr: string) =
+            (optExpr: WidgetBuilder<Expr>, constraints: WidgetBuilder<StaticOptimizationConstraint> list, expr: string)
+            =
             Ast.LibraryOnlyStaticOptimizationExpr(optExpr, constraints, Ast.ConstantExpr expr)
 
         static member LibraryOnlyStaticOptimizationExpr

@@ -50,10 +50,7 @@ type MyClass() =
 
     [<Fact>]
     let ``Produces a rec namespace with binding``() =
-        Oak() {
-            (Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) })
-                .toRecursive()
-        }
+        Oak() { (Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) }).toRecursive() }
         |> produces
             """
 namespace rec Fabulous.AST

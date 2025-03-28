@@ -33,8 +33,7 @@ open type Fabulous.AST.Ast
 
 Oak() {
     AnonymousModule() {
-        Open([ "System"; "IO" ])
-            .triviaBefore(SingleLine("Open a .NET Framework namespace."))
+        Open([ "System"; "IO" ]).triviaBefore(SingleLine("Open a .NET Framework namespace."))
 
         Open("Fabulous.AST").triviaAfter(Newline())
 
@@ -42,8 +41,7 @@ Oak() {
             .triviaBefore(SingleLine("This will expose all accessible static fields and members on the type."))
             .triviaAfter(Newline())
 
-        OpenGlobal("A")
-            .triviaBefore(SingleLine("Open from root path only with global specifier"))
+        OpenGlobal("A").triviaBefore(SingleLine("Open from root path only with global specifier"))
 
         OpenGlobal("B")
         OpenGlobal([ "A"; "B" ])

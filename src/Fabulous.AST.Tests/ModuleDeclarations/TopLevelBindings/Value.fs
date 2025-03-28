@@ -157,8 +157,7 @@ let x = 12
     let ``Simple Let binding with type params Postfix``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .typeParams(PostfixList(TyparDecl("'T")))
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams(PostfixList(TyparDecl("'T")))
 
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
                     .typeParams(PostfixList([ TyparDecl("'a"); TyparDecl("'b"); TyparDecl("'c") ]))
@@ -176,14 +175,12 @@ let x<'a, 'b, 'c> = 12
     let ``Simple Let binding with type params Prefix``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .typeParams(PostfixList(TyparDecl("'T")))
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams(PostfixList(TyparDecl("'T")))
 
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
                     .typeParams(PostfixList([ TyparDecl("'a"); TyparDecl("'b"); TyparDecl("'c") ]))
 
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .typeParams(PostfixList([ "'a"; "'b"; "'c" ]))
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams(PostfixList([ "'a"; "'b"; "'c" ]))
             }
         }
         |> produces
@@ -217,8 +214,7 @@ let internal x = 12
     let ``Simple Let binding with a single xml doc``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .xmlDocs([ "This is a comment" ])
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).xmlDocs([ "This is a comment" ])
             }
         }
         |> produces
@@ -256,8 +252,7 @@ let x = 12
     let ``Simple Let binding with multiline with a single attribute``() =
         Oak() {
             AnonymousModule() {
-                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)))
-                    .attribute(Attribute "Obsolete")
+                Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).attribute(Attribute "Obsolete")
 
             }
         }

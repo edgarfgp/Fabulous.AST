@@ -315,8 +315,7 @@ let x i = ()
     let ``Produces a function with parameters and Xml Doc``() =
         Oak() {
             AnonymousModule() {
-                Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()))
-                    .xmlDocs([ "Im a function" ])
+                Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())).xmlDocs([ "Im a function" ])
             }
         }
         |> produces

@@ -57,7 +57,8 @@ module MatchClauseBuilders =
             Ast.MatchClauseExpr(Ast.ConstantPat(pattern), whenExpr, bodyExpr)
 
         static member MatchClauseExpr
-            (pattern: WidgetBuilder<Pattern>, whenExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            (pattern: WidgetBuilder<Pattern>, whenExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>)
+            =
             Ast.MatchClauseExpr(pattern, Ast.ConstantExpr(whenExpr), bodyExpr)
 
         static member MatchClauseExpr
@@ -66,7 +67,8 @@ module MatchClauseBuilders =
             Ast.MatchClauseExpr(pattern, Ast.Constant(whenExpr), bodyExpr)
 
         static member MatchClauseExpr
-            (pattern: WidgetBuilder<Constant>, whenExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            (pattern: WidgetBuilder<Constant>, whenExpr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>)
+            =
             Ast.MatchClauseExpr(pattern, Ast.ConstantExpr(whenExpr), bodyExpr)
 
         static member MatchClauseExpr
@@ -83,11 +85,13 @@ module MatchClauseBuilders =
             Ast.MatchClauseExpr(pattern, Ast.Constant(whenExpr), bodyExpr)
 
         static member MatchClauseExpr
-            (pattern: WidgetBuilder<Pattern>, whenExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            (pattern: WidgetBuilder<Pattern>, whenExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>)
+            =
             Ast.MatchClauseExpr(pattern, whenExpr, Ast.ConstantExpr(bodyExpr))
 
         static member MatchClauseExpr
-            (pattern: WidgetBuilder<Constant>, whenExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            (pattern: WidgetBuilder<Constant>, whenExpr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>)
+            =
             Ast.MatchClauseExpr(pattern, whenExpr, Ast.ConstantExpr(bodyExpr))
 
         static member MatchClauseExpr
