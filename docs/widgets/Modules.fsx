@@ -8,25 +8,27 @@ index: 3
 
 (**
 # Modules
-For details on how the AST node works, please refer to the [Fantomas documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-moduleornamespacenode.html).
-See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/modules) for a comparison between the two.
 
-*)
-(**
-### Constructors
+## Contents
+- [Overview](#overview)
+- [Basic Usage](#basic-usage)
+- [Anonymous Modules](#anonymous-modules)
+- [Named Modules](#named-modules)
+- [Hash Directives](#hash-directives)
+- [Nested Modules](#nested-modules)
+- [Referencing Code in Modules](#referencing-code-in-modules)
+- [Recursive Modules](#recursive-modules)
+- [Value Declarations in Modules](#value-declarations-in-modules)
+- [Function Declarations in Modules](#function-declarations-in-modules)
+- [Type Declarations in Modules](#type-declarations-in-modules)
 
-| Constructors                       | Description                                           |
-|------------------------------------| ----------------------------------------------------- |
-| Module(name: string)                             | Creates a Module AST node with the specified name. |
-*)
+## Overview
+Modules in F# are a way to group related functionality together. All F# code exists within modules. When you create a new file,
+if it doesn't begin with a namespace declaration or a top-level module declaration, the entire contents of the file become part of an
+implicit anonymous module.
 
-(**
-### Modifiers
-
-| Modifiers                                                                                  | Description                                                                                     |
-| ------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------------------------------|
-| hashDirectives(values: WidgetBuilder<ParsedHashDirectiveNode> list)                         |  a list of hash directive nodes                                                                                             |
-| hashDirective(value: WidgetBuilder<ParsedHashDirectiveNode>)      |   a hash directive node                    |
+## Basic Usage
+Create a module with the `Module` widget:
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -38,250 +40,225 @@ open type Fabulous.AST.Ast
 
 Oak() {
     AnonymousModule() {
+        Module("MyModule") {
+            Value("x", Int(42))
+            Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Anonymous Modules
+Anonymous modules represent the implicit module created for the content of a file:
+*)
+
+Oak() {
+    AnonymousModule() {
         Value("x", Int(1))
-            .triviaBefore(
-                BlockComment(
-                    """
-If a code file does not begin with a top-level module declaration or a namespace declaration,
-the whole contents of the file, including any local modules,
-becomes part of an implicitly created top-level module that has the same name as the file,
-without the extension, with the first letter converted to uppercase. For example, consider the following file.
-"""
-                )
-            )
-            .triviaBefore(Newline())
-            .triviaAfter(Newline())
+        Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
     }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-    Namespace("Program") { Value("y", Int(2)) }
-    |> _.triviaBefore(SingleLine("Top-level module declaration."))
-    |> _.toImplicit()
+// produces the following code:
+(*** include-output ***)
 
+(**
+## Named Modules
+Named modules explicitly define a module with a name:
+*)
+
+Oak() {
     AnonymousModule() {
-        Module("MyModule1") {
-            Value("module1Value", Int(100))
-                .triviaBefore(
-                    SingleLine("Indent all program elements within modules that are declared with an equal sign.")
-                )
-
-            Function("module1Function", ParameterPat("x"), InfixAppExpr("x", "+", Int(1)))
-                .triviaBefore(
-                    SingleLine("Indent all program elements within modules that are declared with an equal sign.")
-                )
-        }
-        |> _.triviaBefore(Newline())
-
-        Module("MyModule2") {
-            Value("module2Value", Int(121))
-                .triviaBefore(
-                    SingleLine("Indent all program elements within modules that are declared with an equal sign.")
-                )
-
-            Function(
-                "module2Function",
-                ParameterPat("x"),
-                InfixAppExpr("x", "*", ParenExpr(AppExpr("MyModule1.module1Function", "module2Value")))
-            )
-                .triviaBefore(
-                    SingleLine("Indent all program elements within modules that are declared with an equal sign.")
-                )
+        Module("MathModule") {
+            Value("pi", Float("3.14159"))
+            Function("square", ParameterPat("x"), InfixAppExpr("x", "*", "x"))
         }
     }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-    Namespace("Arithmetic") {
-        Function("add", [ ParameterPat("x"); ParameterPat("y") ], InfixAppExpr("x", "+", "y"))
-        Function("sub", [ ParameterPat("x"); ParameterPat("y") ], InfixAppExpr("x", "-", "y"))
+// produces the following code:
+(*** include-output ***)
 
-    }
-    |> _.toImplicit()
-    |> _.triviaBefore(Newline())
-    |> _.triviaBefore(
-        BlockComment(
-            """
+(**
+## Hash Directives
+Add compiler directives to modules with the `hashDirective` or `hashDirectives` methods:
+*)
 
-Referencing Code in Modules
-When you reference functions, types, and values from another module, you must either use a qualified name or open the module.
-If you use a qualified name, you must specify the namespaces, the module, and the identifier for the program element you want.
-You separate each part of the qualified path with a dot (.), as follows.
-
-Namespace1.Namespace2.ModuleName.Identifier
-"""
-        )
-    )
-
+Oak() {
     AnonymousModule() {
-        Value("result1", AppExpr("Arithmetic.add", [ Int(5); Int(9) ]))
-            .triviaBefore(SingleLine("Fully qualify the function name."))
-
-        Open("Arithmetic").triviaBefore(SingleLine("Open the module."))
-
-        Value("result2", AppExpr("add", [ Int(5); Int(9) ]))
+        NoWarn("0044")
+        Module("MyModule") { Value("x", Int(42)) }
     }
-    |> _.triviaBefore(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Nested Modules
+Modules can be nested inside other modules:
+*)
+
+Oak() {
     AnonymousModule() {
-        Module("Y") {
-            Value("x", Int(1))
+        Module("Outer") {
+            Value("outerValue", Int(1))
 
-            Module("Z") { Value("z", Int(5)).triviaAfter(Newline()) }
+            Module("Inner") { Value("innerValue", Int(2)) }
         }
-        |> _.triviaBefore(
-            BlockComment(
-                """
-Nested Modules
-Modules can be nested. Inner modules must be indented as far as outer module declarations to indicate that they are inner modules, not new modules.
-For example, compare the following two examples. Module Z is an inner module in the following code.
-"""
-            )
-        )
     }
-    |> _.triviaBefore(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Referencing Code in Modules
+When referencing code from other modules, you can either use a qualified name or open the module:
+*)
+
+Oak() {
     AnonymousModule() {
-        Module("Y") { Value("x", Int(1)) }
-
-        Module("Z") { Value("z", Int(5)) }
-    }
-    |> _.triviaBefore(SingleLine("Nested Modules"))
-    |> _.triviaBefore(Newline())
-
-    AnonymousModule() {
-        Module("Y") {
-            Value("x", Int(1))
-
-            Module("Z") { Value("z", Int(5)) }
+        Module("Math") {
+            Function("add", [ ParameterPat("x"); ParameterPat("y") ], InfixAppExpr("x", "+", "y"))
+            Function("multiply", [ ParameterPat("x"); ParameterPat("y") ], InfixAppExpr("x", "*", "y"))
         }
 
+        // Using qualified name
+        Value("sum", AppExpr("Math.add", [ Int(5); Int(10) ]))
+
+        // Opening the module
+        Open("Math")
+        Value("product", AppExpr("multiply", [ Int(5); Int(10) ]))
     }
-    |> _.triviaBefore(SingleLine("Nested Modules"))
-    |> _.triviaBefore(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-    AnonymousModule() { Module("Y") { Module("Z") { Value("z", Int(5)) } } }
-    |> _.triviaBefore(SingleLine("Nested Modules"))
-    |> _.triviaBefore(Newline())
+// produces the following code:
+(*** include-output ***)
 
-    Namespace("TopLevel") {
-        Value("topLevelX", Int(5))
+(**
+## Recursive Modules
+Create recursive modules with the `toRecursive` method. This is useful when modules, types, and functions within need to reference each other:
+*)
 
-        Module("Inner1") { Value("inner1X", Int(1)) }
-
-        Module("Inner2") { Value("inner2X", Int(5)) }
-    }
-    |> _.toImplicit()
-    |> _.triviaBefore(
-        BlockComment(
-            """
-The top-level module declaration can be omitted if the file is named
-TopLevel.fs or topLevel.fs, and the file is the only file in an
-application.
-"""
-        )
-    )
-    |> _.triviaBefore(Newline())
-
+Oak() {
     AnonymousModule() {
         Module("RecursiveModule") {
-            Union("Orientation") {
-                UnionCase("Up")
-                UnionCase("Down")
+            Union("Tree") {
+                UnionCase("Leaf", "int")
+                UnionCase("Node", [ Field("value", "int"); Field("left", "Tree"); Field("right", "Tree") ])
             }
 
-            Union("PeelState") {
-                UnionCase("Peeled")
-                UnionCase("Unpeeled")
-            }
-
-            ExceptionDefn("DontSqueezeTheBananaException", Field("Banana"))
-
-            TypeDefn("Banana", Constructor(ParenPat(ParameterPat("orientation", LongIdent("Orientation"))))) {
-                MemberVal("IsPeeled", Bool(false), true, true)
-                MemberVal("Orientation", "orientation", true, true)
-
-                MemberVal("Sides", ListExpr([ "PeelState"; "Unpeeled" ]), true, true)
-                    .returnType(LongIdent "PeelState list")
-
-                Member("self.Peel", UnitPat(), "BananaHelpers.peel")
-                    .triviaAfter(LineCommentAfterSourceCode("Note the dependency on the BananaHelpers module."))
-
-                Member("self.SqueezeJuiceOut", UnitPat(), "raise (DontSqueezeTheBananaException self)")
-                    .triviaAfter(LineCommentAfterSourceCode("This member depends on the exception above."))
-            }
-
-            Module("BananaHelpers") {
-                Function(
-                    "peel",
-                    [ ParenPat(ParameterPat("b", "Banana")) ],
-                    CompExprBodyExpr(
-                        [ Function(
-                              "flip",
-                              [ ParenPat(ParameterPat("banana", "Banana")) ],
-                              MatchExpr(
-                                  "banana.Orientation",
-                                  [ MatchClauseExpr(
-                                        "Up",
-                                        CompExprBodyExpr(
-                                            [ LongIdentSetExpr("banana.Orientation", "Down"); ConstantExpr("banana") ]
-                                        )
-                                    )
-
-                                    MatchClauseExpr("Down", "banana") ]
-                              )
-                          )
-                          |> LetOrUseExpr
-
-                          Function(
-                              "peelSides",
-                              [ ParenPat(ParameterPat("banana", "Banana")) ],
-                              InfixAppExpr(
-                                  "banana.Sides",
-                                  "|>",
-                                  MatchLambdaExpr(
-                                      [ MatchClauseExpr("Unpeeled", "Peeled"); MatchClauseExpr("Peeled", "Peeled") ]
-                                  )
-                              )
-                          )
-                          |> LetOrUseExpr
-
-                          MatchExpr(
-                              "b.Orientation",
-                              [ MatchClauseExpr("Up", SameInfixAppsExpr("b", [ ("|>", "flip"); ("|>", "peelSides") ]))
-
-                                MatchClauseExpr("Down", InfixAppExpr("b", "|>", "peelSides")) ]
-                          )
-                          |> OtherExpr ]
-                    )
-                )
-            }
-            |> _.triviaBefore(Newline())
-            |> _.triviaBefore(SingleLine("Mutual References"))
-            |> _.triviaAfter(Newline())
-            |> _.triviaAfter(
-                BlockComment(
-                    """
-Note that the exception DontSqueezeTheBananaException and the class Banana both refer to each other.
-Additionally, the module BananaHelpers and the class Banana also refer to each other.
-This would not be possible to express in F# if you removed the rec keyword from the RecursiveModule module.
-"""
+            Function(
+                "sum",
+                ParameterPat("tree"),
+                MatchExpr(
+                    "tree",
+                    [ MatchClauseExpr(ConstantPat("Leaf(n)"), "n")
+                      MatchClauseExpr(
+                          ConstantPat("Node(v, l, r)"),
+                          InfixAppExpr("v", "+", ParenExpr(InfixAppExpr(AppExpr("sum", "l"), "+", AppExpr("sum", "r"))))
+                      ) ]
                 )
             )
-
         }
         |> _.toRecursive()
     }
-    |> _.triviaBefore(
-        BlockComment(
-            """
-Recursive modules
-F# 4.1 introduces the notion of modules which allow for all contained code to be mutually recursive.
-This is done via module rec.
-Use of module rec can alleviate some pains in not being able to write mutually referential code between types and modules.
-The following is an example of this:
-"""
-        )
-    )
-    |> _.triviaBefore(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Value Declarations in Modules
+Add values to modules with the `Value` widget:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Module("Constants") {
+            Value("pi", Float("3.14159"))
+            Value("e", Float("2.71828"))
+            Value("phi", Float("1.61803"))
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Function Declarations in Modules
+Add functions to modules with the `Function` widget:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Module("Functions") {
+            Function("increment", ParameterPat("x"), InfixAppExpr("x", "+", Int(1)))
+            Function("decrement", ParameterPat("x"), InfixAppExpr("x", "-", Int(1)))
+            Function("apply", [ ParameterPat("f"); ParameterPat("x") ], AppExpr("f", "x"))
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Type Declarations in Modules
+Add type declarations to modules:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Module("Types") {
+            Record("Person") {
+                Field("Name", "string")
+                Field("Age", "int")
+            }
+
+            Union("Shape") {
+                UnionCase("Circle", Float())
+                UnionCase("Square", Float())
+            }
+
+            TypeDefn("Point", Constructor(ParenPat([ ParameterPat("x"); ParameterPat("y") ]))) {
+                Member("this.X", ConstantExpr("x"))
+                Member("this.Y", ConstantExpr("y"))
+            }
+        }
+    }
 }
 |> Gen.mkOak
 |> Gen.run
