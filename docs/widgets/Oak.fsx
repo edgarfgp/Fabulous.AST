@@ -8,26 +8,11 @@ index: 1
 
 (**
 # Oak
-It is the entry point for out DSL, it can contain one or more `Namespace`, `Module` and `AnonymousModule` nodes. `Module` must be inside a `AnonymousModule` or `Namespace` nodes.
 
-For details on how the AST node works, please refer to the [Fantomas Core documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-oak.html).
+## Overview
+The Oak widget is the root container for all F# AST nodes in the Fabulous.AST DSL. It serves as the entry point for creating F# code and must be used as the outermost container for your AST structure.
 
-*)
-(**
-### Constructors
-
-| Constructors                       | Description                                           |
-|------------------------------------| ----------------------------------------------------- |
-| Oak()                              | Creates an Oak AST node |
-*)
-
-(**
-### Modifiers
-
-| Modifiers                                                                                  | Description                                                                                     |
-| ------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------------------------------|
-| hashDirectives(values: WidgetBuilder<ParsedHashDirectiveNode> list)                         |  a list of hash directive nodes                                                                                             |
-| hashDirective(value: WidgetBuilder<ParsedHashDirectiveNode>)      |   a hash directive node                    |
+## Basic Usage
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -37,20 +22,49 @@ For details on how the AST node works, please refer to the [Fantomas Core docume
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
+Oak() { AnonymousModule() { Value("x", Int(42)) } }
+|> Gen.mkOak // Convert to an Oak AST node
+|> Gen.run // Generate the F# code string
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Structure
+The Oak widget can contain any combination of the following top-level nodes:
+
+- `AnonymousModule`: For file-level code
+- `Namespace`: For organizing code in namespaces
+- `HashDirective` : For compiler directives
+
+> Note: `Module` nodes must be nested inside either `AnonymousModule` or `Namespace` nodes.
+
+## Adding Hash Directives
+Add compiler directives at the Oak level:
+*)
+
+Oak() { AnonymousModule() { NoWarn("0044") } }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Example with Multiple Components
+Here's a more complete example showing how Oak can contain multiple components:
+*)
+
 Oak() {
-    AnonymousModule() { NoWarn(String "0044") }
+    // Hash directive at the file level
+    AnonymousModule() { NoWarn("0044") }
 
-    Namespace("Widgets") { Module("WidgetsModule") { Value("x", String("12")) } }
+    // A namespace with a module
+    Namespace("Widgets") { Module("WidgetModule") { Value("x", String("12")) } }
 
-    Namespace("Widgets.WidgetModule") {
-        Function("widgetFunction", [ ParameterPat("x"); ParameterPat("y") ], String("12"))
-    }
-    |> _.toImplicit()
-    |> _.triviaBefore(Newline())
-
-    AnonymousModule() { Module("WidgetsModule") { Value("y", String("12")) } }
-    |> _.triviaBefore(Newline())
-
+    // An anonymous module with code
     AnonymousModule() { Value("y", String("12")) } |> _.triviaBefore(Newline())
 }
 |> Gen.mkOak
