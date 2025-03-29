@@ -8,33 +8,22 @@ index: 2
 
 (**
 # Namespaces
-For details on how the AST node works, please refer to the [Fantomas documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-moduleornamespacenode.html).
-See also official [documentation](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/namespaces) for a comparison between the two.
 
-*)
-(**
-### Constructors
+## Contents
+- [Overview](#overview)
+- [Basic Usage](#basic-usage)
+- [Implicit Namespaces](#implicit-namespaces)
+- [Global Namespace](#global-namespace)
+- [Multiple Modules in a Namespace](#multiple-modules-in-a-namespace)
+- [Multiple Namespaces](#nested-namespaces)
+- [Recursive Namespaces](#recursive-namespaces)
 
-| Constructors                       | Description                                           |
-|------------------------------------| ----------------------------------------------------- |
-| Namespace(name: string)                  | Creates a NamespaceNode AST node with the specified name. |
-| Namespace(name: string)          | Creates an implicit NamespaceNode AST node with the specified name
-| AnonymousModule()                        | Creates an NamespaceNode AST node. |
-*)
+## Overview
+Namespaces in F# are a way to organize code by grouping related types and modules. They help prevent naming conflicts
+and provide a hierarchical structure for organizing code. Unlike modules, namespaces can be split across multiple files and assemblies.
 
-(**
-### Modifier Functions
-
-| Modifier                                   | Description                                                                                     |
-|---------------------------------------------|-------------------------------------------------------------------------------------------------|
-| toRecursive(this: WidgetBuilder<ModuleOrNamespaceNode>) | Adds a scalar indicating that the namespace is recursive.                                         |
-| toPrivate(this: WidgetBuilder<ModuleOrNamespaceNode>)   | Sets the accessibility of the namespace to private.                                               |
-| toPublic(this: WidgetBuilder<ModuleOrNamespaceNode>)    | Sets the accessibility of the namespace to public.                                                |
-| toInternal(this: WidgetBuilder<ModuleOrNamespaceNode>)  | Sets the accessibility of the namespace to internal.
-| toImplicit(this: WidgetBuilder<ModuleOrNamespaceNode>)  | Sets the namespace to be implicit.
-| xmlDocs(this: WidgetBuilder<ModuleOrNamespaceNode>, xmlDocs: string list) | Adds XML documentation comments to the module.                                                |
-| attributes(this: WidgetBuilder<ModuleOrNamespaceNode>, attributes: WidgetBuilder<AttributeNode> list) | Adds multiple attributes to the module.                                                        |
-| attribute(this: WidgetBuilder<ModuleOrNamespaceNode>, attribute: WidgetBuilder<AttributeNode>) | Adds a single attribute to the module.                                                         |
+## Basic Usage
+Create a namespace with the `Namespace` widget:
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -50,9 +39,20 @@ Oak() {
 
         Module("WidgetsModule") { Value("widgetName", String("Widget2")) }
     }
-    |> _.triviaBefore(SingleLine("Namespace"))
-    |> _.triviaAfter(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Implicit Namespaces
+Implicit namespaces are created using the `toImplicit` modifier:
+*)
+
+Oak() {
     Namespace("Widgets.WidgetModule") {
         Function(
             "widgetFunction",
@@ -61,9 +61,33 @@ Oak() {
         )
     }
     |> _.toImplicit()
-    |> _.triviaBefore(SingleLine("Implicit Namespace"))
-    |> _.triviaAfter(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Global Namespace
+The global namespace can be accessed using the `GlobalNamespace` widget:
+*)
+
+Oak() { GlobalNamespace() { TypeDefn("MyClass", UnitPat()) { Member("this.Prop1", String("X")) } } }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Multiple Modules in a Namespace
+A namespace can contain multiple modules:
+*)
+
+Oak() {
     Namespace("Widgets") {
         Module("WidgetModule1") {
             Function(
@@ -91,38 +115,41 @@ Oak() {
             )
         }
     }
-    |> _.triviaBefore(SingleLine("Multiple Modules"))
-    |> _.triviaAfter(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-    Namespace("Widgets") {
-        TypeDefn("MyWidget1") { Member("this.WidgetName", String("Widget1")) }
+// produces the following code:
+(*** include-output ***)
 
-        Module("WidgetsModule") { Value("widgetName", String("Widget2")) }
-    }
-    |> _.triviaBefore(SingleLine("Namespace"))
-    |> _.triviaAfter(Newline())
+(**
+## Multiple Namespaces
+Namespaces can be nested to create a hierarchical structure:
+*)
 
+Oak() {
     Namespace("Outer") {
         TypeDefn("MyClass", UnitPat()) {
             Member("this.X", ParenPat(ParameterPat(ConstantPat(Constant "x"))), InfixAppExpr("p", "+", Int(1)))
         }
-        |> _.triviaBefore(SingleLine("Full name: Outer.MyClass"))
     }
-    |> _.triviaBefore(SingleLine("Nested Namespaces"))
-    |> _.triviaAfter(Newline())
 
     Namespace("Outer.Inner") { TypeDefn("MyClass", UnitPat()) { Member("this.Prop1", String("X")) } }
-    |> _.triviaBefore(SingleLine("Full name: Outer.Inner.MyClass"))
-    |> _.triviaAfter(Newline())
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-    GlobalNamespace() { TypeDefn("MyClass", UnitPat()) { Member("this.Prop1", String("X")) } }
-    |> _.triviaBefore(SingleLine("Global Namespace"))
-    |> _.triviaAfter(Newline())
+// produces the following code:
+(*** include-output ***)
 
-    AnonymousModule() { Value("x", ConstantExpr(Int(3))) }
-    |> _.triviaBefore(SingleLine("Anonymous Module"))
-    |> _.triviaAfter(Newline())
+(**
+## Recursive Namespaces
+Create recursive namespaces with the `toRecursive` method. This is useful when types and modules within need to reference each other:
+*)
 
+Oak() {
     Namespace("MutualReferences") {
         Union("Orientation") {
             UnionCase("Up")
@@ -149,10 +176,8 @@ Oak() {
             )
 
             Member("self.Peel", UnitPat(), "BananaHelpers.peel")
-                .triviaAfter(LineCommentAfterSourceCode("Note the dependency on the BananaHelpers module."))
 
             Member("self.SqueezeJuiceOut", UnitPat(), "raise (DontSqueezeTheBananaException self)")
-                .triviaAfter(LineCommentAfterSourceCode("This member depends on the exception above."))
         }
 
         Module("BananaHelpers") {
@@ -200,24 +225,8 @@ Oak() {
                 )
             )
         }
-        |> _.triviaBefore(Newline())
-        |> _.triviaBefore(SingleLine("Mutual References"))
-        |> _.triviaAfter(Newline())
-        |> _.triviaAfter(
-            BlockComment(
-                """
-Note that the exception DontSqueezeTheBananaException and the class Banana both refer to each other.
-Additionally, the module BananaHelpers and the class Banana also refer to each other.
-This wouldn't be possible to express in F# if you removed the rec keyword from the MutualReferences namespace.
-"""
-            )
-        )
-
     }
     |> _.toRecursive()
-    |> _.triviaBefore(SingleLine("Recursive Namespace"))
-    |> _.triviaAfter(Newline())
-
 }
 |> Gen.mkOak
 |> Gen.run
