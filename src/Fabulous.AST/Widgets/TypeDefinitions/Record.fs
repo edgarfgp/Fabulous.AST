@@ -24,6 +24,8 @@ module Record =
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
+    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
+
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name =
@@ -54,6 +56,15 @@ module Record =
                 Widgets.tryGetScalarValue widget Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
+            let isRecursive =
+                Widgets.tryGetScalarValue widget IsRecursive
+                |> ValueOption.map(fun x ->
+                    if x then
+                        SingleTextNode.``and``
+                    else
+                        SingleTextNode.``type``)
+                |> ValueOption.defaultValue SingleTextNode.``type``
+
             let accessControl =
                 match accessControl with
                 | Public -> Some(SingleTextNode.``public``)
@@ -65,7 +76,7 @@ module Record =
                 TypeNameNode(
                     xmlDocs,
                     attributes,
-                    SingleTextNode.``type``,
+                    isRecursive,
                     None,
                     IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     typeParams,
@@ -88,6 +99,7 @@ module RecordBuilders =
     type Ast with
         /// <summary>Create a record type with the given name.</summary>
         /// <param name="name">The name of the record type.</param>
+        /// <param name="isRecursive">Whether the record type is recursive.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -284,6 +296,24 @@ type RecordModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefnRecordNode>) =
         this.AddScalar(Record.Accessibility.WithValue(AccessControl.Internal))
+
+    /// <summary>Sets the Record to be recursive.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Point") {
+    ///             Field("X", Float())
+    ///             Field("Y", Float())
+    ///             Field("Z", Float())
+    ///         }
+    ///         |> _.toRecursive()
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<TypeDefnRecordNode>) =
+        this.AddScalar(Record.IsRecursive.WithValue(true))
 
 type RecordYieldExtensions =
     [<Extension>]

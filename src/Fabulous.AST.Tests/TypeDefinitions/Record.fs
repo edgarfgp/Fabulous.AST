@@ -140,6 +140,37 @@ type Colors<'other> =
 """
 
     [<Fact>]
+    let ``Produces Mutually Recursive Records``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Person") {
+                    Field("Name", String())
+                    Field("Age", Int())
+                    Field("Address", LongIdent("Address"))
+                }
+
+                Record("Address") {
+                    Field("Line1", String())
+                    Field("Line2", String())
+                    Field("Occupant", LongIdent("Person"))
+                }
+                |> _.toRecursive()
+            }
+        }
+        |> produces
+            """
+type Person =
+    { Name: string
+      Age: int
+      Address: Address }
+
+and Address =
+    { Line1: string
+      Line2: string
+      Occupant: Person }
+"""
+
+    [<Fact>]
     let ``yield! multiple records``() =
         let genRecord(identifier: string) =
             Record(identifier) { Field("X", Float()) }
