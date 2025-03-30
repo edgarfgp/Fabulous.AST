@@ -11,7 +11,7 @@ module OptVar =
     let IsOptional = Attributes.defineScalar<bool> "IsOptional"
 
     let WidgetKey =
-        Widgets.register "Lazy" (fun widget ->
+        Widgets.register "OptVar" (fun widget ->
             let identifier = Widgets.getScalarValue widget Identifier
             let isOptional = Widgets.getScalarValue widget IsOptional
 
