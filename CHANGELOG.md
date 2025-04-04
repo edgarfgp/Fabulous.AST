@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.4.0] - 2025-04-04
+
+### Added
+- Snapshot testing by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/145
+- Add a playground sample by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/148
+- Improve docs by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/149
+
+### Changed
+- Update fantomas by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/146
+
 ## [1.3.0] - 2025-03-16
 
 ### Changed
@@ -283,7 +293,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.3.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.4.0
 [1.3.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.3.0
 [1.2.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.2.0
 [1.1.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.1.0
