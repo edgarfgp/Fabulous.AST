@@ -73,6 +73,8 @@ module ImplicitConstructorBuilders =
 
         static member Constructor(pattern: string) = Ast.Constructor(Ast.Constant(pattern))
 
+        static member Constructor() = Ast.Constructor(Ast.UnitPat())
+
 type ImplicitConstructorModifiers =
     [<Extension>]
     static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =

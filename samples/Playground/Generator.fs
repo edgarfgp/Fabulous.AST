@@ -9,7 +9,14 @@ module Generator =
     let source outputPath =
         async {
             let! sourceText =
-                Oak() { Namespace("MyNamespace") { Module("MyModule") { Value("y", "12") } } }
+                Oak() {
+                    Namespace("MyNamespace") {
+                        Module("MyModule") {
+                            Value("y", "12")
+                            Value("y", "13")
+                        }
+                    }
+                }
                 |> Gen.mkOak
                 |> CodeFormatter.FormatOakAsync
 

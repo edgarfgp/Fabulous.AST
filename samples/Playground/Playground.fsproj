@@ -5,9 +5,9 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Common.fs" Watch="false"/>
-        <Compile Include="Generator.fs" Watch="true" />
-        <Compile Include="Program.fs"  Watch="false" />
+        <Compile Include="Common.fs" />
+        <Compile Include="Generator.fs" />
+        <Compile Include="Program.fs"  />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\src\Fabulous.AST\Fabulous.AST.fsproj" />
