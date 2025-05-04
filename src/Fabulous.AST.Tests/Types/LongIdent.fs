@@ -7,7 +7,7 @@ open Fabulous.AST
 
 open type Ast
 
-module LongIdentTests =
+module LongIdent =
 
     [<Fact>]
     let ``Long identifier with multiple parts``() =

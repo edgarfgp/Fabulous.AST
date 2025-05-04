@@ -125,7 +125,7 @@ module InfixAppBuilders =
             Ast.InfixAppExpr(lhs, operator, Ast.Constant(rhs))
 
         /// <summary>
-        /// Create an infix application expression with an expression left-hand side and constant right-hand side.
+        /// Creates an infix application expression with an expression left-hand side and constant right-hand side.
         /// </summary>
         /// <param name="lhs">The left-hand side expression.</param>
         /// <param name="operator">The infix operator.</param>

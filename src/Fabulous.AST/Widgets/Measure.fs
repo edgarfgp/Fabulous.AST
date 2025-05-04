@@ -235,13 +235,35 @@ module MeasureBuilders =
         /// <summary>Creates a measure raised to a power from string values.</summary>
         /// <param name="measure">The base measure as a string.</param>
         /// <param name="node">The power as a string.</param>
+        static member MeasurePower(measure: string, node: WidgetBuilder<RationalConstNode>) =
+            WidgetBuilder<Measure>(
+                Measure.WidgetMeasurePowerKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| Measure.LHS.WithValue(Ast.MeasureSingle(measure).Compile())
+                       Measure.RHS.WithValue(node.Compile()) |],
+                    Array.empty
+                )
+            )
+
         static member MeasurePower(measure: string, node: string) =
             WidgetBuilder<Measure>(
                 Measure.WidgetMeasurePowerKey,
                 AttributesBundle(
                     StackList.empty(),
                     [| Measure.LHS.WithValue(Ast.MeasureSingle(measure).Compile())
-                       Measure.RHS.WithValue(Ast.MeasureSingle(node).Compile()) |],
+                       Measure.RHS.WithValue(Ast.Integer(node).Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member MeasurePower(measure: WidgetBuilder<Measure>, node: string) =
+            WidgetBuilder<Measure>(
+                Measure.WidgetMeasurePowerKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| Measure.LHS.WithValue(measure.Compile())
+                       Measure.RHS.WithValue(Ast.Integer(node).Compile()) |],
                     Array.empty
                 )
             )

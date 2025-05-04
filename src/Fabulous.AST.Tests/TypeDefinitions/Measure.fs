@@ -14,7 +14,7 @@ module UnitsOfMeasure =
             AnonymousModule() {
                 Measure("cm").xmlDocs([ "Cm, centimeters." ])
 
-                Measure("ml", MeasurePower(LongIdent "cm", Integer "3")).xmlDocs([ "Ml, milliliters." ])
+                Measure("ml", MeasurePowerType(LongIdent "cm", Integer "3")).xmlDocs([ "Ml, milliliters." ])
 
                 Measure("g").xmlDocs([ "Mass, grams." ])
                 Measure("kg").xmlDocs([ "Mass, kilograms." ])
@@ -29,7 +29,7 @@ module UnitsOfMeasure =
                     "N",
                     Tuple(
                         [ AppPostfix(LongIdent "kg", LongIdent "m")
-                          MeasurePower(LongIdent "s", Integer "2") ],
+                          MeasurePowerType(LongIdent "s", Integer "2") ],
                         "/"
                     )
                 )
@@ -37,7 +37,7 @@ module UnitsOfMeasure =
 
                 Measure("bar").xmlDocs([ "Pressure, bar." ])
 
-                Measure("Pa", Tuple([ LongIdent("N"); MeasurePower(LongIdent "m", Integer "2") ], "/"))
+                Measure("Pa", Tuple([ LongIdent("N"); MeasurePowerType(LongIdent "m", Integer "2") ], "/"))
                     .xmlDocs([ "Pressure, Pascals" ])
 
                 Measure("ml").xmlDocs([ "Volume, milliliters." ])
