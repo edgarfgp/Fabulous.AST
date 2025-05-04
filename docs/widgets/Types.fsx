@@ -331,7 +331,7 @@ Oak() {
         Value("userId", Int(42), LongIdent("UserId"))
 
         // Type abbreviation with a unit of measure
-        //Abbrev("Distance", MeasureSingle("m"))
+        Abbrev("Distance", "m")
         Value("myDistance", ConstantExpr(ConstantMeasure("50.0", "m")), LongIdent("Distance"))
     }
 }

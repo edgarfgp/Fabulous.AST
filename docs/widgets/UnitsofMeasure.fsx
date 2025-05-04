@@ -21,7 +21,7 @@ Oak() {
     AnonymousModule() {
         Measure("cm")
 
-        Measure("ml", MeasurePower(LongIdent "cm", Integer "3"))
+        Measure("ml", MeasurePowerType("cm", Integer "3"))
 
         Measure("m")
 
@@ -29,14 +29,7 @@ Oak() {
 
         Measure("kg")
 
-        Measure(
-            "N",
-            Tuple(
-                [ AppPostfix(LongIdent "kg", LongIdent "m")
-                  MeasurePower(LongIdent "s", Integer "2") ],
-                "/"
-            )
-        )
+        Measure("N", Tuple([ AppPrefix(LongIdent "kg", LongIdent "m"); MeasurePowerType("s", Integer "2") ], "/"))
     }
 }
 |> Gen.mkOak
