@@ -131,6 +131,7 @@
         <Compile Include="Attributes\Attributes.fs" />
         <Compile Include="Types\Types.fs" />
         <Compile Include="Types\LongIdent.fs" />
+        <Compile Include="Types\Measures.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

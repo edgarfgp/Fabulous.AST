@@ -204,6 +204,34 @@ module MeasureBuilders =
                 )
             )
 
+        /// <summary>Creates a division measure between two measures.</summary>
+        /// <param name="lhs">The numerator measure.</param>
+        /// <param name="rhs">The denominator measure.</param>
+        static member MeasureDivide(lhs: string, rhs: WidgetBuilder<Measure>) =
+            WidgetBuilder<Measure>(
+                Measure.WidgetMeasureDivideKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| Measure.LHS.WithValue(Ast.MeasureSingle(lhs).Compile())
+                       Measure.RHS.WithValue(rhs.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        /// <summary>Creates a division measure between two measures.</summary>
+        /// <param name="lhs">The numerator measure.</param>
+        /// <param name="rhs">The denominator measure.</param>
+        static member MeasureDivide(lhs: WidgetBuilder<Measure>, rhs: string) =
+            WidgetBuilder<Measure>(
+                Measure.WidgetMeasureDivideKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| Measure.LHS.WithValue(lhs.Compile())
+                       Measure.RHS.WithValue(Ast.MeasureSingle(rhs).Compile()) |],
+                    Array.empty
+                )
+            )
+
         /// <summary>Creates a division measure between two string measures.</summary>
         /// <param name="lhs">The numerator measure as a string.</param>
         /// <param name="rhs">The denominator measure as a string.</param>
