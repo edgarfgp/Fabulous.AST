@@ -23,6 +23,7 @@ module Constant =
                 ConstantExpr(UInt64(0UL))
                 ConstantExpr(IntPtr(System.IntPtr.Zero))
                 ConstantExpr(UIntPtr(System.UIntPtr.Zero))
+                ConstantExpr(Float(System.Math.PI))
                 ConstantExpr(Decimal(4.0m))
                 ConstantExpr(Double(4.0))
                 ConstantExpr(Single(4.0f))
@@ -100,14 +101,15 @@ true
 0UL
 nativeint 0
 unativeint 0
+3.141592653589793
 4.0m
-4
+4.0
 4.0f
 "hello"
 'c'
 4.0f
 A
-```I'm a constant```
+``I'm a constant``
 ()
 2<cm>
 2<m>

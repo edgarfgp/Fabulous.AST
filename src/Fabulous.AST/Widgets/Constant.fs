@@ -70,30 +70,78 @@ module ConstantBuilders =
 
         /// <summary>Creates a decimal constant.</summary>
         /// <param name="value">The decimal value.</param>
-        static member Decimal(value: decimal) = Ast.BaseConstant($"{value}m")
+        static member Decimal(value: decimal) =
+            // For decimal values, we need to make sure it has the correct form with 'm' suffix
+            // The value already includes a decimal point if it's not a whole number
+            let valueStr = value.ToString()
+
+            let formattedValue =
+                if valueStr.Contains(".") then
+                    $"{valueStr}m"
+                else
+                    $"{valueStr}.0m"
+
+            Ast.BaseConstant(formattedValue)
 
         /// <summary>Creates a floating-point constant.</summary>
         /// <param name="value">The floating-point value.</param>
         static member Float(value: float) =
-            Ast.BaseConstant($"""{value.ToString("F1")}""")
+            let formatted =
+                if value = Math.Floor(value) then
+                    $"{value}.0"
+                else
+                    $"{value}"
+
+            Ast.BaseConstant(formatted)
 
         /// <summary>Creates a double-precision floating-point constant.</summary>
         /// <param name="value">The double-precision floating-point value.</param>
-        static member Double(value: double) = Ast.BaseConstant($"{value}")
+        static member Double(value: double) =
+            let formatted =
+                if value = Math.Floor(value) then
+                    $"{value}.0"
+                else
+                    $"{value}"
+
+            Ast.BaseConstant(formatted)
 
         /// <summary>Creates a 32-bit floating-point constant.</summary>
         /// <param name="value">The 32-bit floating-point value.</param>
         static member Float32(value: float32) =
-            Ast.BaseConstant($"""{value.ToString("F1")}f""")
+            let formatted =
+                if float32(Math.Floor(float value)) = value then
+                    $"{value}.0f"
+                else
+                    $"{value}f"
+
+            Ast.BaseConstant(formatted)
 
         /// <summary>Creates a single-precision floating-point constant.</summary>
         /// <param name="value">The single-precision floating-point value.</param>
         static member Single(value: single) =
-            Ast.BaseConstant($"""{value.ToString("F1")}f""")
+            let formatted =
+                if float32(Math.Floor(float value)) = value then
+                    $"{value}.0f"
+                else
+                    $"{value}f"
+
+            Ast.BaseConstant(formatted)
 
         /// <summary>Creates a character constant.</summary>
         /// <param name="value">The character value.</param>
-        static member Char(value: char) = Ast.BaseConstant($"'{value}'")
+        static member Char(value: char) =
+            let escaped =
+                match value with
+                | '\n' -> "\\n"
+                | '\r' -> "\\r"
+                | '\t' -> "\\t"
+                | '\'' -> "\\'"
+                | '\\' -> "\\\\"
+                | '"' -> "\"" // Double quote doesn't need escaping in char literals
+                | '\000' -> "\\0"
+                | _ -> string value
+
+            Ast.BaseConstant($"'{escaped}'")
 
         /// <summary>Creates a string constant with proper escaping.</summary>
         /// <param name="value">The string value.</param>
@@ -105,14 +153,14 @@ module ConstantBuilders =
 
         /// <summary>Creates a backtick-quoted identifier constant.</summary>
         /// <param name="value">The identifier value.</param>
-        static member Backticks(value: string) = Ast.BaseConstant($"```{value}```")
+        static member Backticks(value: string) = Ast.BaseConstant($"``{value}``")
 
         /// <summary>Creates a backtick-quoted identifier constant from another constant.</summary>
         /// <param name="value">The constant value to wrap in backticks.</param>
         static member Backticks(value: WidgetBuilder<Constant>) =
             let value =
                 match Gen.mkOak value with
-                | Constant.FromText node -> Constant.FromText(SingleTextNode.Create($"```{node.Text}```"))
+                | Constant.FromText node -> Constant.FromText(SingleTextNode.Create($"``{node.Text}``"))
                 | Constant.Unit _ as unit -> unit
                 | Constant.Measure _ as measure -> measure
 
@@ -130,14 +178,29 @@ module ConstantBuilders =
 
             WidgetBuilder<Constant>(Constant.WidgetKey, Constant.Value.WithValue(value))
 
-        /// <summary>Creates a raw (verbatim) string constant.</summary>
+        /// <summary>Creates a raw (verbatim) string constant using the @"..." syntax.</summary>
         /// <param name="value">The raw string value.</param>
-        static member VerbatimString(value: string) =
-            Ast.BaseConstant($"\"\"\"{value}\"\"\"")
+        static member VerbatimString(value: string) = Ast.BaseConstant($"@\"{value}\"")
 
-        /// <summary>Creates a raw (verbatim) string constant from another constant.</summary>
+        /// <summary>Creates a raw (verbatim) string constant using the @"..." syntax from another constant.</summary>
         /// <param name="value">The constant value to wrap as a raw string.</param>
         static member VerbatimString(value: WidgetBuilder<Constant>) =
+            let value =
+                match Gen.mkOak value with
+                | Constant.FromText node -> Constant.FromText(SingleTextNode.Create($"@\"{node.Text}\""))
+                | Constant.Unit _ as unit -> unit
+                | Constant.Measure _ as measure -> measure
+
+            WidgetBuilder<Constant>(Constant.WidgetKey, Constant.Value.WithValue(value))
+
+        /// <summary>Creates a triple-quoted string constant using the """...""" syntax.</summary>
+        /// <param name="value">The string value.</param>
+        static member TripleQuotedString(value: string) =
+            Ast.BaseConstant($"\"\"\"{value}\"\"\"")
+
+        /// <summary>Creates a triple-quoted string constant using the """...""" syntax from another constant.</summary>
+        /// <param name="value">The constant value to wrap as a triple-quoted string.</param>
+        static member TripleQuotedString(value: WidgetBuilder<Constant>) =
             let value =
                 match Gen.mkOak value with
                 | Constant.FromText node -> Constant.FromText(SingleTextNode.Create($"\"\"\"{node.Text}\"\"\""))

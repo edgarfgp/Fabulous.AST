@@ -138,7 +138,7 @@ let t: obj = obj
 
                 Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), Tuple([ String(); String() ]))
 
-                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), MeasurePower("cm", Integer(2)))
+                Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), MeasurePowerType("cm", Integer(2)))
 
                 Value(ConstantPat(Constant("c")), ConstantExpr(Bool(false)), Funs([ Int() ], String()))
             }

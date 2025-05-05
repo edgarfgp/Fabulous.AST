@@ -19,7 +19,7 @@ module TypeMeasurePower =
 [<AutoOpen>]
 module TypeMeasurePowerBuilders =
     type Ast with
-        static member MeasurePower(value: WidgetBuilder<Type>, rational: WidgetBuilder<RationalConstNode>) =
+        static member MeasurePowerType(value: WidgetBuilder<Type>, rational: WidgetBuilder<RationalConstNode>) =
             WidgetBuilder<Type>(
                 TypeMeasurePower.WidgetKey,
                 AttributesBundle(
@@ -30,5 +30,5 @@ module TypeMeasurePowerBuilders =
                 )
             )
 
-        static member MeasurePower(value: string, rational: WidgetBuilder<RationalConstNode>) =
-            Ast.MeasurePower(Ast.LongIdent value, rational)
+        static member MeasurePowerType(value: string, rational: WidgetBuilder<RationalConstNode>) =
+            Ast.MeasurePowerType(Ast.LongIdent value, rational)

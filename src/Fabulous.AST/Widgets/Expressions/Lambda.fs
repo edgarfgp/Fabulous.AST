@@ -32,6 +32,9 @@ module LambdaBuilders =
                 )
             )
 
+        static member LambdaExpr(parameter: WidgetBuilder<Pattern>, value: WidgetBuilder<Expr>) =
+            Ast.LambdaExpr([ parameter ], value)
+
         static member LambdaExpr(parameter: WidgetBuilder<Pattern>, value: WidgetBuilder<Constant>) =
             Ast.LambdaExpr([ parameter ], Ast.ConstantExpr(value))
 
@@ -53,5 +56,13 @@ module LambdaBuilders =
             let parameters = parameters |> List.map Ast.ConstantPat
             Ast.LambdaExpr(parameters, value)
 
+        static member LambdaExpr(parameters: string list, value: WidgetBuilder<Constant>) =
+            let parameters = parameters |> List.map Ast.ConstantPat
+            Ast.LambdaExpr(parameters, Ast.ConstantExpr(value))
+
         static member LambdaExpr(parameters: string list, value: string) =
             Ast.LambdaExpr(parameters |> List.map Ast.ConstantPat, Ast.Constant(value))
+
+        static member LambdaExpr(parameters: string, value: string) =
+            let parameters = [ parameters ] |> List.map Ast.ConstantPat
+            Ast.LambdaExpr(parameters, Ast.Constant(value))
