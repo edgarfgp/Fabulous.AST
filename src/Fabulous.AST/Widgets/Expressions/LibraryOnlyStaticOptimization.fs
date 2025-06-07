@@ -11,13 +11,13 @@ module LibraryOnlyStaticOptimization =
     let Value = Attributes.defineWidget "Value"
 
     let Constraints =
-        Attributes.defineScalar<StaticOptimizationConstraint list> "Constraints"
+        Attributes.defineScalar<StaticOptimizationConstraint seq> "Constraints"
 
     let WidgetKey =
         Widgets.register "LibraryOnlyStaticOptimization" (fun widget ->
             let optExpr = Widgets.getNodeFromWidget<Expr> widget OptimizedValue
             let expr = Widgets.getNodeFromWidget<Expr> widget Value
-            let constraints = Widgets.getScalarValue widget Constraints
+            let constraints = Widgets.getScalarValue widget Constraints |> List.ofSeq
 
             Expr.LibraryOnlyStaticOptimization(
                 ExprLibraryOnlyStaticOptimizationNode(optExpr, constraints, expr, Range.Zero)
@@ -30,10 +30,10 @@ module LibraryOnlyStaticOptimizationBuilders =
         static member LibraryOnlyStaticOptimizationExpr
             (
                 optExpr: WidgetBuilder<Expr>,
-                constraints: WidgetBuilder<StaticOptimizationConstraint> list,
+                constraints: WidgetBuilder<StaticOptimizationConstraint> seq,
                 expr: WidgetBuilder<Expr>
             ) =
-            let constraints = constraints |> List.map Gen.mkOak
+            let constraints = constraints |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 LibraryOnlyStaticOptimization.WidgetKey,
@@ -48,7 +48,7 @@ module LibraryOnlyStaticOptimizationBuilders =
         static member LibraryOnlyStaticOptimizationExpr
             (
                 optExpr: WidgetBuilder<Constant>,
-                constraints: WidgetBuilder<StaticOptimizationConstraint> list,
+                constraints: WidgetBuilder<StaticOptimizationConstraint> seq,
                 expr: WidgetBuilder<Expr>
             ) =
             Ast.LibraryOnlyStaticOptimizationExpr(Ast.ConstantExpr optExpr, constraints, expr)
@@ -80,24 +80,24 @@ module LibraryOnlyStaticOptimizationBuilders =
             Ast.LibraryOnlyStaticOptimizationExpr(Ast.ConstantExpr optExpr, [], Ast.ConstantExpr expr)
 
         static member LibraryOnlyStaticOptimizationExpr
-            (optExpr: string, constraints: WidgetBuilder<StaticOptimizationConstraint> list, expr: WidgetBuilder<Expr>)
+            (optExpr: string, constraints: WidgetBuilder<StaticOptimizationConstraint> seq, expr: WidgetBuilder<Expr>)
             =
             Ast.LibraryOnlyStaticOptimizationExpr(Ast.ConstantExpr optExpr, constraints, expr)
 
         static member LibraryOnlyStaticOptimizationExpr
             (
                 optExpr: WidgetBuilder<Expr>,
-                constraints: WidgetBuilder<StaticOptimizationConstraint> list,
+                constraints: WidgetBuilder<StaticOptimizationConstraint> seq,
                 expr: WidgetBuilder<Constant>
             ) =
             Ast.LibraryOnlyStaticOptimizationExpr(optExpr, constraints, Ast.ConstantExpr expr)
 
         static member LibraryOnlyStaticOptimizationExpr
-            (optExpr: WidgetBuilder<Expr>, constraints: WidgetBuilder<StaticOptimizationConstraint> list, expr: string)
+            (optExpr: WidgetBuilder<Expr>, constraints: WidgetBuilder<StaticOptimizationConstraint> seq, expr: string)
             =
             Ast.LibraryOnlyStaticOptimizationExpr(optExpr, constraints, Ast.ConstantExpr expr)
 
         static member LibraryOnlyStaticOptimizationExpr
-            (optExpr: string, constraints: WidgetBuilder<StaticOptimizationConstraint> list, expr: string)
+            (optExpr: string, constraints: WidgetBuilder<StaticOptimizationConstraint> seq, expr: string)
             =
             Ast.LibraryOnlyStaticOptimizationExpr(Ast.ConstantExpr optExpr, constraints, Ast.ConstantExpr(expr))

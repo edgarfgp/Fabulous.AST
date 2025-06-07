@@ -15,7 +15,7 @@ module EnumCase =
     let Value = Attributes.defineWidget "Value"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -143,7 +143,7 @@ type EnumCaseModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<EnumCaseNode>, xmlDocs: string seq) =
         EnumCaseModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current EnumCase definition.</summary>
@@ -162,7 +162,7 @@ type EnumCaseModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<EnumCaseNode>, attributes: WidgetBuilder<AttributeNode> seq) =
         this.AddScalar(
             EnumCase.MultipleAttributes.WithValue(
                 [ for attr in attributes do

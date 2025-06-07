@@ -23,8 +23,8 @@ module DefaultMemberBuilders =
         ///    }
         /// }
         /// </code>
-        static member Default(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>) =
-            let parameters = parameters |> List.map Gen.mkOak
+        static member Default(name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Expr>) =
+            let parameters = parameters |> Seq.map Gen.mkOak |> List.ofSeq
 
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
@@ -55,9 +55,7 @@ module DefaultMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member Default
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>)
-            =
+        static member Default(name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Constant>) =
             Ast.Default(name, parameters, Ast.ConstantExpr(bodyExpr))
 
         /// <summary>
@@ -76,7 +74,7 @@ module DefaultMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member Default(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
+        static member Default(name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: string) =
             Ast.Default(name, parameters, Ast.Constant(bodyExpr))
 
         /// <summary>
@@ -95,10 +93,10 @@ module DefaultMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member Default(name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>) =
+        static member Default(name: string, parameters: string seq, bodyExpr: WidgetBuilder<Expr>) =
             let parameters =
                 parameters
-                |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
+                |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
 
             Ast.Default(name, parameters, bodyExpr)
 
@@ -118,9 +116,9 @@ module DefaultMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member Default(name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>) =
+        static member Default(name: string, parameters: string seq, bodyExpr: WidgetBuilder<Constant>) =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Default(name, parameters, bodyExpr)
 
@@ -140,9 +138,9 @@ module DefaultMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member Default(name: string, parameters: string list, bodyExpr: string) =
+        static member Default(name: string, parameters: string seq, bodyExpr: string) =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Default(name, parameters, bodyExpr)
 

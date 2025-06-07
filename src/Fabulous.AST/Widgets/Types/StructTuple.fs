@@ -5,7 +5,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module TypeStructTuple =
-    let Items = Attributes.defineScalar<Type list> "Items"
+    let Items = Attributes.defineScalar<Type seq> "Items"
 
     let WidgetKey =
         Widgets.register "TypeStructTuple" (fun widget ->
@@ -13,8 +13,8 @@ module TypeStructTuple =
 
             let values =
                 values
-                |> List.map Choice1Of2
-                |> List.intersperse(Choice2Of2(SingleTextNode.comma))
+                |> Seq.map Choice1Of2
+                |> Seq.intersperse(Choice2Of2(SingleTextNode.comma))
 
             Type.StructTuple(
                 TypeStructTupleNode(SingleTextNode.``struct``, values, SingleTextNode.rightParenthesis, Range.Zero)
@@ -23,9 +23,9 @@ module TypeStructTuple =
 [<AutoOpen>]
 module TypeStructTupleBuilders =
     type Ast with
-        static member StructTuple(items: WidgetBuilder<Type> list) =
-            WidgetBuilder<Type>(TypeStructTuple.WidgetKey, TypeStructTuple.Items.WithValue(items |> List.map Gen.mkOak))
+        static member StructTuple(items: WidgetBuilder<Type> seq) =
+            WidgetBuilder<Type>(TypeStructTuple.WidgetKey, TypeStructTuple.Items.WithValue(items |> Seq.map Gen.mkOak))
 
-        static member StructTuple(items: string list) =
-            let items = items |> List.map Ast.LongIdent
+        static member StructTuple(items: string seq) =
+            let items = items |> Seq.map Ast.LongIdent
             Ast.StructTuple(items)

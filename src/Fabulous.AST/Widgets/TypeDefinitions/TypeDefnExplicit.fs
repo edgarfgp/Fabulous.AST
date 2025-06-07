@@ -12,7 +12,7 @@ module TypeDefnExplicit =
     let Name = Attributes.defineScalar<string> "Name"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let TypeParams = Attributes.defineWidget "TypeParams"
 
@@ -245,7 +245,7 @@ type TypeDefnExplicitModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnExplicitNode>, xmlDocs: string seq) =
         TypeDefnExplicitModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current widget.</summary>
@@ -264,7 +264,7 @@ type TypeDefnExplicitModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnExplicitNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnExplicitNode>, values: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             TypeDefnExplicit.MultipleAttributes.WithValue(

@@ -26,11 +26,11 @@ module OpenBuilders =
         ///     }
         /// }
         /// </code>
-        static member Open(values: string list) =
+        static member Open(values: string seq) =
             let values =
                 values
-                |> List.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
-                |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
+                |> Seq.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
+                |> Seq.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
 
             let value =
                 Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
@@ -57,12 +57,12 @@ module OpenBuilders =
         ///     }
         /// }
         /// </code>
-        static member OpenGlobal(values: string list) =
+        static member OpenGlobal(values: string seq) =
             let values =
                 values
-                |> List.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
-                |> fun gbl -> IdentifierOrDot.Ident(SingleTextNode.``global``) :: gbl
-                |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
+                |> Seq.map(fun name -> IdentifierOrDot.Ident(SingleTextNode.Create(name)))
+                |> fun gbl -> IdentifierOrDot.Ident(SingleTextNode.``global``) :: List.ofSeq gbl
+                |> Seq.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
 
             let value =
                 Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
@@ -89,10 +89,12 @@ module OpenBuilders =
         ///     }
         /// }
         /// </code>
-        static member OpenType(values: string list) =
+        static member OpenType(values: string seq) =
             WidgetBuilder<OpenListNode>(
                 Open.WidgetKey,
-                Open.OpenList.WithValue(Open.Target(OpenTargetNode(Gen.mkOak(Ast.LongIdent(values)), Range.Zero)))
+                Open.OpenList.WithValue(
+                    Open.Target(OpenTargetNode(Gen.mkOak(Ast.LongIdent(List.ofSeq values)), Range.Zero))
+                )
 
             )
 

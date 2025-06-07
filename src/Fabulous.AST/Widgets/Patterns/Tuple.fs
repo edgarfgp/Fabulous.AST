@@ -5,7 +5,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module TuplePat =
-    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
+    let Parameters = Attributes.defineScalar<Pattern seq> "Parameters"
 
     let WidgetKey =
         Widgets.register "Tuple" (fun widget ->
@@ -13,8 +13,8 @@ module TuplePat =
 
             let values =
                 values
-                |> List.map Choice1Of2
-                |> List.intersperse(Choice2Of2(SingleTextNode.comma))
+                |> Seq.map Choice1Of2
+                |> Seq.intersperse(Choice2Of2(SingleTextNode.comma))
 
             Pattern.Tuple(PatTupleNode(values, Range.Zero)))
 
@@ -22,15 +22,15 @@ module TuplePat =
 module TuplePatBuilders =
     type Ast with
 
-        static member TuplePat(value: WidgetBuilder<Pattern> list) =
-            let parameters = value |> List.map Gen.mkOak
+        static member TuplePat(value: WidgetBuilder<Pattern> seq) =
+            let parameters = value |> Seq.map Gen.mkOak
 
             WidgetBuilder<Pattern>(TuplePat.WidgetKey, TuplePat.Parameters.WithValue(parameters))
 
-        static member TuplePat(values: WidgetBuilder<Constant> list) =
-            let values = values |> List.map Ast.ConstantPat
+        static member TuplePat(values: WidgetBuilder<Constant> seq) =
+            let values = values |> Seq.map Ast.ConstantPat
             Ast.TuplePat(values)
 
-        static member TuplePat(values: string list) =
-            let values = values |> List.map(Ast.Constant)
+        static member TuplePat(values: string seq) =
+            let values = values |> Seq.map(Ast.Constant)
             Ast.TuplePat(values)

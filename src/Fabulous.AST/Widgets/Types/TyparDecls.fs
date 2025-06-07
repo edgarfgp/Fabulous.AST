@@ -11,10 +11,10 @@ module TyparDeclNode =
     let TyPar = Attributes.defineScalar<string> "Return"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let IntersectionConstrains =
-        Attributes.defineScalar<Type list> "IntersectionConstrains"
+        Attributes.defineScalar<Type seq> "IntersectionConstrains"
 
     let WidgetKey =
         Widgets.register "TyparDeclNode" (fun widget ->
@@ -27,14 +27,14 @@ module TyparDeclNode =
 
             let intersectionConstrains =
                 Widgets.getScalarValue widget IntersectionConstrains
-                |> List.map(Choice1Of2)
-                |> List.intersperse(Choice2Of2 SingleTextNode.comma)
+                |> Seq.map(Choice1Of2)
+                |> Seq.intersperse(Choice2Of2 SingleTextNode.comma)
 
             TyparDeclNode(attributes, SingleTextNode.Create(tyPar), intersectionConstrains, Range.Zero))
 
 type TyparDeclNodeModifiers =
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TyparDeclNode>, attributes: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<TyparDeclNode>, attributes: WidgetBuilder<AttributeNode> seq) =
         this.AddScalar(
             TyparDeclNode.MultipleAttributes.WithValue(
                 [ for attr in attributes do
@@ -50,8 +50,8 @@ type TyparDeclNodeModifiers =
 module TyparDeclNodeBuilders =
     type Ast with
 
-        static member TyparDecl(tyPar: string, constraints: WidgetBuilder<Type> list) =
-            let constrains = constraints |> List.map Gen.mkOak
+        static member TyparDecl(tyPar: string, constraints: WidgetBuilder<Type> seq) =
+            let constrains = constraints |> Seq.map Gen.mkOak
 
             WidgetBuilder<TyparDeclNode>(
                 TyparDeclNode.WidgetKey,
@@ -69,8 +69,8 @@ module TyparDeclNodeBuilders =
 
         static member TyparDecl(tyPar: string) = Ast.TyparDecl(tyPar, [])
 
-        static member TyparDecl(tyPar: string, constraints: string list) =
-            Ast.TyparDecl(tyPar, constraints |> List.map Ast.LongIdent)
+        static member TyparDecl(tyPar: string, constraints: string seq) =
+            Ast.TyparDecl(tyPar, constraints |> Seq.map Ast.LongIdent)
 
         static member TyparDecl(tyPar: string, value: string) = Ast.TyparDecl(tyPar, [ value ])
 
@@ -83,22 +83,22 @@ module TyparDecls =
             let value = Widgets.getNodeFromWidget widget TyparDecl
             TyparDecls.SinglePrefix(value))
 
-    let Decls = Attributes.defineScalar<TyparDeclNode list> "Decls"
+    let Decls = Attributes.defineScalar<TyparDeclNode seq> "Decls"
 
     let WidgetPrefixListKey =
         Widgets.register "PrefixList" (fun widget ->
-            let decls = Widgets.getScalarValue widget Decls
+            let decls = Widgets.getScalarValue widget Decls |> List.ofSeq
 
             TyparDecls.PrefixList(
                 TyparDeclsPrefixListNode(SingleTextNode.lessThan, decls, SingleTextNode.greaterThan, Range.Zero)
             ))
 
-    let Constraints = Attributes.defineScalar<TypeConstraint list> "ConstraintValue"
+    let Constraints = Attributes.defineScalar<TypeConstraint seq> "ConstraintValue"
 
     let WidgetPostfixListKey =
         Widgets.register "PostfixList" (fun widget ->
-            let decls = Widgets.getScalarValue widget Decls
-            let constraints = Widgets.getScalarValue widget Constraints
+            let decls = Widgets.getScalarValue widget Decls |> List.ofSeq
+            let constraints = Widgets.getScalarValue widget Constraints |> List.ofSeq
 
             TyparDecls.PostfixList(
                 TyparDeclsPostfixListNode(
@@ -119,13 +119,13 @@ module TyparDeclsBuilders =
 
         static member SinglePrefix(value: string) = Ast.SinglePrefix(Ast.TyparDecl(value))
 
-        static member PrefixList(decls: WidgetBuilder<TyparDeclNode> list) =
-            let decls = decls |> List.map Gen.mkOak
+        static member PrefixList(decls: WidgetBuilder<TyparDeclNode> seq) =
+            let decls = decls |> Seq.map Gen.mkOak
 
             WidgetBuilder<TyparDecls>(TyparDecls.WidgetPrefixListKey, TyparDecls.Decls.WithValue(decls))
 
-        static member PrefixList(decls: string list) =
-            let decls = decls |> List.map Ast.TyparDecl
+        static member PrefixList(decls: string seq) =
+            let decls = decls |> Seq.map Ast.TyparDecl
             Ast.PrefixList(decls)
 
         static member PrefixList(decls: WidgetBuilder<TyparDeclNode>) = Ast.PrefixList([ decls ])
@@ -133,10 +133,10 @@ module TyparDeclsBuilders =
         static member PrefixList(decl: string) = Ast.PrefixList([ decl ])
 
         static member PostfixList
-            (decls: WidgetBuilder<TyparDeclNode> list, constraints: WidgetBuilder<TypeConstraint> list)
+            (decls: WidgetBuilder<TyparDeclNode> seq, constraints: WidgetBuilder<TypeConstraint> seq)
             =
-            let decls = decls |> List.map Gen.mkOak
-            let constraints = constraints |> List.map Gen.mkOak
+            let decls = decls |> Seq.map Gen.mkOak
+            let constraints = constraints |> Seq.map Gen.mkOak
 
             WidgetBuilder<TyparDecls>(
                 TyparDecls.WidgetPostfixListKey,
@@ -147,21 +147,21 @@ module TyparDeclsBuilders =
                 )
             )
 
-        static member PostfixList(decls: string list, constraints: WidgetBuilder<TypeConstraint> list) =
-            let decls = decls |> List.map Ast.TyparDecl
+        static member PostfixList(decls: string seq, constraints: WidgetBuilder<TypeConstraint> seq) =
+            let decls = decls |> Seq.map Ast.TyparDecl
             Ast.PostfixList(decls, constraints)
 
-        static member PostfixList(decls: WidgetBuilder<TyparDeclNode> list) = Ast.PostfixList(decls, [])
+        static member PostfixList(decls: WidgetBuilder<TyparDeclNode> seq) = Ast.PostfixList(decls, [])
 
-        static member PostfixList(decls: string list) =
-            let decls = decls |> List.map Ast.TyparDecl
+        static member PostfixList(decls: string seq) =
+            let decls = decls |> Seq.map Ast.TyparDecl
             Ast.PostfixList(decls)
 
         static member PostfixList(decl: WidgetBuilder<TyparDeclNode>) = Ast.PostfixList([ decl ], [])
 
         static member PostfixList(decl: string) = Ast.PostfixList([ decl ])
 
-        static member PostfixList(constraints: WidgetBuilder<TypeConstraint> list) = Ast.PostfixList([], constraints)
+        static member PostfixList(constraints: WidgetBuilder<TypeConstraint> seq) = Ast.PostfixList([], constraints)
 
         static member PostfixList(constraints: WidgetBuilder<TypeConstraint>) = Ast.PostfixList([], [ constraints ])
 

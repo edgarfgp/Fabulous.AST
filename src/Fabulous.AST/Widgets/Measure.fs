@@ -93,9 +93,9 @@ module Measure =
 
     let Node = Attributes.defineWidget "Node"
 
-    let Measures = Attributes.defineScalar<Measure list> "Measures"
+    let Measures = Attributes.defineScalar<Measure seq> "Measures"
 
-    let Content = Attributes.defineScalar<string list> "Content"
+    let Content = Attributes.defineScalar<string seq> "Content"
 
     let WidgetMeasureSingleKey =
         Widgets.register "MeasureSingle" (fun widget ->
@@ -143,7 +143,7 @@ module Measure =
     let WidgetSequenceKey =
         Widgets.register "Sequence" (fun widget ->
             let measures = Widgets.getScalarValue widget Measures
-            Measure.Seq(MeasureSequenceNode(measures, Range.Zero)))
+            Measure.Seq(MeasureSequenceNode(List.ofSeq measures, Range.Zero)))
 
     let WidgetParenthesisKey =
         Widgets.register "Parenthesis" (fun widget ->
@@ -296,21 +296,21 @@ module MeasureBuilders =
                 )
             )
 
-        /// <summary>Creates a multiple measure from a list of string measures.</summary>
-        /// <param name="content">The list of measure names.</param>
-        static member MeasureMultiple(content: string list) =
+        /// <summary>Creates a multiple measure from a seq of string measures.</summary>
+        /// <param name="content">The seq of measure names.</param>
+        static member MeasureMultiple(content: string seq) =
             WidgetBuilder<Measure>(Measure.WidgetMeasureMultiplyKey, Measure.Content.WithValue(content))
 
         /// <summary>Creates a sequence of measures.</summary>
-        /// <param name="value">The list of measures.</param>
-        static member MeasureSeq(value: WidgetBuilder<Measure> list) =
-            let measures = value |> List.map Gen.mkOak
+        /// <param name="value">The seq of measures.</param>
+        static member MeasureSeq(value: WidgetBuilder<Measure> seq) =
+            let measures = value |> Seq.map Gen.mkOak
 
             WidgetBuilder<Measure>(Measure.WidgetSequenceKey, Measure.Measures.WithValue(measures))
 
         /// <summary>Creates a sequence of measures from string values.</summary>
-        /// <param name="values">The list of measure names.</param>
-        static member MeasureSeq(values: string list) =
+        /// <param name="values">The seq of measure names.</param>
+        static member MeasureSeq(values: string seq) =
             let measures =
                 [ for value in values do
                       Gen.mkOak(Ast.MeasureSingle(value)) ]

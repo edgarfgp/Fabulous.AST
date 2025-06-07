@@ -10,8 +10,8 @@ open Microsoft.FSharp.Core.CompilerServices
 type Ast = class end
 
 type MethodParamsType =
-    | UnNamed of parameters: WidgetBuilder<Type> list * isTupled: bool
-    | Named of types: (string * WidgetBuilder<Type>) list * isTupled: bool
+    | UnNamed of parameters: WidgetBuilder<Type> seq * isTupled: bool
+    | Named of types: (string * WidgetBuilder<Type>) seq * isTupled: bool
 
 type AccessControl =
     | Public
@@ -22,16 +22,22 @@ type AccessControl =
 [<AutoOpen>]
 module CommonExtensions =
     type MultipleTextsNode with
-        static member Create(texts: SingleTextNode list) = MultipleTextsNode(texts, Range.Zero)
+        static member Create(texts: SingleTextNode seq) =
+            MultipleTextsNode(List.ofSeq texts, Range.Zero)
 
     type Type with
         static member Create(name: string) =
             Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))
 
     type MultipleAttributeListNode with
-        static member Create(values: AttributeNode list) =
+        static member Create(values: AttributeNode seq) =
             MultipleAttributeListNode(
-                [ AttributeListNode(SingleTextNode.leftAttribute, values, SingleTextNode.rightAttribute, Range.Zero) ],
+                [ AttributeListNode(
+                      SingleTextNode.leftAttribute,
+                      List.ofSeq values,
+                      SingleTextNode.rightAttribute,
+                      Range.Zero
+                  ) ],
                 Range.Zero
             )
 
@@ -44,6 +50,23 @@ module List =
 
         source
         |> List.iter(fun element ->
+            if notFirst then
+                coll.Add separator
+
+            coll.Add element
+            notFirst <- true)
+
+        coll.Close()
+
+[<RequireQualifiedAccess>]
+module Seq =
+    let intersperse separator (source: 'T seq) =
+        let mutable coll = new ListCollector<'T>()
+
+        let mutable notFirst = false
+
+        source
+        |> Seq.iter(fun element ->
             if notFirst then
                 coll.Add separator
 

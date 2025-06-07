@@ -7,7 +7,7 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module TypeAnonRecord =
-    let Fields = Attributes.defineScalar<(string * WidgetBuilder<Type>) list> "Fields"
+    let Fields = Attributes.defineScalar<(string * WidgetBuilder<Type>) seq> "Fields"
 
     let IsStructNode = Attributes.defineScalar<bool> "IsStructNode"
 
@@ -17,11 +17,12 @@ module TypeAnonRecord =
 
             let fields =
                 fields
-                |> List.map(fun (name, widget) ->
+                |> Seq.map(fun (name, widget) ->
                     let name = PrettyNaming.NormalizeIdentifierBackticks name
                     let name = SingleTextNode.Create(name)
                     let tp = Gen.mkOak widget
                     (name, tp))
+                |> List.ofSeq
 
             let isStructNode = Widgets.getScalarValue widget IsStructNode
 
@@ -44,7 +45,7 @@ module TypeAnonRecord =
 [<AutoOpen>]
 module TypeAnonRecordBuilders =
     type Ast with
-        static member AnonRecord(fields: (string * WidgetBuilder<Type>) list) =
+        static member AnonRecord(fields: (string * WidgetBuilder<Type>) seq) =
             WidgetBuilder<Type>(
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
@@ -54,11 +55,11 @@ module TypeAnonRecordBuilders =
                 )
             )
 
-        static member AnonRecord(fields: (string * string) list) =
-            let fields = fields |> List.map(fun (name, value) -> (name, Ast.LongIdent value))
+        static member AnonRecord(fields: (string * string) seq) =
+            let fields = fields |> Seq.map(fun (name, value) -> (name, Ast.LongIdent value))
             Ast.AnonRecord(fields)
 
-        static member StructAnonRecord(fields: (string * WidgetBuilder<Type>) list) =
+        static member StructAnonRecord(fields: (string * WidgetBuilder<Type>) seq) =
             WidgetBuilder<Type>(
                 TypeAnonRecord.WidgetKey,
                 AttributesBundle(
@@ -68,6 +69,6 @@ module TypeAnonRecordBuilders =
                 )
             )
 
-        static member StructAnonRecord(fields: (string * string) list) =
-            let fields = fields |> List.map(fun (name, value) -> (name, Ast.LongIdent value))
+        static member StructAnonRecord(fields: (string * string) seq) =
+            let fields = fields |> Seq.map(fun (name, value) -> (name, Ast.LongIdent value))
             Ast.StructAnonRecord(fields)

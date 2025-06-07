@@ -15,7 +15,7 @@ module TypeDefnAbbrevNode =
     let AliasType = Attributes.defineWidget "AliasType"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -127,7 +127,7 @@ type TypeDefnAbbrevNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, xmlDocs: string list) =
+    static member xmlDocs(this: WidgetBuilder<TypeDefnAbbrevNode>, xmlDocs: string seq) =
         TypeDefnAbbrevNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current type abbreviation definition.</summary>
@@ -143,7 +143,7 @@ type TypeDefnAbbrevNodeModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnAbbrevNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnAbbrevNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             TypeDefnAbbrevNode.MultipleAttributes.WithValue(

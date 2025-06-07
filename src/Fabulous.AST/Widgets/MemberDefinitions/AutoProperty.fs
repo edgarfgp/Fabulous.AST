@@ -16,7 +16,7 @@ module AutoPropertyMember =
     let HasSetter = Attributes.defineScalar<bool * AccessControl> "HasSetter"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
@@ -578,7 +578,7 @@ type AutoPropertyMemberModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: string list) =
+    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: string seq) =
         AutoPropertyMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current widget.</summary>
@@ -596,9 +596,9 @@ type AutoPropertyMemberModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<MemberDefnAutoPropertyNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<MemberDefnAutoPropertyNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(AutoPropertyMember.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(AutoPropertyMember.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attribute for the current widget.</summary>
     /// <param name="this">Current widget.</param>

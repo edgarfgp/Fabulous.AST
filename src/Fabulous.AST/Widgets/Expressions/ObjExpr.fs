@@ -12,7 +12,7 @@ module ObjExpr =
 
     let Members = Attributes.defineWidgetCollection "Members"
 
-    let Interfaces = Attributes.defineScalar<InterfaceImplNode list> "Interface"
+    let Interfaces = Attributes.defineScalar<InterfaceImplNode seq> "Interface"
 
     let Value = Attributes.defineWidget "ExprValue"
 
@@ -29,7 +29,9 @@ module ObjExpr =
                 |> ValueOption.defaultValue []
 
             let interfaces =
-                Widgets.tryGetScalarValue widget Interfaces |> ValueOption.defaultValue []
+                Widgets.tryGetScalarValue widget Interfaces
+                |> ValueOption.defaultValue []
+                |> List.ofSeq
 
             let typeName = Widgets.getNodeFromWidget<Type> widget Name
             let exprValue = Widgets.tryGetNodeFromWidget<Expr> widget Value

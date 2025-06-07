@@ -8,12 +8,12 @@ open Fantomas.FCS.Text
 module TryWith =
     let Value = Attributes.defineWidget "Value"
 
-    let Clauses = Attributes.defineScalar<MatchClauseNode list> "Clauses"
+    let Clauses = Attributes.defineScalar<MatchClauseNode seq> "Clauses"
 
     let WidgetKey =
         Widgets.register "TryWith" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
-            let clauses = Widgets.getScalarValue widget Clauses
+            let clauses = Widgets.getScalarValue widget Clauses |> List.ofSeq
             Expr.TryWith(ExprTryWithNode(SingleTextNode.``try``, expr, SingleTextNode.``with``, clauses, Range.Zero)))
 
 [<AutoOpen>]
@@ -39,8 +39,8 @@ module TryWithBuilders =
         ///     }
         /// }
         /// </code>
-        static member TryWithExpr(value: WidgetBuilder<Expr>, clauses: WidgetBuilder<MatchClauseNode> list) =
-            let clauses = clauses |> List.map Gen.mkOak
+        static member TryWithExpr(value: WidgetBuilder<Expr>, clauses: WidgetBuilder<MatchClauseNode> seq) =
+            let clauses = clauses |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 TryWith.WidgetKey,
@@ -71,7 +71,7 @@ module TryWithBuilders =
         ///     }
         /// }
         /// </code>
-        static member TryWithExpr(value: WidgetBuilder<Constant>, clauses: WidgetBuilder<MatchClauseNode> list) =
+        static member TryWithExpr(value: WidgetBuilder<Constant>, clauses: WidgetBuilder<MatchClauseNode> seq) =
             Ast.TryWithExpr(Ast.ConstantExpr(value), clauses)
 
         /// <summary>
@@ -94,7 +94,7 @@ module TryWithBuilders =
         ///     }
         /// }
         /// </code>
-        static member TryWithExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> list) =
+        static member TryWithExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> seq) =
             Ast.TryWithExpr(Ast.ConstantExpr(value), clauses)
 
         /// <summary>

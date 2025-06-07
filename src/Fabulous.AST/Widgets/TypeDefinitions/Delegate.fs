@@ -11,7 +11,7 @@ open Fantomas.FCS.Text
 module Delegate =
 
     let Name = Attributes.defineScalar<string> "Name"
-    let Parameters = Attributes.defineScalar<Type list> "Parameters"
+    let Parameters = Attributes.defineScalar<Type seq> "Parameters"
 
     let Return = Attributes.defineWidget "ReturnType"
 
@@ -26,11 +26,12 @@ module Delegate =
 
             let parameters =
                 parameters
-                |> List.mapi(fun i t ->
-                    if i = List.length parameters - 1 then
+                |> Seq.mapi(fun i t ->
+                    if i = Seq.length parameters - 1 then
                         (t, SingleTextNode.arrow)
                     else
                         (t, SingleTextNode.star))
+                |> List.ofSeq
 
             TypeDefnDelegateNode(
                 TypeNameNode(
@@ -55,14 +56,14 @@ module Delegate =
 module DelegateBuilders =
     type Ast with
         static member private BaseDelegate
-            (name: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>)
+            (name: string, parameters: WidgetBuilder<Type> seq, returnType: WidgetBuilder<Type>)
             =
             WidgetBuilder<TypeDefnDelegateNode>(
                 Delegate.WidgetKey,
                 AttributesBundle(
                     StackList.two(
                         Delegate.Name.WithValue(name),
-                        Delegate.Parameters.WithValue(parameters |> List.map Gen.mkOak)
+                        Delegate.Parameters.WithValue(parameters |> Seq.map Gen.mkOak)
                     ),
                     [| Delegate.Return.WithValue(returnType.Compile()) |],
                     Array.empty
@@ -80,7 +81,7 @@ module DelegateBuilders =
         ///     }
         /// }
         /// </code>
-        static member Delegate(name: string, parameters: WidgetBuilder<Type> list, returnType: WidgetBuilder<Type>) =
+        static member Delegate(name: string, parameters: WidgetBuilder<Type> seq, returnType: WidgetBuilder<Type>) =
             Ast.BaseDelegate(name, parameters, returnType)
 
         /// <summary>Create a delegate type definition.</summary>
@@ -94,8 +95,8 @@ module DelegateBuilders =
         ///     }
         /// }
         /// </code>
-        static member Delegate(name: string, parameters: string list, returnType: WidgetBuilder<Type>) =
-            Ast.BaseDelegate(name, parameters |> List.map Ast.LongIdent, returnType)
+        static member Delegate(name: string, parameters: string seq, returnType: WidgetBuilder<Type>) =
+            Ast.BaseDelegate(name, parameters |> Seq.map Ast.LongIdent, returnType)
 
         /// <summary>Create a delegate type definition.</summary>
         /// <param name="name">The name of the delegate.</param>
@@ -108,8 +109,8 @@ module DelegateBuilders =
         ///     }
         /// }
         /// </code>
-        static member Delegate(name: string, parameters: string list, returnType: string) =
-            Ast.BaseDelegate(name, parameters |> List.map Ast.LongIdent, Ast.LongIdent returnType)
+        static member Delegate(name: string, parameters: string seq, returnType: string) =
+            Ast.BaseDelegate(name, parameters |> Seq.map Ast.LongIdent, Ast.LongIdent returnType)
 
         /// <summary>Create a delegate type definition.</summary>
         /// <param name="name">The name of the delegate.</param>
@@ -122,7 +123,7 @@ module DelegateBuilders =
         ///     }
         /// }
         /// </code>
-        static member Delegate(name: string, parameters: WidgetBuilder<Type> list, returnType: string) =
+        static member Delegate(name: string, parameters: WidgetBuilder<Type> seq, returnType: string) =
             Ast.BaseDelegate(name, parameters, Ast.LongIdent returnType)
 
         /// <summary>Create a delegate type definition.</summary>

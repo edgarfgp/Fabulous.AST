@@ -15,11 +15,10 @@ module TypeNameNode =
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
-    let MeasureAttribute =
-        Attributes.defineScalar<AttributeNode list> "MeasureAttribute"
+    let MeasureAttribute = Attributes.defineScalar<AttributeNode seq> "MeasureAttribute"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Measure" (fun widget ->
@@ -30,7 +29,7 @@ module TypeNameNode =
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
-            let measureAttribute = Widgets.getScalarValue widget MeasureAttribute
+            let measureAttribute = Widgets.getScalarValue widget MeasureAttribute |> List.ofSeq
 
             let multipleAttributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -39,7 +38,7 @@ module TypeNameNode =
 
             let attributes =
                 match multipleAttributes with
-                | Some(multipleAttributes) -> measureAttribute @ multipleAttributes
+                | Some(multipleAttributes) -> measureAttribute @ List.ofSeq multipleAttributes
                 | None -> measureAttribute
 
             TypeNameNode(
@@ -131,7 +130,7 @@ type TypeNameNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<TypeNameNode>, xmlDocs: string list) =
+    static member xmlDocs(this: WidgetBuilder<TypeNameNode>, xmlDocs: string seq) =
         TypeNameNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current measure type definition.</summary>
@@ -146,8 +145,8 @@ type TypeNameNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<TypeNameNode>, attributes: WidgetBuilder<AttributeNode> list) =
-        this.AddScalar(TypeNameNode.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+    static member inline attributes(this: WidgetBuilder<TypeNameNode>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(TypeNameNode.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current measure type definition.</summary>
     /// <param name="this">Current widget.</param>

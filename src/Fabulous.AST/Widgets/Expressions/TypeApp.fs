@@ -8,11 +8,11 @@ open Fantomas.FCS.Text
 module TypeApp =
     let IdentifierExpr = Attributes.defineWidget "Value"
 
-    let TypeParameters = Attributes.defineScalar<Type list> "TypeParameters"
+    let TypeParameters = Attributes.defineScalar<Type seq> "TypeParameters"
 
     let WidgetKey =
         Widgets.register "TypeApp" (fun widget ->
-            let parameters = Widgets.getScalarValue widget TypeParameters
+            let parameters = Widgets.getScalarValue widget TypeParameters |> List.ofSeq
             let identifierExpr = Widgets.getNodeFromWidget widget IdentifierExpr
 
             Expr.TypeApp(
@@ -29,8 +29,8 @@ module TypeApp =
 module TypeAppBuilders =
     type Ast with
 
-        static member TypeAppExpr(value: WidgetBuilder<Expr>, parameters: WidgetBuilder<Type> list) =
-            let parameters = parameters |> List.map Gen.mkOak
+        static member TypeAppExpr(value: WidgetBuilder<Expr>, parameters: WidgetBuilder<Type> seq) =
+            let parameters = parameters |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 TypeApp.WidgetKey,
@@ -41,14 +41,14 @@ module TypeAppBuilders =
                 )
             )
 
-        static member TypeAppExpr(value: WidgetBuilder<Constant>, parameters: WidgetBuilder<Type> list) =
+        static member TypeAppExpr(value: WidgetBuilder<Constant>, parameters: WidgetBuilder<Type> seq) =
             Ast.TypeAppExpr(Ast.ConstantExpr(value), parameters)
 
-        static member TypeAppExpr(value: string, parameters: WidgetBuilder<Type> list) =
+        static member TypeAppExpr(value: string, parameters: WidgetBuilder<Type> seq) =
             Ast.TypeAppExpr(Ast.Constant(value), parameters)
 
-        static member TypeAppExpr(value: string, parameters: string list) =
-            let parameters = parameters |> List.map(fun t -> Ast.EscapeHatch(Type.Create(t)))
+        static member TypeAppExpr(value: string, parameters: string seq) =
+            let parameters = parameters |> Seq.map(fun t -> Ast.EscapeHatch(Type.Create(t)))
             Ast.TypeAppExpr(Ast.Constant(value), parameters)
 
         static member TypeAppExpr(value: WidgetBuilder<Expr>, parameter: WidgetBuilder<Type>) =

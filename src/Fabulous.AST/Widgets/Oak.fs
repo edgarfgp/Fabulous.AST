@@ -10,7 +10,7 @@ module Oak =
     let Decls = Attributes.defineWidgetCollection "Decls"
 
     let ParsedHashDirectives =
-        Attributes.defineScalar<ParsedHashDirectiveNode list> "ParsedHashDirectives"
+        Attributes.defineScalar<ParsedHashDirectiveNode seq> "ParsedHashDirectives"
 
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
@@ -21,7 +21,7 @@ module Oak =
                 |> ValueOption.map id
                 |> ValueOption.defaultValue []
 
-            Oak(hashDirectives, decls, Range.Zero))
+            Oak(List.ofSeq hashDirectives, decls, Range.Zero))
 
 [<AutoOpen>]
 module SyntaxOakBuilders =
@@ -56,7 +56,7 @@ type SyntaxOakModifiers =
     /// |> _.hashDirectives([ NoWarn("FS0028") ])
     /// </code>
     [<Extension>]
-    static member inline hashDirectives(this: WidgetBuilder<Oak>, values: WidgetBuilder<ParsedHashDirectiveNode> list) =
+    static member inline hashDirectives(this: WidgetBuilder<Oak>, values: WidgetBuilder<ParsedHashDirectiveNode> seq) =
         this.AddScalar(Oak.ParsedHashDirectives.WithValue([ for value in values -> Gen.mkOak value ]))
 
     /// <summary>Sets the hash directive for the current Oak widget.</summary>
