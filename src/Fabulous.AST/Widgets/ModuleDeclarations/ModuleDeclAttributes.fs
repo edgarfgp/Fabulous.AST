@@ -10,7 +10,7 @@ module ModuleDeclAttributes =
     let DoExpression = Attributes.defineWidget "DoExpression"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
@@ -80,9 +80,9 @@ type ModuleDeclAttributeModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ModuleDeclAttributesNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ModuleDeclAttributesNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(ModuleDeclAttributes.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(ModuleDeclAttributes.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current module.</summary>
     /// <param name="this">Current widget.</param>

@@ -10,7 +10,7 @@ module ExceptionDefn =
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -97,8 +97,8 @@ module ExceptionDefnBuilders =
         ///     }
         /// }
         /// </code>
-        static member ExceptionDefn(value: string, parameters: WidgetBuilder<FieldNode> list) =
-            Ast.ExceptionDefn(Ast.UnionCase(value, parameters))
+        static member ExceptionDefn(value: string, parameters: WidgetBuilder<FieldNode> seq) =
+            Ast.ExceptionDefn(Ast.UnionCase(value, List.ofSeq parameters))
 
         /// <summary>Create an exception definition with a union case.</summary>
         /// <param name="value">The union case.</param>
@@ -123,9 +123,9 @@ module ExceptionDefnBuilders =
         ///     }
         /// }
         /// </code>
-        static member ExceptionDefn(value: string, parameters: WidgetBuilder<Type> list) =
-            let parameters = parameters |> List.map Ast.Field
-            Ast.ExceptionDefn(Ast.UnionCase(value, parameters))
+        static member ExceptionDefn(value: string, parameters: WidgetBuilder<Type> seq) =
+            let parameters = parameters |> Seq.map Ast.Field
+            Ast.ExceptionDefn(Ast.UnionCase(value, List.ofSeq parameters))
 
         /// <summary>Create an exception definition with a union case.</summary>
         /// <param name="value">The union case.</param>
@@ -150,9 +150,9 @@ module ExceptionDefnBuilders =
         ///     }
         /// }
         /// </code>
-        static member ExceptionDefn(value: string, parameters: string list) =
-            let parameters = parameters |> List.map Ast.Field
-            Ast.ExceptionDefn(Ast.UnionCase(value, parameters))
+        static member ExceptionDefn(value: string, parameters: string seq) =
+            let parameters = parameters |> Seq.map Ast.Field
+            Ast.ExceptionDefn(Ast.UnionCase(value, List.ofSeq parameters))
 
         /// <summary>Create an exception definition with a union case.</summary>
         /// <param name="value">The union case.</param>
@@ -176,8 +176,8 @@ module ExceptionDefnBuilders =
         ///     }
         /// }
         /// </code>
-        static member ExceptionDefn(value: string, parameters: (string * WidgetBuilder<Type>) list) =
-            Ast.ExceptionDefn(Ast.UnionCase(value, parameters))
+        static member ExceptionDefn(value: string, parameters: (string * WidgetBuilder<Type>) seq) =
+            Ast.ExceptionDefn(Ast.UnionCase(value, List.ofSeq parameters))
 
         /// <summary>Create an exception definition with a union case.</summary>
         /// <param name="value">The union case.</param>
@@ -189,8 +189,8 @@ module ExceptionDefnBuilders =
         ///     }
         /// }
         /// </code>
-        static member ExceptionDefn(value: string, parameters: (string * string) list) =
-            Ast.ExceptionDefn(Ast.UnionCase(value, parameters))
+        static member ExceptionDefn(value: string, parameters: (string * string) seq) =
+            Ast.ExceptionDefn(Ast.UnionCase(value, List.ofSeq parameters))
 
 type ExceptionDefnModifiers =
     /// <summary>Sets the XmlDocs for the current exception definition.</summary>
@@ -220,7 +220,7 @@ type ExceptionDefnModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ExceptionDefnNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<ExceptionDefnNode>, xmlDocs: string seq) =
         ExceptionDefnModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the members for the current exception definition.</summary>
@@ -252,7 +252,7 @@ type ExceptionDefnModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ExceptionDefnNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ExceptionDefnNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             ExceptionDefn.MultipleAttributes.WithValue(

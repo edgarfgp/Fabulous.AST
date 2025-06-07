@@ -5,11 +5,11 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module StructTuplePat =
-    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
+    let Parameters = Attributes.defineScalar<Pattern seq> "Parameters"
 
     let WidgetKey =
         Widgets.register "StructTuple" (fun widget ->
-            let values = Widgets.getScalarValue widget Parameters
+            let values = Widgets.getScalarValue widget Parameters |> List.ofSeq
 
             Pattern.StructTuple(PatStructTupleNode(values, Range.Zero)))
 
@@ -17,16 +17,16 @@ module StructTuplePat =
 module StructTuplePatBuilders =
     type Ast with
 
-        static member StructTuplePat(values: WidgetBuilder<Pattern> list) =
+        static member StructTuplePat(values: WidgetBuilder<Pattern> seq) =
             WidgetBuilder<Pattern>(
                 StructTuplePat.WidgetKey,
-                StructTuplePat.Parameters.WithValue(values |> List.map Gen.mkOak)
+                StructTuplePat.Parameters.WithValue(values |> Seq.map Gen.mkOak)
             )
 
-        static member StructTuplePat(values: WidgetBuilder<Constant> list) =
-            let values = values |> List.map Ast.ConstantPat
+        static member StructTuplePat(values: WidgetBuilder<Constant> seq) =
+            let values = values |> Seq.map Ast.ConstantPat
             Ast.StructTuplePat(values)
 
-        static member StructTuplePat(values: string list) =
-            let values = values |> List.map(Ast.Constant)
+        static member StructTuplePat(values: string seq) =
+            let values = values |> Seq.map(Ast.Constant)
             Ast.StructTuplePat(values)

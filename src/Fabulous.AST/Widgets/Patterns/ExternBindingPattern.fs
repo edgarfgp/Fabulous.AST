@@ -10,7 +10,7 @@ module ExternBindingPattern =
     let PatternVal = Attributes.defineWidget "DoExpression"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let TypeValue = Attributes.defineWidget "Type"
 
@@ -62,9 +62,9 @@ module ExternBindingPatternNodeBuilders =
 type ExternBindingPatternNodeModifiers =
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ExternBindingPatternNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ExternBindingPatternNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(ExternBindingPattern.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(ExternBindingPattern.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     [<Extension>]
     static member inline attribute

@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module RecordExpr =
-    let Fields = Attributes.defineScalar<RecordFieldNode list> "Fields"
+    let Fields = Attributes.defineScalar<RecordFieldNode seq> "Fields"
     let CopyInfo = Attributes.defineWidget "CopyInfo"
 
     let OpenBrace = Attributes.defineScalar<SingleTextNode> "OpenBrace"
@@ -24,7 +24,7 @@ module RecordExpr =
                 | ValueSome copyInfo -> Some copyInfo
                 | ValueNone -> None
 
-            let fields = Widgets.getScalarValue widget Fields
+            let fields = Widgets.getScalarValue widget Fields |> List.ofSeq
 
             Expr.Record(ExprRecordNode(openBrace, copyInfo, fields, closeBrace, Range.Zero)))
 
@@ -37,7 +37,7 @@ module RecordExprBuilders =
                 copyInfo: WidgetBuilder<Expr> voption,
                 leftSingleNode: SingleTextNode,
                 rightSingleNode: SingleTextNode,
-                fields: WidgetBuilder<RecordFieldNode> list
+                fields: WidgetBuilder<RecordFieldNode> seq
             ) =
             let copyInfo =
                 match copyInfo with
@@ -50,14 +50,14 @@ module RecordExprBuilders =
                     StackList.three(
                         RecordExpr.OpenBrace.WithValue(leftSingleNode),
                         RecordExpr.CloseBrace.WithValue(rightSingleNode),
-                        RecordExpr.Fields.WithValue(fields |> List.map Gen.mkOak)
+                        RecordExpr.Fields.WithValue(fields |> Seq.map Gen.mkOak)
                     ),
                     copyInfo,
                     Array.empty
                 )
             )
 
-        static member RecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member RecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.BaseRecordExpr(
                 ValueSome copyInfo,
                 SingleTextNode.leftCurlyBrace,
@@ -65,16 +65,16 @@ module RecordExprBuilders =
                 fields
             )
 
-        static member RecordExpr(copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member RecordExpr(copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.RecordExpr(Ast.ConstantExpr(copyInfo), fields)
 
-        static member RecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member RecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.RecordExpr(Ast.Constant(copyInfo), fields)
 
-        static member RecordExpr(fields: WidgetBuilder<RecordFieldNode> list) =
+        static member RecordExpr(fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.BaseRecordExpr(ValueNone, SingleTextNode.leftCurlyBrace, SingleTextNode.rightCurlyBrace, fields)
 
-        static member AnonRecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member AnonRecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.BaseRecordExpr(
                 ValueSome copyInfo,
                 SingleTextNode.leftCurlyBraceWithBar,
@@ -82,13 +82,13 @@ module RecordExprBuilders =
                 fields
             )
 
-        static member AnonRecordExpr(copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member AnonRecordExpr(copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.AnonRecordExpr(Ast.ConstantExpr(copyInfo), fields)
 
-        static member AnonRecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member AnonRecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.AnonRecordExpr(Ast.Constant(copyInfo), fields)
 
-        static member AnonRecordExpr(fields: WidgetBuilder<RecordFieldNode> list) =
+        static member AnonRecordExpr(fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.BaseRecordExpr(
                 ValueNone,
                 SingleTextNode.leftCurlyBraceWithBar,

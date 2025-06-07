@@ -17,7 +17,7 @@ module Field =
     let Mutable = Attributes.defineScalar<bool> "Mutable"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let LeadingKeyword = Attributes.defineScalar<SingleTextNode> "LeadingKeyword"
 
@@ -214,7 +214,7 @@ type FieldModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<FieldNode>, xmlDocs: string list) =
+    static member xmlDocs(this: WidgetBuilder<FieldNode>, xmlDocs: string seq) =
         FieldModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the ValField to be mutable.</summary>
@@ -247,8 +247,8 @@ type FieldModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: WidgetBuilder<AttributeNode> list) =
-        this.AddScalar(Field.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+    static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(Field.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current measure ValField definition.</summary>
     /// <param name="this">Current widget.</param>

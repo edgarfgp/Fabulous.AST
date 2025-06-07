@@ -11,7 +11,7 @@ type TextSegment =
 
 module InterpolatedString =
     let Dollars = Attributes.defineScalar<string * bool> "Dollars"
-    let Parts = Attributes.defineScalar<TextSegment list> "Parts"
+    let Parts = Attributes.defineScalar<TextSegment seq> "Parts"
 
     let private createBraces count braceFn =
         List.replicate count braceFn |> List.map Choice1Of2
@@ -33,16 +33,16 @@ module InterpolatedString =
               yield Choice2Of2(Gen.mkOak expr)
               yield! createBraces braceCount SingleTextNode.rightCurlyBrace ]
     // Check if an interpolated string contains only text segments
-    let private isTextOnly(parts: TextSegment list) =
+    let private isTextOnly(parts: TextSegment seq) =
         parts
-        |> List.forall (function
+        |> Seq.forall (function
             | Text _ -> true
             | _ -> false)
 
     // Combine text-only segments for optimization
-    let private combineTextOnly(parts: TextSegment list) =
+    let private combineTextOnly(parts: TextSegment seq) =
         parts
-        |> List.map (function
+        |> Seq.map (function
             | Text t -> t
             | _ -> "")
         |> String.concat ""
@@ -68,7 +68,7 @@ module InterpolatedString =
                 let processedParts =
                     [ yield Choice1Of2(SingleTextNode.Create dollars)
                       yield openQuote
-                      yield! parts |> List.collect processPart
+                      yield! parts |> Seq.collect processPart
                       yield closeQuote ]
 
                 Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.Zero)))
@@ -77,7 +77,7 @@ module InterpolatedString =
 module InterpolatedStringBuilders =
     type Ast with
         static member private BaseInterpolatedStringExpr
-            (parts: TextSegment list, isVerbatim: bool option, dollars: int option)
+            (parts: TextSegment seq, isVerbatim: bool option, dollars: int option)
             =
             let dollars =
                 dollars
@@ -115,7 +115,7 @@ module InterpolatedStringBuilders =
         ///     }
         /// }
         /// </code>
-        static member InterpolatedStringExpr(parts: TextSegment list, ?isVerbatim: bool, ?dollars: int) =
+        static member InterpolatedStringExpr(parts: TextSegment seq, ?isVerbatim: bool, ?dollars: int) =
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
         /// <summary>
@@ -151,8 +151,8 @@ module InterpolatedStringBuilders =
         ///     }
         /// }
         /// </code>
-        static member InterpolatedStringExpr(parts: WidgetBuilder<Expr> list, ?isVerbatim: bool, ?dollars: int) =
-            let parts = parts |> List.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
+        static member InterpolatedStringExpr(parts: WidgetBuilder<Expr> seq, ?isVerbatim: bool, ?dollars: int) =
+            let parts = parts |> Seq.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
         /// <summary>
@@ -188,8 +188,8 @@ module InterpolatedStringBuilders =
         ///     }
         /// }
         /// </code>
-        static member InterpolatedStringExpr(parts: WidgetBuilder<Constant> list, ?isVerbatim: bool, ?dollars: int) =
-            let parts = parts |> List.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
+        static member InterpolatedStringExpr(parts: WidgetBuilder<Constant> seq, ?isVerbatim: bool, ?dollars: int) =
+            let parts = parts |> Seq.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
         /// <summary>
@@ -225,8 +225,8 @@ module InterpolatedStringBuilders =
         ///     }
         /// }
         /// </code>
-        static member InterpolatedStringExpr(parts: string list, ?isVerbatim: bool, ?dollars: int) =
-            let parts = parts |> List.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
+        static member InterpolatedStringExpr(parts: string seq, ?isVerbatim: bool, ?dollars: int) =
+            let parts = parts |> Seq.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
             Ast.BaseInterpolatedStringExpr(parts, isVerbatim, dollars)
 
         /// <summary>

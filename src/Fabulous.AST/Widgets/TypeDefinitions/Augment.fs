@@ -18,7 +18,7 @@ module Augmentation =
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Augmentation" (fun widget ->
@@ -160,7 +160,7 @@ type AugmentationModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnAugmentationNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnAugmentationNode>, xmlDocs: string seq) =
         AugmentationModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the accessibility for the current widget to private.</summary>
@@ -242,9 +242,9 @@ type AugmentationModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnAugmentationNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnAugmentationNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(Augmentation.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(Augmentation.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attribute for the current widget.</summary>
     /// <param name="this">Current widget.</param>

@@ -9,12 +9,12 @@ open Fantomas.Core.SyntaxOak
 
 module Match =
     let MatchExpr = Attributes.defineWidget "MatchExpr"
-    let MatchClauses = Attributes.defineScalar<MatchClauseNode list> "MatchClauses"
+    let MatchClauses = Attributes.defineScalar<MatchClauseNode seq> "MatchClauses"
 
     let WidgetKey =
         Widgets.register "Match" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget MatchExpr
-            let matchClauses = Widgets.getScalarValue widget MatchClauses
+            let matchClauses = Widgets.getScalarValue widget MatchClauses |> List.ofSeq
 
             Expr.Match(
                 ExprMatchNode(SingleTextNode.``match``, expr, SingleTextNode.``with``, matchClauses, Range.Zero)
@@ -24,20 +24,20 @@ module Match =
 module MatchBuilders =
     type Ast with
 
-        static member MatchExpr(value: WidgetBuilder<Expr>, clauses: WidgetBuilder<MatchClauseNode> list) =
+        static member MatchExpr(value: WidgetBuilder<Expr>, clauses: WidgetBuilder<MatchClauseNode> seq) =
             WidgetBuilder<Expr>(
                 Match.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Match.MatchClauses.WithValue(clauses |> List.map Gen.mkOak)),
+                    StackList.one(Match.MatchClauses.WithValue(clauses |> Seq.map Gen.mkOak)),
                     [| Match.MatchExpr.WithValue(value.Compile()) |],
                     Array.empty
                 )
             )
 
-        static member MatchExpr(value: WidgetBuilder<Constant>, clauses: WidgetBuilder<MatchClauseNode> list) =
+        static member MatchExpr(value: WidgetBuilder<Constant>, clauses: WidgetBuilder<MatchClauseNode> seq) =
             Ast.MatchExpr(Ast.ConstantExpr(value), clauses)
 
-        static member MatchExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> list) =
+        static member MatchExpr(value: string, clauses: WidgetBuilder<MatchClauseNode> seq) =
             Ast.MatchExpr(Ast.Constant(value), clauses)
 
         static member MatchExpr(value: WidgetBuilder<Expr>, clause: WidgetBuilder<MatchClauseNode>) =

@@ -6,24 +6,24 @@ open Fantomas.FCS.Text
 
 module TypeLongIdent =
 
-    let Value = Attributes.defineScalar<string list> "Value"
+    let Value = Attributes.defineScalar<string seq> "Value"
 
     let WidgetKey =
         Widgets.register "LongIdentType" (fun widget ->
             let values =
                 Widgets.getScalarValue widget Value
-                |> List.intersperse "."
-                |> List.map(fun value -> IdentifierOrDot.Ident(SingleTextNode.Create(value)))
+                |> Seq.intersperse "."
+                |> Seq.map(fun value -> IdentifierOrDot.Ident(SingleTextNode.Create(value)))
 
-            Type.LongIdent(IdentListNode(values, Range.Zero)))
+            Type.LongIdent(IdentListNode(List.ofSeq values, Range.Zero)))
 
 [<AutoOpen>]
 module LongIdentTypeBuilders =
     type Ast with
 
         /// <summary>Creates a long identifier type with dot-separated parts.</summary>
-        /// <param name="value">The list of identifier parts.</param>
-        static member LongIdent(value: string list) =
+        /// <param name="value">The seq of identifier parts.</param>
+        static member LongIdent(value: string seq) =
             WidgetBuilder<Type>(TypeLongIdent.WidgetKey, TypeLongIdent.Value.WithValue(value))
 
         /// <summary>Creates a simple identifier type.</summary>

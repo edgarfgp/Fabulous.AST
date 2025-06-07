@@ -9,7 +9,7 @@ open type Fabulous.AST.Ast
 
 module AppLongIdentAndSingleParenArg =
     let ExprVal = Attributes.defineWidget "Name"
-    let FunctionName = Attributes.defineScalar<string list> "FunctionName"
+    let FunctionName = Attributes.defineScalar<string seq> "FunctionName"
 
     let WidgetKey =
         Widgets.register "AppLongIdentAndSingleParenArg" (fun widget ->
@@ -17,8 +17,8 @@ module AppLongIdentAndSingleParenArg =
 
             let functionName =
                 Widgets.getScalarValue widget FunctionName
-                |> List.map(SingleTextNode.Create)
-                |> List.intersperse(SingleTextNode.Create ".")
+                |> Seq.map(SingleTextNode.Create)
+                |> Seq.intersperse(SingleTextNode.Create ".")
 
             Expr.AppLongIdentAndSingleParenArg(
                 ExprAppLongIdentAndSingleParenArgNode(
@@ -36,7 +36,7 @@ module AppLongIdentAndSingleParenArg =
 module AppLongIdentAndSingleParenArgBuilders =
     type Ast with
 
-        static member AppLongIdentAndSingleParenArgExpr(name: string list, expr: WidgetBuilder<Expr>) =
+        static member AppLongIdentAndSingleParenArgExpr(name: string seq, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<Expr>(
                 AppLongIdentAndSingleParenArg.WidgetKey,
                 AttributesBundle(
@@ -46,10 +46,10 @@ module AppLongIdentAndSingleParenArgBuilders =
                 )
             )
 
-        static member AppLongIdentAndSingleParenArgExpr(name: string list, expr: WidgetBuilder<Constant>) =
+        static member AppLongIdentAndSingleParenArgExpr(name: string seq, expr: WidgetBuilder<Constant>) =
             Ast.AppLongIdentAndSingleParenArgExpr(name, Ast.ConstantExpr(expr))
 
-        static member AppLongIdentAndSingleParenArgExpr(name: string list, expr: string) =
+        static member AppLongIdentAndSingleParenArgExpr(name: string seq, expr: string) =
             Ast.AppLongIdentAndSingleParenArgExpr(name, Ast.Constant(expr))
 
         static member AppLongIdentAndSingleParenArgExpr(name: string, expr: WidgetBuilder<Expr>) =

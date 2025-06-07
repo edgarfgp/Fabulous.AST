@@ -17,7 +17,7 @@ module NestedModule =
     let Decls = Attributes.defineWidgetCollection "Decls"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineWidget "XmlDoc"
 
@@ -183,7 +183,7 @@ type NestedModuleModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<NestedModuleNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<NestedModuleNode>, xmlDocs: string seq) =
         NestedModuleModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the XmlDocs for the current module.</summary>
@@ -218,7 +218,7 @@ type NestedModuleModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<NestedModuleNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<NestedModuleNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             NestedModule.MultipleAttributes.WithValue(

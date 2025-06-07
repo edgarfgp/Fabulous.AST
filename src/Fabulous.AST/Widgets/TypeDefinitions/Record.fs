@@ -16,7 +16,7 @@ module Record =
     let Members = Attributes.defineWidgetCollection "Members"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -99,7 +99,6 @@ module RecordBuilders =
     type Ast with
         /// <summary>Create a record type with the given name.</summary>
         /// <param name="name">The name of the record type.</param>
-        /// <param name="isRecursive">Whether the record type is recursive.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -176,7 +175,7 @@ type RecordModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRecordNode>, xmlDocs: string seq) =
         RecordModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current record definition.</summary>
@@ -196,7 +195,7 @@ type RecordModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnRecordNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnRecordNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             Record.MultipleAttributes.WithValue(

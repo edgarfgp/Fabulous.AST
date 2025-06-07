@@ -7,14 +7,14 @@ open Fantomas.FCS.Text
 
 module InheritRecord =
     let InheritConstructor = Attributes.defineWidget "InheritConstructor"
-    let Fields = Attributes.defineScalar<RecordFieldNode list> "Fields"
+    let Fields = Attributes.defineScalar<RecordFieldNode seq> "Fields"
 
     let WidgetKey =
         Widgets.register "InheritRecord" (fun widget ->
             let inheritConstructor =
                 Widgets.getNodeFromWidget<InheritConstructor> widget InheritConstructor
 
-            let fields = Widgets.getScalarValue widget Fields
+            let fields = Widgets.getScalarValue widget Fields |> List.ofSeq
 
             Expr.InheritRecord(
                 ExprInheritRecordNode(
@@ -31,12 +31,12 @@ module InheritRecordBuilders =
     type Ast with
 
         static member InheritRecordExpr
-            (value: WidgetBuilder<InheritConstructor>, fields: WidgetBuilder<RecordFieldNode> list)
+            (value: WidgetBuilder<InheritConstructor>, fields: WidgetBuilder<RecordFieldNode> seq)
             =
             WidgetBuilder<Expr>(
                 InheritRecord.WidgetKey,
                 AttributesBundle(
-                    StackList.one(InheritRecord.Fields.WithValue(fields |> List.map Gen.mkOak)),
+                    StackList.one(InheritRecord.Fields.WithValue(fields |> Seq.map Gen.mkOak)),
                     [| InheritRecord.InheritConstructor.WithValue(value.Compile()) |],
                     Array.empty
                 )

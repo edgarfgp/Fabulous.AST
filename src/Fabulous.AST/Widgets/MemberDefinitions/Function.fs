@@ -11,13 +11,13 @@ module BindingFunction =
 
     let Leading = Attributes.defineScalar<SingleTextNode> "Leading"
 
-    let Parameters = Attributes.defineScalar<Pattern list> "Parameters"
+    let Parameters = Attributes.defineScalar<Pattern seq> "Parameters"
 
     let WidgetKey =
         Widgets.register "Function" (fun widget ->
             let name = Widgets.getScalarValue widget Name
             let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
-            let parameters = Widgets.getScalarValue widget Parameters
+            let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
 
             let leading =
                 Widgets.tryGetScalarValue widget Leading
@@ -82,12 +82,12 @@ module BindingFunctionBuilders =
         static member private BaseFunction
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
+                parameters: WidgetBuilder<Pattern> seq,
                 bodyExpr: WidgetBuilder<Expr>,
                 ?returnType: WidgetBuilder<Type>
             ) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
-            let parameters = parameters |> List.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak
 
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,
@@ -117,7 +117,7 @@ module BindingFunctionBuilders =
         ///     }
         /// }
         /// </code>
-        static member Function(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>) =
+        static member Function(name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Expr>) =
             Ast.BaseFunction(name, parameters, bodyExpr)
 
         /// <summary>
@@ -137,7 +137,7 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
+                parameters: WidgetBuilder<Pattern> seq,
                 bodyExpr: WidgetBuilder<Expr>,
                 returnType: WidgetBuilder<Type>
             ) =
@@ -158,7 +158,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr>, returnType: string)
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Expr>, returnType: string)
             =
             Ast.BaseFunction(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
@@ -185,8 +185,8 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list
+                parameters: WidgetBuilder<Pattern> seq,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> seq
             ) =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
 
@@ -215,8 +215,8 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                parameters: WidgetBuilder<Pattern> seq,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> seq,
                 returnType: WidgetBuilder<Type>
             ) =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), returnType)
@@ -246,8 +246,8 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                parameters: WidgetBuilder<Pattern> seq,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> seq,
                 returnType: string
             ) =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
@@ -270,7 +270,7 @@ module BindingFunctionBuilders =
         /// }
         ///</code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Expr> list)
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Expr> seq)
             =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
 
@@ -296,8 +296,8 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<Expr> list,
+                parameters: WidgetBuilder<Pattern> seq,
+                bodyExpr: WidgetBuilder<Expr> seq,
                 returnType: WidgetBuilder<Type>
             ) =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), returnType)
@@ -322,12 +322,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (
-                name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<Expr> list,
-                returnType: string
-            ) =
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Expr> seq, returnType: string) =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
@@ -350,7 +345,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<BindingNode> list)
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<BindingNode> seq)
             =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr))
 
@@ -378,8 +373,8 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<BindingNode> list,
+                parameters: WidgetBuilder<Pattern> seq,
+                bodyExpr: WidgetBuilder<BindingNode> seq,
                 returnType: WidgetBuilder<Type>
             ) =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), returnType)
@@ -408,8 +403,8 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<BindingNode> list,
+                parameters: WidgetBuilder<Pattern> seq,
+                bodyExpr: WidgetBuilder<BindingNode> seq,
                 returnType: string
             ) =
             Ast.BaseFunction(name, parameters, Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
@@ -437,7 +432,7 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 parameter: WidgetBuilder<Pattern>,
-                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> seq
             ) =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
 
@@ -466,7 +461,7 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 parameter: WidgetBuilder<Pattern>,
-                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> seq,
                 returnType: WidgetBuilder<Type>
             ) =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), returnType)
@@ -496,7 +491,7 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 parameter: WidgetBuilder<Pattern>,
-                bodyExpr: WidgetBuilder<ComputationExpressionStatement> list,
+                bodyExpr: WidgetBuilder<ComputationExpressionStatement> seq,
                 returnType: string
             ) =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
@@ -518,7 +513,7 @@ module BindingFunctionBuilders =
         ///     }
         /// }
         /// </code>
-        static member Function(name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> list) =
+        static member Function(name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> seq) =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
 
         /// <summary>
@@ -544,7 +539,7 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 parameter: WidgetBuilder<Pattern>,
-                bodyExpr: WidgetBuilder<Expr> list,
+                bodyExpr: WidgetBuilder<Expr> seq,
                 returnType: WidgetBuilder<Type>
             ) =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), returnType)
@@ -569,7 +564,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> list, returnType: string)
+            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr> seq, returnType: string)
             =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
 
@@ -593,7 +588,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<BindingNode> list)
+            (name: string, parameter: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<BindingNode> seq)
             =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr))
 
@@ -622,7 +617,7 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 parameter: WidgetBuilder<Pattern>,
-                bodyExpr: WidgetBuilder<BindingNode> list,
+                bodyExpr: WidgetBuilder<BindingNode> seq,
                 returnType: WidgetBuilder<Type>
             ) =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), returnType)
@@ -652,7 +647,7 @@ module BindingFunctionBuilders =
             (
                 name: string,
                 parameter: WidgetBuilder<Pattern>,
-                bodyExpr: WidgetBuilder<BindingNode> list,
+                bodyExpr: WidgetBuilder<BindingNode> seq,
                 returnType: string
             ) =
             Ast.BaseFunction(name, [ parameter ], Ast.CompExprBodyExpr(bodyExpr), Ast.LongIdent(returnType))
@@ -671,7 +666,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: WidgetBuilder<Constant>)
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Constant>)
             =
             Ast.BaseFunction(name, parameters, Ast.ConstantExpr(bodyExpr))
 
@@ -692,7 +687,7 @@ module BindingFunctionBuilders =
         static member Function
             (
                 name: string,
-                parameters: WidgetBuilder<Pattern> list,
+                parameters: WidgetBuilder<Pattern> seq,
                 bodyExpr: WidgetBuilder<Constant>,
                 returnType: WidgetBuilder<Type>
             ) =
@@ -713,12 +708,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (
-                name: string,
-                parameters: WidgetBuilder<Pattern> list,
-                bodyExpr: WidgetBuilder<Constant>,
-                returnType: string
-            ) =
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Constant>, returnType: string) =
             Ast.BaseFunction(name, parameters, Ast.ConstantExpr(bodyExpr), Ast.LongIdent(returnType))
 
         /// <summary>
@@ -734,7 +724,7 @@ module BindingFunctionBuilders =
         ///     }
         /// }
         /// </code>
-        static member Function(name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string) =
+        static member Function(name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: string) =
             Ast.BaseFunction(name, parameters, Ast.ConstantExpr(Ast.Constant(bodyExpr)))
 
         /// <summary>
@@ -752,7 +742,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: WidgetBuilder<Type>)
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: string, returnType: WidgetBuilder<Type>)
             =
             Ast.BaseFunction(name, parameters, Ast.ConstantExpr(Ast.Constant(bodyExpr)), returnType)
 
@@ -771,7 +761,7 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: WidgetBuilder<Pattern> list, bodyExpr: string, returnType: string)
+            (name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: string, returnType: string)
             =
             Ast.BaseFunction(name, parameters, Ast.ConstantExpr(Ast.Constant(bodyExpr)), Ast.LongIdent(returnType))
 
@@ -788,10 +778,10 @@ module BindingFunctionBuilders =
         ///     }
         /// }
         /// </code>
-        static member Function(name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>) =
+        static member Function(name: string, parameters: string seq, bodyExpr: WidgetBuilder<Expr>) =
             let parameters =
                 parameters
-                |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
+                |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
 
             Ast.BaseFunction(name, parameters, bodyExpr)
 
@@ -810,11 +800,11 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
+            (name: string, parameters: string seq, bodyExpr: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>)
             =
             let parameters =
                 parameters
-                |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
+                |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
 
             Ast.Function(name, parameters, bodyExpr, returnType)
 
@@ -833,11 +823,11 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Expr>, returnType: string)
+            (name: string, parameters: string seq, bodyExpr: WidgetBuilder<Expr>, returnType: string)
             =
             let parameters =
                 parameters
-                |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
+                |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(Ast.Constant(p))))
 
             Ast.Function(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
@@ -854,9 +844,9 @@ module BindingFunctionBuilders =
         ///     }
         /// }
         /// </code>
-        static member Function(name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>) =
+        static member Function(name: string, parameters: string seq, bodyExpr: WidgetBuilder<Constant>) =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Function(name, parameters, bodyExpr)
 
@@ -875,10 +865,10 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
+            (name: string, parameters: string seq, bodyExpr: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>)
             =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Function(name, parameters, bodyExpr, returnType)
 
@@ -897,10 +887,10 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string list, bodyExpr: WidgetBuilder<Constant>, returnType: string)
+            (name: string, parameters: string seq, bodyExpr: WidgetBuilder<Constant>, returnType: string)
             =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Function(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 
@@ -917,9 +907,9 @@ module BindingFunctionBuilders =
         ///     }
         /// }
         /// </code>
-        static member Function(name: string, parameters: string list, bodyExpr: string) =
+        static member Function(name: string, parameters: string seq, bodyExpr: string) =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Function(name, parameters, bodyExpr)
 
@@ -938,10 +928,10 @@ module BindingFunctionBuilders =
         /// }
         /// </code>
         static member Function
-            (name: string, parameters: string list, bodyExpr: string, returnType: WidgetBuilder<Type>)
+            (name: string, parameters: string seq, bodyExpr: string, returnType: WidgetBuilder<Type>)
             =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Function(name, parameters, bodyExpr, returnType)
 
@@ -959,9 +949,9 @@ module BindingFunctionBuilders =
         ///     }
         /// }
         /// </code>
-        static member Function(name: string, parameters: string list, bodyExpr: string, returnType: string) =
+        static member Function(name: string, parameters: string seq, bodyExpr: string, returnType: string) =
             let parameters =
-                parameters |> List.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
+                parameters |> Seq.map(fun p -> Ast.ParameterPat(Ast.ConstantPat(p)))
 
             Ast.Function(name, parameters, bodyExpr, Ast.LongIdent(returnType))
 

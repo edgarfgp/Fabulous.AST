@@ -5,11 +5,11 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module RecordPat =
-    let Fields = Attributes.defineScalar<PatRecordField list> "Fields"
+    let Fields = Attributes.defineScalar<PatRecordField seq> "Fields"
 
     let WidgetKey =
         Widgets.register "RecordPat" (fun widget ->
-            let fields = Widgets.getScalarValue widget Fields
+            let fields = Widgets.getScalarValue widget Fields |> List.ofSeq
 
             Pattern.Record(
                 PatRecordNode(SingleTextNode.leftCurlyBrace, fields, SingleTextNode.rightCurlyBrace, Range.Zero)
@@ -19,5 +19,5 @@ module RecordPat =
 module RecordPatBuilders =
     type Ast with
 
-        static member RecordPat(fields: WidgetBuilder<PatRecordField> list) =
-            WidgetBuilder<Pattern>(RecordPat.WidgetKey, RecordPat.Fields.WithValue(fields |> List.map Gen.mkOak))
+        static member RecordPat(fields: WidgetBuilder<PatRecordField> seq) =
+            WidgetBuilder<Pattern>(RecordPat.WidgetKey, RecordPat.Fields.WithValue(fields |> Seq.map Gen.mkOak))

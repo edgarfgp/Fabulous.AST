@@ -13,9 +13,9 @@ module UnionCase =
     let Name = Attributes.defineScalar<string> "Name"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
-    let Fields = Attributes.defineScalar<FieldNode list> "Fields"
+    let Fields = Attributes.defineScalar<FieldNode seq> "Fields"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -30,6 +30,7 @@ module UnionCase =
                 Widgets.tryGetScalarValue widget Fields
                 |> ValueOption.map id
                 |> ValueOption.defaultValue []
+                |> List.ofSeq
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
@@ -75,13 +76,13 @@ module UnionCaseBuilders =
         ///     }
         /// }
         /// </code>
-        static member UnionCase(name: string, fields: WidgetBuilder<FieldNode> list) =
+        static member UnionCase(name: string, fields: WidgetBuilder<FieldNode> seq) =
             WidgetBuilder<UnionCaseNode>(
                 UnionCase.WidgetKey,
                 AttributesBundle(
                     StackList.two(
                         UnionCase.Name.WithValue(name),
-                        UnionCase.Fields.WithValue(fields |> List.map Gen.mkOak)
+                        UnionCase.Fields.WithValue(fields |> Seq.map Gen.mkOak)
                     ),
                     Array.empty,
                     Array.empty
@@ -100,8 +101,8 @@ module UnionCaseBuilders =
         ///     }
         /// }
         /// </code>
-        static member UnionCase(name: string, fields: WidgetBuilder<Type> list) =
-            let fields = fields |> List.map Ast.Field
+        static member UnionCase(name: string, fields: WidgetBuilder<Type> seq) =
+            let fields = fields |> Seq.map Ast.Field
             Ast.UnionCase(name, fields)
 
         /// <summary>Create a union case with the specified name and fields.</summary>
@@ -131,8 +132,8 @@ module UnionCaseBuilders =
         ///     }
         /// }
         /// </code>
-        static member UnionCase(name: string, fields: string list) =
-            Ast.UnionCase(name, fields |> List.map Ast.Field)
+        static member UnionCase(name: string, fields: string seq) =
+            Ast.UnionCase(name, fields |> Seq.map Ast.Field)
 
         /// <summary>Create a union case with the specified name and fields.</summary>
         /// <param name="name">The name of the union case.</param>
@@ -174,8 +175,8 @@ module UnionCaseBuilders =
         ///     }
         /// }
         /// </code>
-        static member UnionCase(name: string, fields: (string * string) list) =
-            Ast.UnionCase(name, fields |> List.map(Ast.Field))
+        static member UnionCase(name: string, fields: (string * string) seq) =
+            Ast.UnionCase(name, fields |> Seq.map(Ast.Field))
 
         /// <summary>Create a union case with the specified name and fields.</summary>
         /// <param name="name">The name of the union case.</param>
@@ -189,8 +190,8 @@ module UnionCaseBuilders =
         ///     }
         /// }
         /// </code>
-        static member UnionCase(name: string, fields: (string * WidgetBuilder<Type>) list) =
-            Ast.UnionCase(name, fields |> List.map(Ast.Field))
+        static member UnionCase(name: string, fields: (string * WidgetBuilder<Type>) seq) =
+            Ast.UnionCase(name, fields |> Seq.map(Ast.Field))
 
 type UnionCaseModifiers =
     /// <summary>Sets the XmlDocs for the current UnionCase definition.</summary>
@@ -224,7 +225,7 @@ type UnionCaseModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<UnionCaseNode>, xmlDocs: string seq) =
         UnionCaseModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current UnionCase definition.</summary>
@@ -241,7 +242,7 @@ type UnionCaseModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: WidgetBuilder<AttributeNode> list) =
+    static member inline attributes(this: WidgetBuilder<UnionCaseNode>, attributes: WidgetBuilder<AttributeNode> seq) =
         this.AddScalar(
             UnionCase.MultipleAttributes.WithValue(
                 [ for attr in attributes do

@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module IfThenElif =
-    let Branches = Attributes.defineScalar<Expr list> "ElifExpr"
+    let Branches = Attributes.defineScalar<Expr seq> "ElifExpr"
 
     let ElseExpr = Attributes.defineWidget "ElseExpr"
 
@@ -14,10 +14,11 @@ module IfThenElif =
         Widgets.register "IfThenElif" (fun widget ->
             let branches =
                 Widgets.getScalarValue widget Branches
-                |> List.choose(fun x ->
+                |> Seq.choose(fun x ->
                     match Expr.Node(x) with
                     | :? ExprIfThenNode as node -> Some node
                     | _ -> None)
+                |> List.ofSeq
 
             let elseExpr = Widgets.tryGetNodeFromWidget widget ElseExpr
 
@@ -31,8 +32,8 @@ module IfThenElif =
 [<AutoOpen>]
 module IfThenElifBuilders =
     type Ast with
-        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: WidgetBuilder<Expr>) =
-            let branches = branches |> List.map Gen.mkOak
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> seq, elseExpr: WidgetBuilder<Expr>) =
+            let branches = branches |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 IfThenElif.WidgetKey,
@@ -43,37 +44,37 @@ module IfThenElifBuilders =
                 )
             )
 
-        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list, elseExpr: WidgetBuilder<Expr>) =
-            let branches = branches |> List.map Ast.ConstantExpr
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> seq, elseExpr: WidgetBuilder<Expr>) =
+            let branches = branches |> Seq.map Ast.ConstantExpr
             Ast.IfThenElifExpr(branches, elseExpr)
 
-        static member IfThenElifExpr(branches: string list, elseExpr: WidgetBuilder<Expr>) =
-            let branches = branches |> List.map Ast.Constant
+        static member IfThenElifExpr(branches: string seq, elseExpr: WidgetBuilder<Expr>) =
+            let branches = branches |> Seq.map Ast.Constant
             Ast.IfThenElifExpr(branches, elseExpr)
 
-        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: WidgetBuilder<Constant>) =
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> seq, elseExpr: WidgetBuilder<Constant>) =
             Ast.IfThenElifExpr(branches, Ast.ConstantExpr(elseExpr))
 
-        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list, elseExpr: string) =
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> seq, elseExpr: string) =
             Ast.IfThenElifExpr(branches, Ast.Constant(elseExpr))
 
-        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list, elseExpr: WidgetBuilder<Constant>) =
-            Ast.IfThenElifExpr(branches |> List.map Ast.ConstantExpr, Ast.ConstantExpr(elseExpr))
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> seq, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElifExpr(branches |> Seq.map Ast.ConstantExpr, Ast.ConstantExpr(elseExpr))
 
-        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list, elseExpr: string) =
-            Ast.IfThenElifExpr(branches |> List.map Ast.ConstantExpr, Ast.Constant(elseExpr))
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> seq, elseExpr: string) =
+            Ast.IfThenElifExpr(branches |> Seq.map Ast.ConstantExpr, Ast.Constant(elseExpr))
 
-        static member IfThenElifExpr(branches: string list, elseExpr: WidgetBuilder<Constant>) =
-            Ast.IfThenElifExpr(branches |> List.map Ast.Constant, Ast.ConstantExpr(elseExpr))
+        static member IfThenElifExpr(branches: string seq, elseExpr: WidgetBuilder<Constant>) =
+            Ast.IfThenElifExpr(branches |> Seq.map Ast.Constant, Ast.ConstantExpr(elseExpr))
 
-        static member IfThenElifExpr(branches: string list, elseExpr: string) =
+        static member IfThenElifExpr(branches: string seq, elseExpr: string) =
             Ast.IfThenElifExpr(branches, Ast.Constant(elseExpr))
 
-        static member IfThenElifExpr(branches: WidgetBuilder<Expr> list) =
-            WidgetBuilder<Expr>(IfThenElif.WidgetKey, IfThenElif.Branches.WithValue(branches |> List.map Gen.mkOak))
+        static member IfThenElifExpr(branches: WidgetBuilder<Expr> seq) =
+            WidgetBuilder<Expr>(IfThenElif.WidgetKey, IfThenElif.Branches.WithValue(branches |> Seq.map Gen.mkOak))
 
-        static member IfThenElifExpr(branches: WidgetBuilder<Constant> list) =
-            Ast.IfThenElifExpr(branches |> List.map Ast.ConstantExpr)
+        static member IfThenElifExpr(branches: WidgetBuilder<Constant> seq) =
+            Ast.IfThenElifExpr(branches |> Seq.map Ast.ConstantExpr)
 
-        static member IfThenElifExpr(branches: string list) =
-            Ast.IfThenElifExpr(branches |> List.map Ast.Constant)
+        static member IfThenElifExpr(branches: string seq) =
+            Ast.IfThenElifExpr(branches |> Seq.map Ast.Constant)

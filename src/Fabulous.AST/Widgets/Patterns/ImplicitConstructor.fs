@@ -11,7 +11,7 @@ module ImplicitConstructor =
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let Pattern = Attributes.defineWidget "Pattern"
 
@@ -81,12 +81,12 @@ type ImplicitConstructorModifiers =
         this.AddWidget(ImplicitConstructor.XmlDocs.WithValue(xmlDocs.Compile()))
 
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<ImplicitConstructorNode>, xmlDocs: string seq) =
         ImplicitConstructorModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ImplicitConstructorNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ImplicitConstructorNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             ImplicitConstructor.MultipleAttributes.WithValue(

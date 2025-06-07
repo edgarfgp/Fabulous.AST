@@ -8,26 +8,27 @@ open Fantomas.FCS.Text
 module AppWithLambda =
     let FuncName = Attributes.defineWidget "FuncName"
 
-    let Arguments = Attributes.defineScalar<Expr list> "Parameters"
+    let Arguments = Attributes.defineScalar<Expr seq> "Parameters"
 
-    let Clauses = Attributes.defineScalar<MatchClauseNode list> "Clauses"
+    let Clauses = Attributes.defineScalar<MatchClauseNode seq> "Clauses"
 
-    let Parameters = Attributes.defineScalar<Pattern list * Expr> "Parameters"
+    let Parameters = Attributes.defineScalar<Pattern seq * Expr> "Parameters"
 
     let IsMatchLambda = Attributes.defineScalar<bool> "IsMatchLambda"
 
     let WidgetKey =
         Widgets.register "AppWithLambda" (fun widget ->
             let funcName = Widgets.getNodeFromWidget<Expr> widget FuncName
-            let arguments = Widgets.getScalarValue widget Arguments
+            let arguments = Widgets.getScalarValue widget Arguments |> List.ofSeq
             let isMatchLambda = Widgets.getScalarValue widget IsMatchLambda
 
             let lambda =
                 if isMatchLambda then
-                    let clauses = Widgets.getScalarValue widget Clauses
+                    let clauses = Widgets.getScalarValue widget Clauses |> List.ofSeq
                     Choice2Of2(ExprMatchLambdaNode(SingleTextNode.``function``, clauses, Range.Zero))
                 else
                     let parameters, expr = Widgets.getScalarValue widget Parameters
+                    let parameters = parameters |> List.ofSeq
 
                     Choice1Of2(
                         ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.Zero)
@@ -51,12 +52,12 @@ module AppWithLambdaBuilders =
         static member AppWithLambdaExpr
             (
                 funcName: WidgetBuilder<Expr>,
-                arguments: WidgetBuilder<Expr> list,
-                parameters: WidgetBuilder<Pattern> list,
+                arguments: WidgetBuilder<Expr> seq,
+                parameters: WidgetBuilder<Pattern> seq,
                 value: WidgetBuilder<Expr>
             ) =
-            let arguments = arguments |> List.map Gen.mkOak
-            let parameters = parameters |> List.map Gen.mkOak
+            let arguments = arguments |> Seq.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 AppWithLambda.WidgetKey,
@@ -72,56 +73,51 @@ module AppWithLambdaBuilders =
             )
 
         static member AppWithLambdaExpr
-            (funcName: WidgetBuilder<Expr>, parameters: WidgetBuilder<Pattern> list, value: WidgetBuilder<Expr>)
+            (funcName: WidgetBuilder<Expr>, parameters: WidgetBuilder<Pattern> seq, value: WidgetBuilder<Expr>)
             =
             Ast.AppWithLambdaExpr(funcName, [], parameters, value)
 
         static member AppWithLambdaExpr
             (
                 funcName: string,
-                arguments: WidgetBuilder<Expr> list,
-                parameters: WidgetBuilder<Pattern> list,
+                arguments: WidgetBuilder<Expr> seq,
+                parameters: WidgetBuilder<Pattern> seq,
                 value: WidgetBuilder<Expr>
             ) =
             Ast.AppWithLambdaExpr(Ast.ConstantExpr(funcName), arguments, parameters, value)
 
         static member AppWithLambdaExpr
-            (
-                funcName: string,
-                arguments: WidgetBuilder<Expr> list,
-                parameters: WidgetBuilder<Pattern> list,
-                value: string
-            ) =
+            (funcName: string, arguments: WidgetBuilder<Expr> seq, parameters: WidgetBuilder<Pattern> seq, value: string) =
             Ast.AppWithLambdaExpr(Ast.ConstantExpr(funcName), arguments, parameters, Ast.ConstantExpr value)
 
         static member AppWithLambdaExpr
-            (funcName: string, arguments: string list, parameters: WidgetBuilder<Pattern> list, value: string)
+            (funcName: string, arguments: string seq, parameters: WidgetBuilder<Pattern> seq, value: string)
             =
-            let arguments = arguments |> List.map Ast.ConstantExpr
+            let arguments = arguments |> Seq.map Ast.ConstantExpr
             Ast.AppWithLambdaExpr(Ast.ConstantExpr(funcName), arguments, parameters, Ast.ConstantExpr value)
 
         static member AppWithLambdaExpr
-            (funcName: string, arguments: WidgetBuilder<Expr> list, parameters: string list, value: string)
+            (funcName: string, arguments: WidgetBuilder<Expr> seq, parameters: string seq, value: string)
             =
-            let parameters = parameters |> List.map Ast.ConstantPat
+            let parameters = parameters |> Seq.map Ast.ConstantPat
             Ast.AppWithLambdaExpr(Ast.ConstantExpr(funcName), arguments, parameters, Ast.ConstantExpr value)
 
         static member AppWithLambdaExpr
-            (funcName: string, arguments: string list, parameters: string list, value: string)
+            (funcName: string, arguments: string seq, parameters: string seq, value: string)
             =
-            let parameters = parameters |> List.map Ast.ConstantPat
-            let arguments = arguments |> List.map Ast.ConstantExpr
+            let parameters = parameters |> Seq.map Ast.ConstantPat
+            let arguments = arguments |> Seq.map Ast.ConstantExpr
             Ast.AppWithLambdaExpr(Ast.ConstantExpr(funcName), arguments, parameters, Ast.ConstantExpr value)
 
-        static member AppWithLambdaExpr(funcName: string, parameters: string list, value: string) =
-            let parameters = parameters |> List.map Ast.ConstantPat
+        static member AppWithLambdaExpr(funcName: string, parameters: string seq, value: string) =
+            let parameters = parameters |> Seq.map Ast.ConstantPat
             Ast.AppWithLambdaExpr(Ast.ConstantExpr(funcName), [], parameters, Ast.ConstantExpr value)
 
         static member AppWithLambdaExpr
             (
                 funcName: WidgetBuilder<Expr>,
-                arguments: WidgetBuilder<Expr> list,
-                parameters: WidgetBuilder<Pattern> list,
+                arguments: WidgetBuilder<Expr> seq,
+                parameters: WidgetBuilder<Pattern> seq,
                 value: string
             ) =
             Ast.AppWithLambdaExpr(funcName, arguments, parameters, Ast.ConstantExpr value)
@@ -129,11 +125,11 @@ module AppWithLambdaBuilders =
         static member AppWithMatchLambdaExpr
             (
                 funcName: WidgetBuilder<Expr>,
-                arguments: WidgetBuilder<Expr> list,
-                clauses: WidgetBuilder<MatchClauseNode> list
+                arguments: WidgetBuilder<Expr> seq,
+                clauses: WidgetBuilder<MatchClauseNode> seq
             ) =
-            let clauses = clauses |> List.map Gen.mkOak
-            let arguments = arguments |> List.map Gen.mkOak
+            let clauses = clauses |> Seq.map Gen.mkOak
+            let arguments = arguments |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 AppWithLambda.WidgetKey,
@@ -149,12 +145,12 @@ module AppWithLambdaBuilders =
             )
 
         static member AppWithMatchLambdaExpr
-            (funcName: string, arguments: WidgetBuilder<Expr> list, clauses: WidgetBuilder<MatchClauseNode> list)
+            (funcName: string, arguments: WidgetBuilder<Expr> seq, clauses: WidgetBuilder<MatchClauseNode> seq)
             =
             Ast.AppWithMatchLambdaExpr(Ast.ConstantExpr(funcName), arguments, clauses)
 
         static member AppWithMatchLambdaExpr
-            (funcName: string, arguments: string list, clauses: WidgetBuilder<MatchClauseNode> list)
+            (funcName: string, arguments: string seq, clauses: WidgetBuilder<MatchClauseNode> seq)
             =
-            let arguments = arguments |> List.map Ast.ConstantExpr
+            let arguments = arguments |> Seq.map Ast.ConstantExpr
             Ast.AppWithMatchLambdaExpr(Ast.ConstantExpr(funcName), arguments, clauses)

@@ -14,7 +14,7 @@ module PropertyGetSetMember =
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
@@ -197,7 +197,7 @@ type PropertyGetSetMemberModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, xmlDocs: string list) =
+    static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, xmlDocs: string seq) =
         PropertyGetSetMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current PropertyGetSetMember widget.</summary>
@@ -218,9 +218,9 @@ type PropertyGetSetMemberModifiers =
     /// </code>
     [<Extension>]
     static member attributes
-        (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(PropertyGetSetMember.MultipleAttributes.WithValue(values |> List.map Gen.mkOak))
+        this.AddScalar(PropertyGetSetMember.MultipleAttributes.WithValue(values |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current PropertyGetSetMember widget.</summary>
     /// <param name="this">Current widget.</param>

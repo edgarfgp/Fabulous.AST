@@ -11,14 +11,14 @@ module ExternBinding =
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let AttributesOfType = Attributes.defineWidget "MultipleAttributes"
     let TypeVal = Attributes.defineWidget "Type"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Identifier = Attributes.defineScalar<string> "Identifier"
-    let Parameters = Attributes.defineScalar<ExternBindingPatternNode list> "Parameters"
+    let Parameters = Attributes.defineScalar<ExternBindingPatternNode seq> "Parameters"
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
@@ -53,7 +53,9 @@ module ExternBinding =
             let name = Widgets.getScalarValue widget Identifier
 
             let parameters =
-                Widgets.tryGetScalarValue widget Parameters |> ValueOption.defaultValue []
+                Widgets.tryGetScalarValue widget Parameters
+                |> ValueOption.defaultValue []
+                |> List.ofSeq
 
             ExternBindingNode(
                 xmlDocs,
@@ -91,9 +93,9 @@ module ExternBindingNodeBuilders =
         /// }
         /// </code>
         static member ExternBinding
-            (tp: WidgetBuilder<Type>, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> list)
+            (tp: WidgetBuilder<Type>, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> seq)
             =
-            let parameters = parameters |> List.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak
 
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
@@ -125,9 +127,7 @@ module ExternBindingNodeBuilders =
         ///     }
         /// }
         /// </code>
-        static member ExternBinding
-            (tp: string, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> list)
-            =
+        static member ExternBinding(tp: string, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> seq) =
             Ast.ExternBinding(Ast.LongIdent(tp), name, parameters)
 
         /// <summary>
@@ -237,7 +237,7 @@ type ExternBindingNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<ExternBindingNode>, xmlDocs: string seq) =
         ExternBindingNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current widget.</summary>
@@ -256,9 +256,9 @@ type ExternBindingNodeModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ExternBindingNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ExternBindingNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(ExternBinding.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(ExternBinding.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>
     /// Sets the attribute for the current widget.

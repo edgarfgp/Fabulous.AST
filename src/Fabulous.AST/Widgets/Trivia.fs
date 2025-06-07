@@ -175,7 +175,7 @@ type TriviaNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline triviaBefore(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaContent> list) =
+    static member inline triviaBefore(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaContent> seq) =
         let node = Gen.mkOak this
 
         for content in value do
@@ -194,7 +194,7 @@ type TriviaNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline triviaBefore(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaNode> list) =
+    static member inline triviaBefore(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaNode> seq) =
         let node = Gen.mkOak this
 
         for content in value do
@@ -239,7 +239,7 @@ type TriviaNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline triviaAfter(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaContent> list) =
+    static member inline triviaAfter(this: WidgetBuilder<#NodeBase>, value: WidgetBuilder<TriviaContent> seq) =
         let node = Gen.mkOak this
 
         for content in value do
