@@ -9,6 +9,9 @@
         <Compile Include="Parsing.fs" />
         <Compile Include="Json.fs" />
     </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" PackagePath="\" Pack="true" />
+    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Fabulous.AST\Fabulous.AST.fsproj" />
