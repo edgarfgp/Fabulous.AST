@@ -73,8 +73,9 @@ module Parsing =
         let root =
             try
                 JsonNode.Parse(input, nodeOptions, documentOptions)
-            with _ ->
-                null
+            with ex ->
+                // Provide context about the input and preserve the original exception
+                raise (System.Text.Json.JsonException($"Failed to parse JSON input in generateModule. Input: {input}", ex))
 
         let emptyState =
             { Emitted = Set.empty
