@@ -132,6 +132,7 @@
         <Compile Include="Types\Types.fs" />
         <Compile Include="Types\LongIdent.fs" />
         <Compile Include="Types\Measures.fs" />
+        <Compile Include="Extensions\Json.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
@@ -150,6 +151,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\extensions\Fabulous.AST.Json\Fabulous.AST.Json.fsproj" />
       <ProjectReference Include="..\Fabulous.AST\Fabulous.AST.fsproj" />
     </ItemGroup>
 
