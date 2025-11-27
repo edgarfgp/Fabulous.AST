@@ -5,7 +5,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Tuple =
-    let Items = Attributes.defineScalar<Expr list> "Items"
+    let Items = Attributes.defineScalar<Expr seq> "Items"
 
     let WidgetKey =
         Widgets.register "Tuple" (fun widget ->
@@ -13,8 +13,8 @@ module Tuple =
 
             let value =
                 values
-                |> List.map Choice1Of2
-                |> List.intersperse(Choice2Of2(SingleTextNode.comma))
+                |> Seq.map Choice1Of2
+                |> Seq.intersperse(Choice2Of2(SingleTextNode.comma))
 
             Expr.Tuple(ExprTupleNode(value, Range.Zero)))
 
@@ -22,13 +22,13 @@ module Tuple =
 module TupleBuilders =
     type Ast with
 
-        static member TupleExpr(value: WidgetBuilder<Expr> list) =
-            let parameters = value |> List.map Gen.mkOak
+        static member TupleExpr(value: WidgetBuilder<Expr> seq) =
+            let parameters = value |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(Tuple.WidgetKey, Tuple.Items.WithValue(parameters))
 
-        static member TupleExpr(value: WidgetBuilder<Constant> list) =
-            Ast.TupleExpr(value |> List.map Ast.ConstantExpr)
+        static member TupleExpr(value: WidgetBuilder<Constant> seq) =
+            Ast.TupleExpr(value |> Seq.map Ast.ConstantExpr)
 
-        static member TupleExpr(value: string list) =
-            Ast.TupleExpr(value |> List.map Ast.Constant)
+        static member TupleExpr(value: string seq) =
+            Ast.TupleExpr(value |> Seq.map Ast.Constant)

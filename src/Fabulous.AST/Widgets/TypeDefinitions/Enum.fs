@@ -14,7 +14,7 @@ module Enum =
     let Name = Attributes.defineScalar<string> "Name"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -115,7 +115,7 @@ type EnumModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnEnumNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnEnumNode>, xmlDocs: string seq) =
         EnumModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current Enum definition.</summary>
@@ -135,7 +135,7 @@ type EnumModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnEnumNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnEnumNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             Enum.MultipleAttributes.WithValue(

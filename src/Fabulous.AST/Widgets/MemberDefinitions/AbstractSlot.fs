@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Linq
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
@@ -16,7 +17,7 @@ module AbstractSlot =
         Attributes.defineScalar<(bool * AccessControl) * (bool * AccessControl)> "HasGetter"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let TypeParams = Attributes.defineWidget "TypeParams"
 
@@ -43,22 +44,22 @@ module AbstractSlot =
                 | ValueSome(UnNamed(parameters, isTupled)) ->
                     let parameters =
                         parameters
-                        |> List.mapi(fun index value ->
+                        |> Seq.mapi(fun index value ->
                             let separator =
-                                if index < parameters.Length - 1 && isTupled then
+                                if index < Seq.length parameters - 1 && isTupled then
                                     SingleTextNode.star
                                 else
                                     SingleTextNode.rightArrow
 
                             (Gen.mkOak value, separator))
 
-                    parameters, returnType
+                    List.ofSeq parameters, returnType
                 | ValueSome(Named(parameters, isTupled)) ->
                     let parameters =
                         parameters
-                        |> List.mapi(fun index (name, value) ->
+                        |> Seq.mapi(fun index (name, value) ->
                             let separator =
-                                if index < parameters.Length - 1 && isTupled then
+                                if index < Seq.length parameters - 1 && isTupled then
                                     SingleTextNode.star
                                 else
                                     SingleTextNode.rightArrow
@@ -78,7 +79,7 @@ module AbstractSlot =
 
                             (value, separator))
 
-                    parameters, returnType
+                    List.ofSeq parameters, returnType
 
             let withGetSetText =
                 match hasGetter, hasSetter with
@@ -259,7 +260,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: WidgetBuilder<Type> list,
+                parameters: WidgetBuilder<Type> seq,
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -310,7 +311,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: string list,
+                parameters: string seq,
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -323,7 +324,7 @@ module AbstractMemberBuilders =
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             let isTupled = defaultArg isTupled false
-            let parameters = parameters |> List.map Ast.LongIdent
+            let parameters = parameters |> Seq.map Ast.LongIdent
 
             Ast.AbstractMember(
                 identifier,
@@ -357,7 +358,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: WidgetBuilder<Type> list,
+                parameters: WidgetBuilder<Type> seq,
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -404,7 +405,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: string list,
+                parameters: string seq,
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -412,7 +413,7 @@ module AbstractMemberBuilders =
                 ?getterAccessibility: AccessControl,
                 ?setterAccessibility: AccessControl
             ) =
-            let parameters = parameters |> List.map Ast.LongIdent
+            let parameters = parameters |> Seq.map Ast.LongIdent
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
@@ -452,7 +453,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: (string * WidgetBuilder<Type>) list,
+                parameters: (string * WidgetBuilder<Type>) seq,
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -503,7 +504,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: (string * string) list,
+                parameters: (string * string) seq,
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -518,8 +519,7 @@ module AbstractMemberBuilders =
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             let parameters =
-                parameters
-                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
+                parameters |> Seq.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
 
             Ast.AbstractMember(
                 identifier,
@@ -553,7 +553,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: (string * WidgetBuilder<Type>) list,
+                parameters: (string * WidgetBuilder<Type>) seq,
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -600,7 +600,7 @@ module AbstractMemberBuilders =
         static member AbstractMember
             (
                 identifier: string,
-                parameters: (string * string) list,
+                parameters: (string * string) seq,
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
@@ -615,8 +615,7 @@ module AbstractMemberBuilders =
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             let parameters =
-                parameters
-                |> List.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
+                parameters |> Seq.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
 
             let returnType = Ast.LongIdent(returnType)
 
@@ -663,7 +662,7 @@ type AbstractMemberModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, xmlDocs: string list) =
+    static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, xmlDocs: string seq) =
         AbstractMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current member.</summary>
@@ -681,9 +680,9 @@ type AbstractMemberModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(AbstractSlot.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(AbstractSlot.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current member.</summary>
     /// <param name="this">Current widget.</param>

@@ -5,12 +5,12 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Intersection =
-    let Values = Attributes.defineScalar<Type list> "Identifier"
+    let Values = Attributes.defineScalar<Type seq> "Identifier"
 
     let WidgetKey =
         Widgets.register "Intersection" (fun widget ->
             let types =
-                match Widgets.getScalarValue widget Values with
+                match List.ofSeq(Widgets.getScalarValue widget Values) with
                 | [] -> []
                 | [ one ] -> [ Choice1Of2(one) ]
                 | types ->
@@ -23,10 +23,10 @@ module Intersection =
 [<AutoOpen>]
 module IntersectionBuilders =
     type Ast with
-        static member Intersection(values: WidgetBuilder<Type> list) =
-            let values = values |> List.map Gen.mkOak
+        static member Intersection(values: WidgetBuilder<Type> seq) =
+            let values = values |> Seq.map Gen.mkOak
 
             WidgetBuilder<Type>(Intersection.WidgetKey, Intersection.Values.WithValue(values))
 
-        static member Intersection(values: string list) =
-            Ast.Intersection(values |> List.map Ast.LongIdent)
+        static member Intersection(values: string seq) =
+            Ast.Intersection(values |> Seq.map Ast.LongIdent)

@@ -8,7 +8,7 @@ open Fantomas.FCS.Text
 
 module ParsedHashDirectives =
     let Ident = Attributes.defineScalar<string> "Ident"
-    let Arguments = Attributes.defineScalar<string list> "Args"
+    let Arguments = Attributes.defineScalar<string seq> "Args"
 
     let WidgetKey =
         Widgets.register "HashDirective" (fun widget ->
@@ -16,19 +16,19 @@ module ParsedHashDirectives =
 
             let arguments =
                 Widgets.getScalarValue widget Arguments
-                |> List.map(fun arg ->
+                |> Seq.map(fun arg ->
                     Choice2Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create arg) ], Range.Zero)))
 
-            ParsedHashDirectiveNode(ident, arguments, Range.Zero))
+            ParsedHashDirectiveNode(ident, List.ofSeq arguments, Range.Zero))
 
 [<AutoOpen>]
 module HashDirectiveBuilders =
     type Ast with
 
-        static member private BaseHashDirective(ident: string, arguments: WidgetBuilder<Constant> list) =
+        static member private BaseHashDirective(ident: string, arguments: WidgetBuilder<Constant> seq) =
             let arguments =
                 arguments
-                |> List.choose(fun arg ->
+                |> Seq.choose(fun arg ->
                     match Gen.mkOak arg with
                     | Constant.FromText node -> Some node.Text
                     | Constant.Unit _ -> None
@@ -49,7 +49,7 @@ module HashDirectiveBuilders =
         ///     }
         /// }
         /// </code>
-        static member NoWarn(args: WidgetBuilder<Constant> list) = Ast.BaseHashDirective("nowarn", args)
+        static member NoWarn(args: WidgetBuilder<Constant> seq) = Ast.BaseHashDirective("nowarn", args)
 
         /// <summary>Creates a NoWarn hash directive.</summary>
         /// <param name="args">The arguments of the NoWarn hash directive.</param>
@@ -60,8 +60,8 @@ module HashDirectiveBuilders =
         ///     }
         /// }
         /// </code>
-        static member NoWarn(args: string list) =
-            Ast.NoWarn(args |> List.map(Ast.Constant))
+        static member NoWarn(args: string seq) =
+            Ast.NoWarn(args |> Seq.map(Ast.Constant))
 
         /// <summary>Creates a NoWarn hash directive.</summary>
         /// <param name="value">The argument of the NoWarn hash directive.</param>
@@ -118,7 +118,7 @@ module HashDirectiveBuilders =
         ///     }
         /// }
         /// </code>
-        static member HashDirective(ident: string, args: WidgetBuilder<Constant> list) =
+        static member HashDirective(ident: string, args: WidgetBuilder<Constant> seq) =
             Ast.BaseHashDirective(ident, args)
 
         /// <summary>Creates a HashDirective widget</summary>
@@ -131,8 +131,8 @@ module HashDirectiveBuilders =
         ///     }
         /// }
         /// </code>
-        static member HashDirective(ident: string, args: string list) =
-            Ast.HashDirective(ident, args |> List.map(Ast.Constant))
+        static member HashDirective(ident: string, args: string seq) =
+            Ast.HashDirective(ident, args |> Seq.map(Ast.Constant))
 
         /// <summary>Creates a HashDirective widget</summary>
         /// <param name="ident">The identifier of the hash directive.</param>

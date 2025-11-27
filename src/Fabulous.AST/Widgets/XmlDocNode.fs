@@ -7,21 +7,21 @@ open Fantomas.FCS.Text
 
 module XmlDocNode =
 
-    let Lines = Attributes.defineScalar<string list> "Lines"
+    let Lines = Attributes.defineScalar<string seq> "Lines"
 
-    let Summary = Attributes.defineScalar<string list> "Lines"
+    let Summary = Attributes.defineScalar<string seq> "Lines"
 
-    let Parameters = Attributes.defineScalar<(string * string) list> "Parameters"
+    let Parameters = Attributes.defineScalar<(string * string) seq> "Parameters"
 
-    let ReturnInfo = Attributes.defineScalar<string list> "ReturnInfo"
+    let ReturnInfo = Attributes.defineScalar<string seq> "ReturnInfo"
 
-    let ExceptionInfo = Attributes.defineScalar<(string * string) list> "ExceptionInfo"
+    let ExceptionInfo = Attributes.defineScalar<(string * string) seq> "ExceptionInfo"
 
     let WidgetKey =
         Widgets.register "XmlDocs" (fun widget ->
             let lines =
                 Widgets.tryGetScalarValue widget Lines
-                |> ValueOption.map(fun lines -> lines |> List.map(fun x -> $"/// {x}"))
+                |> ValueOption.map(fun lines -> lines |> Seq.map(fun x -> $"/// {x}"))
                 |> ValueOption.defaultValue []
 
             let getEscapeSequence c =
@@ -35,8 +35,8 @@ module XmlDocNode =
 
             let escape str = String.collect getEscapeSequence str
 
-            let rec processLines(lines: string list) =
-                match lines with
+            let rec processLines(lines: string seq) =
+                match List.ofSeq lines with
                 | [] -> []
                 | lineA :: rest as lines ->
                     let lineAT = lineA.TrimStart([| ' ' |])
@@ -48,19 +48,19 @@ module XmlDocNode =
                     else
                         [ "<summary>" ] @ (lines |> List.map escape) @ [ "</summary>" ]
 
-            let composeSummary(unprocessedLines: string list) =
+            let composeSummary(unprocessedLines: string seq) =
                 processLines unprocessedLines |> List.map(fun x -> $"/// {x}")
 
-            let composeParameters(parameters: (string * string) list) =
+            let composeParameters(parameters: (string * string) seq) =
                 parameters
-                |> List.map(fun (name, desc) -> $"/// <param name=\"{name}\">{desc}</param>")
+                |> Seq.map(fun (name, desc) -> $"/// <param name=\"{name}\">{desc}</param>")
 
-            let composeReturnInfo(returnInfo: string list) =
-                returnInfo |> List.map(fun v -> $"/// <returns>{v}</returns>")
+            let composeReturnInfo(returnInfo: string seq) =
+                returnInfo |> Seq.map(fun v -> $"/// <returns>{v}</returns>")
 
-            let composeExceptionInfo(exceptionInfo: (string * string) list) =
+            let composeExceptionInfo(exceptionInfo: (string * string) seq) =
                 exceptionInfo
-                |> List.map(fun (name, desc) -> $"/// <exception cref=\"{name}\">{desc}</exception>")
+                |> Seq.map(fun (name, desc) -> $"/// <exception cref=\"{name}\">{desc}</exception>")
 
             let summary =
                 Widgets.tryGetScalarValue widget Summary
@@ -84,8 +84,8 @@ module XmlDocNode =
 
             let lines =
                 [ lines; summary; parameters; returnInfo; exceptionInfo ]
-                |> List.concat
-                |> Array.ofList
+                |> Seq.concat
+                |> Array.ofSeq
 
             XmlDocNode(lines, Range.Zero))
 
@@ -93,7 +93,7 @@ module XmlDocNode =
 module XmlDocsBuilders =
     type Ast with
         /// <summary>Creates XML documentation with the specified lines.</summary>
-        /// <param name="lines">The list of documentation lines.</param>
+        /// <param name="lines">The seq of documentation lines.</param>
         /// <code lang="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -102,7 +102,7 @@ module XmlDocsBuilders =
         ///     }
         /// }
         /// </code>
-        static member inline XmlDocs(lines: string list) =
+        static member inline XmlDocs(lines: string seq) =
             WidgetBuilder<XmlDocNode>(XmlDocNode.WidgetKey, XmlDocNode.Lines.WithValue(lines))
 
         /// <summary>Creates XML documentation with a single line.</summary>
@@ -118,7 +118,7 @@ module XmlDocsBuilders =
         static member inline XmlDocs(lines: string) = Ast.XmlDocs [ lines ]
 
         /// <summary>Creates a summary XML documentation with the specified lines.</summary>
-        /// <param name="lines">The list of summary lines.</param>
+        /// <param name="lines">The seq of summary lines.</param>
         /// <code lang="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -127,7 +127,7 @@ module XmlDocsBuilders =
         ///     }
         /// }
         /// </code>
-        static member inline Summary(lines: string list) =
+        static member inline Summary(lines: string seq) =
             WidgetBuilder<XmlDocNode>(XmlDocNode.WidgetKey, XmlDocNode.Summary.WithValue(lines))
 
         /// <summary>Creates a summary XML documentation with a single line.</summary>
@@ -158,7 +158,7 @@ type XmlDocsModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline parameters(this: WidgetBuilder<XmlDocNode>, parameters: (string * string) list) =
+    static member inline parameters(this: WidgetBuilder<XmlDocNode>, parameters: (string * string) seq) =
         this.AddScalar(XmlDocNode.Parameters.WithValue(parameters))
 
     /// <summary>Adds a single parameter documentation to XML documentation.</summary>
@@ -213,7 +213,7 @@ type XmlDocsModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline returnInfo(this: WidgetBuilder<XmlDocNode>, returnInfo: string list) =
+    static member inline returnInfo(this: WidgetBuilder<XmlDocNode>, returnInfo: string seq) =
         this.AddScalar(XmlDocNode.ReturnInfo.WithValue(returnInfo))
 
     /// <summary>Adds return value documentation to XML documentation.</summary>
@@ -250,7 +250,7 @@ type XmlDocsModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline exceptionInfo(this: WidgetBuilder<XmlDocNode>, exceptionInfo: (string * string) list) =
+    static member inline exceptionInfo(this: WidgetBuilder<XmlDocNode>, exceptionInfo: (string * string) seq) =
         this.AddScalar(XmlDocNode.ExceptionInfo.WithValue(exceptionInfo))
 
     /// <summary>Adds exception information to XML documentation.</summary>

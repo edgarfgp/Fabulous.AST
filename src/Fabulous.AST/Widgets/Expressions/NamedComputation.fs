@@ -59,11 +59,11 @@ module NamedComputationBuilders =
 
         static member SeqExpr(body: WidgetBuilder<Expr>) = Ast.NamedComputationExpr("seq", body)
 
-        static member SeqExpr(body: WidgetBuilder<Expr> list) =
+        static member SeqExpr(body: WidgetBuilder<Expr> seq) =
             Ast.NamedComputationExpr("seq", Ast.CompExprBodyExpr(body))
 
-        static member SeqExpr(body: WidgetBuilder<Constant> list) =
+        static member SeqExpr(body: WidgetBuilder<Constant> seq) =
             Ast.NamedComputationExpr("seq", Ast.CompExprBodyExpr(body))
 
-        static member SeqExpr(body: string list) =
+        static member SeqExpr(body: string seq) =
             Ast.NamedComputationExpr("seq", Ast.CompExprBodyExpr(body))

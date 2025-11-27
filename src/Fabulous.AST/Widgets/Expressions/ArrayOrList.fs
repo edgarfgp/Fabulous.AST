@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ArrayOrList =
-    let Items = Attributes.defineScalar<Expr list> "Items"
+    let Items = Attributes.defineScalar<Expr seq> "Items"
 
     let OpeningNode = Attributes.defineScalar<SingleTextNode> "OpeningNode"
 
@@ -14,7 +14,7 @@ module ArrayOrList =
 
     let WidgetKey =
         Widgets.register "ArrayOrList" (fun widget ->
-            let values = Widgets.getScalarValue widget Items
+            let values = Widgets.getScalarValue widget Items |> List.ofSeq
             let openNode = Widgets.getScalarValue widget OpeningNode
             let closeNode = Widgets.getScalarValue widget ClosingNode
             Expr.ArrayOrList(ExprArrayOrListNode(openNode, values, closeNode, Range.Zero)))
@@ -23,10 +23,10 @@ module ArrayOrList =
 module ArrayOrListBuilders =
     type Ast with
         /// <summary>
-        /// Creates a list expression from a list of expression widgets.
+        /// Creates a list expression from a seq of expression widgets.
         /// </summary>
-        /// <param name="value">The list of expression widgets to include in the list.</param>
-        /// <returns>A widget builder for a list expression.</returns>
+        /// <param name="value">The seq of expression widgets to include in the seq.</param>
+        /// <returns>A widget builder for a seq expression.</returns>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -34,8 +34,8 @@ module ArrayOrListBuilders =
         ///     }
         /// }
         /// </code>
-        static member ListExpr(value: WidgetBuilder<Expr> list) =
-            let parameters = value |> List.map Gen.mkOak
+        static member ListExpr(value: WidgetBuilder<Expr> seq) =
+            let parameters = value |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 ArrayOrList.WidgetKey,
@@ -51,10 +51,10 @@ module ArrayOrListBuilders =
             )
 
         /// <summary>
-        /// Creates a list expression from a list of constant widgets.
+        /// Creates a seq expression from a seq of constant widgets.
         /// </summary>
-        /// <param name="value">The list of constant widgets to include in the list.</param>
-        /// <returns>A widget builder for a list expression.</returns>
+        /// <param name="value">The seq of constant widgets to include in the seq.</param>
+        /// <returns>A widget builder for a seq expression.</returns>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -62,15 +62,15 @@ module ArrayOrListBuilders =
         ///     }
         /// }
         /// </code>
-        static member ListExpr(value: WidgetBuilder<Constant> list) =
-            let values = value |> List.map Ast.ConstantExpr
+        static member ListExpr(value: WidgetBuilder<Constant> seq) =
+            let values = value |> Seq.map Ast.ConstantExpr
             Ast.ListExpr(values)
 
         /// <summary>
-        /// Creates a list expression from a list of string literals.
+        /// Creates a seq expression from a seq of string literals.
         /// </summary>
-        /// <param name="value">The list of string literals to include in the list.</param>
-        /// <returns>A widget builder for a list expression.</returns>
+        /// <param name="value">The seq of string literals to include in the seq.</param>
+        /// <returns>A widget builder for a seq expression.</returns>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -78,14 +78,14 @@ module ArrayOrListBuilders =
         ///     }
         /// }
         /// </code>
-        static member ListExpr(value: string list) =
-            let values = value |> List.map Ast.Constant
-            Ast.ListExpr(values |> List.map Ast.ConstantExpr)
+        static member ListExpr(value: string seq) =
+            let values = value |> Seq.map Ast.Constant
+            Ast.ListExpr(values |> Seq.map Ast.ConstantExpr)
 
         /// <summary>
-        /// Creates an empty list expression.
+        /// Creates an empty seq expression.
         /// </summary>
-        /// <returns>A widget builder for a list expression.</returns>
+        /// <returns>A widget builder for a seq expression.</returns>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -96,9 +96,9 @@ module ArrayOrListBuilders =
         static member EmptyListExpr() = Ast.ListExpr(List.empty)
 
         /// <summary>
-        /// Creates an array expression from a list of expression widgets.
+        /// Creates an array expression from a seq of expression widgets.
         /// </summary>
-        /// <param name="value">The list of expression widgets to include in the array.</param>
+        /// <param name="value">The seq of expression widgets to include in the array.</param>
         /// <returns>A widget builder for an array expression.</returns>
         /// <code language="fsharp">
         /// Oak() {
@@ -107,8 +107,8 @@ module ArrayOrListBuilders =
         ///     }
         /// }
         /// </code>
-        static member ArrayExpr(value: WidgetBuilder<Expr> list) =
-            let parameters = value |> List.map Gen.mkOak
+        static member ArrayExpr(value: WidgetBuilder<Expr> seq) =
+            let parameters = value |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(
                 ArrayOrList.WidgetKey,
@@ -124,9 +124,9 @@ module ArrayOrListBuilders =
             )
 
         /// <summary>
-        /// Creates an array expression from a list of constant widgets.
+        /// Creates an array expression from a seq of constant widgets.
         /// </summary>
-        /// <param name="value">The list of constant widgets to include in the array.</param>
+        /// <param name="value">The seq of constant widgets to include in the array.</param>
         /// <returns>A widget builder for an array expression.</returns>
         /// <code language="fsharp">
         /// Oak() {
@@ -135,14 +135,14 @@ module ArrayOrListBuilders =
         ///     }
         /// }
         /// </code>
-        static member ArrayExpr(value: WidgetBuilder<Constant> list) =
-            let values = value |> List.map Ast.ConstantExpr
+        static member ArrayExpr(value: WidgetBuilder<Constant> seq) =
+            let values = value |> Seq.map Ast.ConstantExpr
             Ast.ArrayExpr(values)
 
         /// <summary>
-        /// Creates an array expression from a list of string literals.
+        /// Creates an array expression from a seq of string literals.
         /// </summary>
-        /// <param name="value">The list of string literals to include in the array.</param>
+        /// <param name="value">The seq of string literals to include in the array.</param>
         /// <returns>A widget builder for an array expression.</returns>
         /// <code language="fsharp">
         /// Oak() {
@@ -151,9 +151,9 @@ module ArrayOrListBuilders =
         ///     }
         /// }
         /// </code>
-        static member ArrayExpr(value: string list) =
-            let values = value |> List.map Ast.Constant
-            Ast.ArrayExpr(values |> List.map Ast.ConstantExpr)
+        static member ArrayExpr(value: string seq) =
+            let values = value |> Seq.map Ast.Constant
+            Ast.ArrayExpr(values |> Seq.map Ast.ConstantExpr)
 
         /// <summary>
         /// Creates an empty array expression.

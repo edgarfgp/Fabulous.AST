@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module AnonStructRecord =
-    let Fields = Attributes.defineScalar<RecordFieldNode list> "Fields"
+    let Fields = Attributes.defineScalar<RecordFieldNode seq> "Fields"
     let CopyInfo = Attributes.defineWidget "CopyInfo"
 
     let WidgetKey =
@@ -18,7 +18,7 @@ module AnonStructRecord =
                 | ValueSome copyInfo -> Some copyInfo
                 | ValueNone -> None
 
-            let fields = Widgets.getScalarValue widget Fields
+            let fields = Widgets.getScalarValue widget Fields |> List.ofSeq
 
             Expr.AnonStructRecord(
                 ExprAnonStructRecordNode(
@@ -36,7 +36,7 @@ module AnonStructRecordBuilders =
     type Ast with
 
         static member private BaseAnonStructRecordExpr
-            (copyInfo: WidgetBuilder<Expr> voption, fields: WidgetBuilder<RecordFieldNode> list)
+            (copyInfo: WidgetBuilder<Expr> voption, fields: WidgetBuilder<RecordFieldNode> seq)
             =
             let copyInfo =
                 match copyInfo with
@@ -46,22 +46,22 @@ module AnonStructRecordBuilders =
             WidgetBuilder<Expr>(
                 AnonStructRecord.WidgetKey,
                 AttributesBundle(
-                    StackList.one(AnonStructRecord.Fields.WithValue(fields |> List.map Gen.mkOak)),
+                    StackList.one(AnonStructRecord.Fields.WithValue(fields |> Seq.map Gen.mkOak)),
                     copyInfo,
                     Array.empty
                 )
             )
 
-        static member AnonStructRecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member AnonStructRecordExpr(copyInfo: WidgetBuilder<Expr>, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.BaseAnonStructRecordExpr(ValueSome copyInfo, fields)
 
         static member AnonStructRecordExpr
-            (copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> list)
+            (copyInfo: WidgetBuilder<Constant>, fields: WidgetBuilder<RecordFieldNode> seq)
             =
             Ast.AnonStructRecordExpr(Ast.ConstantExpr(copyInfo), fields)
 
-        static member AnonStructRecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> list) =
+        static member AnonStructRecordExpr(copyInfo: string, fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.AnonStructRecordExpr(Ast.Constant(copyInfo), fields)
 
-        static member AnonStructRecordExpr(fields: WidgetBuilder<RecordFieldNode> list) =
+        static member AnonStructRecordExpr(fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.BaseAnonStructRecordExpr(ValueNone, fields)

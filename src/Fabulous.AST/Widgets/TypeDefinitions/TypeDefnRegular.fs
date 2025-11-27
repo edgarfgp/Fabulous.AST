@@ -14,7 +14,7 @@ module TypeDefnRegular =
     let Members = Attributes.defineWidgetCollection "Members"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
     let TypeParams = Attributes.defineWidget "TypeParams"
@@ -198,7 +198,7 @@ type TypeDefnRegularModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string seq) =
         TypeDefnRegularModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the type parameters for the current type definition.</summary>
@@ -233,7 +233,7 @@ type TypeDefnRegularModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnRegularNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnRegularNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
         this.AddScalar(
             TypeDefnRegular.MultipleAttributes.WithValue(

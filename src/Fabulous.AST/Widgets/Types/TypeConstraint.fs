@@ -48,14 +48,14 @@ module TypeConstraint =
             TypeConstraint.SupportsMember(TypeConstraintSupportsMemberNode(tp, memberDefn, Range.Zero)))
 
     let EnumOrDelegate =
-        Attributes.defineScalar<struct (string * string * Type list)> "EnumOrDelegate"
+        Attributes.defineScalar<struct (string * string * Type seq)> "EnumOrDelegate"
 
     let WidgetEnumOrDelegateKey =
         Widgets.register "EnumOrDelegate" (fun widget ->
             let struct (tp, verb, ts) = Widgets.getScalarValue widget EnumOrDelegate
 
             TypeConstraint.EnumOrDelegate(
-                TypeConstraintEnumOrDelegateNode(SingleTextNode.Create(tp), verb, ts, Range.Zero)
+                TypeConstraintEnumOrDelegateNode(SingleTextNode.Create(tp), verb, List.ofSeq ts, Range.Zero)
             ))
 
     let WhereSelfConstrained = Attributes.defineWidget "WhereSelfConstrained"
@@ -114,17 +114,17 @@ module TypeConstraintBuilders =
 
         static member SubtypeOf(typar: string, tp: string) = Ast.SubtypeOf(typar, Ast.LongIdent(tp))
 
-        static member EnumOrDelegate(tp: string, verb: string, ts: WidgetBuilder<Type> list) =
+        static member EnumOrDelegate(tp: string, verb: string, ts: WidgetBuilder<Type> seq) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetEnumOrDelegateKey,
-                TypeConstraint.EnumOrDelegate.WithValue((tp, verb, List.map Gen.mkOak ts))
+                TypeConstraint.EnumOrDelegate.WithValue((tp, verb, List.map Gen.mkOak (List.ofSeq ts)))
             )
 
         static member EnumOrDelegate(tp: string, verb: string, ts: WidgetBuilder<Type>) =
             Ast.EnumOrDelegate(tp, verb, [ ts ])
 
-        static member EnumOrDelegate(tp: string, verb: string, ts: string list) =
-            let ts = ts |> List.map Ast.LongIdent
+        static member EnumOrDelegate(tp: string, verb: string, ts: string seq) =
+            let ts = ts |> Seq.map Ast.LongIdent
             Ast.EnumOrDelegate(tp, verb, ts)
 
         static member EnumOrDelegate(tp: string, verb: string, ts: string) = Ast.EnumOrDelegate(tp, verb, [ ts ])

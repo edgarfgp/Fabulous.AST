@@ -8,7 +8,7 @@ open Fantomas.FCS.Text
 module SameInfixApps =
     let LeadingExpr = Attributes.defineWidget "LeadingExpr"
 
-    let SubsequentExpressions = Attributes.defineScalar<(string * Expr) list> "Value"
+    let SubsequentExpressions = Attributes.defineScalar<(string * Expr) seq> "Value"
 
     let WidgetKey =
         Widgets.register "SameInfixApps" (fun widget ->
@@ -16,7 +16,8 @@ module SameInfixApps =
 
             let subsequentExpressions =
                 Widgets.getScalarValue widget SubsequentExpressions
-                |> List.map(fun x -> SingleTextNode.Create(fst x), snd x)
+                |> Seq.map(fun x -> SingleTextNode.Create(fst x), snd x)
+                |> List.ofSeq
 
             Expr.SameInfixApps(ExprSameInfixAppsNode(leadingExpr, subsequentExpressions, Range.Zero)))
 
@@ -24,8 +25,8 @@ module SameInfixApps =
 module SameInfixAppsBuilders =
     type Ast with
 
-        static member SameInfixAppsExpr(leading: WidgetBuilder<Expr>, items: (string * WidgetBuilder<Expr>) list) =
-            let subsequentExpressions = items |> List.map(fun (op, expr) -> op, Gen.mkOak expr)
+        static member SameInfixAppsExpr(leading: WidgetBuilder<Expr>, items: (string * WidgetBuilder<Expr>) seq) =
+            let subsequentExpressions = items |> Seq.map(fun (op, expr) -> op, Gen.mkOak expr)
 
             WidgetBuilder<Expr>(
                 SameInfixApps.WidgetKey,
@@ -36,26 +37,26 @@ module SameInfixAppsBuilders =
                 )
             )
 
-        static member SameInfixAppsExpr(leading: WidgetBuilder<Constant>, items: (string * WidgetBuilder<Expr>) list) =
+        static member SameInfixAppsExpr(leading: WidgetBuilder<Constant>, items: (string * WidgetBuilder<Expr>) seq) =
             Ast.SameInfixAppsExpr(Ast.ConstantExpr(leading), items)
 
-        static member SameInfixAppsExpr(leading: string, items: (string * WidgetBuilder<Expr>) list) =
+        static member SameInfixAppsExpr(leading: string, items: (string * WidgetBuilder<Expr>) seq) =
             Ast.SameInfixAppsExpr(Ast.Constant(leading), items)
 
         static member SameInfixAppsExpr
-            (leading: WidgetBuilder<Constant>, items: (string * WidgetBuilder<Constant>) list)
+            (leading: WidgetBuilder<Constant>, items: (string * WidgetBuilder<Constant>) seq)
             =
-            let items = items |> List.map(fun (op, expr) -> op, Ast.ConstantExpr(expr))
+            let items = items |> Seq.map(fun (op, expr) -> op, Ast.ConstantExpr(expr))
             Ast.SameInfixAppsExpr(Ast.ConstantExpr(leading), items)
 
-        static member SameInfixAppsExpr(leading: WidgetBuilder<Constant>, items: (string * string) list) =
-            let items = items |> List.map(fun (op, expr) -> op, Ast.Constant(expr))
+        static member SameInfixAppsExpr(leading: WidgetBuilder<Constant>, items: (string * string) seq) =
+            let items = items |> Seq.map(fun (op, expr) -> op, Ast.Constant(expr))
             Ast.SameInfixAppsExpr(leading, items)
 
-        static member SameInfixAppsExpr(leading: string, items: (string * WidgetBuilder<Constant>) list) =
-            let items = items |> List.map(fun (op, expr) -> op, Ast.ConstantExpr(expr))
+        static member SameInfixAppsExpr(leading: string, items: (string * WidgetBuilder<Constant>) seq) =
+            let items = items |> Seq.map(fun (op, expr) -> op, Ast.ConstantExpr(expr))
             Ast.SameInfixAppsExpr(Ast.Constant(leading), items)
 
-        static member SameInfixAppsExpr(leading: string, items: (string * string) list) =
-            let items = items |> List.map(fun (op, expr) -> op, Ast.Constant(expr))
+        static member SameInfixAppsExpr(leading: string, items: (string * string) seq) =
+            let items = items |> Seq.map(fun (op, expr) -> op, Ast.Constant(expr))
             Ast.SameInfixAppsExpr(Ast.Constant(leading), items)

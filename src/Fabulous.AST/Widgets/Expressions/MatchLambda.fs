@@ -5,11 +5,11 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module MatchLambda =
-    let Clauses = Attributes.defineScalar<MatchClauseNode list> "Clauses"
+    let Clauses = Attributes.defineScalar<MatchClauseNode seq> "Clauses"
 
     let WidgetKey =
         Widgets.register "MatchLambda" (fun widget ->
-            let clauses = Widgets.getScalarValue widget Clauses
+            let clauses = Widgets.getScalarValue widget Clauses |> List.ofSeq
 
             Expr.MatchLambda(ExprMatchLambdaNode(SingleTextNode.``function``, clauses, Range.Zero)))
 
@@ -17,7 +17,7 @@ module MatchLambda =
 module MatchLambdaBuilders =
     type Ast with
 
-        static member MatchLambdaExpr(clauses: WidgetBuilder<MatchClauseNode> list) =
-            let clauses = clauses |> List.map Gen.mkOak
+        static member MatchLambdaExpr(clauses: WidgetBuilder<MatchClauseNode> seq) =
+            let clauses = clauses |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(MatchLambda.WidgetKey, MatchLambda.Clauses.WithValue(clauses))

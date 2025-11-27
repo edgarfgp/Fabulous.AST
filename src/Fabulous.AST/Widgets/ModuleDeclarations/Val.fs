@@ -11,9 +11,9 @@ module Val =
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
-    let LeadingKeyword = Attributes.defineScalar<SingleTextNode list> "LeadingKeyword"
+    let LeadingKeyword = Attributes.defineScalar<SingleTextNode seq> "LeadingKeyword"
 
     let IsInlined = Attributes.defineScalar<bool> "Inlined"
 
@@ -72,6 +72,7 @@ module Val =
 
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget LeadingKeyword
+                |> ValueOption.map(List.ofSeq)
                 |> ValueOption.filter(_.IsEmpty >> not)
                 |> ValueOption.map(fun nodes -> Some(MultipleTextsNode(nodes, Range.Zero)))
                 |> ValueOption.defaultValue None
@@ -95,7 +96,7 @@ module Val =
 module ValBuilders =
     type Ast with
         static member private BaseVal
-            (leadingKeyword: SingleTextNode list, identifier: string, returnType: WidgetBuilder<Type>)
+            (leadingKeyword: SingleTextNode seq, identifier: string, returnType: WidgetBuilder<Type>)
             =
             WidgetBuilder<ValNode>(
                 Val.WidgetKey,
@@ -143,7 +144,7 @@ module ValBuilders =
         ///     }
         /// }
         /// </code>
-        static member Val(leadingKeyword: string list, identifier: string, returnType: WidgetBuilder<Type>) =
+        static member Val(leadingKeyword: string seq, identifier: string, returnType: WidgetBuilder<Type>) =
             Ast.BaseVal([ for kw in leadingKeyword -> SingleTextNode.Create(kw) ], identifier, returnType)
 
         /// <summary>Creates a Val widget with a leading keyword, an identifier, and a return type.</summary>
@@ -157,7 +158,7 @@ module ValBuilders =
         ///     }
         /// }
         /// </code>
-        static member Val(leadingKeyword: string list, identifier: string, returnType: string) =
+        static member Val(leadingKeyword: string seq, identifier: string, returnType: string) =
             Ast.BaseVal(
                 [ for kw in leadingKeyword -> SingleTextNode.Create(kw) ],
                 identifier,
@@ -220,7 +221,7 @@ type ValNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ValNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<ValNode>, xmlDocs: string seq) =
         ValNodeModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the Val to be mutable.</summary>
@@ -263,8 +264,8 @@ type ValNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<ValNode>, attributes: WidgetBuilder<AttributeNode> list) =
-        this.AddScalar(Val.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+    static member inline attributes(this: WidgetBuilder<ValNode>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(Val.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attribute for the current Val.</summary>
     /// <param name="this">Current widget.</param>

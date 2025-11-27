@@ -18,7 +18,7 @@ module ModuleOrNamespace =
     let IsAnonymousModule = Attributes.defineScalar<bool> "IsAnonymousModule"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Namespace" (fun widget ->
@@ -255,7 +255,7 @@ type NamespaceModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ModuleOrNamespaceNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<ModuleOrNamespaceNode>, xmlDocs: string seq) =
         NamespaceModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the XmlDocs for the current namespace.</summary>
@@ -290,9 +290,9 @@ type NamespaceModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<ModuleOrNamespaceNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<ModuleOrNamespaceNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(ModuleOrNamespace.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(ModuleOrNamespace.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current namespace.</summary>
     /// <param name="this">Current widget.</param>

@@ -16,7 +16,7 @@ module Union =
     let Members = Attributes.defineWidgetCollection "Members"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
@@ -182,7 +182,7 @@ type UnionModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnUnionNode>, xmlDocs: string seq) =
         UnionModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current union definition.</summary>
@@ -200,9 +200,9 @@ type UnionModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<TypeDefnUnionNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<TypeDefnUnionNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(Union.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(Union.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attributes for the current union definition.</summary>
     /// <param name="this">Current widget.</param>

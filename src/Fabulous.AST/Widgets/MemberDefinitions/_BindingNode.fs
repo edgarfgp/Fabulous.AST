@@ -14,7 +14,7 @@ module BindingNode =
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let Return = Attributes.defineWidget "Return"
@@ -52,7 +52,7 @@ type BindingNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<BindingNode>, comments: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<BindingNode>, comments: string seq) =
         BindingNodeModifiers.xmlDocs(this, Ast.XmlDocs(comments))
 
     /// <summary>
@@ -69,8 +69,8 @@ type BindingNodeModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeNode> list) =
-        this.AddScalar(BindingNode.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+    static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(BindingNode.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>
     /// Sets the attributes for the current widget.

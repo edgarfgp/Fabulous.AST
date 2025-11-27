@@ -10,7 +10,7 @@ module ExplicitConstructorMember =
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
     let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode list> "MultipleAttributes"
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
@@ -267,7 +267,7 @@ type ExplicitConstructorModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: string list) =
+    static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: string seq) =
         ExplicitConstructorModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
 
     /// <summary>Sets the attributes for the current widget.</summary>
@@ -288,9 +288,9 @@ type ExplicitConstructorModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes
-        (this: WidgetBuilder<MemberDefnExplicitCtorNode>, attributes: WidgetBuilder<AttributeNode> list)
+        (this: WidgetBuilder<MemberDefnExplicitCtorNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(ExplicitConstructorMember.MultipleAttributes.WithValue(attributes |> List.map Gen.mkOak))
+        this.AddScalar(ExplicitConstructorMember.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
     /// <summary>Sets the attribute for the current widget.</summary>
     /// <param name="this">Current widget.</param>

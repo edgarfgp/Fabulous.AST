@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module TypeTuple =
-    let Items = Attributes.defineScalar<Type list> "Items"
+    let Items = Attributes.defineScalar<Type seq> "Items"
     let Exponent = Attributes.defineScalar<string> "Exponent"
 
     let WidgetKey =
@@ -18,21 +18,21 @@ module TypeTuple =
 
             let items =
                 Widgets.getScalarValue widget Items
-                |> List.map Choice1Of2
-                |> List.intersperse(Choice2Of2(exponent))
+                |> Seq.map Choice1Of2
+                |> Seq.intersperse(Choice2Of2(exponent))
 
             Type.Tuple(TypeTupleNode(items, Range.Zero)))
 
 [<AutoOpen>]
 module TypeTupleBuilders =
     type Ast with
-        static member Tuple(items: WidgetBuilder<Type> list) =
-            let items = items |> List.map Gen.mkOak
+        static member Tuple(items: WidgetBuilder<Type> seq) =
+            let items = items |> Seq.map Gen.mkOak
 
             WidgetBuilder<Type>(TypeTuple.WidgetKey, TypeTuple.Items.WithValue(items))
 
-        static member Tuple(items: WidgetBuilder<Type> list, exponent: string) =
-            let items = items |> List.map Gen.mkOak
+        static member Tuple(items: WidgetBuilder<Type> seq, exponent: string) =
+            let items = items |> Seq.map Gen.mkOak
 
             WidgetBuilder<Type>(
                 TypeTuple.WidgetKey,
@@ -43,10 +43,10 @@ module TypeTupleBuilders =
                 )
             )
 
-        static member Tuple(items: string list) =
-            let items = items |> List.map Ast.LongIdent
+        static member Tuple(items: string seq) =
+            let items = items |> Seq.map Ast.LongIdent
             Ast.Tuple(items)
 
-        static member Tuple(items: string list, exponent: string) =
-            let items = items |> List.map Ast.LongIdent
+        static member Tuple(items: string seq, exponent: string) =
+            let items = items |> Seq.map Ast.LongIdent
             Ast.Tuple(items, exponent)

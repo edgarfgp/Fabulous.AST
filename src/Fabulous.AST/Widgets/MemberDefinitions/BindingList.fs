@@ -5,11 +5,11 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module BindingList =
-    let Bindings = Attributes.defineScalar<BindingNode list> "Type"
+    let Bindings = Attributes.defineScalar<BindingNode seq> "Type"
 
     let WidgetKey =
         Widgets.register "LetBindingMember" (fun widget ->
-            let bindings = Widgets.getScalarValue widget Bindings
+            let bindings = Widgets.getScalarValue widget Bindings |> List.ofSeq
             BindingListNode(bindings, Range.Zero))
 
 [<AutoOpen>]
@@ -17,9 +17,9 @@ module LetBindingMemberBuilders =
     type Ast with
 
         /// <summary>
-        /// Define a list of let bindings.
+        /// Define a seq of let bindings.
         /// </summary>
-        /// <param name="bindings">The list of bindings.</param>
+        /// <param name="bindings">The seq of bindings.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -32,10 +32,10 @@ module LetBindingMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member LetBindings(bindings: WidgetBuilder<BindingNode> list) =
+        static member LetBindings(bindings: WidgetBuilder<BindingNode> seq) =
             WidgetBuilder<BindingListNode>(
                 BindingList.WidgetKey,
-                BindingList.Bindings.WithValue(bindings |> List.map Gen.mkOak)
+                BindingList.Bindings.WithValue(bindings |> Seq.map Gen.mkOak)
             )
 
         /// <summary>
