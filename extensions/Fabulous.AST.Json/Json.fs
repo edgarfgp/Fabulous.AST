@@ -106,7 +106,7 @@ module JsonBuilders =
         /// The resulting declarations can be yielded inside Modules/Namespaces.
         /// </summary>
         /// <param name="json">JSON input text.</param>
-        /// <code lang="fsharp">>
+        /// <code lang="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
         ///         Json("{""name"":""Alice"",""age"":30}")
