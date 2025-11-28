@@ -1,16 +1,34 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+
+    <!-- Import Fabulous.AST.Json.Build props -->
+    <Import Project="..\..\extensions\Fabulous.AST.Json.Build\build\Fabulous.AST.Json.Build.props" />
+
     <ItemGroup>
         <Compile Include="Common.fs" />
         <Compile Include="Generator.fs" />
+        <!-- Include generated file before Program.fs -->
+        <Compile Include="$(IntermediateOutputPath)FabulousAst\user.Generated.fs" Condition="Exists('$(IntermediateOutputPath)FabulousAst\user.Generated.fs')" />
         <Compile Include="Program.fs"  />
     </ItemGroup>
+
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Fabulous.AST\Fabulous.AST.fsproj" />
+        <ProjectReference Include="..\..\src\Fabulous.AST\Fabulous.AST.fsproj" />
+        <ProjectReference Include="..\..\extensions\Fabulous.AST.Json\Fabulous.AST.Json.fsproj" />
     </ItemGroup>
+
+    <!-- JSON files to generate types from -->
+    <ItemGroup>
+        <FabulousAstJson Include="schemas\user.json" 
+                         RootName="User" 
+                         Namespace="Playground.Generated" />
+    </ItemGroup>
+
+    <!-- Import Fabulous.AST.Json.Build targets -->
+    <Import Project="..\..\extensions\Fabulous.AST.Json.Build\build\Fabulous.AST.Json.Build.targets" />
 
 </Project>

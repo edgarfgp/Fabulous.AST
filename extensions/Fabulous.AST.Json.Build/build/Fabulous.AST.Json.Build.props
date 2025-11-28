@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- Output directory for generated files -->
+    <FabulousAstJsonOutputDir Condition="'$(FabulousAstJsonOutputDir)' == ''">$(IntermediateOutputPath)FabulousAst\</FabulousAstJsonOutputDir>
+
+    <!-- Enable/disable generation (useful for CI scenarios) -->
+    <EnableFabulousAstJsonGeneration Condition="'$(EnableFabulousAstJsonGeneration)' == ''">true</EnableFabulousAstJsonGeneration>
+  </PropertyGroup>
+
+  <!-- Define the FabulousAstJson item type -->
+  <ItemGroup>
+    <AvailableItemName Include="FabulousAstJson" />
+  </ItemGroup>
+
+  <!-- Default metadata for FabulousAstJson items -->
+  <ItemDefinitionGroup>
+    <FabulousAstJson>
+      <!-- Type generation options -->
+      <RootName>Root</RootName>
+      <Namespace/>
+      <ModuleName/>
+      <!-- Output file name (defaults to InputName.Generated.fs) -->
+      <OutputFileName/>
+    </FabulousAstJson>
+  </ItemDefinitionGroup>
+
+</Project>
