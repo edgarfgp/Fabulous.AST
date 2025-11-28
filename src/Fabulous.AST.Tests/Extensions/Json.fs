@@ -81,7 +81,7 @@ type Root =
 
     [<Fact>]
     let ``Marks fields optional across array of objects when missing or null``() =
-        Oak() { AnonymousModule() { Json("[ { \"id\": 1, \"name\": \"adds\" }, { \"id\": null } ]") } }
+        Oak() { AnonymousModule() { Json("[ { \"id\": 1, \"name\": \"Alice\" }, { \"id\": null } ]") } }
         |> produces
             """
 
