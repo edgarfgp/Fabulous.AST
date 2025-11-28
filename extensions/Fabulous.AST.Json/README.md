@@ -1,19 +1,40 @@
 # Fabulous.AST.Json
 
-Fabulous.AST.Json is an extension for Fabulous.AST that turns a JSON sample into F# type declarations using the Fantomas Oak-based AST DSL. It infers record types (and aliases) from your JSON and emits clean, formatted F# code you can snapshot-test or paste into your projects.
+A code generation library that transforms JSON samples into F# type definitions using the Fabulous.AST DSL.
 
-It is not a runtime deserializer nor a Type Provider. It’s a small, deterministic generator that lives inside the Fabulous.AST DSL, ideal for tests, docs, and ad‑hoc code generation.
+## What is it?
 
+Fabulous.AST.Json is a **programmatic F# type generator** that:
 
-Installation
+- Takes a JSON sample as input
+- Infers F# record types, nested types, and type aliases
+- Outputs clean, Fantomas-formatted F# code
 
-- dotnet add package Fabulous.AST.Json
+**It is NOT:**
+- A runtime JSON deserializer (use `System.Text.Json` or `Newtonsoft.Json` for that)
+- A Type Provider (types are generated as source code, not at compile-time)
 
-The Fabulous.AST.Json package targets .NET 8 for the extension assembly and depends on the core Fabulous.AST library (netstandard2.1). See global.json for the SDK used in this repo.
+**Use cases:**
+- Generating F# types from API response samples
+- Creating type-safe models from JSON schemas
+- Test fixtures and documentation
+- Custom code generation tooling
 
+> **💡 Tip:** If you want automatic build-time generation from JSON files, use [Fabulous.AST.Json.Build](https://www.nuget.org/packages/Fabulous.AST.Json.Build) instead.
 
-How to use
-Basic example generating a single record type from a JSON object:
+## Installation
+
+```bash
+dotnet add package Fabulous.AST.Json
+```
+
+**Requirements:** .NET 8.0 or later
+
+## How to use
+
+### Basic example
+
+Generate a record type from a JSON object:
 
 ```fsharp
 open Fabulous.AST
@@ -32,63 +53,105 @@ let source =
     |> Gen.run
 
 printfn "%s" source
-// Produces:
-//
-// type Root = { name: string; age: int; active: bool }
 ```
 
-Arrays and nested objects are handled as you’d expect. For a root array, the generator creates an element record and a list alias:
+**Output:**
+```fsharp
+type Root = { name: string; age: int; active: bool }
+```
+
+### Arrays and nested objects
+
+Arrays generate an element type and a list alias:
 
 ```fsharp
+let json = """[{ "id": 1, "name": "Item 1" }, { "id": 2, "name": "Item 2" }]"""
+
 let source =
-    Oak() { AnonymousModule() { Json("""[ { "id": 1 } ]""") } }
+    Oak() { AnonymousModule() { Json(json) } }
     |> Gen.mkOak
     |> Gen.run
-
-// type RootItem = { id: int }
-// type Root = RootItem list
 ```
 
-You can customize behavior with modifiers:
+**Output:**
+```fsharp
+type RootItem = { id: int; name: string }
+type Root = RootItem list
+```
+
+Nested objects become nested record types:
+
+```fsharp
+let json = """{ "user": { "name": "Alice", "address": { "city": "London" } } }"""
+
+let source =
+    Oak() { AnonymousModule() { Json(json) } }
+    |> Gen.mkOak
+    |> Gen.run
+```
+
+**Output:**
+```fsharp
+type RootUserAddress = { city: string }
+type RootUser = { name: string; address: RootUserAddress }
+type Root = { user: RootUser }
+```
+
+### Customization with modifiers
+
+Customize the root type name and JSON parsing options:
 
 ```fsharp
 open System.Text.Json
 
-let permissive = JsonSerializerOptions(
+let options = JsonSerializerOptions(
     AllowTrailingCommas = true,
-    ReadCommentHandling = JsonCommentHandling.Skip,
-    PropertyNameCaseInsensitive = true
+    ReadCommentHandling = JsonCommentHandling.Skip
 )
 
 let source =
     Oak() {
         AnonymousModule() {
-            Json("""
-            {
-              // comment allowed
-              "id": 1,
-            }
-            """)
-                .rootName("Person")
-                .serializerOptions(permissive)
-                // granular overrides if desired:
-                .allowTrailingCommas(true)
-                .readCommentHandling(JsonCommentHandling.Skip)
-                .nodePropertyNameCaseInsensitive(true)
+            Json("""{ "id": 1, "email": "alice@example.com" }""")
+                .rootName("User")
+                .serializerOptions(options)
         }
     }
     |> Gen.mkOak
     |> Gen.run
-
-// type Person = { id: int }
 ```
 
-Available modifiers (see XML docs in code for details and precedence):
-- .rootName(string)
-- .serializerOptions(JsonSerializerOptions)
-- .nodeOptions(JsonNodeOptions)
-- .allowTrailingCommas(bool)
-- .readCommentHandling(JsonCommentHandling)
-- .maxDepth(int)
-- .serializerPropertyNameCaseInsensitive(bool)
-- .nodePropertyNameCaseInsensitive(bool)
+**Output:**
+```fsharp
+type User = { id: int; email: string }
+```
+
+### Available modifiers
+
+| Modifier | Description |
+|----------|-------------|
+| `.rootName(string)` | Set the name of the root type (default: `"Root"`) |
+| `.serializerOptions(JsonSerializerOptions)` | Full control over JSON parsing |
+| `.nodeOptions(JsonNodeOptions)` | Options for `JsonNode` parsing |
+| `.allowTrailingCommas(bool)` | Allow trailing commas in JSON |
+| `.readCommentHandling(JsonCommentHandling)` | Handle JSON comments |
+| `.maxDepth(int)` | Maximum nesting depth |
+| `.serializerPropertyNameCaseInsensitive(bool)` | Case-insensitive property matching |
+| `.nodePropertyNameCaseInsensitive(bool)` | Case-insensitive node property matching |
+
+## Type inference rules
+
+| JSON value | F# type |
+|------------|---------|
+| `"string"` | `string` |
+| `123` | `int` |
+| `123.45` | `float` |
+| `true`/`false` | `bool` |
+| `null` | `obj` |
+| `[...]` | `ElementType list` |
+| `{...}` | Record type |
+
+## Related packages
+
+- **[Fabulous.AST](https://www.nuget.org/packages/Fabulous.AST)** - Core DSL for generating F# code
+- **[Fabulous.AST.Json.Build](https://www.nuget.org/packages/Fabulous.AST.Json.Build)** - MSBuild task for automatic build-time generation
