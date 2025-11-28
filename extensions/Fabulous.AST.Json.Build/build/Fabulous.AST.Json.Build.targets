@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- Import the task assembly - support both NuGet package and local development -->
   <PropertyGroup>
-    <FabulousAstJsonBuildTasksDir Condition="'$(FabulousAstJsonBuildTasksDir)' == ''">$(MSBuildThisFileDirectory)..\bin\Debug\net8.0\</FabulousAstJsonBuildTasksDir>
+    <!-- Default to Debug if not set -->
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    
+    <!-- Task assembly path - relative to the targets file location -->
+    <_FabulousAstJsonTaskAssembly>$(MSBuildThisFileDirectory)..\bin\$(Configuration)\net8.0\Fabulous.AST.Json.Build.dll</_FabulousAstJsonTaskAssembly>
   </PropertyGroup>
 
+  <!-- Import the task assembly -->
   <UsingTask
     TaskName="Fabulous.AST.Json.Build.FabulousAstJsonTask"
-    AssemblyFile="$(FabulousAstJsonBuildTasksDir)Fabulous.AST.Json.Build.dll" />
+    AssemblyFile="$(_FabulousAstJsonTaskAssembly)" />
 
   <!--
     Main generation target
-    Runs before compilation, with proper input/output tracking for incremental builds
+    Runs before compilation to generate F# files from JSON
   -->
   <Target
     Name="FabulousAstJsonGenerate"
@@ -28,18 +32,13 @@
     <FabulousAstJsonTask
       JsonFiles="@(FabulousAstJson)"
       ProjectDirectory="$(MSBuildProjectDirectory)"
-      IntermediateOutputPath="$(IntermediateOutputPath)">
+      OutputDirectory="$(FabulousAstJsonOutputDir)">
 
       <Output TaskParameter="GeneratedFiles" ItemName="FabulousAstJsonGeneratedFiles" />
     </FabulousAstJsonTask>
 
-    <!-- Track generated files for Clean target -->
-    <ItemGroup>
-      <FileWrites Include="@(FabulousAstJsonGeneratedFiles)" />
-    </ItemGroup>
-
     <Message
-      Importance="normal"
+      Importance="high"
       Text="Fabulous.AST.Json: Generated %(FabulousAstJsonGeneratedFiles.Identity)"
       Condition="'@(FabulousAstJsonGeneratedFiles)' != ''" />
 
@@ -47,20 +46,10 @@
 
   <!-- Clean target to remove generated files -->
   <Target Name="FabulousAstJsonClean" BeforeTargets="Clean">
-    <RemoveDir Directories="$(FabulousAstJsonOutputDir)" Condition="Exists('$(FabulousAstJsonOutputDir)')" />
-  </Target>
-
-  <!--
-    Design-time support: Generate during design-time builds
-    This helps IDE support, though full IntelliSense requires additional work
-  -->
-  <Target
-    Name="FabulousAstJsonGenerateDesignTime"
-    BeforeTargets="CoreCompile"
-    Condition="'$(DesignTimeBuild)' == 'true' AND '$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != ''">
-
-    <CallTarget Targets="FabulousAstJsonGenerate" />
-
+    <ItemGroup>
+      <_FabulousAstJsonFilesToDelete Include="$(FabulousAstJsonOutputDir)*.Generated.fs" />
+    </ItemGroup>
+    <Delete Files="@(_FabulousAstJsonFilesToDelete)" />
   </Target>
 
 </Project>
