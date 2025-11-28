@@ -6,7 +6,7 @@
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     
     <!-- Task assembly path - relative to the targets file location -->
-    <_FabulousAstJsonTaskAssembly>$(MSBuildThisFileDirectory)..\bin\$(Configuration)\net8.0\Fabulous.AST.Json.Build.dll</_FabulousAstJsonTaskAssembly>
+    <_FabulousAstJsonTaskAssembly>$(MSBuildThisFileDirectory)..\tasks\net8.0\Fabulous.AST.Json.Build.dll</_FabulousAstJsonTaskAssembly>
   </PropertyGroup>
 
   <!-- Import the task assembly -->
