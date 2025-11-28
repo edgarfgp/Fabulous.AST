@@ -11,9 +11,9 @@
     <ItemGroup>
         <Compile Include="Common.fs" />
         <Compile Include="Generator.fs" />
-        <!-- Include generated file before Program.fs -->
-        <Compile Include="$(IntermediateOutputPath)FabulousAst\user.Generated.fs" Condition="Exists('$(IntermediateOutputPath)FabulousAst\user.Generated.fs')" />
-        <Compile Include="Program.fs"  />
+        <!-- Explicitly include generated files - IDE will see these -->
+        <Compile Include="Generated\*.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>

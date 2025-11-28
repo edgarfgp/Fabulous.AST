@@ -11,9 +11,7 @@ open Fabulous.AST.Json
 type FabulousAstJsonTask() =
     inherit Task()
 
-    // ─────────────────────────────────────────────────────────────────────
     // Input Properties
-    // ─────────────────────────────────────────────────────────────────────
 
     /// JSON files to process (ITaskItem array from MSBuild)
     [<Required>]
@@ -23,32 +21,27 @@ type FabulousAstJsonTask() =
     [<Required>]
     member val ProjectDirectory: string = null with get, set
 
-    /// Intermediate output path (obj/ folder)
+    /// Output directory for generated files
     [<Required>]
-    member val IntermediateOutputPath: string = null with get, set
+    member val OutputDirectory: string = null with get, set
 
-    // ─────────────────────────────────────────────────────────────────────
     // Output Properties
-    // ─────────────────────────────────────────────────────────────────────
 
     /// Generated F# files to include in compilation
     [<Output>]
     member val GeneratedFiles: ITaskItem array = Array.empty with get, set
 
-    // ─────────────────────────────────────────────────────────────────────
     // Implementation
-    // ─────────────────────────────────────────────────────────────────────
 
     override this.Execute() =
         try
             let generatedFiles = ResizeArray<ITaskItem>()
 
             // Create output directory
-            let outputDir = Path.Combine(this.IntermediateOutputPath, "FabulousAst")
-            Directory.CreateDirectory(outputDir) |> ignore
+            Directory.CreateDirectory(this.OutputDirectory) |> ignore
 
             for item in this.JsonFiles do
-                match this.ProcessItem(item, outputDir) with
+                match this.ProcessItem(item, this.OutputDirectory) with
                 | Some taskItem -> generatedFiles.Add(taskItem)
                 | None -> ()
 
@@ -72,17 +65,11 @@ type FabulousAstJsonTask() =
             this.Log.LogError("Fabulous.AST.Json: Input file not found: {0}", inputPath)
             None
         else
-            // Parse configuration from item metadata
             let config = this.ParseConfig(item, inputPath, outputDir)
-
-            // Read JSON content
             let jsonContent = File.ReadAllText(inputPath)
-
-            // Compute hash for incremental build
             let configString = JsonGenerationItem.toConfigString config
             let hash = HashUtils.computeHash jsonContent configString
 
-            // Check if regeneration needed
             if HashUtils.needsRegeneration config.OutputPath hash then
                 this.Log.LogMessage(
                     MessageImportance.Normal,
@@ -91,22 +78,19 @@ type FabulousAstJsonTask() =
                     inputPath
                 )
 
-                // Generate F# code
                 let generatedCode = this.GenerateCode(jsonContent, config)
-
-                // Write with header
                 let header = HashUtils.generateHeader hash inputPath
                 File.WriteAllText(config.OutputPath, header + generatedCode)
             else
                 this.Log.LogMessage(
-                    MessageImportance.Normal,
+                    MessageImportance.Low,
                     "Fabulous.AST.Json: Skipping {0} (up-to-date)",
                     config.OutputPath
                 )
 
             Some(TaskItem(config.OutputPath) :> ITaskItem)
 
-    member private this.ParseConfig(item: ITaskItem, inputPath: string, outputDir: string) : JsonGenerationItem =
+    member private _.ParseConfig(item: ITaskItem, inputPath: string, outputDir: string) : JsonGenerationItem =
         let getMetadata (name: string) (defaultValue: string) =
             match item.GetMetadata(name) with
             | null
@@ -123,11 +107,9 @@ type FabulousAstJsonTask() =
           Namespace = item.GetMetadata("Namespace")
           ModuleName = item.GetMetadata("ModuleName") }
 
-    member private this.GenerateCode(jsonContent: string, config: JsonGenerationItem) : string =
-        // Build the JSON widget with configuration
+    member private _.GenerateCode(jsonContent: string, config: JsonGenerationItem) : string =
         let jsonWidget = Ast.Json(jsonContent).rootName(config.RootName)
 
-        // Build the namespace wrapper or anonymous module
         let oak =
             match config.Namespace with
             | ns when not(String.IsNullOrEmpty(ns)) -> Ast.Oak() { Ast.Namespace(ns) { jsonWidget } }
