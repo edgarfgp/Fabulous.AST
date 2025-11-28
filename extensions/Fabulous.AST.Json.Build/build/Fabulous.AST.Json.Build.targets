@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Import the task assembly - support both NuGet package and local development -->
+  <PropertyGroup>
+    <FabulousAstJsonBuildTasksDir Condition="'$(FabulousAstJsonBuildTasksDir)' == ''">$(MSBuildThisFileDirectory)..\bin\Debug\net8.0\</FabulousAstJsonBuildTasksDir>
+  </PropertyGroup>
+
+  <UsingTask
+    TaskName="Fabulous.AST.Json.Build.FabulousAstJsonTask"
+    AssemblyFile="$(FabulousAstJsonBuildTasksDir)Fabulous.AST.Json.Build.dll" />
+
+  <!--
+    Main generation target
+    Runs before compilation, with proper input/output tracking for incremental builds
+  -->
+  <Target
+    Name="FabulousAstJsonGenerate"
+    BeforeTargets="BeforeCompile"
+    Condition="'$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != ''"
+    Inputs="@(FabulousAstJson)"
+    Outputs="@(FabulousAstJson->'$(FabulousAstJsonOutputDir)%(Filename).Generated.fs')">
+
+    <!-- Ensure output directory exists -->
+    <MakeDir Directories="$(FabulousAstJsonOutputDir)" />
+
+    <!-- Run the generation task -->
+    <FabulousAstJsonTask
+      JsonFiles="@(FabulousAstJson)"
+      ProjectDirectory="$(MSBuildProjectDirectory)"
+      IntermediateOutputPath="$(IntermediateOutputPath)">
+
+      <Output TaskParameter="GeneratedFiles" ItemName="FabulousAstJsonGeneratedFiles" />
+    </FabulousAstJsonTask>
+
+    <!-- Track generated files for Clean target -->
+    <ItemGroup>
+      <FileWrites Include="@(FabulousAstJsonGeneratedFiles)" />
+    </ItemGroup>
+
+    <Message
+      Importance="normal"
+      Text="Fabulous.AST.Json: Generated %(FabulousAstJsonGeneratedFiles.Identity)"
+      Condition="'@(FabulousAstJsonGeneratedFiles)' != ''" />
+
+  </Target>
+
+  <!-- Clean target to remove generated files -->
+  <Target Name="FabulousAstJsonClean" BeforeTargets="Clean">
+    <RemoveDir Directories="$(FabulousAstJsonOutputDir)" Condition="Exists('$(FabulousAstJsonOutputDir)')" />
+  </Target>
+
+  <!--
+    Design-time support: Generate during design-time builds
+    This helps IDE support, though full IntelliSense requires additional work
+  -->
+  <Target
+    Name="FabulousAstJsonGenerateDesignTime"
+    BeforeTargets="CoreCompile"
+    Condition="'$(DesignTimeBuild)' == 'true' AND '$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != ''">
+
+    <CallTarget Targets="FabulousAstJsonGenerate" />
+
+  </Target>
+
+</Project>
