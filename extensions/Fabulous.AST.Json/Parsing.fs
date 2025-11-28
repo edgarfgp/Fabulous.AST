@@ -2,7 +2,6 @@ namespace Fabulous.AST.Json
 
 open System
 open System.Globalization
-open System.Collections.Generic
 open System.Text.Json
 open System.Text.Json.Nodes
 open Fabulous.AST
@@ -10,6 +9,11 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Parsing =
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Naming Utilities
+    // ─────────────────────────────────────────────────────────────────────────
+
     let toPascalCase (s: string) (fallback: string) =
         let s = if String.IsNullOrWhiteSpace(s) then fallback else s
 
@@ -36,6 +40,10 @@ module Parsing =
                         string first + p.Substring(1))
             |> String.concat ""
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // AST Helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
     let ident(name: string) = SingleTextNode(name, Range.Zero)
 
     let identList(name: string) =
@@ -49,6 +57,10 @@ module Parsing =
     let optionType(t: Type) : Type =
         Type.AppPostfix(TypeAppPostFixNode(t, longIdent "option", Range.Zero))
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Type Inference Helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
     let tryJsonValue<'T>(v: JsonValue) : bool =
         try
             let _ = v.GetValue<'T>()
@@ -56,129 +68,210 @@ module Parsing =
         with _ ->
             false
 
-    // Functional generation state for the parser
+    /// Infer type from a JsonValue primitive
+    let inferPrimitiveType(v: JsonValue) : Type =
+        if tryJsonValue<bool> v then longIdent "bool"
+        elif tryJsonValue<int64> v then longIdent "int"
+        elif tryJsonValue<double> v then longIdent "float"
+        else longIdent "string"
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Generation State
+    // ─────────────────────────────────────────────────────────────────────────
+
     type GenState =
         { Emitted: Set<string>
-          DeclsRev: Fantomas.Core.SyntaxOak.ModuleDecl list }
+          DeclsRev: ModuleDecl list }
+
+    let emptyState =
+        { Emitted = Set.empty
+          DeclsRev = [] }
+
+    let addDecl (decl: ModuleDecl) (st: GenState) =
+        { st with DeclsRev = decl :: st.DeclsRev }
+
+    let markEmitted (name: string) (st: GenState) =
+        { st with Emitted = st.Emitted.Add name }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // AST Node Builders
+    // ─────────────────────────────────────────────────────────────────────────
+
+    let mkTypeNameNode(typeName: string) =
+        TypeNameNode(
+            None,
+            None,
+            SingleTextNode.``type``,
+            None,
+            identList typeName,
+            None,
+            [],
+            None,
+            Some(SingleTextNode.equals),
+            None,
+            Range.Zero
+        )
+
+    let mkRecordDecl (typeName: string) (fields: FieldNode list) : ModuleDecl =
+        let recordNode =
+            TypeDefnRecordNode(
+                mkTypeNameNode typeName,
+                None,
+                SingleTextNode.leftCurlyBrace,
+                fields,
+                SingleTextNode.rightCurlyBrace,
+                [],
+                Range.Zero
+            )
+
+        ModuleDecl.TypeDefn(TypeDefn.Record(recordNode))
+
+    let mkAliasDecl (name: string) (t: Type) : ModuleDecl =
+        TypeDefnAbbrevNode(mkTypeNameNode name, t, [], Range.Zero)
+        |> TypeDefn.Abbrev
+        |> ModuleDecl.TypeDefn
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Array-of-Objects Analysis (Extracted for Reuse)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /// Result of analyzing an array of JSON objects
+    type ObjectArrayAnalysis =
+        { Keys: string list
+          OptionalKeys: Set<string>
+          TypeOverrides: Map<string, Type> }
+
+    /// Extract all JsonObjects from a JsonArray
+    let extractObjects(arr: JsonArray) : JsonObject array =
+        arr
+        |> Seq.choose (function
+            | :? JsonObject as o -> Some o
+            | _ -> None)
+        |> Seq.toArray
+
+    /// Collect union of keys from objects, preserving first-seen order
+    let collectKeys(objs: JsonObject array) : string list =
+        let keysRev, _ =
+            (([], Set.empty<string>), objs)
+            ||> Array.fold(fun (keysRev, seen) o ->
+                ((keysRev, seen), Seq.toArray o)
+                ||> Array.fold(fun (keysRev, seen) p ->
+                    if seen.Contains p.Key then
+                        keysRev, seen
+                    else
+                        p.Key :: keysRev, seen.Add p.Key))
+
+        List.rev keysRev
+
+    /// Analyze an array of objects to determine optional keys and infer types.
+    /// The genTypeFn parameter allows recursive type generation.
+    let analyzeObjectArray
+        (objs: JsonObject array)
+        (genTypeFn: string -> JsonNode -> GenState -> Type * GenState)
+        (st: GenState)
+        : ObjectArrayAnalysis * GenState =
+
+        let keys = collectKeys objs
+
+        let optionKeys, typeOverrides, st' =
+            ((Set.empty<string>, Map.empty<string, Type>, st), keys)
+            ||> List.fold(fun (optSet, overrides, stAcc) key ->
+                let values =
+                    objs |> Array.choose(fun o -> if o.ContainsKey key then Some o[key] else None)
+
+                let hasMissing = values.Length <> objs.Length
+                let hasNull = values |> Array.exists isNull
+                let optSet' = if hasMissing || hasNull then Set.add key optSet else optSet
+
+                let sampleOpt = values |> Array.tryFind(fun v -> not(isNull v))
+
+                let fieldType, stAcc' =
+                    match sampleOpt with
+                    | Some v -> genTypeFn (toPascalCase key "Field") v stAcc
+                    | None -> longIdent "obj", stAcc
+
+                optSet', Map.add key fieldType overrides, stAcc')
+
+        let analysis =
+            { Keys = keys
+              OptionalKeys = optionKeys
+              TypeOverrides = typeOverrides }
+
+        analysis, st'
+
+    /// Build a representative JsonObject containing all keys (for ensureRecordWith)
+    let buildRepresentativeObject(keys: string list) : JsonObject =
+        let rep = JsonObject()
+        keys |> List.iter(fun k -> rep.Add(k, JsonValue.Create ""))
+        rep
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Main Generation Logic
+    // ─────────────────────────────────────────────────────────────────────────
 
     /// Generate a ModuleOrNamespaceNode containing type declarations inferred from the given JSON input.
-    /// rootNameOpt allows overriding the default root type name ("Root").
-    /// nodeOptions and documentOptions allow controlling System.Text.Json parsing behavior.
     let generateModule
         (rootNameOpt: voption<string>)
         (nodeOptions: JsonNodeOptions)
         (documentOptions: JsonDocumentOptions)
         (input: string)
         : ModuleOrNamespaceNode =
+
         let root =
             try
                 JsonNode.Parse(input, nodeOptions, documentOptions)
             with ex ->
-                // Provide context about the input and preserve the original exception
-                raise (System.Text.Json.JsonException($"Failed to parse JSON input in generateModule. Input: {input}", ex))
+                raise(JsonException($"Failed to parse JSON input in generateModule. Input: {input}", ex))
 
-        let emptyState =
-            { Emitted = Set.empty
-              DeclsRev = [] }
-
-        let addDecl (decl: ModuleDecl) (st: GenState) =
-            { st with DeclsRev = decl :: st.DeclsRev }
-
-        let markEmitted name (st: GenState) =
-            { st with Emitted = st.Emitted.Add name }
-
-        // Resolve the desired root/type names (allow override via modifier)
         let resolvedRootName =
             match rootNameOpt with
             | ValueSome rn when not(String.IsNullOrWhiteSpace rn) -> toPascalCase rn "Root"
             | _ -> "Root"
 
-        let resolvedItemName = toPascalCase ($"{resolvedRootName}Item") "Item"
+        let resolvedItemName = toPascalCase $"{resolvedRootName}Item" "Item"
 
-        // Forward-declared recursive functions that return a Type along with updated state
+        // ─────────────────────────────────────────────────────────────────
+        // Recursive type generation
+        // ─────────────────────────────────────────────────────────────────
+
         let rec genType (suggestedName: string) (node: JsonNode) (st: GenState) : Type * GenState =
             match node with
             | :? JsonObject as obj ->
                 let typeName = toPascalCase suggestedName "Anon"
                 let st' = ensureRecord typeName obj st
                 longIdent typeName, st'
-            | :? JsonArray as arr ->
-                if arr.Count = 0 then
-                    // empty arrays -> obj list
-                    listType(Type.LongIdent(identList "obj")), st
-                else
-                    match arr[0] with
-                    | :? JsonObject ->
-                        // Special handling: scan all objects to infer optional fields and types
-                        let objs =
-                            arr
-                            |> Seq.choose (function
-                                | :? JsonObject as o -> Some o
-                                | _ -> None)
-                            |> Seq.toArray
 
-                        if objs.Length = 0 then
-                            // Fallback to previous behavior if no objects
-                            let first = arr[0]
-                            let elemName = toPascalCase (suggestedName + "Item") "Item"
-                            let elemType, st' = genType elemName first st
-                            listType elemType, st'
-                        else
-                            // Collect union of keys preserving first-seen order
-                            let keysRev, _seen =
-                                (([], Set.empty<string>), objs)
-                                ||> Array.fold(fun (keysRev, seen) o ->
-                                    ((keysRev, seen), Seq.toArray o)
-                                    ||> Array.fold(fun (keysRev, seen) p ->
-                                        if seen.Contains p.Key then
-                                            keysRev, seen
-                                        else
-                                            p.Key :: keysRev, seen.Add p.Key))
+            | :? JsonArray as arr -> genArrayType suggestedName arr st
 
-                            let keys = List.rev keysRev
+            | :? JsonValue as v -> inferPrimitiveType v, st
 
-                            // Determine option keys and type overrides
-                            let (optionKeys, typeOverrides, st') =
-                                ((Set.empty<string>, Map.empty<string, Type>, st), keys)
-                                ||> List.fold(fun (optSet, overrides, stAcc) k ->
-                                    let values =
-                                        objs |> Array.choose(fun o -> if o.ContainsKey k then Some o[k] else None)
-
-                                    let hasMissing = values.Length <> objs.Length
-                                    // In System.Text.Json.Nodes, null values are represented by null JsonNode references
-                                    let hasNull = values |> Array.exists isNull
-
-                                    let optSet' = if hasMissing || hasNull then Set.add k optSet else optSet
-
-                                    let sampleOpt = values |> Array.tryFind(fun v -> not(isNull v))
-
-                                    let fieldType, stAcc' =
-                                        match sampleOpt with
-                                        | Some v -> genType (toPascalCase k "Field") v stAcc
-                                        | None -> longIdent "obj", stAcc
-
-                                    optSet', Map.add k fieldType overrides, stAcc')
-
-                            // Build a representative object containing all keys (values unused due to overrides)
-                            let rep = JsonObject()
-                            keys |> List.iter(fun k -> rep.Add(k, JsonValue.Create ""))
-
-                            let elemName = toPascalCase (suggestedName + "Item") "Item"
-                            let st'' = ensureRecordWith elemName rep optionKeys typeOverrides st'
-                            listType(longIdent elemName), st''
-                    | first ->
-                        let elemName = toPascalCase (suggestedName + "Item") "Item"
-                        let elemType, st' = genType elemName first st
-                        listType elemType, st'
-            | :? JsonValue as v ->
-                let t =
-                    if tryJsonValue<bool> v then longIdent "bool"
-                    elif tryJsonValue<int64> v then longIdent "int"
-                    elif tryJsonValue<double> v then longIdent "float"
-                    else longIdent "string"
-
-                t, st
             | _ -> longIdent "obj", st
+
+        and genArrayType (suggestedName: string) (arr: JsonArray) (st: GenState) : Type * GenState =
+            if arr.Count = 0 then
+                listType(longIdent "obj"), st
+            else
+                let elemName = toPascalCase (suggestedName + "Item") "Item"
+
+                match arr[0] with
+                | :? JsonObject ->
+                    let objs = extractObjects arr
+
+                    if objs.Length = 0 then
+                        let elemType, st' = genType elemName arr[0] st
+                        listType elemType, st'
+                    else
+                        let analysis, st' = analyzeObjectArray objs genType st
+                        let rep = buildRepresentativeObject analysis.Keys
+
+                        let st'' =
+                            ensureRecordWith elemName rep analysis.OptionalKeys analysis.TypeOverrides st'
+
+                        listType(longIdent elemName), st''
+
+                | first ->
+                    let elemType, st' = genType elemName first st
+                    listType elemType, st'
 
         and ensureRecordWith
             (typeName: string)
@@ -187,10 +280,10 @@ module Parsing =
             (typeOverrides: Map<string, Type>)
             (st: GenState)
             : GenState =
+
             if st.Emitted.Contains typeName then
                 st
             else
-                // Generate fields first (may recursively generate child types)
                 let fieldsRev, st' =
                     (([], st), Seq.toArray obj)
                     ||> Array.fold(fun (accFields, stAcc) prop ->
@@ -217,141 +310,53 @@ module Parsing =
 
                         fieldNode :: accFields, stAcc')
 
-                // Build a record definition and turn it into a ModuleDecl node
                 let fields = List.rev fieldsRev
-
-                let typeNameNode =
-                    TypeNameNode(
-                        None,
-                        None,
-                        SingleTextNode.``type``,
-                        None,
-                        identList typeName,
-                        None,
-                        [],
-                        None,
-                        Some(SingleTextNode.equals),
-                        None,
-                        Range.Zero
-                    )
-
-                let recordNode =
-                    TypeDefnRecordNode(
-                        typeNameNode,
-                        None,
-                        SingleTextNode.leftCurlyBrace,
-                        fields,
-                        SingleTextNode.rightCurlyBrace,
-                        [],
-                        Range.Zero
-                    )
-
-                let modDecl = ModuleDecl.TypeDefn(TypeDefn.Record(recordNode))
-                st' |> addDecl modDecl |> markEmitted typeName
+                let decl = mkRecordDecl typeName fields
+                st' |> addDecl decl |> markEmitted typeName
 
         and ensureRecord (typeName: string) (obj: JsonObject) (st: GenState) : GenState =
-            // Default behavior: no optional keys and no overrides
             ensureRecordWith typeName obj Set.empty Map.empty st
 
-        // Helpers to build abbreviation (alias) declarations
-        let mkAliasDecl name (t: Type) : ModuleDecl =
-            let typeNameNode =
-                TypeNameNode(
-                    None,
-                    None,
-                    SingleTextNode.``type``,
-                    None,
-                    identList name,
-                    None,
-                    [],
-                    None,
-                    Some(SingleTextNode.equals),
-                    None,
-                    Range.Zero
-                )
+        // ─────────────────────────────────────────────────────────────────
+        // Top-level generation based on root node type
+        // ─────────────────────────────────────────────────────────────────
 
-            TypeDefnAbbrevNode(typeNameNode, t, [], Range.Zero)
-            |> TypeDefn.Abbrev
-            |> ModuleDecl.TypeDefn
+        let generateRootArray(arr: JsonArray) : GenState =
+            if arr.Count = 0 then
+                emptyState |> addDecl(mkAliasDecl resolvedRootName (listType(longIdent "obj")))
+            else
+                match arr[0] with
+                | :? JsonObject ->
+                    let objs = extractObjects arr
 
-        // Produce top-level based on the root node
+                    if objs.Length = 0 then
+                        let elemType, st' = genType resolvedItemName arr[0] emptyState
+                        st' |> addDecl(mkAliasDecl resolvedRootName (listType elemType))
+                    else
+                        let analysis, st' = analyzeObjectArray objs genType emptyState
+                        let rep = buildRepresentativeObject analysis.Keys
+
+                        let st'' =
+                            ensureRecordWith resolvedItemName rep analysis.OptionalKeys analysis.TypeOverrides st'
+
+                        st''
+                        |> addDecl(mkAliasDecl resolvedRootName (listType(longIdent resolvedItemName)))
+
+                | elem ->
+                    let elemType, st' = genType resolvedItemName elem emptyState
+                    st' |> addDecl(mkAliasDecl resolvedRootName (listType elemType))
+
         if isNull root then
-            // Invalid JSON -> nothing
             ModuleOrNamespaceNode(None, [], Range.Zero)
         else
             let finalState =
                 match root with
                 | :? JsonObject as o -> emptyState |> ensureRecord resolvedRootName o
-                | :? JsonArray as a ->
-                    if a.Count = 0 then
-                        // type Root = obj list
-                        let aliasType = listType(longIdent "obj")
-                        emptyState |> addDecl(mkAliasDecl resolvedRootName aliasType)
-                    else
-                        match a[0] with
-                        | :? JsonObject ->
-                            // Scan all objects to compute optional fields and types
-                            let objs =
-                                a
-                                |> Seq.choose (function
-                                    | :? JsonObject as o -> Some o
-                                    | _ -> None)
-                                |> Seq.toArray
 
-                            if objs.Length = 0 then
-                                // Fallback to first element inference
-                                let elemType, st' = genType resolvedItemName a[0] emptyState
-                                st' |> addDecl(mkAliasDecl resolvedRootName (listType elemType))
-                            else
-                                let keysRev, _seen =
-                                    (([], Set.empty<string>), objs)
-                                    ||> Array.fold(fun (keysRev, seen) o ->
-                                        ((keysRev, seen), Seq.toArray o)
-                                        ||> Array.fold(fun (keysRev, seen) p ->
-                                            if seen.Contains p.Key then
-                                                keysRev, seen
-                                            else
-                                                p.Key :: keysRev, seen.Add p.Key))
+                | :? JsonArray as a -> generateRootArray a
 
-                                let keys = List.rev keysRev
+                | :? JsonValue as v -> emptyState |> addDecl(mkAliasDecl resolvedRootName (inferPrimitiveType v))
 
-                                let (optionKeys, typeOverrides, st') =
-                                    ((Set.empty<string>, Map.empty<string, Type>, emptyState), keys)
-                                    ||> List.fold(fun (optSet, overrides, stAcc) k ->
-                                        let values =
-                                            objs |> Array.choose(fun o -> if o.ContainsKey k then Some o[k] else None)
-
-                                        let hasMissing = values.Length <> objs.Length
-                                        let hasNull = values |> Array.exists isNull
-                                        let optSet' = if hasMissing || hasNull then Set.add k optSet else optSet
-
-                                        let sampleOpt = values |> Array.tryFind(fun v -> not(isNull v))
-
-                                        let fieldType, stAcc' =
-                                            match sampleOpt with
-                                            | Some v -> genType (toPascalCase k "Field") v stAcc
-                                            | None -> longIdent "obj", stAcc
-
-                                        optSet', Map.add k fieldType overrides, stAcc')
-
-                                let rep = JsonObject()
-                                keys |> List.iter(fun k -> rep.Add(k, JsonValue.Create ""))
-
-                                let st'' = ensureRecordWith resolvedItemName rep optionKeys typeOverrides st'
-
-                                st''
-                                |> addDecl(mkAliasDecl resolvedRootName (listType(longIdent resolvedItemName)))
-                        | elem ->
-                            let elemType, st' = genType resolvedItemName elem emptyState
-                            st' |> addDecl(mkAliasDecl resolvedRootName (listType elemType))
-                | :? JsonValue as v ->
-                    let t =
-                        if tryJsonValue<bool> v then longIdent "bool"
-                        elif tryJsonValue<int64> v then longIdent "int"
-                        elif tryJsonValue<double> v then longIdent "float"
-                        else longIdent "string"
-
-                    emptyState |> addDecl(mkAliasDecl resolvedRootName t)
                 | _ -> emptyState
 
             ModuleOrNamespaceNode(None, List.rev finalState.DeclsRev, Range.Zero)
