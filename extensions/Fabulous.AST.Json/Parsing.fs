@@ -221,7 +221,8 @@ module Parsing =
             try
                 JsonNode.Parse(input, nodeOptions, documentOptions)
             with ex ->
-                raise(JsonException($"Failed to parse JSON input in generateModule. Input: {input}", ex))
+                // Avoid logging raw JSON content
+                raise(JsonException("Failed to parse JSON input in generateModule.", ex))
 
         let resolvedRootName =
             match rootNameOpt with
