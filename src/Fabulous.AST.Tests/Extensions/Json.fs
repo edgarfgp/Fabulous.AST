@@ -1,5 +1,6 @@
 namespace Fabulous.AST.Tests.Extensions
 
+open System.Text.Json
 open Xunit
 open Fabulous.AST
 open Fabulous.AST.Json
@@ -10,7 +11,18 @@ module JsonGeneration =
 
     [<Fact>]
     let ``Generates record from simple object``() =
-        Oak() { AnonymousModule() { Json("{ \"name\": \"Alice\", \"age\": 30, \"active\": true }") } }
+        Oak() {
+            let json =
+                """
+{
+    "name": "Alice",
+    "age": 30,
+    "active": true
+}
+    """
+
+            AnonymousModule() { Json(json) }
+        }
         |> produces
             """
 
@@ -103,7 +115,7 @@ type Root = RootItem list
 
         Oak() {
             AnonymousModule() {
-                Json(json).allowTrailingCommas(true).readCommentHandling(System.Text.Json.JsonCommentHandling.Skip)
+                Json(json).documentAllowTrailingCommas(true).documentCommentHandling(JsonCommentHandling.Skip)
             }
         }
         |> produces
@@ -115,7 +127,7 @@ type Root = { id: int; name: string }
 
     [<Fact>]
     let ``Parses array with trailing comma when enabled``() =
-        Oak() { AnonymousModule() { Json("[1,2,]").allowTrailingCommas(true) } }
+        Oak() { AnonymousModule() { Json("[1,2,]").documentAllowTrailingCommas(true) } }
         |> produces
             """
 
@@ -126,10 +138,7 @@ type Root = int list
     [<Fact>]
     let ``Allows comments and trailing commas via serializerOptions without granular overrides``() =
         let ser =
-            System.Text.Json.JsonSerializerOptions(
-                AllowTrailingCommas = true,
-                ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip
-            )
+            JsonSerializerOptions(AllowTrailingCommas = true, ReadCommentHandling = JsonCommentHandling.Skip)
 
         let json =
             """

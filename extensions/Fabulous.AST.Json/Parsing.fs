@@ -1,6 +1,7 @@
 namespace Fabulous.AST.Json
 
 open System
+open System.Diagnostics
 open System.Globalization
 open System.Text.Json
 open System.Text.Json.Nodes
@@ -68,12 +69,31 @@ module Parsing =
         with _ ->
             false
 
+    /// Get the JsonValueKind for a JsonValue without throwing.
+    /// Prefer JsonValue.GetValueKind() (STJ 8+) and fall back to obtaining a JsonElement.
+    let getKind(v: JsonValue) : JsonValueKind =
+        try
+            // Available on System.Text.Json 8+
+            v.GetValueKind()
+        with _ ->
+            try
+                v.GetValue<JsonElement>().ValueKind
+            with _ ->
+                JsonValueKind.Undefined
+
     /// Infer type from a JsonValue primitive
     let inferPrimitiveType(v: JsonValue) : Type =
-        if tryJsonValue<bool> v then longIdent "bool"
-        elif tryJsonValue<int64> v then longIdent "int"
-        elif tryJsonValue<double> v then longIdent "float"
-        else longIdent "string"
+        match getKind v with
+        | JsonValueKind.True
+        | JsonValueKind.False -> longIdent "bool"
+        | JsonValueKind.String -> longIdent "string"
+        | JsonValueKind.Number ->
+            if tryJsonValue<int64> v then longIdent "int"
+            elif tryJsonValue<double> v then longIdent "float"
+            else longIdent "float"
+        | JsonValueKind.Null
+        | JsonValueKind.Undefined
+        | _ -> longIdent "string"
 
     // ─────────────────────────────────────────────────────────────────────────
     // Generation State
@@ -217,12 +237,30 @@ module Parsing =
         (input: string)
         : ModuleOrNamespaceNode =
 
+        // Debug: surface selected JsonDocumentOptions used for parsing
+        Debug.WriteLine(
+            "[DEBUG_LOG] JsonDocumentOptions: AllowTrailingCommas={0}; CommentHandling={1}; MaxDepth={2}",
+            documentOptions.AllowTrailingCommas,
+            documentOptions.CommentHandling,
+            documentOptions.MaxDepth
+        )
+
         let root =
             try
                 JsonNode.Parse(input, nodeOptions, documentOptions)
             with ex ->
                 // Avoid logging raw JSON content
-                raise(JsonException("Failed to parse JSON input in generateModule.", ex))
+                let rootHint =
+                    match rootNameOpt with
+                    | ValueSome rn when not(String.IsNullOrWhiteSpace rn) -> rn.Trim()
+                    | _ -> "Root"
+
+                raise(
+                    JsonException(
+                        $"Failed to parse JSON input in generateModule (root '{rootHint}'). Consider enabling comments or trailing commas in options. Effective options: AllowTrailingCommas={documentOptions.AllowTrailingCommas}; CommentHandling={documentOptions.CommentHandling}; MaxDepth={documentOptions.MaxDepth}",
+                        ex
+                    )
+                )
 
         let resolvedRootName =
             match rootNameOpt with
