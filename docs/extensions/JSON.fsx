@@ -29,7 +29,20 @@ open type Fabulous.AST.Ast
 Pass a JSON string to Json and render the generated F# code with Gen.run:
 *)
 
-Oak() { AnonymousModule() { Json("{ \"name\": \"Alice\", \"age\": 30, \"active\": true }") } }
+Oak() {
+    AnonymousModule() {
+        let json =
+            """
+{
+    "name": "Alice",
+    "age": 30,
+    "active": true
+}
+"""
+
+        Json(json)
+    }
+}
 |> Gen.mkOak
 |> Gen.run
 |> printfn "%s"
@@ -46,7 +59,12 @@ Oak() { AnonymousModule() { Json("{ \"name\": \"Alice\", \"age\": 30, \"active\"
 *)
 
 (** Root name **)
-Oak() { AnonymousModule() { Json("{\"id\":1}").rootName("Person") } }
+Oak() {
+    AnonymousModule() {
+        let json = """{ "id": 1 }"""
+        Json(json).rootName("Person")
+    }
+}
 |> Gen.mkOak
 |> Gen.run
 |> printfn "%s"
@@ -78,7 +96,23 @@ Oak() {
 (*** include-output ***)
 
 (** Case-insensitive property names **)
-Oak() { AnonymousModule() { Json("[ { \"ID\": 1 }, { \"id\": 2 } ]").nodePropertyNameCaseInsensitive(true) } }
+Oak() {
+    AnonymousModule() {
+        let json =
+            """
+[
+    {
+        "ID": 1
+    },
+    {
+        "id": 2
+    }
+]
+"""
+
+        Json(json).nodePropertyNameCaseInsensitive(true)
+    }
+}
 |> Gen.mkOak
 |> Gen.run
 |> printfn "%s"
