@@ -6,14 +6,13 @@
     </PropertyGroup>
 
     <!-- Import Fabulous.AST.Json.Build props -->
-<!--    <Import Project="..\..\extensions\Fabulous.AST.Json.Build\build\Fabulous.AST.Json.Build.props" />-->
+    <Import Project="..\..\extensions\Fabulous.AST.Build\build\Fabulous.AST.Build.props" />
 
     <ItemGroup>
         <Compile Include="Common.fs" />
         <Compile Include="Generator.fs" />
         <!-- Explicitly include generated files - IDE will see these -->
-<!--        <Compile Include="Generated\*.fs" />-->
-        <Compile Include="Generated\user.Generated.fs" />
+        <Compile Include="Generated\*.Generated.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
@@ -23,14 +22,17 @@
     </ItemGroup>
 
 
-<!--    &lt;!&ndash; JSON files to generate types from &ndash;&gt;-->
-<!--    <ItemGroup>-->
-<!--        <FabulousAstJson Include="schemas\user.json"-->
-<!--                         RootName="User"-->
-<!--                         Namespace="Playground.Generated" />-->
-<!--    </ItemGroup>-->
+    <!-- JSON files to generate types from -->
+    <ItemGroup>
+        <FabulousAstJson Include="schemas\user.json"
+                         RootName="User"
+                         Namespace="Playground.Generated" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Generated\" />
+    </ItemGroup>
 
-<!--    &lt;!&ndash; Import Fabulous.AST.Json.Build targets &ndash;&gt;-->
-<!--    <Import Project="..\..\extensions\Fabulous.AST.Json.Build\build\Fabulous.AST.Json.Build.targets" />-->
+    <!-- Import Fabulous.AST.Build targets -->
+    <Import Project="..\..\extensions\Fabulous.AST.Build\build\Fabulous.AST.Build.targets" />
 
 </Project>
