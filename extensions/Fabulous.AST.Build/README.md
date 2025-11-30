@@ -1,10 +1,10 @@
-# Fabulous.AST.Json.Build
+# Fabulous.AST.Build
 
 An MSBuild task that automatically generates F# types from JSON files at build time.
 
 ## What is it?
 
-Fabulous.AST.Json.Build is a **build-time code generator** that:
+Fabulous.AST.Build is a **build-time code generator** that:
 
 - Watches JSON files in your project
 - Automatically generates F# record types during build

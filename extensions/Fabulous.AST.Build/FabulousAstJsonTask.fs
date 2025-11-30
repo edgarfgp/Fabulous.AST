@@ -1,4 +1,4 @@
-namespace Fabulous.AST.Json.Build
+namespace Fabulous.AST.Build
 
 open System
 open System.IO
