@@ -92,9 +92,9 @@ let source =
 
 **Output:**
 ```fsharp
-type RootUserAddress = { city: string }
-type RootUser = { name: string; address: RootUserAddress }
-type Root = { user: RootUser }
+type Address = { city: string }
+type User = { name: string; address: Address }
+type Root = { user: User }
 ```
 
 ### Customization with modifiers
@@ -131,12 +131,11 @@ type User = { id: int; email: string }
 | Modifier | Description |
 |----------|-------------|
 | `.rootName(string)` | Set the name of the root type (default: `"Root"`) |
-| `.serializerOptions(JsonSerializerOptions)` | Full control over JSON parsing |
-| `.nodeOptions(JsonNodeOptions)` | Options for `JsonNode` parsing |
-| `.allowTrailingCommas(bool)` | Allow trailing commas in JSON |
-| `.readCommentHandling(JsonCommentHandling)` | Handle JSON comments |
-| `.maxDepth(int)` | Maximum nesting depth |
-| `.serializerPropertyNameCaseInsensitive(bool)` | Case-insensitive property matching |
+| `.documentOptions(JsonDocumentOptions)` | Provide `JsonDocumentOptions` used for parsing |
+| `.documentAllowTrailingCommas(bool)` | Allow trailing commas in JSON |
+| `.documentCommentHandling(JsonCommentHandling)` | Handle JSON comments |
+| `.documentMaxDepth(int)` | Maximum nesting depth |
+| `.serializerOptions(JsonSerializerOptions)` | Seed related document options from a serializer config |
 | `.nodePropertyNameCaseInsensitive(bool)` | Case-insensitive node property matching |
 
 ## Type inference rules
@@ -147,7 +146,7 @@ type User = { id: int; email: string }
 | `123` | `int` |
 | `123.45` | `float` |
 | `true`/`false` | `bool` |
-| `null` | `obj` |
+| `null` | `string` |
 | `[...]` | `ElementType list` |
 | `{...}` | Record type |
 
