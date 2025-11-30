@@ -28,5 +28,4 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\Fabulous.AST\Fabulous.AST.fsproj" />
     </ItemGroup>
-
 </Project>
