@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>MSBuild integration for Fabulous.AST.Json type generation</Description>
 
     <!-- This makes it a build-time only package -->
@@ -19,6 +18,13 @@
     <!-- Suppress NU5100 warning about DLLs in lib folder -->
     <NoWarn>$(NoWarn);NU5100</NoWarn>
   </PropertyGroup>
+
+    <!-- NuGet Package -->
+    <PropertyGroup>
+        <Description>Fabulous.AST.Json MSBuild task for generating JSON types</Description>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NeutralLanguage>en-US</NeutralLanguage>
+    </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="HashUtils.fs" />
