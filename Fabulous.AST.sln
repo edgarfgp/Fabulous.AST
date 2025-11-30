@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", 
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Json", "extensions\Fabulous.AST.Json\Fabulous.AST.Json.fsproj", "{E24BB01E-F3B4-40E8-AF42-7717909D7AAC}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Json.Build", "extensions\Fabulous.AST.Json.Build\Fabulous.AST.Json.Build.fsproj", "{D6BDB5DB-93E4-457C-872E-AB9D8223EB08}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Build", "extensions\Fabulous.AST.Build\Fabulous.AST.Build.fsproj", "{D6BDB5DB-93E4-457C-872E-AB9D8223EB08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

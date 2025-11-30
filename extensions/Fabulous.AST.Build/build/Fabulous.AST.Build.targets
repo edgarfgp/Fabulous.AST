@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- Default to Debug if not set -->
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
+    <!-- Preferred task assembly path when installed via NuGet package -->
+    <_FabulousAstJsonTaskAssemblyPack>$(MSBuildThisFileDirectory)..\tasks\net8.0\Fabulous.AST.Build.dll</_FabulousAstJsonTaskAssemblyPack>
+
+    <!-- Fallback path for in-repo/local development (built project output) -->
+    <_FabulousAstJsonTaskAssemblyBin>$(MSBuildThisFileDirectory)..\bin\$(Configuration)\net8.0\Fabulous.AST.Build.dll</_FabulousAstJsonTaskAssemblyBin>
+
+    <!-- Resolve the actual task assembly to load: prefer packaged path, fall back to local bin output -->
+    <_FabulousAstJsonTaskAssembly Condition="Exists('$(_FabulousAstJsonTaskAssemblyPack)')">$(_FabulousAstJsonTaskAssemblyPack)</_FabulousAstJsonTaskAssembly>
+    <_FabulousAstJsonTaskAssembly Condition="'$( _FabulousAstJsonTaskAssembly )' == '' AND Exists('$(_FabulousAstJsonTaskAssemblyBin)')">$(_FabulousAstJsonTaskAssemblyBin)</_FabulousAstJsonTaskAssembly>
+  </PropertyGroup>
+
+  <!-- Import the task assembly -->
+  <UsingTask
+    TaskName="Fabulous.AST.Build.FabulousAstJsonTask"
+    AssemblyFile="$(_FabulousAstJsonTaskAssembly)"
+    Condition="Exists('$(_FabulousAstJsonTaskAssembly)')" />
+
+  <!--
+    Main generation target
+    Runs before compilation to generate F# files from JSON
+  -->
+  <Target
+    Name="FabulousAstJsonGenerate"
+    BeforeTargets="BeforeCompile"
+    Condition="'$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != '' AND Exists('$(_FabulousAstJsonTaskAssembly)')"
+    Inputs="@(FabulousAstJson)"
+    Outputs="@(FabulousAstJson->'$(FabulousAstJsonOutputDir)%(Filename).Generated.fs')">
+
+    <!-- Ensure output directory exists -->
+    <MakeDir Directories="$(FabulousAstJsonOutputDir)" />
+
+    <!-- Run the generation task -->
+    <FabulousAstJsonTask
+      JsonFiles="@(FabulousAstJson)"
+      ProjectDirectory="$(MSBuildProjectDirectory)"
+      OutputDirectory="$(FabulousAstJsonOutputDir)">
+
+      <Output TaskParameter="GeneratedFiles" ItemName="FabulousAstJsonGeneratedFiles" />
+    </FabulousAstJsonTask>
+
+    <Message
+      Importance="high"
+      Text="Fabulous.AST.Json: Generated %(FabulousAstJsonGeneratedFiles.Identity)"
+      Condition="'@(FabulousAstJsonGeneratedFiles)' != ''" />
+
+  </Target>
+
+  <!-- Emit a helpful warning when generation is enabled but the task assembly isn't available -->
+  <Target
+    Name="FabulousAstJsonGenerate_Skipped_NoTask"
+    BeforeTargets="BeforeCompile"
+    Condition="'$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != '' AND !Exists('$(_FabulousAstJsonTaskAssembly)')">
+    <Message Importance="high"
+             Text="Fabulous.AST.Json: Skipping generation because task assembly not found at '$(_FabulousAstJsonTaskAssembly)'. Build the Fabulous.AST.Build project or use the NuGet package so 'tasks/net8.0/Fabulous.AST.Build.dll' exists." />
+  </Target>
+
+  <!-- Clean target to remove generated files -->
+  <Target Name="FabulousAstJsonClean" BeforeTargets="Clean">
+    <ItemGroup>
+      <_FabulousAstJsonFilesToDelete Include="$(FabulousAstJsonOutputDir)*.Generated.fs" />
+    </ItemGroup>
+    <Delete Files="@(_FabulousAstJsonFilesToDelete)" />
+  </Target>
+
+</Project>
