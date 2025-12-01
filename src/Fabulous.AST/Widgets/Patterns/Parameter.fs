@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -8,6 +9,9 @@ open Fantomas.FCS.Text
 module Parameter =
     let Value = Attributes.defineWidget "Value"
     let TypeVal = Attributes.defineWidget "Type"
+
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Parameter" (fun widget ->
@@ -18,7 +22,12 @@ module Parameter =
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
-            Pattern.Parameter(PatParameterNode(None, value, typeValue, Range.Zero)))
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
+
+            Pattern.Parameter(PatParameterNode(attributes, value, typeValue, Range.Zero)))
 
 [<AutoOpen>]
 module ParameterBuilders =
@@ -61,3 +70,17 @@ module ParameterBuilders =
         static member ParameterPat(name: WidgetBuilder<Constant>) = Ast.ParameterPat(Ast.ConstantPat(name))
 
         static member ParameterPat(name: string) = Ast.ParameterPat(Ast.Constant(name))
+
+type ParameterModifiers =
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<Pattern>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(
+            Parameter.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
+        )
+
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<Pattern>, attribute: WidgetBuilder<AttributeNode>) =
+        ParameterModifiers.attributes(this, [ attribute ])
