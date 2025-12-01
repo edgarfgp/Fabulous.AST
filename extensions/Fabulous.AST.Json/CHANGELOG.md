@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
-## [0.1.0] - 2023-04-03
+## [1.7.0] - 2025-12-02
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST.Json/compare/0.1.0...HEAD
-[0.1.0]: https://github.com/edgarfgp/Fabulous.AST.Json/releases/tag/0.1.0
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST.Json/compare/1.7.0...HEAD
+[1.7.0]: https://github.com/edgarfgp/Fabulous.AST.Json/releases/tag/1.7.0

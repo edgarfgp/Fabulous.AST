@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution items", "_Solutio
 		Directory.Packages.props = Directory.Packages.props
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
+		extensions\Fabulous.AST.Build\CHANGELOG.md = extensions\Fabulous.AST.Build\CHANGELOG.md
+		extensions\Fabulous.AST.Json\CHANGELOG.md = extensions\Fabulous.AST.Json\CHANGELOG.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{272B82D3-B8F4-4D4E-A62B-CFCA65F108F0}"

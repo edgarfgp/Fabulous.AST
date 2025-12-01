@@ -9,6 +9,8 @@ permissions: write-all
 env:
   CONFIG: Release
   SLN_FILE: Fabulous.AST.sln
+  JSON_FILE: extensions/Fabulous.AST.Json/Fabulous.AST.Json.fsproj
+  BUILD_FILE: extensions/Fabulous.AST.Build/Fabulous.AST.Build.fsproj
 
 jobs:
   release:
@@ -35,6 +37,20 @@ jobs:
           validation_level: warn
           version: '${{ env.RELEASE_VERSION }}'
           path: ./CHANGELOG.md
+      - name: Get Fabulous.AST.Json Changelog Entry
+        id: json_changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+            validation_level: warn
+            version: '${{ env.RELEASE_VERSION }}'
+            path: extensions/Fabulous.AST.Json/CHANGELOG.md
+      - name: Get Fabulous.AST.Build Changelog Entry
+        id: build_changelog
+        uses: mindsers/changelog-reader-action@v2
+        with:
+            validation_level: warn
+            version: '${{ env.RELEASE_VERSION }}'
+            path: extensions/Fabulous.AST.Build/CHANGELOG.md
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -48,6 +64,9 @@ jobs:
       - name: Pack
         run: |
           dotnet pack ${SLN_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="${{ steps.changelog_reader.outputs.changes }}" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${JSON_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="${{ steps.json_changelog.outputs.changes }}" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${BUILD_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="${{ steps.build_changelog.outputs.changes }}" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
