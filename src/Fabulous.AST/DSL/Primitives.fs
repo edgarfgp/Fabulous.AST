@@ -107,7 +107,7 @@ and [<Struct>] WidgetCollectionAttribute =
     { Key: WidgetCollectionAttributeKey
       Value: ArraySlice<Widget> }
 
-/// Represents a virtual UI element such as a Label, a Button, etc.
+/// Uniform representation of AST nodes.
 and [<Struct>] Widget =
     { Key: WidgetKey
       ScalarAttributes: ScalarAttribute array
