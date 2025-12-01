@@ -56,3 +56,53 @@ Oak() {
 
 // produces the following code:
 (*** include-output ***)
+
+(**
+## ParameterPat with Attributes
+You can add attributes to parameter patterns using the `.attribute()` or `.attributes()` modifiers.
+This is useful for adding attributes to constructor parameters or method parameters.
+*)
+
+Oak() {
+    AnonymousModule() {
+        // Class with attributed constructor parameter
+        TypeDefn("Class", Constructor(ParameterPat("c", Int()).attribute(Attribute("Obsolete")))) {
+            // Method with attributed parameter
+            Member("this.First", ParenPat(ParameterPat("a", String()).attribute(Attribute("Obsolete"))), UnitExpr())
+
+            // Method with attributed parameter using function type
+            Member(
+                "this.Second",
+                ParenPat(ParameterPat("a", Funs(String(), Int())).attribute(Attribute("A"))),
+                UnitExpr()
+            )
+        }
+
+        // Class with multiple attributed constructor parameters
+        TypeDefn(
+            "MyClass",
+            Constructor(
+                TuplePat(
+                    [ ParameterPat("a", Int()).attribute(Attribute("Obsolete"))
+                      ParameterPat("b", String()).attribute(Attribute("Required")) ]
+                )
+            )
+        ) {
+            Member("this.Value", ConstantExpr(Int(0)))
+        }
+
+        // Parameter with multiple attributes
+        TypeDefn(
+            "AnotherClass",
+            Constructor(ParameterPat("c", Int()).attributes([ Attribute("Obsolete"); Attribute("Required") ]))
+        ) {
+            Member("this.Value", ConstantExpr(Int(0)))
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
