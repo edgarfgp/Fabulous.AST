@@ -204,3 +204,34 @@ type Person(name: string, age: int) =
         and set index value = ordinals[index] <- value
 
 """
+
+    [<Fact>]
+    let ``Getter with return type does not require type annotation``() =
+        let computedType = LongIdent("Vector3")
+
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Object3D", UnitPat()) {
+                    Member("this.Position", Getter(UnitPat(), ConstantExpr("Unchecked.defaultof<_>"), computedType))
+
+                    Member(
+                        "this.Rotation",
+                        Getter(UnitPat(), ConstantExpr("Unchecked.defaultof<_>"), ?returnType = Some computedType)
+                    )
+
+                    Member("this.Scale", Getter(UnitPat(), ConstantExpr("Unchecked.defaultof<_>"), "Vector3"))
+                }
+            }
+        }
+        |> produces
+            """
+type Object3D() =
+    member this.Position
+        with get (): Vector3 = Unchecked.defaultof<_>
+
+    member this.Rotation
+        with get (): Vector3 = Unchecked.defaultof<_>
+
+    member this.Scale
+        with get (): Vector3 = Unchecked.defaultof<_>
+"""
