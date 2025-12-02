@@ -59,3 +59,54 @@ type Delegate1 = delegate of (int * int) -> int
 type Delegate2 = delegate of a: (int * int) -> int
 type Delegate3 = delegate of a: int * b: int -> int
 """
+
+    [<Fact>]
+    let ``Produces a delegate with attributes``() =
+        Oak() {
+            AnonymousModule() {
+                AnyModuleDecl((Delegate("Delegate", "int", "int").attributes([ Attribute("Obsolete") ])))
+            }
+        }
+        |> produces
+            """
+[<Obsolete>]
+type Delegate = delegate of int -> int
+"""
+
+    [<Fact>]
+    let ``Produces a delegate with attribute``() =
+        Oak() {
+            AnonymousModule() { AnyModuleDecl((Delegate("Delegate", "int", "int").attribute(Attribute("Obsolete")))) }
+        }
+        |> produces
+            """
+[<Obsolete>]
+type Delegate = delegate of int -> int
+"""
+
+    [<Fact>]
+    let ``Produces a delegate with access modifiers``() =
+        Oak() {
+            AnonymousModule() {
+                AnyModuleDecl(Delegate("Delegate1", "int", "int").toPublic())
+                AnyModuleDecl(Delegate("Delegate2", "int", "int").toPrivate())
+                AnyModuleDecl(Delegate("Delegate3", "int", "int").toInternal())
+            }
+        }
+        |> produces
+            """
+type public Delegate1 = delegate of int -> int
+type private Delegate2 = delegate of int -> int
+type internal Delegate3 = delegate of int -> int
+"""
+
+    [<Fact>]
+    let ``Produces a delegate with documentation``() =
+        Oak() {
+            AnonymousModule() { AnyModuleDecl(Delegate("Delegate", "int", "int").xmlDocs([ "This is a delegate" ])) }
+        }
+        |> produces
+            """
+/// This is a delegate
+type Delegate = delegate of int -> int
+"""
