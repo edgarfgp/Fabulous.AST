@@ -15,6 +15,15 @@ module Delegate =
 
     let Return = Attributes.defineWidget "ReturnType"
 
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
+    let XmlDocs = Attributes.defineWidget "XmlDocs"
+
+    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
+
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "TypeDefnDelegateNode" (fun widget ->
             let name =
@@ -33,17 +42,41 @@ module Delegate =
                         (t, SingleTextNode.star))
                 |> List.ofSeq
 
+            let xmlDocs =
+                Widgets.tryGetNodeFromWidget widget XmlDocs
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
+
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
+
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+                |> function
+                    | Public -> Some(SingleTextNode.``public``)
+                    | Private -> Some(SingleTextNode.``private``)
+                    | Internal -> Some(SingleTextNode.``internal``)
+                    | Unknown -> None
+
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget IsRecursive
+                |> ValueOption.map(fun _ -> SingleTextNode.``and``)
+                |> ValueOption.defaultValue SingleTextNode.``type``
+
             TypeDefnDelegateNode(
                 TypeNameNode(
-                    None,
-                    None,
-                    SingleTextNode.``type``,
-                    Some(SingleTextNode.Create(name)),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
+                    xmlDocs,
+                    attributes,
+                    leadingKeyword,
+                    accessControl,
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                     None,
                     [],
                     None,
-                    None,
+                    Some SingleTextNode.equals,
                     None,
                     Range.Zero
                 ),
@@ -181,6 +214,130 @@ module DelegateBuilders =
         /// </code>
         static member Delegate(name: string, parameter: string, returnType: string) =
             Ast.BaseDelegate(name, [ Ast.LongIdent parameter ], Ast.LongIdent returnType)
+
+type DelegateModifiers =
+    /// <summary>Sets the XmlDocs for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.xmlDocs(Summary("This is a delegate"))
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnDelegateNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(Delegate.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    /// <summary>Sets the XmlDocs for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.xmlDocs([ "This is a delegate" ])
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<TypeDefnDelegateNode>, xmlDocs: string seq) =
+        DelegateModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
+
+    /// <summary>Sets the attributes for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.attributes([ Attribute("Obsolete") ])
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline attributes
+        (this: WidgetBuilder<TypeDefnDelegateNode>, attributes: WidgetBuilder<AttributeNode> seq)
+        =
+        this.AddScalar(
+            Delegate.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
+        )
+
+    /// <summary>Sets the attributes for the current type definition.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attributes to set.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.attribute(Attribute("Obsolete"))
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<TypeDefnDelegateNode>, attribute: WidgetBuilder<AttributeNode>) =
+        DelegateModifiers.attributes(this, [ attribute ])
+
+    /// <summary>Sets the type definition to be private.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.toPrivate()
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<TypeDefnDelegateNode>) =
+        this.AddScalar(Delegate.Accessibility.WithValue(AccessControl.Private))
+
+    /// <summary>Sets the type definition to be public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.toPublic()
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<TypeDefnDelegateNode>) =
+        this.AddScalar(Delegate.Accessibility.WithValue(AccessControl.Public))
+
+    /// <summary>Sets the type definition to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.toInternal()
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<TypeDefnDelegateNode>) =
+        this.AddScalar(Delegate.Accessibility.WithValue(AccessControl.Internal))
+
+    /// <summary>Sets the type definition to be recursive.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Delegate("Delegate", "int", "int")
+    ///         |> _.toRecursive()
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<TypeDefnDelegateNode>) =
+        this.AddScalar(Delegate.IsRecursive.WithValue(true))
 
 type DelegateYieldExtensions =
     [<Extension>]
