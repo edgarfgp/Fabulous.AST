@@ -560,3 +560,303 @@ type TypeTriviaModifiers =
     [<Extension>]
     static member inline triviaAfter(this: WidgetBuilder<Type>, value: WidgetBuilder<TriviaContent>) =
         TypeTriviaModifiers.triviaAfter(this, [ value ])
+
+type MemberDefnTriviaModifiers =
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaContent> seq) =
+        let memberDefn = Gen.mkOak this
+        let node = MemberDefn.Node(memberDefn)
+
+        for content in value do
+            let content = Ast.TriviaNode(content) |> Gen.mkOak
+            node.AddBefore(content)
+
+        Ast.EscapeHatch(memberDefn)
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaNode> seq) =
+        let memberDefn = Gen.mkOak this
+        let node = MemberDefn.Node(memberDefn)
+
+        for content in value do
+            let content = content |> Gen.mkOak
+            node.AddBefore(content)
+
+        Ast.EscapeHatch(memberDefn)
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaContent>) =
+        MemberDefnTriviaModifiers.triviaBefore(this, [ value ])
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaNode>) =
+        MemberDefnTriviaModifiers.triviaBefore(this, [ value ])
+
+    /// <summary>Adds trivia after the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaAfter(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaContent> seq) =
+        let memberDefn = Gen.mkOak this
+        let node = MemberDefn.Node(memberDefn)
+
+        for content in value do
+            let content = Ast.TriviaNode(content) |> Gen.mkOak
+            node.AddAfter(content)
+
+        Ast.EscapeHatch(memberDefn)
+
+    /// <summary>Adds trivia after the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add after the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaAfter(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaContent>) =
+        MemberDefnTriviaModifiers.triviaAfter(this, [ value ])
+
+type TypeDefnTriviaModifiers =
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaContent> seq) =
+        let typeDefn = Gen.mkOak this
+        let node = TypeDefn.Node(typeDefn)
+
+        for content in value do
+            let content = Ast.TriviaNode(content) |> Gen.mkOak
+            node.AddBefore(content)
+
+        Ast.EscapeHatch(typeDefn)
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaNode> seq) =
+        let typeDefn = Gen.mkOak this
+        let node = TypeDefn.Node(typeDefn)
+
+        for content in value do
+            let content = content |> Gen.mkOak
+            node.AddBefore(content)
+
+        Ast.EscapeHatch(typeDefn)
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaContent>) =
+        TypeDefnTriviaModifiers.triviaBefore(this, [ value ])
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaNode>) =
+        TypeDefnTriviaModifiers.triviaBefore(this, [ value ])
+
+    /// <summary>Adds trivia after the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaAfter(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaContent> seq) =
+        let typeDefn = Gen.mkOak this
+        let node = TypeDefn.Node(typeDefn)
+
+        for content in value do
+            let content = Ast.TriviaNode(content) |> Gen.mkOak
+            node.AddAfter(content)
+
+        Ast.EscapeHatch(typeDefn)
+
+    /// <summary>Adds trivia after the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add after the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaAfter(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaContent>) =
+        TypeDefnTriviaModifiers.triviaAfter(this, [ value ])
+
+type ModuleDeclTriviaModifiers =
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaContent> seq) =
+        let moduleDecl = Gen.mkOak this
+        let node = ModuleDecl.Node(moduleDecl)
+
+        for content in value do
+            let content = Ast.TriviaNode(content) |> Gen.mkOak
+            node.AddBefore(content)
+
+        Ast.EscapeHatch(moduleDecl)
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaNode> seq) =
+        let moduleDecl = Gen.mkOak this
+        let node = ModuleDecl.Node(moduleDecl)
+
+        for content in value do
+            let content = content |> Gen.mkOak
+            node.AddBefore(content)
+
+        Ast.EscapeHatch(moduleDecl)
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaContent>) =
+        ModuleDeclTriviaModifiers.triviaBefore(this, [ value ])
+
+    /// <summary>Adds trivia before the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add before the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaBefore(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaNode>) =
+        ModuleDeclTriviaModifiers.triviaBefore(this, [ value ])
+
+    /// <summary>Adds trivia after the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaAfter(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaContent> seq) =
+        let moduleDecl = Gen.mkOak this
+        let node = ModuleDecl.Node(moduleDecl)
+
+        for content in value do
+            let content = Ast.TriviaNode(content) |> Gen.mkOak
+            node.AddAfter(content)
+
+        Ast.EscapeHatch(moduleDecl)
+
+    /// <summary>Adds trivia after the current node.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">Trivia content to add after the node.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Value("x", "1")
+    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline triviaAfter(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaContent>) =
+        ModuleDeclTriviaModifiers.triviaAfter(this, [ value ])
