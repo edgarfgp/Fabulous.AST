@@ -771,3 +771,189 @@ type MyType() =
         ) =
         ()
 """
+
+module CombinedTriviaTests =
+
+    [<Fact>]
+    let ``Value with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                Value("x", ConstantExpr(Int(42)))
+                    .triviaBefore(SingleLine("Comment before"))
+                    .triviaAfter(LineCommentAfterSourceCode("Comment after"))
+            }
+        }
+        |> produces
+            """
+// Comment before
+let x = 42 // Comment after
+"""
+
+    [<Fact>]
+    let ``Expr with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "result",
+                    ConstantExpr(Int(42))
+                        .triviaBefore(SingleLine("The answer"))
+                        .triviaAfter(LineCommentAfterSourceCode("to everything"))
+                )
+            }
+        }
+        |> produces
+            """
+let result =
+    // The answer
+    42 // to everything
+"""
+
+    [<Fact>]
+    let ``Pattern with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    ConstantPat(Int(42))
+                        .triviaBefore(SingleLine("Pattern comment before"))
+                        .triviaAfter(LineCommentAfterSourceCode("Pattern comment after")),
+                    ConstantExpr(String("value"))
+                )
+            }
+        }
+        |> produces
+            """
+// Pattern comment before
+let 42 // Pattern comment after
+    = "value"
+"""
+
+    [<Fact>]
+    let ``Type with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ConstantExpr(Int(42)),
+                    LongIdent("int")
+                        .triviaBefore(SingleLine("Type annotation"))
+                        .triviaAfter(LineCommentAfterSourceCode("end of type"))
+                )
+            }
+        }
+        |> produces
+            """
+let x:
+    // Type annotation
+    int // end of type
+    = 42
+"""
+
+    [<Fact>]
+    let ``TypeDefn with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                (Record("Person") { Field("Name", LongIdent("string")) })
+                    .triviaBefore(SingleLine("Person record definition"))
+                    .triviaAfter(LineCommentAfterSourceCode("End of Person"))
+            }
+        }
+        |> produces
+            """
+// Person record definition
+type Person = { Name: string } // End of Person
+"""
+
+    [<Fact>]
+    let ``Member with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("MyClass", UnitPat()) {
+                    Member(ConstantPat(Constant("this.Value")), ConstantExpr(Int(42)))
+                        .triviaBefore(SingleLine("Value property"))
+                        .triviaAfter(LineCommentAfterSourceCode("returns 42"))
+                }
+            }
+        }
+        |> produces
+            """
+type MyClass() =
+    // Value property
+    member this.Value = 42 // returns 42
+"""
+
+    [<Fact>]
+    let ``Module with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                (Module("Utils") { Value("helper", ConstantExpr(Int(1))) })
+                    .triviaBefore(SingleLine("Utility module"))
+                    .triviaAfter(LineCommentAfterSourceCode("End of Utils"))
+            }
+        }
+        |> produces
+            """
+// Utility module
+module Utils =
+    let helper = 1 // End of Utils
+"""
+
+    [<Fact>]
+    let ``Value with directive before and comment after``() =
+        Oak() {
+            AnonymousModule() {
+                Value("debugValue", ConstantExpr(Int(42)))
+                    .triviaBefore(Directive("#if DEBUG"))
+                    .triviaAfter(Directive("#endif"))
+            }
+        }
+        |> produces
+            """
+#if DEBUG
+let debugValue = 42
+#endif
+"""
+
+    [<Fact>]
+    let ``Value with multiple trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                Value("x", ConstantExpr(Int(42)))
+                    .triviaBefore([ SingleLine("First comment"); SingleLine("Second comment") ])
+                    .triviaAfter([ LineCommentAfterSourceCode("After comment"); Newline() ])
+            }
+        }
+        |> produces
+            """
+// First comment
+// Second comment
+let x = 42 // After comment
+
+"""
+
+    [<Fact>]
+    let ``Function parameter with trivia before and after``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("MyClass", UnitPat()) {
+                    Member(
+                        "this.Process",
+                        ParenPat(
+                            ParameterPat(ConstantPat(Constant("input")), String())
+                                .triviaBefore(SingleLine("Input parameter"))
+                                .triviaAfter(LineCommentAfterSourceCode("required"))
+                        ),
+                        ConstantExpr(ConstantUnit())
+                    )
+                }
+            }
+        }
+        |> produces
+            """
+type MyClass() =
+    member this.Process
+        (
+            // Input parameter
+            input: string // required
+        ) =
+        ()
+"""
