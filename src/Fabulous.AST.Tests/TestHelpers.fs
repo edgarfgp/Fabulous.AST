@@ -24,8 +24,8 @@ module TestHelpers =
 
     let produces (expected: string) (source: WidgetBuilder<#Oak>) =
         let res = Gen.mkOak source |> Gen.run
-        Assert.Equal(expected.Trim(), res.Trim())
+        Assert.Equal(expected.Trim().ReplaceLineEndings("\n"), res.Trim().ReplaceLineEndings("\n"))
 
     let producesWithConfig (config: Fantomas.Core.FormatConfig) (expected: string) (source: WidgetBuilder<#Oak>) =
         let res = Gen.mkOak source |> Gen.runWith config
-        Assert.Equal(expected.Trim(), res.Trim())
+        Assert.Equal(expected.Trim().ReplaceLineEndings("\n"), res.Trim().ReplaceLineEndings("\n"))

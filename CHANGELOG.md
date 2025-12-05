@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
-## [1.7.0] - 2025-12-02
+## [1.7.0] - 2025-12-03
 
 ### Added
-- No changes.
+- chore(docs): AI cooked the XML Docs by @shayanhabibi in https://github.com/edgarfgp/Fabulous.AST/pull/154
+- feat: add support for attributes in parameter patterns by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/156
+- feat: add modifiers for `Delegate` by @shayanhabibi in https://github.com/edgarfgp/Fabulous.AST/pull/160
+
+### Fixed
+* fix: Remove overload collision for Getter by @shayanhabibi in https://github.com/edgarfgp/Fabulous.AST/pull/158
 
 ## [1.6.0] - 2025-06-07
 
@@ -308,7 +313,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.6.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.7.0...HEAD
+[1.7.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.7.0
 [1.6.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.6.0
 [1.5.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.5.0
 [1.4.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.4.0
