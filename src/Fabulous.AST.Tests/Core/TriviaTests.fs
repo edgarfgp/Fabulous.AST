@@ -125,8 +125,10 @@ module PatternTriviaTests =
         }
         |> produces
             """
+let
 // Pattern comment
-let 42 = "value"
+42 =
+    "value"
 """
 
     [<Fact>]
@@ -141,7 +143,7 @@ let 42 = "value"
         }
         |> produces
             """
-(*Block pattern comment*) let 42 = "value"
+let (*Block pattern comment*) 42 = "value"
 """
 
     [<Fact>]
@@ -156,8 +158,8 @@ let 42 = "value"
         }
         |> produces
             """
-let 42 // After pattern
-    = "value"
+let 42 = // After pattern
+    "value"
 """
 
     [<Fact>]
@@ -172,9 +174,11 @@ let 42 // After pattern
         }
         |> produces
             """
+let
 // First
 // Second
-let 42 = "value"
+42 =
+    "value"
 """
 
     [<Fact>]
@@ -189,8 +193,10 @@ let 42 = "value"
         }
         |> produces
             """
+let
 // TriviaNode comment
-let 42 = "value"
+42 =
+    "value"
 """
 
     [<Fact>]
@@ -200,8 +206,10 @@ let 42 = "value"
         }
         |> produces
             """
+let
 // Named pattern
-let x = 42
+x =
+    42
 """
 
 module ExprTriviaTests =
@@ -277,7 +285,10 @@ let x =
         }
         |> produces
             """
-let x = 42
+let x =
+    42
+
+
 
 let y = 43
 """
@@ -311,9 +322,11 @@ module TypeTriviaTests =
         }
         |> produces
             """
-let x:
-    // Type comment
-    int = 42
+let x
+    :
+      // Type comment
+      int =
+    42
 """
 
     [<Fact>]
@@ -342,7 +355,8 @@ let x: (*Block type comment*) int = 42
         |> produces
             """
 let x: int // After type
-    = 42
+    =
+    42
 """
 
     [<Fact>]
@@ -358,10 +372,12 @@ let x: int // After type
         }
         |> produces
             """
-let x:
-    // Type info
-    // More info
-    int = 42
+let x
+    :
+      // Type info
+      // More info
+      int =
+    42
 """
 
     [<Fact>]
@@ -377,9 +393,11 @@ let x:
         }
         |> produces
             """
-let x:
-    // TriviaNode type comment
-    int = 42
+let x
+    :
+      // TriviaNode type comment
+      int =
+    42
 """
 
 module TypeDefnTriviaTests =
@@ -762,11 +780,13 @@ type MyType() =
     member this.MyMethod
         (
             #if !(ELECTRON_OS_LIN || ELECTRON_OS_WIN || ELECTRON_OS_MAC || ELECTRON_OS_MAS) || ELECTRON_OS_LIN || ELECTRON_OS_WIN
-            ?color: string,
+            ?color: string
             #endif
+            ,
             #if !(ELECTRON_OS_LIN || ELECTRON_OS_WIN || ELECTRON_OS_MAC || ELECTRON_OS_MAS) || ELECTRON_OS_LIN || ELECTRON_OS_WIN
-            ?symbolColor: string,
+            ?symbolColor: string
             #endif
+            ,
             ?height: int
         ) =
         ()
@@ -822,9 +842,10 @@ let result =
         }
         |> produces
             """
+let
 // Pattern comment before
-let 42 // Pattern comment after
-    = "value"
+42 = // Pattern comment after
+    "value"
 """
 
     [<Fact>]
@@ -842,10 +863,12 @@ let 42 // Pattern comment after
         }
         |> produces
             """
-let x:
-    // Type annotation
-    int // end of type
-    = 42
+let x
+    :
+      // Type annotation
+      int // end of type
+    =
+    42
 """
 
     [<Fact>]
@@ -952,9 +975,9 @@ let x = 42 // After comment
 type MyClass() =
     member this.Process
         (
-            // Input parameter
-            input: string // required
-        ) =
+        // Input parameter
+        input: string) // required
+        =
         ()
 """
 
@@ -972,8 +995,8 @@ module TriviaNodeAfterTests =
         }
         |> produces
             """
-let 42 // After pattern
-    = "value"
+let 42 = // After pattern
+    "value"
 """
 
     [<Fact>]
@@ -991,7 +1014,8 @@ let 42 // After pattern
             """
 let 42 // Comment
 
-    = "value"
+=
+    "value"
 """
 
     [<Fact>]
@@ -1019,7 +1043,8 @@ let x = 42 // After expr
         }
         |> produces
             """
-let x = 42 // Comment
+let x =
+    42 // Comment
 
 """
 
@@ -1037,7 +1062,8 @@ let x = 42 // Comment
         |> produces
             """
 let x: int // After type
-    = 42
+    =
+    42
 """
 
     [<Fact>]
@@ -1057,9 +1083,11 @@ let x: int // After type
         }
         |> produces
             """
-let x: int // Type comment
+let x
+    : int // Type comment
 
-    = 42
+      =
+    42
 """
 
     [<Fact>]
@@ -1189,7 +1217,8 @@ let x = 42 // After comment
         }
         |> produces
             """
+let
 // Pattern before
-let 42 // Pattern after
-    = "value"
+42 = // Pattern after
+    "value"
 """
