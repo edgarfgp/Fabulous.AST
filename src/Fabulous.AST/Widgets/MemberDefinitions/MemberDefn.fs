@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections
@@ -34,6 +35,7 @@ module MemberDefnBuilders =
 
         /// <summary>Create a MemberDefn widget which will accept any MemberDefn node.</summary>
         /// <param name="value">The MemberDefn node to add to the widget.</param>
+        [<Obsolete("Use yield! with a list of widgets instead. YieldFrom extensions are now available for all member definition types.")>]
         static member AnyMemberDefn(value: WidgetBuilder<#NodeBase>) =
             WidgetBuilder<MemberDefn>(MemberDefn.WidgetKey, MemberDefn.MemberDefn.WithValue(value.Compile()))
 
@@ -193,6 +195,230 @@ type MemberDefnCollectionBuilderExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         MemberDefnCollectionBuilderExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom(_: CollectionBuilder<'parent, MemberDefn>, x: FieldNode seq) : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.ValField(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<FieldNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom(_: CollectionBuilder<'parent, MemberDefn>, x: BindingNode seq) : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.Member(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<BindingNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: MemberDefnAbstractSlotNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.AbstractSlot(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnAbstractSlotNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: MemberDefnInterfaceNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.Interface(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: MemberDefnAutoPropertyNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.AutoProperty(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnAutoPropertyNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: MemberDefnPropertyGetSetNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.PropertyGetSet(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnPropertyGetSetNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: InheritConstructor seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.ImplicitInherit(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<InheritConstructor> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: MemberDefnInheritNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.Inherit(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnInheritNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: BindingListNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.LetBinding(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<BindingListNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: ExternBindingNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.ExternBinding(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<ExternBindingNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: ExprSingleNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.DoExpr(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<ExprSingleNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, MemberDefn>, x: MemberDefnExplicitCtorNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.ExplicitCtor(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<MemberDefnExplicitCtorNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MemberDefnCollectionBuilderExtensions.YieldFrom(this, nodes)
 
 type ModuleDeclAttributeCollectionBuilderExtensions =
 

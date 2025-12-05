@@ -179,7 +179,7 @@ and Address =
             Oak() {
                 AnonymousModule() {
                     genRecord("R")
-                    yield! identifiers |> List.map(fun ident -> AnyModuleDecl(genRecord(ident)))
+                    yield! identifiers |> List.map genRecord
                 }
             }
 
@@ -190,4 +190,14 @@ and Address =
 type R = { X: float }
 type G = { X: float }
 type B = { X: float }
+"""
+
+    [<Fact>]
+    let ``yield! multiple record fields``() =
+        Oak() {
+            AnonymousModule() { Record("Color") { yield! [ Field("R", Int()); Field("G", Int()); Field("B", Int()) ] } }
+        }
+        |> produces
+            """
+type Color = { R: int; G: int; B: int }
 """

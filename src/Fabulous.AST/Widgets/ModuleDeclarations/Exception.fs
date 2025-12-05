@@ -331,3 +331,24 @@ type ExceptionDefnNodeYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         ExceptionDefnNodeYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: ExceptionDefnNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let moduleDecl = ModuleDecl.Exception node
+                Ast.EscapeHatch(moduleDecl).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExceptionDefnNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        ExceptionDefnNodeYieldExtensions.YieldFrom(this, nodes)

@@ -250,3 +250,46 @@ type Colors =
     | Blue = 2
 
 """
+
+    [<Fact>]
+    let ``yield! multiple enums``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ Enum("Colors") {
+                          EnumCase("Red", Int(0))
+                          EnumCase("Green", Int(1))
+                      }
+                      Enum("Sizes") {
+                          EnumCase("Small", Int(0))
+                          EnumCase("Large", Int(1))
+                      } ]
+            }
+        }
+        |> produces
+            """
+type Colors =
+    | Red = 0
+    | Green = 1
+
+type Sizes =
+    | Small = 0
+    | Large = 1
+"""
+
+    [<Fact>]
+    let ``yield! multiple enum cases``() =
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    yield! [ EnumCase("Red", Int(0)); EnumCase("Green", Int(1)); EnumCase("Blue", Int(2)) ]
+                }
+            }
+        }
+        |> produces
+            """
+type Colors =
+    | Red = 0
+    | Green = 1
+    | Blue = 2
+"""

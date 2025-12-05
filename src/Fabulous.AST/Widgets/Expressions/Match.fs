@@ -60,3 +60,22 @@ type MatchYieldExtensions =
     static member inline Yield(_: CollectionBuilder<Expr, MatchClauseNode>, x: MatchClauseNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<Expr, MatchClauseNode>, x: MatchClauseNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(node).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<Expr, MatchClauseNode>, x: WidgetBuilder<MatchClauseNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        MatchYieldExtensions.YieldFrom(this, nodes)

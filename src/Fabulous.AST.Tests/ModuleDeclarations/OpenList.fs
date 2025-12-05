@@ -89,13 +89,7 @@ open type ABC.DFE
 
     [<Fact>]
     let ``yield! a list of opens``() =
-        Oak() {
-            AnonymousModule() {
-                yield!
-                    [ AnyModuleDecl(Open("Fabulous.AST"))
-                      AnyModuleDecl(OpenType([ "ABC"; "DFE" ])) ]
-            }
-        }
+        Oak() { AnonymousModule() { yield! [ Open("Fabulous.AST"); OpenType([ "ABC"; "DFE" ]) ] } }
         |> produces
             """
 open Fabulous.AST

@@ -58,17 +58,15 @@ exception Error9 of a: string * b: int
         Oak() {
             AnonymousModule() {
                 yield!
-                    [ AnyModuleDecl(ExceptionDefn("Error"))
+                    [ ExceptionDefn("Error")
 
-                      AnyModuleDecl(ExceptionDefn("Error1", Field("string")))
+                      ExceptionDefn("Error1", Field("string"))
 
-                      AnyModuleDecl(ExceptionDefn("Error2", [ Field(String()); Field(Int()) ]))
+                      ExceptionDefn("Error2", [ Field(String()); Field(Int()) ])
 
-                      AnyModuleDecl(
-                          ExceptionDefn("Error3", Field("msg", String())).members() {
-                              Member("Message", String("")).toStatic()
-                          }
-                      ) ]
+                      ExceptionDefn("Error3", Field("msg", String())).members() {
+                          Member("Message", String("")).toStatic()
+                      } ]
             }
         }
         |> produces

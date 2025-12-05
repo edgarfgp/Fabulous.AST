@@ -196,3 +196,25 @@ type AbbrevYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         AbbrevYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnAbbrevNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let typeDefn = TypeDefn.Abbrev(node)
+                let typeDefn = ModuleDecl.TypeDefn(typeDefn)
+                Ast.EscapeHatch(typeDefn).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnAbbrevNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        AbbrevYieldExtensions.YieldFrom(this, nodes)

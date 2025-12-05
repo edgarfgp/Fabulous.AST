@@ -12,59 +12,57 @@ module MemberDefn =
     let ``yield! multiple MemberDefns``() =
         Oak() {
             AnonymousModule() {
-                TypeDefn("IMyInterface") { AbstractMember("GetValue", [ Unit() ], String()) }
-                TypeDefn("IMyInterface1") { AbstractMember("GetValue", [ Unit() ], String()) }
-                TypeDefn("IMyInterface2") { AbstractMember("GetValue", [ Unit() ], String()) }
-
-                (Record("Colors") {
-                    Field("Green", LongIdent("string"))
-                    Field("Blue", LongIdent("'other"))
-                    Field("Yellow", LongIdent("int"))
-                })
-                    .typeParams(PostfixList([ "'other" ]))
-                    .members() {
-                    yield!
-                        [ AnyMemberDefn(
-                              InterfaceWith(LongIdent "IMyInterface") {
-                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
-                              }
-                          )
-
-                          AnyMemberDefn(
-                              InterfaceWith(LongIdent "IMyInterface1") {
-                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
-                              }
-                          ) ]
-
-                    InterfaceWith("IMyInterface2") { () }
-
+                TypeDefn("MyClass", UnitPat()) {
+                    Member("this.Name", ConstantExpr(String "John"))
+                    Member("this.Age", ConstantExpr(Int 30))
+                    Member("this.City", ConstantExpr(String "NYC"))
                 }
-
             }
         }
+        |> produces
+            """
+type MyClass() =
+    member this.Name = "John"
+    member this.Age = 30
+    member this.City = "NYC"
+"""
 
+    [<Fact>]
+    let ``yield! multiple abstract members``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("IMyInterface") {
+                    yield!
+                        [ AbstractMember("GetName", [ Unit() ], String())
+                          AbstractMember("GetAge", [ Unit() ], Int())
+                          AbstractMember("GetCity", [ Unit() ], String()) ]
+                }
+            }
+        }
         |> produces
             """
 type IMyInterface =
-    abstract GetValue: unit -> string
+    abstract GetName: unit -> string
+    abstract GetAge: unit -> int
+    abstract GetCity: unit -> string
+"""
 
-type IMyInterface1 =
-    abstract GetValue: unit -> string
-
-type IMyInterface2 =
-    abstract GetValue: unit -> string
-
-type Colors<'other> =
-    { Green: string
-      Blue: 'other
-      Yellow: int }
-
-    interface IMyInterface with
-        member x.GetValue() = x.MyField2
-
-    interface IMyInterface1 with
-        member x.GetValue() = x.MyField2
-
-    interface IMyInterface2
-
+    [<Fact>]
+    let ``yield! multiple auto properties``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("MyClass", UnitPat()) {
+                    yield!
+                        [ MemberVal("Name", ConstantExpr(String "John"), true)
+                          MemberVal("Age", ConstantExpr(Int 30), true)
+                          MemberVal("City", ConstantExpr(String "NYC"), true) ]
+                }
+            }
+        }
+        |> produces
+            """
+type MyClass() =
+    member val Name = "John" with get
+    member val Age = 30 with get
+    member val City = "NYC" with get
 """

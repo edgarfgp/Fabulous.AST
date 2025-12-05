@@ -420,3 +420,20 @@ let res3 = conn.Open ()
 let res4 = conn.Open()
 let res5 = conn.Open ()
 """
+
+    [<Fact>]
+    let ``yield! multiple values``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ Value(ConstantPat(Constant("x")), ConstantExpr(Int(1)))
+                      Value(ConstantPat(Constant("y")), ConstantExpr(Int(2)))
+                      Value(ConstantPat(Constant("z")), ConstantExpr(Int(3))) ]
+            }
+        }
+        |> produces
+            """
+let x = 1
+let y = 2
+let z = 3
+"""

@@ -314,6 +314,24 @@ type RecordModifiers =
     static member inline toRecursive(this: WidgetBuilder<TypeDefnRecordNode>) =
         this.AddScalar(Record.IsRecursive.WithValue(true))
 
+type RecordFieldYieldExtensions =
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: FieldNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(x).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: FieldNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(node).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
 type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnRecordNode) : CollectionContent =
@@ -328,3 +346,25 @@ type RecordYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         RecordYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnRecordNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let typeDefn = TypeDefn.Record(node)
+                let typeDefn = ModuleDecl.TypeDefn(typeDefn)
+                Ast.EscapeHatch(typeDefn).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnRecordNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        RecordYieldExtensions.YieldFrom(this, nodes)

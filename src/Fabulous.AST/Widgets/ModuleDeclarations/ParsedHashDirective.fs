@@ -186,3 +186,24 @@ type HashDirectiveNodeExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         HashDirectiveNodeExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: ParsedHashDirectiveNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ]))
+                Ast.EscapeHatch(moduleDecl).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ParsedHashDirectiveNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        HashDirectiveNodeExtensions.YieldFrom(this, nodes)

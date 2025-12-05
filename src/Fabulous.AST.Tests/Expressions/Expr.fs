@@ -15,7 +15,7 @@ module Expr =
             AnonymousModule() {
                 yield!
                     [ String "A"; String "B"; String "C"; Int(0); Bool(false); Float(9.0) ]
-                    |> List.map(fun x -> AnyModuleDecl(ConstantExpr(x)))
+                    |> List.map ConstantExpr
             }
         }
         |> produces

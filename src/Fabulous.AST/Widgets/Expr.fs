@@ -67,3 +67,18 @@ type ExprYieldExtensions =
         let moduleDecl = ModuleDecl.DeclExpr node
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<Expr> seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun widget ->
+                let node = Gen.mkOak widget
+                let moduleDecl = ModuleDecl.DeclExpr node
+                Ast.EscapeHatch(moduleDecl).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
