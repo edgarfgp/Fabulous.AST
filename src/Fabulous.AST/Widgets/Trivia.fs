@@ -294,13 +294,17 @@ type TriviaNodeModifiers =
         TriviaNodeModifiers.triviaAfter(this, [ value ])
 
 type PatternTriviaModifiers =
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">List of trivia content to add before the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaBefore([ SingleLine("First"); SingleLine("Second") ]),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -314,13 +318,17 @@ type PatternTriviaModifiers =
 
         Ast.EscapeHatch(pattern)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">List of trivia nodes to add before the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaBefore([ TriviaNode(SingleLine("Comment")) ]),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -334,39 +342,51 @@ type PatternTriviaModifiers =
 
         Ast.EscapeHatch(pattern)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">Trivia content to add before the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaBefore(SingleLine("Pattern comment")),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<Pattern>, value: WidgetBuilder<TriviaContent>) =
         PatternTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">Trivia node to add before the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaBefore(TriviaNode(SingleLine("Comment"))),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<Pattern>, value: WidgetBuilder<TriviaNode>) =
         PatternTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">List of trivia content to add after the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaAfter([ LineCommentAfterSourceCode("After pattern") ]),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -380,13 +400,17 @@ type PatternTriviaModifiers =
 
         Ast.EscapeHatch(pattern)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia nodes to add after the node.</param>
+    /// <summary>Adds trivia after the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">List of trivia nodes to add after the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ TriviaNode(SingleLine("Comment after")) ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaAfter([ TriviaNode(LineCommentAfterSourceCode("After")) ]),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -400,26 +424,34 @@ type PatternTriviaModifiers =
 
         Ast.EscapeHatch(pattern)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">Trivia content to add after the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaAfter(LineCommentAfterSourceCode("After pattern")),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaAfter(this: WidgetBuilder<Pattern>, value: WidgetBuilder<TriviaContent>) =
         PatternTriviaModifiers.triviaAfter(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia node to add after the node.</param>
+    /// <summary>Adds trivia after the pattern.</summary>
+    /// <param name="this">Current pattern widget.</param>
+    /// <param name="value">Trivia node to add after the pattern.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(TriviaNode(SingleLine("Comment after")))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ConstantPat(Int(42)).triviaAfter(TriviaNode(LineCommentAfterSourceCode("After"))),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -427,13 +459,17 @@ type PatternTriviaModifiers =
         PatternTriviaModifiers.triviaAfter(this, [ value ])
 
 type ExprTriviaModifiers =
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">List of trivia content to add before the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaBefore([ SingleLine("First"); SingleLine("Second") ])
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -447,13 +483,17 @@ type ExprTriviaModifiers =
 
         Ast.EscapeHatch(expr)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">List of trivia nodes to add before the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaBefore([ TriviaNode(SingleLine("Comment")) ])
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -467,39 +507,51 @@ type ExprTriviaModifiers =
 
         Ast.EscapeHatch(expr)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">Trivia content to add before the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaBefore(SingleLine("Expression comment"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<Expr>, value: WidgetBuilder<TriviaContent>) =
         ExprTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">Trivia node to add before the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaBefore(TriviaNode(SingleLine("Comment")))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<Expr>, value: WidgetBuilder<TriviaNode>) =
         ExprTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">List of trivia content to add after the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaAfter([ LineCommentAfterSourceCode("After expr") ])
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -513,13 +565,17 @@ type ExprTriviaModifiers =
 
         Ast.EscapeHatch(expr)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia nodes to add after the node.</param>
+    /// <summary>Adds trivia after the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">List of trivia nodes to add after the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ TriviaNode(SingleLine("Comment after")) ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaAfter([ TriviaNode(LineCommentAfterSourceCode("After")) ])
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -533,26 +589,34 @@ type ExprTriviaModifiers =
 
         Ast.EscapeHatch(expr)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">Trivia content to add after the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaAfter(LineCommentAfterSourceCode("After expression"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaAfter(this: WidgetBuilder<Expr>, value: WidgetBuilder<TriviaContent>) =
         ExprTriviaModifiers.triviaAfter(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia node to add after the node.</param>
+    /// <summary>Adds trivia after the expression.</summary>
+    /// <param name="this">Current expression widget.</param>
+    /// <param name="value">Trivia node to add after the expression.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(TriviaNode(SingleLine("Comment after")))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             "x",
+    ///             ConstantExpr(Int(42)).triviaAfter(TriviaNode(LineCommentAfterSourceCode("After")))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -560,13 +624,17 @@ type ExprTriviaModifiers =
         ExprTriviaModifiers.triviaAfter(this, [ value ])
 
 type TypeTriviaModifiers =
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">List of trivia content to add before the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaBefore([ SingleLine("First"); SingleLine("Second") ])),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -580,13 +648,17 @@ type TypeTriviaModifiers =
 
         Ast.EscapeHatch(typ)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">List of trivia nodes to add before the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaBefore([ TriviaNode(SingleLine("Comment")) ])),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -600,39 +672,51 @@ type TypeTriviaModifiers =
 
         Ast.EscapeHatch(typ)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">Trivia content to add before the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaBefore(SingleLine("Type comment"))),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<Type>, value: WidgetBuilder<TriviaContent>) =
         TypeTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">Trivia node to add before the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaBefore(TriviaNode(SingleLine("Comment")))),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<Type>, value: WidgetBuilder<TriviaNode>) =
         TypeTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">List of trivia content to add after the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaAfter([ LineCommentAfterSourceCode("After type") ])),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -646,13 +730,17 @@ type TypeTriviaModifiers =
 
         Ast.EscapeHatch(typ)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia nodes to add after the node.</param>
+    /// <summary>Adds trivia after the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">List of trivia nodes to add after the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ TriviaNode(SingleLine("Comment after")) ])
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaAfter([ TriviaNode(LineCommentAfterSourceCode("After")) ])),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -666,26 +754,34 @@ type TypeTriviaModifiers =
 
         Ast.EscapeHatch(typ)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">Trivia content to add after the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaAfter(LineCommentAfterSourceCode("After type"))),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaAfter(this: WidgetBuilder<Type>, value: WidgetBuilder<TriviaContent>) =
         TypeTriviaModifiers.triviaAfter(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia node to add after the node.</param>
+    /// <summary>Adds trivia after the type.</summary>
+    /// <param name="this">Current type widget.</param>
+    /// <param name="value">Trivia node to add after the type.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(TriviaNode(SingleLine("Comment after")))
+    ///     AnonymousModule() {
+    ///         Value(
+    ///             ParameterPat("x", String().triviaAfter(TriviaNode(LineCommentAfterSourceCode("After")))),
+    ///             ConstantExpr(String("value"))
+    ///         )
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -693,13 +789,17 @@ type TypeTriviaModifiers =
         TypeTriviaModifiers.triviaAfter(this, [ value ])
 
 type MemberDefnTriviaModifiers =
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">List of trivia content to add before the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaBefore([ SingleLine("First"); SingleLine("Second") ])
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -713,13 +813,17 @@ type MemberDefnTriviaModifiers =
 
         Ast.EscapeHatch(memberDefn)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">List of trivia nodes to add before the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaBefore([ TriviaNode(SingleLine("Comment")) ])
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -733,39 +837,51 @@ type MemberDefnTriviaModifiers =
 
         Ast.EscapeHatch(memberDefn)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">Trivia content to add before the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaBefore(SingleLine("Member comment"))
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaContent>) =
         MemberDefnTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">Trivia node to add before the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaBefore(TriviaNode(SingleLine("Comment")))
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaNode>) =
         MemberDefnTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">List of trivia content to add after the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaAfter([ LineCommentAfterSourceCode("After member") ])
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -779,13 +895,17 @@ type MemberDefnTriviaModifiers =
 
         Ast.EscapeHatch(memberDefn)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia nodes to add after the node.</param>
+    /// <summary>Adds trivia after the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">List of trivia nodes to add after the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ TriviaNode(SingleLine("Comment after")) ])
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaAfter([ TriviaNode(LineCommentAfterSourceCode("After")) ])
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -799,26 +919,34 @@ type MemberDefnTriviaModifiers =
 
         Ast.EscapeHatch(memberDefn)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">Trivia content to add after the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaAfter(LineCommentAfterSourceCode("After member"))
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaAfter(this: WidgetBuilder<MemberDefn>, value: WidgetBuilder<TriviaContent>) =
         MemberDefnTriviaModifiers.triviaAfter(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia node to add after the node.</param>
+    /// <summary>Adds trivia after the member definition.</summary>
+    /// <param name="this">Current member definition widget.</param>
+    /// <param name="value">Trivia node to add after the member.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(TriviaNode(SingleLine("Comment after")))
+    ///     AnonymousModule() {
+    ///         TypeDefn("MyClass", UnitPat()) {
+    ///             Member("this.Value", ConstantExpr(Int(42)))
+    ///                 .triviaAfter(TriviaNode(LineCommentAfterSourceCode("After")))
+    ///         }
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -826,13 +954,15 @@ type MemberDefnTriviaModifiers =
         MemberDefnTriviaModifiers.triviaAfter(this, [ value ])
 
 type TypeDefnTriviaModifiers =
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">List of trivia content to add before the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaBefore([ SingleLine("First"); SingleLine("Second") ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -846,13 +976,15 @@ type TypeDefnTriviaModifiers =
 
         Ast.EscapeHatch(typeDefn)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">List of trivia nodes to add before the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaBefore([ TriviaNode(SingleLine("Comment")) ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -866,39 +998,45 @@ type TypeDefnTriviaModifiers =
 
         Ast.EscapeHatch(typeDefn)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">Trivia content to add before the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaBefore(SingleLine("Type definition comment"))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaContent>) =
         TypeDefnTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">Trivia node to add before the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaBefore(TriviaNode(SingleLine("Comment")))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaNode>) =
         TypeDefnTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">List of trivia content to add after the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaAfter([ LineCommentAfterSourceCode("After type") ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -912,13 +1050,15 @@ type TypeDefnTriviaModifiers =
 
         Ast.EscapeHatch(typeDefn)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia nodes to add after the node.</param>
+    /// <summary>Adds trivia after the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">List of trivia nodes to add after the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ TriviaNode(SingleLine("Comment after")) ])
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaAfter([ TriviaNode(LineCommentAfterSourceCode("After")) ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -932,26 +1072,30 @@ type TypeDefnTriviaModifiers =
 
         Ast.EscapeHatch(typeDefn)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">Trivia content to add after the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaAfter(LineCommentAfterSourceCode("After type"))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaAfter(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TriviaContent>) =
         TypeDefnTriviaModifiers.triviaAfter(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia node to add after the node.</param>
+    /// <summary>Adds trivia after the type definition.</summary>
+    /// <param name="this">Current type definition widget.</param>
+    /// <param name="value">Trivia node to add after the type definition.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(TriviaNode(SingleLine("Comment after")))
+    ///     AnonymousModule() {
+    ///         Record("Person") { Field("Name", String()) }
+    ///             |> _.triviaAfter(TriviaNode(LineCommentAfterSourceCode("After")))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -959,13 +1103,15 @@ type TypeDefnTriviaModifiers =
         TypeDefnTriviaModifiers.triviaAfter(this, [ value ])
 
 type ModuleDeclTriviaModifiers =
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">List of trivia content to add before the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ SingleLine("Comment before"); BlockComment("Block comment") ])
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaBefore([ SingleLine("First"); SingleLine("Second") ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -979,13 +1125,15 @@ type ModuleDeclTriviaModifiers =
 
         Ast.EscapeHatch(moduleDecl)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">List of trivia nodes to add before the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore([ TriviaNode(SingleLine("Comment before")); TriviaNode(BlockComment("Block comment")) ])
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaBefore([ TriviaNode(SingleLine("Comment")) ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -999,39 +1147,45 @@ type ModuleDeclTriviaModifiers =
 
         Ast.EscapeHatch(moduleDecl)
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">Trivia content to add before the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(TriviaNode(SingleLine("Comment before")))
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaBefore(SingleLine("Module declaration comment"))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaContent>) =
         ModuleDeclTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia before the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add before the node.</param>
+    /// <summary>Adds trivia before the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">Trivia node to add before the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaBefore(SingleLine("Comment before"))
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaBefore(TriviaNode(SingleLine("Comment")))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaBefore(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaNode>) =
         ModuleDeclTriviaModifiers.triviaBefore(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">List of trivia content to add after the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ SingleLine("Comment after"); Newline() ])
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaAfter([ LineCommentAfterSourceCode("After decl") ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -1045,13 +1199,15 @@ type ModuleDeclTriviaModifiers =
 
         Ast.EscapeHatch(moduleDecl)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">List of trivia nodes to add after the node.</param>
+    /// <summary>Adds trivia after the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">List of trivia nodes to add after the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter([ TriviaNode(SingleLine("Comment after")) ])
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaAfter([ TriviaNode(LineCommentAfterSourceCode("After")) ])
+    ///     }
     /// }
     /// </code>
     [<Extension>]
@@ -1065,26 +1221,30 @@ type ModuleDeclTriviaModifiers =
 
         Ast.EscapeHatch(moduleDecl)
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia content to add after the node.</param>
+    /// <summary>Adds trivia after the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">Trivia content to add after the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(SingleLine("Comment after"))
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaAfter(LineCommentAfterSourceCode("After declaration"))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
     static member inline triviaAfter(this: WidgetBuilder<ModuleDecl>, value: WidgetBuilder<TriviaContent>) =
         ModuleDeclTriviaModifiers.triviaAfter(this, [ value ])
 
-    /// <summary>Adds trivia after the current node.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">Trivia node to add after the node.</param>
+    /// <summary>Adds trivia after the module declaration.</summary>
+    /// <param name="this">Current module declaration widget.</param>
+    /// <param name="value">Trivia node to add after the declaration.</param>
     /// <code lang="fsharp">
     /// Oak() {
-    ///     Value("x", "1")
-    ///     |> _.triviaAfter(TriviaNode(SingleLine("Comment after")))
+    ///     AnonymousModule() {
+    ///         Value("x", ConstantExpr(Int(42)))
+    ///             |> _.triviaAfter(TriviaNode(LineCommentAfterSourceCode("After")))
+    ///     }
     /// }
     /// </code>
     [<Extension>]
