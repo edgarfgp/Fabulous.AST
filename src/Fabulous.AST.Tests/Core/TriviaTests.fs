@@ -957,3 +957,239 @@ type MyClass() =
         ) =
         ()
 """
+
+module TriviaNodeAfterTests =
+
+    [<Fact>]
+    let ``Pattern triviaAfter with single TriviaNode``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    ConstantPat(Int(42)).triviaAfter(TriviaNode(LineCommentAfterSourceCode("After pattern"))),
+                    ConstantExpr(String("value"))
+                )
+            }
+        }
+        |> produces
+            """
+let 42 // After pattern
+    = "value"
+"""
+
+    [<Fact>]
+    let ``Pattern triviaAfter with TriviaNode seq``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    ConstantPat(Int(42))
+                        .triviaAfter([ TriviaNode(LineCommentAfterSourceCode("Comment")); TriviaNode(Newline()) ]),
+                    ConstantExpr(String("value"))
+                )
+            }
+        }
+        |> produces
+            """
+let 42 // Comment
+
+    = "value"
+"""
+
+    [<Fact>]
+    let ``Expr triviaAfter with single TriviaNode``() =
+        Oak() {
+            AnonymousModule() {
+                Value("x", ConstantExpr(Int(42)).triviaAfter(TriviaNode(LineCommentAfterSourceCode("After expr"))))
+            }
+        }
+        |> produces
+            """
+let x = 42 // After expr
+"""
+
+    [<Fact>]
+    let ``Expr triviaAfter with TriviaNode seq``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ConstantExpr(Int(42))
+                        .triviaAfter([ TriviaNode(LineCommentAfterSourceCode("Comment")); TriviaNode(Newline()) ])
+                )
+            }
+        }
+        |> produces
+            """
+let x = 42 // Comment
+
+"""
+
+    [<Fact>]
+    let ``Type triviaAfter with single TriviaNode``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ConstantExpr(Int(42)),
+                    LongIdent("int").triviaAfter(TriviaNode(LineCommentAfterSourceCode("After type")))
+                )
+            }
+        }
+        |> produces
+            """
+let x: int // After type
+    = 42
+"""
+
+    [<Fact>]
+    let ``Type triviaAfter with TriviaNode seq``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ConstantExpr(Int(42)),
+                    LongIdent("int")
+                        .triviaAfter(
+                            [ TriviaNode(LineCommentAfterSourceCode("Type comment"))
+                              TriviaNode(Newline()) ]
+                        )
+                )
+            }
+        }
+        |> produces
+            """
+let x: int // Type comment
+
+    = 42
+"""
+
+    [<Fact>]
+    let ``MemberDefn triviaAfter with single TriviaNode``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("MyClass", UnitPat()) {
+                    Member(ConstantPat(Constant("this.Value")), ConstantExpr(Int(42)))
+                        .triviaAfter(TriviaNode(LineCommentAfterSourceCode("After member")))
+                }
+            }
+        }
+        |> produces
+            """
+type MyClass() =
+    member this.Value = 42 // After member
+"""
+
+    [<Fact>]
+    let ``MemberDefn triviaAfter with TriviaNode seq``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("MyClass", UnitPat()) {
+                    Member(ConstantPat(Constant("this.Value")), ConstantExpr(Int(42)))
+                        .triviaAfter(
+                            [ TriviaNode(LineCommentAfterSourceCode("Member comment"))
+                              TriviaNode(Newline()) ]
+                        )
+                }
+            }
+        }
+        |> produces
+            """
+type MyClass() =
+    member this.Value = 42 // Member comment
+
+"""
+
+    [<Fact>]
+    let ``TypeDefn triviaAfter with single TriviaNode``() =
+        Oak() {
+            AnonymousModule() {
+                (Record("Person") { Field("Name", LongIdent("string")) })
+                    .triviaAfter(TriviaNode(LineCommentAfterSourceCode("End of Person")))
+            }
+        }
+        |> produces
+            """
+type Person = { Name: string } // End of Person
+"""
+
+    [<Fact>]
+    let ``TypeDefn triviaAfter with TriviaNode seq``() =
+        Oak() {
+            AnonymousModule() {
+                (Record("Person") { Field("Name", LongIdent("string")) })
+                    .triviaAfter(
+                        [ TriviaNode(LineCommentAfterSourceCode("Person record"))
+                          TriviaNode(Newline()) ]
+                    )
+            }
+        }
+        |> produces
+            """
+type Person = { Name: string } // Person record
+
+"""
+
+    [<Fact>]
+    let ``ModuleDecl triviaAfter with single TriviaNode``() =
+        Oak() {
+            AnonymousModule() {
+                (Module("Inner") { Value("x", ConstantExpr(Int(42))) })
+                    .triviaAfter(TriviaNode(LineCommentAfterSourceCode("End of Inner")))
+            }
+        }
+        |> produces
+            """
+module Inner =
+    let x = 42 // End of Inner
+"""
+
+    [<Fact>]
+    let ``ModuleDecl triviaAfter with TriviaNode seq``() =
+        Oak() {
+            AnonymousModule() {
+                (Module("Inner") { Value("x", ConstantExpr(Int(42))) })
+                    .triviaAfter(
+                        [ TriviaNode(LineCommentAfterSourceCode("Module comment"))
+                          TriviaNode(Newline()) ]
+                    )
+            }
+        }
+        |> produces
+            """
+module Inner =
+    let x = 42 // Module comment
+
+"""
+
+    [<Fact>]
+    let ``Combined triviaBefore TriviaNode and triviaAfter TriviaNode``() =
+        Oak() {
+            AnonymousModule() {
+                Value("x", ConstantExpr(Int(42)))
+                    .triviaBefore(TriviaNode(SingleLine("Before comment")))
+                    .triviaAfter(TriviaNode(LineCommentAfterSourceCode("After comment")))
+            }
+        }
+        |> produces
+            """
+// Before comment
+let x = 42 // After comment
+"""
+
+    [<Fact>]
+    let ``Pattern combined TriviaNode before and after``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    ConstantPat(Int(42))
+                        .triviaBefore(TriviaNode(SingleLine("Pattern before")))
+                        .triviaAfter(TriviaNode(LineCommentAfterSourceCode("Pattern after"))),
+                    ConstantExpr(String("value"))
+                )
+            }
+        }
+        |> produces
+            """
+// Pattern before
+let 42 // Pattern after
+    = "value"
+"""
