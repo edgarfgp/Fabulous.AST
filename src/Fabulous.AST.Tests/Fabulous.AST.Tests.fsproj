@@ -4,7 +4,6 @@
         <TargetFramework>net8.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>
-        <GenerateProgramFile>false</GenerateProgramFile>
         <WarnOn>$(WarnOn);3390</WarnOn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>$(NoWarn);FS3186;NETSDK1206;NU1507;NU1903</NoWarn>
@@ -132,17 +131,15 @@
         <Compile Include="Types\Types.fs" />
         <Compile Include="Types\LongIdent.fs" />
         <Compile Include="Types\Measures.fs" />
-        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="FsCheck.Xunit" />
         <PackageReference Include="FsUnit.xUnit" />
         <PackageReference Include="Verify.XunitV3" />
-        <PackageReference Include="xunit.v3.extensibility.core" />
+        <PackageReference Include="xunit.v3" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Update="FSharp.Core" />
-        <PackageReference Include="xunit.runner.console" />
         <PackageReference Include="xunit.runner.visualstudio">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
