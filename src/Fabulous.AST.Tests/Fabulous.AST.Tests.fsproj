@@ -132,7 +132,6 @@
         <Compile Include="Types\LongIdent.fs" />
         <Compile Include="Types\Measures.fs" />
         <Compile Include="Extensions\Json.fs" />
-        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
