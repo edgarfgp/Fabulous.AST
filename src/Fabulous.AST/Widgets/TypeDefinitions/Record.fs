@@ -332,6 +332,13 @@ type RecordFieldYieldExtensions =
 
         { Widgets = widgets }
 
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<TypeDefnRecordNode, FieldNode>, x: WidgetBuilder<FieldNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        RecordFieldYieldExtensions.YieldFrom(this, nodes)
+
 type RecordYieldExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnRecordNode) : CollectionContent =
