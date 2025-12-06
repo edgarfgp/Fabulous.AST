@@ -96,3 +96,13 @@ val public z: string
             """
 val x<'a, 'b> : string
 """
+
+    [<Fact>]
+    let ``yield! multiple vals``() =
+        Oak() { AnonymousModule() { yield! [ Val("x", String()); Val("y", Int()); Val("z", Boolean()) ] } }
+        |> produces
+            """
+val x: string
+val y: int
+val z: bool
+"""

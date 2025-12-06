@@ -251,3 +251,22 @@ type ValueYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         ValueYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom(_: CollectionBuilder<'parent, ModuleDecl>, x: BindingNode seq) : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let moduleDecl = ModuleDecl.TopLevelBinding node
+                Ast.EscapeHatch(moduleDecl).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        ValueYieldExtensions.YieldFrom(this, nodes)

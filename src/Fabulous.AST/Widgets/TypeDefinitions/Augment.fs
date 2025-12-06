@@ -285,3 +285,25 @@ type AugmentYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         AugmentYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnAugmentationNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let typeDefn = TypeDefn.Augmentation(node)
+                let typeDefn = ModuleDecl.TypeDefn(typeDefn)
+                Ast.EscapeHatch(typeDefn).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnAugmentationNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        AugmentYieldExtensions.YieldFrom(this, nodes)

@@ -116,3 +116,24 @@ type ModuleDeclAttributesYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         ModuleDeclAttributesYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: ModuleDeclAttributesNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let moduleDecl = ModuleDecl.Attributes node
+                Ast.EscapeHatch(moduleDecl).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ModuleDeclAttributesNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        ModuleDeclAttributesYieldExtensions.YieldFrom(this, nodes)
