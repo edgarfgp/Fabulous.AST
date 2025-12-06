@@ -281,3 +281,22 @@ type UnionCaseYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         UnionCaseYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: UnionCaseNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(node).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        UnionCaseYieldExtensions.YieldFrom(this, nodes)

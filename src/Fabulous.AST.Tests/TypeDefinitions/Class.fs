@@ -236,6 +236,28 @@ type Person() =
 
 """
 
+    [<Fact>]
+    let ``yield! multiple classes``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ TypeDefn("Person", UnitPat()) {
+                          Member(ConstantPat(Constant("this.Name")), ConstantExpr(String ""))
+                      }
+                      TypeDefn("Animal", UnitPat()) {
+                          Member(ConstantPat(Constant("this.Name")), ConstantExpr(String ""))
+                      } ]
+            }
+        }
+        |> produces
+            """
+type Person() =
+    member this.Name = ""
+
+type Animal() =
+    member this.Name = ""
+"""
+
 module GenericClass =
     [<Fact>]
     let ``Produces a generic class``() =

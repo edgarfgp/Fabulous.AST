@@ -203,3 +203,22 @@ type EnumCaseNodeYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         EnumCaseNodeYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: EnumCaseNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(node).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        EnumCaseNodeYieldExtensions.YieldFrom(this, nodes)

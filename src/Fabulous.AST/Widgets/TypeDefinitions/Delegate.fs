@@ -353,3 +353,25 @@ type DelegateYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         DelegateYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnDelegateNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node ->
+                let typeDefn = TypeDefn.Delegate(node)
+                let typeDefn = ModuleDecl.TypeDefn(typeDefn)
+                Ast.EscapeHatch(typeDefn).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnDelegateNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        DelegateYieldExtensions.YieldFrom(this, nodes)

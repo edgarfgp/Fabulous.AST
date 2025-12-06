@@ -431,3 +431,20 @@ let cylinderVolume radius =
     let pi = 3.14159
     length * pi * radius * radius
 """
+
+    [<Fact>]
+    let ``yield! multiple functions``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ Function("add", [ "a"; "b" ], "a + b")
+                      Function("subtract", [ "a"; "b" ], "a - b")
+                      Function("multiply", [ "a"; "b" ], "a * b") ]
+            }
+        }
+        |> produces
+            """
+let add a b = a + b
+let subtract a b = a - b
+let multiply a b = a * b
+"""

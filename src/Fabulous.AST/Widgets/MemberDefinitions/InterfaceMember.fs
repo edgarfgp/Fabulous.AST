@@ -86,3 +86,22 @@ type InterfaceMemberYieldExtensions =
         : CollectionContent =
         let node = Gen.mkOak x
         InterfaceMemberYieldExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, xs: BindingNode seq)
+        : CollectionContent =
+        let widgets =
+            xs
+            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.Member(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, xs: WidgetBuilder<BindingNode> seq)
+        : CollectionContent =
+        let nodes = xs |> Seq.map Gen.mkOak
+        InterfaceMemberYieldExtensions.YieldFrom(this, nodes)

@@ -162,3 +162,35 @@ type Person() =
 
     interface IFoo4
 """
+
+    [<Fact>]
+    let ``InterfaceWith supports yield! multiple bindings``() =
+        Oak() {
+            AnonymousModule() {
+                // Define an interface with two abstract members
+                TypeDefn("IMyInterface") {
+                    AbstractMember("GetValue", [ Unit() ], String())
+                    AbstractMember("GetOther", [ Unit() ], Int())
+                }
+
+                // Implement the interface on a class using yield! inside InterfaceWith { ... }
+                TypeDefn("Person", UnitPat()) {
+                    InterfaceWith(LongIdent "IMyInterface") {
+                        yield!
+                            [ Member("x.GetValue", UnitPat(), ConstantExpr(String("x")))
+                              Member("x.GetOther", UnitPat(), ConstantExpr(Int(42))) ]
+                    }
+                }
+            }
+        }
+        |> produces
+            """
+type IMyInterface =
+    abstract GetValue: unit -> string
+    abstract GetOther: unit -> int
+
+type Person() =
+    interface IMyInterface with
+        member x.GetValue() = "x"
+        member x.GetOther() = 42
+"""
