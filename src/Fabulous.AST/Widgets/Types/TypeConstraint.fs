@@ -154,3 +154,9 @@ module TypeConstraintBuilders =
 
         static member Supports(tp: string, memberDefn: WidgetBuilder<MemberDefnSigMemberNode>) =
             Ast.BaseSupports(Ast.LongIdent(tp), MemberDefn.SigMember(Gen.mkOak memberDefn))
+
+        static member Supports(tp: WidgetBuilder<Type>, memberDefn: WidgetBuilder<MemberDefn>) =
+            Ast.BaseSupports(tp, Gen.mkOak memberDefn)
+
+        static member Supports(tp: string, memberDefn: WidgetBuilder<MemberDefn>) =
+            Ast.BaseSupports(Ast.LongIdent(tp), Gen.mkOak memberDefn)

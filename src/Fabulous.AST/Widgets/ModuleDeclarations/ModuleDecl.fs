@@ -1,85 +1,161 @@
 namespace Fabulous.AST
 
-open System
+open System.Runtime.CompilerServices
 open Fabulous.AST
+open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 
+/// Shared attribute definitions used across module declaration widget types
 module ModuleDecl =
-    let ModuleDecl = Attributes.defineScalar<ModuleDecl> "ModuleDecl"
+    let XmlDocs = Attributes.defineWidget "ModuleDeclXmlDocs"
 
-    let WidgetKey =
-        Widgets.register "ModuleDecl" (fun widget ->
-            let modeDecl = Widgets.getScalarValue widget ModuleDecl
-            modeDecl)
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode seq> "ModuleDeclMultipleAttributes"
 
-[<AutoOpen>]
-module ModuleDeclBuilders =
-    type Ast with
+    let Accessibility = Attributes.defineScalar<AccessControl> "ModuleDeclAccessibility"
+    let TypeParams = Attributes.defineWidget "ModuleDeclTypeParams"
+    let IsMutable = Attributes.defineScalar<bool> "ModuleDeclIsMutable"
+    let IsInlined = Attributes.defineScalar<bool> "ModuleDeclIsInlined"
+    let IsRecursive = Attributes.defineScalar<bool> "ModuleDeclIsRecursive"
 
-        static member private BaseAny(value: ModuleDecl) =
-            WidgetBuilder<ModuleDecl>(ModuleDecl.WidgetKey, ModuleDecl.ModuleDecl.WithValue(value))
+type ModuleDeclModifiers =
+    /// <summary>Sets the XmlDocs for the current module declaration widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<ModuleDecl>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(ModuleDecl.XmlDocs.WithValue(xmlDocs.Compile()))
 
-        /// <summary>Allows you to create a module declaration with the specified TypeDefn.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefn>) =
-            let value = ModuleDecl.TypeDefn(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the XmlDocs for the current module declaration widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="comments">The comments to set.</param>
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<ModuleDecl>, comments: string seq) =
+        ModuleDeclModifiers.xmlDocs(this, Ast.XmlDocs(comments))
 
-        /// <summary>Allows you to create a module declaration with the specified DeclExpr.</summary>
-        [<Obsolete("Use yield! with a list of Expr widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<Expr>) =
-            let value = ModuleDecl.DeclExpr(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the XmlDocs for the current module declaration widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="comment">The comment to set.</param>
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<ModuleDecl>, comment: string) =
+        ModuleDeclModifiers.xmlDocs(this, [ comment ])
 
-        /// <summary>Allows you to create a module declaration with the specified OpenListNode.</summary>
-        [<Obsolete("Use yield! with a list of Open widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<OpenListNode>) =
-            let value = ModuleDecl.OpenList(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the attributes for the current module declaration widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<ModuleDecl>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(ModuleDecl.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
 
-        /// <summary>Allows you to create a module declaration with the specified ParsedHashDirectiveNode.</summary>
-        [<Obsolete("Use yield! with a list of HashDirective widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<HashDirectiveListNode>) =
-            let value = ModuleDecl.HashDirectiveList(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the attribute for the current module declaration widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<ModuleDecl>, attribute: WidgetBuilder<AttributeNode>) =
+        ModuleDeclModifiers.attributes(this, [ attribute ])
 
-        /// <summary>Allows you to create a module declaration with the specified ModuleDeclAttributesNode.</summary>
-        [<Obsolete("Use yield! with a list of ModuleDeclAttributes widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<ModuleDeclAttributesNode>) =
-            let value = ModuleDecl.Attributes(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the accessibility for the current module declaration widget to private.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<ModuleDecl>) =
+        this.AddScalar(ModuleDecl.Accessibility.WithValue(AccessControl.Private))
 
-        /// <summary>Allows you to create a module declaration with the specified ExceptionDefnNode.</summary>
-        [<Obsolete("Use yield! with a list of ExceptionDefn widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<ExceptionDefnNode>) =
-            let value = ModuleDecl.Exception(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the accessibility for the current module declaration widget to public.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<ModuleDecl>) =
+        this.AddScalar(ModuleDecl.Accessibility.WithValue(AccessControl.Public))
 
-        /// <summary>Allows you to create a module declaration with the specified ExternBindingNode.</summary>
-        [<Obsolete("Use yield! with a list of ExternBinding widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<ExternBindingNode>) =
-            let value = ModuleDecl.ExternBinding(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the accessibility for the current module declaration widget to internal.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<ModuleDecl>) =
+        this.AddScalar(ModuleDecl.Accessibility.WithValue(AccessControl.Internal))
 
-        /// <summary>Allows you to create a module declaration with the specified BindingNode.</summary>
-        [<Obsolete("Use yield! with a list of Value/Function widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<BindingNode>) =
-            let value = ModuleDecl.TopLevelBinding(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the current module declaration widget to be mutable.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toMutable(this: WidgetBuilder<ModuleDecl>) =
+        this.AddScalar(ModuleDecl.IsMutable.WithValue(true))
 
-        /// <summary>Allows you to create a module declaration with the specified ModuleAbbrevNode.</summary>
-        [<Obsolete("Use yield! with a list of ModuleAbbrev widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<ModuleAbbrevNode>) =
-            let value = ModuleDecl.ModuleAbbrev(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the current module declaration widget to be inlined.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toInlined(this: WidgetBuilder<ModuleDecl>) =
+        this.AddScalar(ModuleDecl.IsInlined.WithValue(true))
 
-        /// <summary>Allows you to create a module declaration with the specified NestedModuleNode.</summary>
-        [<Obsolete("Use yield! with a list of NestedModule widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<NestedModuleNode>) =
-            let value = ModuleDecl.NestedModule(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the current module declaration widget to be recursive.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<ModuleDecl>) =
+        this.AddScalar(ModuleDecl.IsRecursive.WithValue(true))
 
-        /// <summary>Allows you to create a module declaration with the specified ValNode.</summary>
-        [<Obsolete("Use yield! with a list of Val widgets instead. YieldFrom extensions are now available for all module declaration types.")>]
-        static member AnyModuleDecl(value: WidgetBuilder<ValNode>) =
-            let value = ModuleDecl.Val(Gen.mkOak value)
-            Ast.BaseAny(value)
+    /// <summary>Sets the type parameters for the current module declaration widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<ModuleDecl>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(ModuleDecl.TypeParams.WithValue(typeParams.Compile()))
+
+type ModuleDeclCollectionBuilderExtensions =
+    // Keep extensions for BindingNode since Value()/Function() return WidgetBuilder<BindingNode> for module-level
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: BindingNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(ModuleDecl.TopLevelBinding(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom(_: CollectionBuilder<'parent, ModuleDecl>, x: BindingNode seq) : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(ModuleDecl.TopLevelBinding(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        ModuleDeclCollectionBuilderExtensions.YieldFrom(this, nodes)
+
+    // Keep extensions for ExternBindingNode since ExternBinding() returns WidgetBuilder<ExternBindingNode>
+    [<Extension>]
+    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ExternBindingNode) : CollectionContent =
+        let widget = Ast.EscapeHatch(ModuleDecl.ExternBinding(x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
+    [<Extension>]
+    static member inline Yield
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExternBindingNode>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        ModuleDeclCollectionBuilderExtensions.Yield(this, node)
+
+    [<Extension>]
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: ExternBindingNode seq)
+        : CollectionContent =
+        let widgets =
+            x
+            |> Seq.map(fun node -> Ast.EscapeHatch(ModuleDecl.ExternBinding(node)).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
+
+        { Widgets = widgets }
+
+    [<Extension>]
+    static member inline YieldFrom
+        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExternBindingNode> seq)
+        : CollectionContent =
+        let nodes = x |> Seq.map Gen.mkOak
+        ModuleDeclCollectionBuilderExtensions.YieldFrom(this, nodes)

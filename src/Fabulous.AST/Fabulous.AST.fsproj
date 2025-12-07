@@ -155,6 +155,7 @@
         <Compile Include="Widgets\Types\Tuple.fs" />
         <Compile Include="Widgets\Types\MeasurePower.fs" />
         <Compile Include="Widgets\Types\Funs.fs" />
+        <Compile Include="Widgets\MemberDefinitions\MemberDefn.fs" />
         <Compile Include="Widgets\MemberDefinitions\InheritConstructor.fs" />
         <Compile Include="Widgets\MemberDefinitions\Inherit.fs" />
         <Compile Include="Widgets\MemberDefinitions\Field.fs" />
@@ -173,7 +174,6 @@
         <Compile Include="Widgets\MemberDefinitions\SigMember.fs" />
         <Compile Include="Widgets\MemberDefinitions\PropertyGetSetBinding.fs" />
         <Compile Include="Widgets\MemberDefinitions\PropertyGetSet.fs" />
-        <Compile Include="Widgets\MemberDefinitions\MemberDefn.fs" />
         <Compile Include="Widgets\TypeDefinitions\TypeDefn.fs" />
         <Compile Include="Widgets\TypeDefinitions\UnionCase.fs" />
         <Compile Include="Widgets\TypeDefinitions\Union.fs" />
@@ -186,14 +186,14 @@
         <Compile Include="Widgets\TypeDefinitions\TypeDefnExplicit.fs" />
         <Compile Include="Widgets\TypeDefinitions\Augment.fs" />
         <Compile Include="Widgets\TypeDefinitions\Delegate.fs" />
+        <Compile Include="Widgets\ModuleDeclarations\ModuleDecl.fs" />
+        <Compile Include="Widgets\ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ParsedHashDirective.fs" />
         <Compile Include="Widgets\ModuleDeclarations\NestedModule.fs" />
         <Compile Include="Widgets\ModuleDeclarations\ModuleAbbrev.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Open.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Val.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\ModuleDeclAttributes.fs" />
         <Compile Include="Widgets\ModuleDeclarations\Exception.fs" />
-        <Compile Include="Widgets\ModuleDeclarations\ModuleDecl.fs" />
         <Compile Include="Widgets\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\Oak.fs" />
     </ItemGroup>

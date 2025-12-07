@@ -238,6 +238,94 @@ type BindingNodeModifiers =
     static member inline typeParams(this: WidgetBuilder<#BindingNode>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(BindingNode.TypeParams.WithValue(typeParams.Compile()))
 
+type MemberDefnModifiers =
+    /// <summary>Sets the XmlDocs for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="xmlDocs">The XmlDocs to set.</param>
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+        this.AddWidget(MemberDefn.XmlDocs.WithValue(xmlDocs.Compile()))
+
+    /// <summary>Sets the XmlDocs for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="comments">The comments to set.</param>
+    [<Extension>]
+    static member inline xmlDocs(this: WidgetBuilder<MemberDefn>, comments: string seq) =
+        MemberDefnModifiers.xmlDocs(this, Ast.XmlDocs(comments))
+
+    /// <summary>Sets the attributes for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<MemberDefn>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(MemberDefn.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+
+    /// <summary>Sets the attribute for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<MemberDefn>, attribute: WidgetBuilder<AttributeNode>) =
+        MemberDefnModifiers.attributes(this, [ attribute ])
+
+    /// <summary>Sets the accessibility for the current member definition widget to private.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(MemberDefn.Accessibility.WithValue(AccessControl.Private))
+
+    /// <summary>Sets the accessibility for the current member definition widget to public.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(MemberDefn.Accessibility.WithValue(AccessControl.Public))
+
+    /// <summary>Sets the accessibility for the current member definition widget to internal.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(MemberDefn.Accessibility.WithValue(AccessControl.Internal))
+
+    /// <summary>Sets the return type for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="returnType">The return type to set.</param>
+    [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    static member inline returnType(this: WidgetBuilder<MemberDefn>, returnType: WidgetBuilder<Type>) =
+        this.AddWidget(BindingNode.Return.WithValue(returnType.Compile()))
+
+    /// <summary>Sets the return type for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="returnType">The return type to set.</param>
+    [<Extension>]
+    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
+    static member inline returnType(this: WidgetBuilder<MemberDefn>, returnType: string) =
+        this.AddWidget(BindingNode.Return.WithValue(Ast.LongIdent(returnType).Compile()))
+
+    /// <summary>Sets the current member definition widget to be mutable.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toMutable(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(MemberDefn.IsMutable.WithValue(true))
+
+    /// <summary>Sets the current member definition widget to be inlined.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toInlined(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(BindingNode.IsInlined.WithValue(true))
+
+    /// <summary>Sets the current member definition widget to be static.</summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toStatic(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(BindingNode.IsStatic.WithValue(true))
+
+    /// <summary>Sets the type parameters for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="typeParams">The type parameters to set.</param>
+    [<Extension>]
+    static member inline typeParams(this: WidgetBuilder<MemberDefn>, typeParams: WidgetBuilder<TyparDecls>) =
+        this.AddWidget(MemberDefn.TypeParams.WithValue(typeParams.Compile()))
+
 type ValueYieldExtensions =
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: BindingNode) : CollectionContent =

@@ -10,7 +10,8 @@ module BindingList =
     let WidgetKey =
         Widgets.register "LetBindingMember" (fun widget ->
             let bindings = Widgets.getScalarValue widget Bindings |> List.ofSeq
-            BindingListNode(bindings, Range.Zero))
+            let node = BindingListNode(bindings, Range.Zero)
+            MemberDefn.LetBinding(node))
 
 [<AutoOpen>]
 module LetBindingMemberBuilders =
@@ -33,7 +34,7 @@ module LetBindingMemberBuilders =
         /// }
         /// </code>
         static member LetBindings(bindings: WidgetBuilder<BindingNode> seq) =
-            WidgetBuilder<BindingListNode>(
+            WidgetBuilder<MemberDefn>(
                 BindingList.WidgetKey,
                 BindingList.Bindings.WithValue(bindings |> Seq.map Gen.mkOak)
             )
@@ -52,7 +53,7 @@ module LetBindingMemberBuilders =
         /// }
         /// </code>
         static member LetBinding(binding: WidgetBuilder<BindingNode>) =
-            WidgetBuilder<BindingListNode>(
+            WidgetBuilder<MemberDefn>(
                 BindingList.WidgetKey,
                 BindingList.Bindings.WithValue([ binding ] |> List.map Gen.mkOak)
             )

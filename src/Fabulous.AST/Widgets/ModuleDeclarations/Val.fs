@@ -8,24 +8,24 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Val =
-    let XmlDocs = Attributes.defineWidget "XmlDocs"
-
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
     let LeadingKeyword = Attributes.defineScalar<SingleTextNode seq> "LeadingKeyword"
-
-    let IsInlined = Attributes.defineScalar<bool> "Inlined"
-
-    let IsMutable = Attributes.defineScalar<bool> "IsMutable"
 
     let Identifier = Attributes.defineScalar<string> "Identifier"
 
     let ReturnType = Attributes.defineWidget "Identifier"
 
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+    let XmlDocs = Attributes.defineWidget "ValXmlDocs"
 
-    let TypeParams = Attributes.defineWidget "TypeParams"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode seq> "ValMultipleAttributes"
+
+    let Accessibility = Attributes.defineScalar<AccessControl> "ValAccessibility"
+
+    let TypeParams = Attributes.defineWidget "ValTypeParams"
+
+    let IsMutable = Attributes.defineScalar<bool> "ValIsMutable"
+
+    let IsInlined = Attributes.defineScalar<bool> "ValIsInlined"
 
     let WidgetKey =
         Widgets.register "ValNode" (fun widget ->
@@ -39,12 +39,10 @@ module Val =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let inlined = Widgets.tryGetScalarValue widget IsInlined
-
             let inlined =
-                match inlined with
-                | ValueSome _ -> Some(SingleTextNode.``inline``)
-                | ValueNone -> None
+                Widgets.tryGetScalarValue widget IsInlined
+                |> ValueOption.map(fun _ -> Some(SingleTextNode.``inline``))
+                |> ValueOption.defaultValue None
 
             let isMutable =
                 Widgets.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue(false)

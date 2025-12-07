@@ -24,10 +24,11 @@ module PropertyGetSetMember =
             let identifier = Widgets.getScalarValue widget Identifier
 
             let isInlined =
-                Widgets.tryGetScalarValue widget IsInlined |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget BindingNode.IsInlined
+                |> ValueOption.defaultValue false
 
             let accessControl =
-                Widgets.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget MemberDefn.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -38,15 +39,16 @@ module PropertyGetSetMember =
                 | Unknown -> None
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
             let isStatic =
-                Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget BindingNode.IsStatic
+                |> ValueOption.defaultValue false
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
                 |> ValueOption.map(fun x -> Some(x))
                 |> ValueOption.defaultValue None
 
@@ -83,19 +85,22 @@ module PropertyGetSetMember =
                 else
                     None
 
-            MemberDefnPropertyGetSetNode(
-                xmlDocs,
-                attributes,
-                multipleTextsNode,
-                inlinedNode,
-                accessControl,
-                memberName,
-                SingleTextNode.``with``,
-                firstBinding,
-                andKeyword,
-                lastBindingWidget,
-                Range.Zero
-            ))
+            let node =
+                MemberDefnPropertyGetSetNode(
+                    xmlDocs,
+                    attributes,
+                    multipleTextsNode,
+                    inlinedNode,
+                    accessControl,
+                    memberName,
+                    SingleTextNode.``with``,
+                    firstBinding,
+                    andKeyword,
+                    lastBindingWidget,
+                    Range.Zero
+                )
+
+            MemberDefn.PropertyGetSet(node))
 
 [<AutoOpen>]
 module PropertyGetSetMemberMemberBuilders =
@@ -117,7 +122,7 @@ module PropertyGetSetMemberMemberBuilders =
         /// }
         /// </code>
         static member Member(identifier: string, getter: WidgetBuilder<PropertyGetSetBindingNode>) =
-            WidgetBuilder<MemberDefnPropertyGetSetNode>(
+            WidgetBuilder<MemberDefn>(
                 PropertyGetSetMember.WidgetKey,
                 AttributesBundle(
                     StackList.one(PropertyGetSetMember.Identifier.WithValue(identifier)),
@@ -149,7 +154,7 @@ module PropertyGetSetMemberMemberBuilders =
                 getter: WidgetBuilder<PropertyGetSetBindingNode>,
                 setter: WidgetBuilder<PropertyGetSetBindingNode>
             ) =
-            WidgetBuilder<MemberDefnPropertyGetSetNode>(
+            WidgetBuilder<MemberDefn>(
                 PropertyGetSetMember.WidgetKey,
                 AttributesBundle(
                     StackList.one(PropertyGetSetMember.Identifier.WithValue(identifier)),
@@ -158,181 +163,3 @@ module PropertyGetSetMemberMemberBuilders =
                     Array.empty
                 )
             )
-
-type PropertyGetSetMemberModifiers =
-    /// <summary>Sets the XmlDocs for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .xmlDocs(Summary([ "This is a property" ]))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(PropertyGetSetMember.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The comments to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .xmlDocs([ "This is a property" ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, xmlDocs: string seq) =
-        PropertyGetSetMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the attributes for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="values">The attributes to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .attributes([ Attribute("Obsolete") ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member attributes
-        (this: WidgetBuilder<MemberDefnPropertyGetSetNode>, values: WidgetBuilder<AttributeNode> seq)
-        =
-        this.AddScalar(PropertyGetSetMember.MultipleAttributes.WithValue(values |> Seq.map Gen.mkOak))
-
-    /// <summary>Sets the attributes for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">The attribute to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .attribute(Attribute("Obsolete"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member attribute(this: WidgetBuilder<MemberDefnPropertyGetSetNode>, value: WidgetBuilder<AttributeNode>) =
-        PropertyGetSetMemberModifiers.attributes(this, [ value ])
-
-    /// <summary>Sets the static modifier for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .toStatic()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toStatic(this: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
-        this.AddScalar(PropertyGetSetMember.IsStatic.WithValue(true))
-
-    /// <summary>Sets the inlined modifier for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .toInlined()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toInlined(this: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
-        this.AddScalar(PropertyGetSetMember.IsInlined.WithValue(true))
-
-    /// <summary>Sets the private accessibility modifier for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .toPrivate()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPrivate(this: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
-        this.AddScalar(PropertyGetSetMember.Accessibility.WithValue(AccessControl.Private))
-
-    /// <summary>Sets the public accessibility modifier for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .toPublic()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPublic(this: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
-        this.AddScalar(PropertyGetSetMember.Accessibility.WithValue(AccessControl.Public))
-
-    /// <summary>Sets the internal accessibility modifier for the current PropertyGetSetMember widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             Member(
-    ///                 "this.Name",
-    ///                 Getter(ConstantExpr("_name"))
-    ///             )
-    ///             .toInternal()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toInternal(this: WidgetBuilder<MemberDefnPropertyGetSetNode>) =
-        this.AddScalar(PropertyGetSetMember.Accessibility.WithValue(AccessControl.Internal))

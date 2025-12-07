@@ -372,3 +372,27 @@ module TraitCallBuilders =
 
         static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefnSigMemberNode>, expr: string) =
             Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
+
+        static member TraitCallExpr
+            (t: WidgetBuilder<Type>, memberDef: WidgetBuilder<MemberDefn>, expr: WidgetBuilder<Expr>)
+            =
+            let memberDef = Gen.mkOak memberDef
+
+            WidgetBuilder<Expr>(
+                TraitCall.WidgetKey,
+                AttributesBundle(
+                    StackList.one(TraitCall.MemberDef.WithValue(memberDef)),
+                    [| TraitCall.Typed.WithValue(t.Compile())
+                       TraitCall.Value.WithValue(expr.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefn>, expr: WidgetBuilder<Expr>) =
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, expr)
+
+        static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefn>, expr: WidgetBuilder<Constant>) =
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)
+
+        static member TraitCallExpr(t: string, memberDef: WidgetBuilder<MemberDefn>, expr: string) =
+            Ast.TraitCallExpr(Ast.EscapeHatch(Type.Create(t)), memberDef, Ast.ConstantExpr expr)

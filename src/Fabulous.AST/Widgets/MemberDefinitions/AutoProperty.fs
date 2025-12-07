@@ -15,9 +15,6 @@ module AutoPropertyMember =
     let HasGetter = Attributes.defineScalar<bool * AccessControl> "HasGetter"
     let HasSetter = Attributes.defineScalar<bool * AccessControl> "HasSetter"
 
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
@@ -29,7 +26,7 @@ module AutoPropertyMember =
             let hasSetter = Widgets.getScalarValue widget HasSetter
 
             let accessControl =
-                Widgets.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget MemberDefn.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -40,12 +37,13 @@ module AutoPropertyMember =
                 | Unknown -> None
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
             let isStatic =
-                Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget BindingNode.IsStatic
+                |> ValueOption.defaultValue false
 
             let returnType = Widgets.tryGetNodeFromWidget widget ReturnType
 
@@ -57,7 +55,7 @@ module AutoPropertyMember =
                 | ValueNone -> None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
@@ -121,18 +119,21 @@ module AutoPropertyMember =
                     )
                 | (false, _), (false, _) -> None
 
-            MemberDefnAutoPropertyNode(
-                xmlDocs,
-                attributes,
-                multipleTextsNode,
-                accessControl,
-                SingleTextNode.Create(identifier),
-                returnType,
-                SingleTextNode.equals,
-                bodyExpr,
-                withGetSetText,
-                Range.Zero
-            ))
+            let node =
+                MemberDefnAutoPropertyNode(
+                    xmlDocs,
+                    attributes,
+                    multipleTextsNode,
+                    accessControl,
+                    SingleTextNode.Create(identifier),
+                    returnType,
+                    SingleTextNode.equals,
+                    bodyExpr,
+                    withGetSetText,
+                    Range.Zero
+                )
+
+            MemberDefn.AutoProperty(node))
 
 [<AutoOpen>]
 module AutoPropertyMemberBuilders =
@@ -152,7 +153,7 @@ module AutoPropertyMemberBuilders =
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
-            WidgetBuilder<MemberDefnAutoPropertyNode>(
+            WidgetBuilder<MemberDefn>(
                 AutoPropertyMember.WidgetKey,
                 AttributesBundle(
                     StackList.three(
@@ -545,176 +546,3 @@ module AutoPropertyMemberBuilders =
                 setterAccessibility,
                 Ast.LongIdent(returnType)
             )
-
-type AutoPropertyMemberModifiers =
-    /// <summary>Sets the XmlDocs for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .xmlDocs(Summary("The name of the person"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(AutoPropertyMember.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .xmlDocs([ "The name of the person" ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAutoPropertyNode>, xmlDocs: string seq) =
-        AutoPropertyMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the attributes for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .attributes([ Attribute("Obsolete") ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attributes
-        (this: WidgetBuilder<MemberDefnAutoPropertyNode>, attributes: WidgetBuilder<AttributeNode> seq)
-        =
-        this.AddScalar(AutoPropertyMember.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
-
-    /// <summary>Sets the attribute for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">The attribute to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .attribute(Attribute("Obsolete"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attribute
-        (this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: WidgetBuilder<AttributeNode>)
-        =
-        AutoPropertyMemberModifiers.attributes(this, [ value ])
-
-    /// <summary>Sets the member to be static.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .toStatic()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toStatic(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
-        this.AddScalar(AutoPropertyMember.IsStatic.WithValue(true))
-
-    /// <summary>Sets the member to be private.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .toPrivate()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPrivate(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
-        this.AddScalar(AutoPropertyMember.Accessibility.WithValue(AccessControl.Private))
-
-    /// <summary>Sets the member to be public.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .toPublic()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPublic(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
-        this.AddScalar(AutoPropertyMember.Accessibility.WithValue(AccessControl.Public))
-
-    /// <summary>Sets the member to be internal.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .toInternal()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toInternal(this: WidgetBuilder<MemberDefnAutoPropertyNode>) =
-        this.AddScalar(AutoPropertyMember.Accessibility.WithValue(AccessControl.Internal))
-
-    /// <summary>Sets the return type for the member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">The return type to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .returnType(String())
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
-    static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: WidgetBuilder<Type>) =
-        this.AddWidget(AutoPropertyMember.ReturnType.WithValue(value.Compile()))
-
-    /// <summary>Sets the return type for the member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="value">The return type to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Person", UnitPat()) {
-    ///             MemberVal("Name", "name", true, true)
-    ///                 .returnType("string")
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
-    static member inline returnType(this: WidgetBuilder<MemberDefnAutoPropertyNode>, value: string) =
-        AutoPropertyMemberModifiers.returnType(this, Ast.LongIdent(value))

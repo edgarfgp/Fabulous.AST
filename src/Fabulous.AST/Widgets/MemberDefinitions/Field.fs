@@ -56,6 +56,45 @@ module Field =
 
             FieldNode(xmlDocs, attributes, leadingKeyword, mutableKeyword, None, name, fieldType, Range.Zero))
 
+    let ValFieldWidgetKey =
+        Widgets.register "ValField" (fun widget ->
+            let xmlDocs =
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
+                |> ValueOption.map(Some)
+                |> ValueOption.defaultValue None
+
+            let name =
+                Widgets.tryGetScalarValue widget Name
+                |> ValueOption.map(fun x -> Some(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks x)))
+                |> ValueOption.defaultValue None
+
+            let fieldType = Widgets.getNodeFromWidget widget FieldType
+
+            let attributes =
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
+
+            let mutableKeyword =
+                Widgets.tryGetScalarValue widget MemberDefn.IsMutable
+                |> ValueOption.defaultValue false
+
+            let mutableKeyword =
+                if mutableKeyword then
+                    Some(SingleTextNode.``mutable``)
+                else
+                    None
+
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget LeadingKeyword
+                |> ValueOption.map(fun x -> Some(MultipleTextsNode.Create([ x ])))
+                |> ValueOption.defaultValue None
+
+            let node =
+                FieldNode(xmlDocs, attributes, leadingKeyword, mutableKeyword, None, name, fieldType, Range.Zero)
+
+            MemberDefn.ValField(node))
+
 [<AutoOpen>]
 module FieldBuilders =
     type Ast with
@@ -154,8 +193,8 @@ module FieldBuilders =
         /// }
         /// </code>
         static member ValField(name: string, fieldType: WidgetBuilder<Type>) =
-            WidgetBuilder<FieldNode>(
-                Field.WidgetKey,
+            WidgetBuilder<MemberDefn>(
+                Field.ValFieldWidgetKey,
                 AttributesBundle(
                     StackList.two(Field.Name.WithValue(name), Field.LeadingKeyword.WithValue(SingleTextNode.``val``)),
                     [| Field.FieldType.WithValue(fieldType.Compile()) |],

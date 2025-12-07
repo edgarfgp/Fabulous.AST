@@ -27,7 +27,7 @@ module BindingMethodNode =
                 |> ValueOption.defaultValue None
 
             let accessControl =
-                Widgets.tryGetScalarValue widget BindingNode.Accessibility
+                Widgets.tryGetScalarValue widget MemberDefn.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -38,12 +38,12 @@ module BindingMethodNode =
                 | Unknown -> None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
-                Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -54,7 +54,7 @@ module BindingMethodNode =
                 | ValueNone -> None
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
+                Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
@@ -65,21 +65,24 @@ module BindingMethodNode =
                   else
                       SingleTextNode.``member`` ]
 
-            BindingNode(
-                xmlDocs,
-                attributes,
-                MultipleTextsNode(multipleTextsNode, Range.Zero),
-                false,
-                inlineNode,
-                accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
-                typeParams,
-                parameters,
-                returnType,
-                SingleTextNode.equals,
-                bodyExpr,
-                Range.Zero
-            ))
+            let node =
+                BindingNode(
+                    xmlDocs,
+                    attributes,
+                    MultipleTextsNode(multipleTextsNode, Range.Zero),
+                    false,
+                    inlineNode,
+                    accessControl,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
+                    typeParams,
+                    parameters,
+                    returnType,
+                    SingleTextNode.equals,
+                    bodyExpr,
+                    Range.Zero
+                )
+
+            MemberDefn.Member(node))
 
 [<AutoOpen>]
 module BindingMethodBuilders =
@@ -93,7 +96,7 @@ module BindingMethodBuilders =
             ) =
             let parameters = parameters |> Seq.map Gen.mkOak
 
-            WidgetBuilder<BindingNode>(
+            WidgetBuilder<MemberDefn>(
                 BindingMethodNode.WidgetKey,
                 AttributesBundle(
                     StackList.two(
