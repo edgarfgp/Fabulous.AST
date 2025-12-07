@@ -18,44 +18,9 @@ module ModuleDeclBuilders =
         static member private BaseAny(value: ModuleDecl) =
             WidgetBuilder<ModuleDecl>(ModuleDecl.WidgetKey, ModuleDecl.ModuleDecl.WithValue(value))
 
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnRecordNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnRecordNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Record(Gen.mkOak value))
-            Ast.BaseAny(value)
-
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnRegularNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnRegularNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Regular(Gen.mkOak value))
-            Ast.BaseAny(value)
-
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnEnumNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnEnumNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Enum(Gen.mkOak value))
-            Ast.BaseAny(value)
-
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnUnionNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnUnionNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Union(Gen.mkOak value))
-            Ast.BaseAny(value)
-
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnAbbrevNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnAbbrevNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Abbrev(Gen.mkOak value))
-            Ast.BaseAny(value)
-
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnExplicitNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnExplicitNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Explicit(Gen.mkOak value))
-            Ast.BaseAny(value)
-
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnAugmentationNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnAugmentationNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Augmentation(Gen.mkOak value))
-            Ast.BaseAny(value)
-
-        /// <summary>Allows you to create a module declaration with the specified TypeDefnDelegateNode.</summary>
-        static member AnyModuleDecl(value: WidgetBuilder<TypeDefnDelegateNode>) =
-            let value = ModuleDecl.TypeDefn(TypeDefn.Delegate(Gen.mkOak value))
+        /// <summary>Allows you to create a module declaration with the specified TypeDefn.</summary>
+        static member AnyModuleDecl(value: WidgetBuilder<TypeDefn>) =
+            let value = ModuleDecl.TypeDefn(Gen.mkOak value)
             Ast.BaseAny(value)
 
         /// <summary>Allows you to create a module declaration with the specified DeclExpr.</summary>

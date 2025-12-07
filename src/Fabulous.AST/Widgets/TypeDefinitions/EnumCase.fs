@@ -191,15 +191,13 @@ type EnumCaseModifiers =
 
 type EnumCaseNodeYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: EnumCaseNode)
-        : CollectionContent =
+    static member inline Yield(_: CollectionBuilder<TypeDefn, EnumCaseNode>, x: EnumCaseNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode>)
+        (this: CollectionBuilder<TypeDefn, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         EnumCaseNodeYieldExtensions.Yield(this, node)

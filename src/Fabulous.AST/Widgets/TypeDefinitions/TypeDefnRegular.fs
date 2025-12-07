@@ -13,16 +13,6 @@ module TypeDefnRegular =
     let ImplicitConstructor = Attributes.defineWidget "SimplePats"
     let Members = Attributes.defineWidgetCollection "Members"
 
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
-    let XmlDocs = Attributes.defineWidget "XmlDocs"
-    let TypeParams = Attributes.defineWidget "TypeParams"
-
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
-
-    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
-
     let WidgetKey =
         Widgets.register "TypeDefnRegular" (fun widget ->
             let name =
@@ -36,17 +26,17 @@ module TypeDefnRegular =
                 |> ValueOption.defaultValue []
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TypeParams
+                Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
+                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget TypeDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -56,7 +46,7 @@ module TypeDefnRegular =
                 | ValueSome constructor -> Some constructor
 
             let accessControl =
-                Widgets.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget TypeDefn.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -67,33 +57,35 @@ module TypeDefnRegular =
                 | Unknown -> None
 
             let leadingKeyword =
-                Widgets.tryGetScalarValue widget IsRecursive
+                Widgets.tryGetScalarValue widget TypeDefn.IsRecursive
                 |> ValueOption.map(fun _ -> SingleTextNode.``and``)
                 |> ValueOption.defaultValue SingleTextNode.``type``
 
-            TypeDefnRegularNode(
-                TypeNameNode(
-                    xmlDocs,
-                    attributes,
-                    leadingKeyword,
-                    accessControl,
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
-                    typeParams,
-                    [],
-                    constructor,
-                    Some(SingleTextNode.equals),
-                    None,
+            TypeDefn.Regular(
+                TypeDefnRegularNode(
+                    TypeNameNode(
+                        xmlDocs,
+                        attributes,
+                        leadingKeyword,
+                        accessControl,
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                        typeParams,
+                        [],
+                        constructor,
+                        Some(SingleTextNode.equals),
+                        None,
+                        Range.Zero
+                    ),
+                    members,
                     Range.Zero
-                ),
-                members,
-                Range.Zero
+                )
             ))
 
 [<AutoOpen>]
 module TypeDefnRegularBuilders =
     type Ast with
         static member BaseTypeDefn(name: string, constructor: WidgetBuilder<ImplicitConstructorNode> voption) =
-            CollectionBuilder<TypeDefnRegularNode, MemberDefn>(
+            CollectionBuilder<TypeDefn, MemberDefn>(
                 TypeDefnRegular.WidgetKey,
                 TypeDefnRegular.Members,
                 AttributesBundle(
@@ -165,176 +157,3 @@ module TypeDefnRegularBuilders =
         /// }
         /// </code>
         static member TypeDefn(name: string) = Ast.BaseTypeDefn(name, ValueNone)
-
-type TypeDefnRegularModifiers =
-    /// <summary>Sets the XmlDocs for the current type definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.xmlDocs(Summary("This is a triangle"))
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(TypeDefnRegular.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current type definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.xmlDocs([ "This is a triangle" ])
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnRegularNode>, xmlDocs: string seq) =
-        TypeDefnRegularModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the type parameters for the current type definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="typeParams">The type parameters to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.typeParams(PostfixList([ "'other"; "'another" ]))
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline typeParams(this: WidgetBuilder<TypeDefnRegularNode>, typeParams: WidgetBuilder<TyparDecls>) =
-        this.AddWidget(TypeDefnRegular.TypeParams.WithValue(typeParams.Compile()))
-
-    /// <summary>Sets the attributes for the current type definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.attributes([ Attribute("Obsolete") ])
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attributes
-        (this: WidgetBuilder<TypeDefnRegularNode>, attributes: WidgetBuilder<AttributeNode> seq)
-        =
-        this.AddScalar(
-            TypeDefnRegular.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
-
-    /// <summary>Sets the attributes for the current type definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attribute">The attributes to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.attribute(Attribute("Obsolete"))
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnRegularNode>, attribute: WidgetBuilder<AttributeNode>) =
-        TypeDefnRegularModifiers.attributes(this, [ attribute ])
-
-    /// <summary>Sets the type definition to be private.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.toPrivate()
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPrivate(this: WidgetBuilder<TypeDefnRegularNode>) =
-        this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Private))
-
-    /// <summary>Sets the type definition to be public.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.toPublic()
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPublic(this: WidgetBuilder<TypeDefnRegularNode>) =
-        this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Public))
-
-    /// <summary>Sets the type definition to be internal.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.toInternal()
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toInternal(this: WidgetBuilder<TypeDefnRegularNode>) =
-        this.AddScalar(TypeDefnRegular.Accessibility.WithValue(AccessControl.Internal))
-
-    /// <summary>Sets the type definition to be recursive.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ITriangle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///         }
-    ///         |> _.toRecursive()
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toRecursive(this: WidgetBuilder<TypeDefnRegularNode>) =
-        this.AddScalar(TypeDefnRegular.IsRecursive.WithValue(true))
-
-type TypeDefnRegularYieldExtensions =
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnRegularNode) : CollectionContent =
-        let typeDefn = TypeDefn.Regular(x)
-        let typeDefn = ModuleDecl.TypeDefn(typeDefn)
-
-        let widget = Ast.EscapeHatch(typeDefn).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnRegularNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        TypeDefnRegularYieldExtensions.Yield(this, node)

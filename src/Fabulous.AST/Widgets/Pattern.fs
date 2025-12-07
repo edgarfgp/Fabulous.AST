@@ -10,6 +10,11 @@ module Pattern =
 
     let TypeParams = Attributes.defineScalar<string seq> "TyparDecls"
 
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode seq> "Pattern_MultipleAttributes"
+
+    let Accessibility = Attributes.defineScalar<AccessControl> "Pattern_Accessibility"
+
     let WidgetKey =
         Widgets.register "ConstPat" (fun widget ->
             let value = Widgets.getNodeFromWidget widget Value
@@ -57,3 +62,37 @@ type PatternModifiers =
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<Pattern>, values: string seq) =
         this.AddScalar(Pattern.TypeParams.WithValue(values))
+
+    /// <summary>Adds multiple attributes to a pattern.</summary>
+    /// <param name="this">The pattern widget.</param>
+    /// <param name="attributes">The sequence of attributes to add.</param>
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<Pattern>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(
+            Pattern.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
+        )
+
+    /// <summary>Adds an attribute to a pattern.</summary>
+    /// <param name="this">The pattern widget.</param>
+    /// <param name="attribute">The attribute to add.</param>
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<Pattern>, attribute: WidgetBuilder<AttributeNode>) =
+        PatternModifiers.attributes(this, [ attribute ])
+
+    /// <summary>Sets the pattern to be private.</summary>
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<Pattern>) =
+        this.AddScalar(Pattern.Accessibility.WithValue(AccessControl.Private))
+
+    /// <summary>Sets the pattern to be public.</summary>
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<Pattern>) =
+        this.AddScalar(Pattern.Accessibility.WithValue(AccessControl.Public))
+
+    /// <summary>Sets the pattern to be internal.</summary>
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<Pattern>) =
+        this.AddScalar(Pattern.Accessibility.WithValue(AccessControl.Internal))

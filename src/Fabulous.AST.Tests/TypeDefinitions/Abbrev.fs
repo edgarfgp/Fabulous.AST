@@ -105,7 +105,7 @@ type MyInt = int
         Oak() {
             AnonymousModule() {
                 Abbrev("MyInt", Int())
-                EscapeHatch(alias)
+                EscapeHatch(TypeDefn.Abbrev(alias))
             }
         }
 
@@ -125,23 +125,27 @@ type MyFloat = float
 
                 Abbrev("MyString", LongIdent "string")
 
-                TypeDefnAbbrevNode(
-                    TypeNameNode(
-                        None,
-                        None,
-                        SingleTextNode("type", Range.Zero),
-                        Some(SingleTextNode("MyFloat", Range.Zero)),
-                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
-                        None,
+                TypeDefn.Abbrev(
+                    TypeDefnAbbrevNode(
+                        TypeNameNode(
+                            None,
+                            None,
+                            SingleTextNode("type", Range.Zero),
+                            Some(SingleTextNode("MyFloat", Range.Zero)),
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                            None,
+                            [],
+                            None,
+                            None,
+                            None,
+                            Range.Zero
+                        ),
+                        Type.LongIdent(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)
+                        ),
                         [],
-                        None,
-                        None,
-                        None,
                         Range.Zero
-                    ),
-                    Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)),
-                    [],
-                    Range.Zero
+                    )
                 )
             }
         }
