@@ -12,7 +12,7 @@ module Val =
 
     let Identifier = Attributes.defineScalar<string> "Identifier"
 
-    let ReturnType = Attributes.defineWidget "Identifier"
+    let ReturnType = Attributes.defineWidget "ReturnType"
 
     let XmlDocs = Attributes.defineWidget "ValXmlDocs"
 
