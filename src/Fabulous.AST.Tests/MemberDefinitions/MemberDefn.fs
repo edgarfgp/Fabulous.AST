@@ -24,17 +24,13 @@ module MemberDefn =
                     .typeParams(PostfixList([ "'other" ]))
                     .members() {
                     yield!
-                        [ AnyMemberDefn(
-                              InterfaceWith(LongIdent "IMyInterface") {
-                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
-                              }
-                          )
+                        [ InterfaceWith(LongIdent "IMyInterface") {
+                              Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                          }
 
-                          AnyMemberDefn(
-                              InterfaceWith(LongIdent "IMyInterface1") {
-                                  Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
-                              }
-                          ) ]
+                          InterfaceWith(LongIdent "IMyInterface1") {
+                              Member("x.GetValue", UnitPat(), ConstantExpr(Constant "x.MyField2"))
+                          } ]
 
                     InterfaceWith("IMyInterface2") { () }
 

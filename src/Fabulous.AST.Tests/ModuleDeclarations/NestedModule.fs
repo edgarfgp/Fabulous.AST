@@ -214,3 +214,25 @@ module Bar =
     let x = 12
 
 """
+
+    [<Fact>]
+    let ``yield! multiple nested modules``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(1))) }
+                      Module("B") { Value(ConstantPat(Constant("y")), ConstantExpr(Int(2))) }
+                      Module("C") { Value(ConstantPat(Constant("z")), ConstantExpr(Int(3))) } ]
+            }
+        }
+        |> produces
+            """
+module A =
+    let x = 1
+
+module B =
+    let y = 2
+
+module C =
+    let z = 3
+"""

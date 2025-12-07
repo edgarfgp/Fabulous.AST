@@ -158,3 +158,20 @@ type MyString = string
 type MyFloat = float
 
 """
+
+    [<Fact>]
+    let ``yield! multiple type abbreviations``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ Abbrev("MyInt", Int())
+                      Abbrev("MyString", String())
+                      Abbrev("MyFloat", Float()) ]
+            }
+        }
+        |> produces
+            """
+type MyInt = int
+type MyString = string
+type MyFloat = float
+"""

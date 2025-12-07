@@ -279,6 +279,45 @@ type Colors = | Red
 type Colors = | [<Obsolete; Test>] Red
 """
 
+    [<Fact>]
+    let ``yield! multiple unions``() =
+        Oak() {
+            AnonymousModule() {
+                yield!
+                    [ Union("Colors") {
+                          UnionCase("Red")
+                          UnionCase("Green")
+                      }
+                      Union("Shapes") {
+                          UnionCase("Circle")
+                          UnionCase("Square")
+                      } ]
+            }
+        }
+        |> produces
+            """
+type Colors =
+    | Red
+    | Green
+
+type Shapes =
+    | Circle
+    | Square
+"""
+
+    [<Fact>]
+    let ``yield! multiple union cases``() =
+        Oak() {
+            AnonymousModule() { Union("Colors") { yield! [ UnionCase("Red"); UnionCase("Green"); UnionCase("Blue") ] } }
+        }
+        |> produces
+            """
+type Colors =
+    | Red
+    | Green
+    | Blue
+"""
+
 module GenericUnion =
 
     [<Fact>]

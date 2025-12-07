@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.8.0] - 2025-12-06
+
+### Changed
+- feat: add support for trivia by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/161
+- feat: yield from support by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/162
+
 ## [1.7.0] - 2025-12-03
 
 ### Added
@@ -313,7 +319,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.7.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.8.0...HEAD
+[1.8.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.8.0
 [1.7.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.7.0
 [1.6.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.6.0
 [1.5.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.5.0

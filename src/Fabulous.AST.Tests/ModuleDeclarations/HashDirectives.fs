@@ -198,3 +198,19 @@ let str = "Debugging!"
 #help List.map
 #help
 """
+
+    [<Fact>]
+    let ``yield! multiple hash directives``() =
+        Oak() {
+            AnonymousModule() {
+                yield! [ NoWarn(String "0044"); NoWarn(String "0045"); NoWarn(String "0046") ]
+                Open("System")
+            }
+        }
+        |> produces
+            """
+#nowarn "0044"
+#nowarn "0045"
+#nowarn "0046"
+open System
+"""
