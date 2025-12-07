@@ -121,14 +121,16 @@ type Colors =
                     EnumCase("Green", ConstantExpr(Int 1))
                     EnumCase("Blue", ConstantExpr(Int 2))
 
-                    EnumCaseNode(
-                        None,
-                        None,
-                        None,
-                        SingleTextNode("Black", Range.Zero),
-                        SingleTextNode("=", Range.Zero),
-                        Expr.Constant(Constant.FromText(SingleTextNode("3", Range.Zero))),
-                        Range.Zero
+                    EscapeHatch(
+                        EnumCaseNode(
+                            None,
+                            None,
+                            None,
+                            SingleTextNode("Black", Range.Zero),
+                            SingleTextNode("=", Range.Zero),
+                            Expr.Constant(Constant.FromText(SingleTextNode("3", Range.Zero))),
+                            Range.Zero
+                        )
                     )
                 }
             }

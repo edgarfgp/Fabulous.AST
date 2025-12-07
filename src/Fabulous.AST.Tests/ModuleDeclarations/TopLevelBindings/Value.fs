@@ -286,20 +286,26 @@ let x = 12
     let ``Simple Let binding with escape hatch``() =
         Oak() {
             AnonymousModule() {
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
+                EscapeHatch(
+                    ModuleDecl.TopLevelBinding(
+                        BindingNode(
+                            None,
+                            None,
+                            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                            false,
+                            None,
+                            None,
+                            Choice1Of2(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
+                            ),
+                            None,
+                            List.Empty,
+                            None,
+                            SingleTextNode("=", Range.Zero),
+                            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                            Range.Zero
+                        )
+                    )
                 )
             }
         }
@@ -314,20 +320,26 @@ let x = 12
     let ``Produces a top level let binding from BindingNode(using Widgets)``() =
         Oak() {
             AnonymousModule() {
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
+                EscapeHatch(
+                    ModuleDecl.TopLevelBinding(
+                        BindingNode(
+                            None,
+                            None,
+                            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                            false,
+                            None,
+                            None,
+                            Choice1Of2(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
+                            ),
+                            None,
+                            List.Empty,
+                            None,
+                            SingleTextNode("=", Range.Zero),
+                            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                            Range.Zero
+                        )
+                    )
                 )
             }
         }

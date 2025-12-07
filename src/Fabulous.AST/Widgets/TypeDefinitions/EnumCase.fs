@@ -191,32 +191,16 @@ type EnumCaseModifiers =
 
 type EnumCaseNodeYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<TypeDefn, EnumCaseNode>, x: EnumCaseNode) : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
     static member inline Yield
-        (this: CollectionBuilder<TypeDefn, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode>)
+        (_: CollectionBuilder<TypeDefn, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode>)
         : CollectionContent =
-        let node = Gen.mkOak x
-        EnumCaseNodeYieldExtensions.Yield(this, node)
+        { Widgets = MutStackArray1.One(x.Compile()) }
 
     [<Extension>]
     static member inline YieldFrom
-        (_: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: EnumCaseNode seq)
+        (_: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode> seq)
         : CollectionContent =
         let widgets =
-            x
-            |> Seq.map(fun node -> Ast.EscapeHatch(node).Compile())
-            |> Seq.toArray
-            |> MutStackArray1.fromArray
+            x |> Seq.map(fun wb -> wb.Compile()) |> Seq.toArray |> MutStackArray1.fromArray
 
         { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>, x: WidgetBuilder<EnumCaseNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        EnumCaseNodeYieldExtensions.YieldFrom(this, nodes)

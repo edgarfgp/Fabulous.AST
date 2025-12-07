@@ -78,16 +78,11 @@ type SyntaxOakModifiers =
 
 type SyntaxOakExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, Oak>, x: ModuleOrNamespaceNode) : CollectionContent =
-        let widget = Ast.EscapeHatch(x).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
     static member inline Yield
-        (this: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<ModuleOrNamespaceNode>)
+        (_: CollectionBuilder<'parent, Oak>, x: WidgetBuilder<ModuleOrNamespaceNode>)
         : CollectionContent =
-        let node = Gen.mkOak x
-        SyntaxOakExtensions.Yield(this, node)
+        let widget = Ast.EscapeHatch(Gen.mkOak x).Compile()
+        { Widgets = MutStackArray1.One(widget) }
 
     ///<summary>Allows Anonymous Module components to be yielded directly into a Module
     /// Useful since there's no common holder of declarations or generic WidgetBuilder than can be used

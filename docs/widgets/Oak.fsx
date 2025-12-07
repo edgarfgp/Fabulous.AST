@@ -21,6 +21,7 @@ The Oak widget is the root container for all F# AST nodes in the Fabulous.AST DS
 
 open Fabulous.AST
 open type Fabulous.AST.Ast
+open Fantomas.FCS.Text
 
 Oak() { AnonymousModule() { Value("x", Int(42)) } }
 |> Gen.mkOak // Convert to an Oak AST node
@@ -73,3 +74,51 @@ Oak() {
 
 // produces the following code:
 (*** include-output ***)
+
+(**
+## Using EscapeHatch for raw SyntaxOak nodes
+
+Example: injecting a raw top-level binding node into an anonymous module.
+*)
+
+open Fantomas.Core.SyntaxOak
+open type Fabulous.AST.Ast
+
+Oak() {
+    AnonymousModule() {
+        // Use the DSL normally
+        Value("x", Int 42)
+
+        // If you must inject a raw SyntaxOak node, wrap it in EscapeHatch
+        EscapeHatch(
+            ModuleDecl.TopLevelBinding(
+                BindingNode(
+                    None,
+                    None,
+                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                    false,
+                    None,
+                    None,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("y", Range.Zero)) ], Range.Zero)),
+                    None,
+                    List.Empty,
+                    None,
+                    SingleTextNode("=", Range.Zero),
+                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                    Range.Zero
+                )
+            )
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+Likewise, if you have other raw nodes (e.g., `TypeDefn.Abbrev`, `EnumCaseNode`, etc.), inject them via `EscapeHatch(...)`.
+The preferred approach remains to use the provided widgets (`Abbrev`, `EnumCase`, `Record`, `Value`, ...), which do not require `EscapeHatch`.
+*)

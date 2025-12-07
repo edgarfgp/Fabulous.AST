@@ -276,33 +276,23 @@ type MemberDefnModifiers =
 
 type ValueYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: BindingNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.TopLevelBinding x
+    static member inline Yield
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode>)
+        : CollectionContent =
+        let moduleDecl = ModuleDecl.TopLevelBinding(Gen.mkOak x)
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode>)
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode> seq)
         : CollectionContent =
-        let node = Gen.mkOak x
-        ValueYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom(_: CollectionBuilder<'parent, ModuleDecl>, x: BindingNode seq) : CollectionContent =
         let widgets =
             x
-            |> Seq.map(fun node ->
-                let moduleDecl = ModuleDecl.TopLevelBinding node
+            |> Seq.map(fun wb ->
+                let moduleDecl = ModuleDecl.TopLevelBinding(Gen.mkOak wb)
                 Ast.EscapeHatch(moduleDecl).Compile())
             |> Seq.toArray
             |> MutStackArray1.fromArray
 
         { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<BindingNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        ValueYieldExtensions.YieldFrom(this, nodes)

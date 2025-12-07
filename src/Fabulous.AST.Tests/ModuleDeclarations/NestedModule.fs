@@ -63,22 +63,29 @@ module A =
         Oak() {
             AnonymousModule() {
                 Module("A") {
-                    BindingNode(
-                        None,
-                        None,
-                        MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                        false,
-                        None,
-                        None,
-                        Choice1Of2(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
-                        ),
-                        None,
-                        List.Empty,
-                        None,
-                        SingleTextNode("=", Range.Zero),
-                        Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                        Range.Zero
+                    EscapeHatch(
+                        ModuleDecl.TopLevelBinding(
+                            BindingNode(
+                                None,
+                                None,
+                                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                                false,
+                                None,
+                                None,
+                                Choice1Of2(
+                                    IdentListNode(
+                                        [ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ],
+                                        Range.Zero
+                                    )
+                                ),
+                                None,
+                                List.Empty,
+                                None,
+                                SingleTextNode("=", Range.Zero),
+                                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                                Range.Zero
+                            )
+                        )
                     )
                 }
             }
@@ -146,22 +153,29 @@ module internal A =
         Oak() {
             Namespace("Fabulous.AST") {
                 Module("Foo") {
-                    BindingNode(
-                        None,
-                        None,
-                        MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                        false,
-                        None,
-                        None,
-                        Choice1Of2(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
-                        ),
-                        None,
-                        List.Empty,
-                        None,
-                        SingleTextNode("=", Range.Zero),
-                        Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                        Range.Zero
+                    EscapeHatch(
+                        ModuleDecl.TopLevelBinding(
+                            BindingNode(
+                                None,
+                                None,
+                                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                                false,
+                                None,
+                                None,
+                                Choice1Of2(
+                                    IdentListNode(
+                                        [ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ],
+                                        Range.Zero
+                                    )
+                                ),
+                                None,
+                                List.Empty,
+                                None,
+                                SingleTextNode("=", Range.Zero),
+                                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                                Range.Zero
+                            )
+                        )
                     )
                 }
             }
@@ -180,22 +194,29 @@ module Foo =
         Oak() {
             Namespace("Fabulous.AST") {
                 Module("Foo") {
-                    BindingNode(
-                        None,
-                        None,
-                        MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                        false,
-                        None,
-                        None,
-                        Choice1Of2(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
-                        ),
-                        None,
-                        List.Empty,
-                        None,
-                        SingleTextNode("=", Range.Zero),
-                        Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                        Range.Zero
+                    EscapeHatch(
+                        ModuleDecl.TopLevelBinding(
+                            BindingNode(
+                                None,
+                                None,
+                                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                                false,
+                                None,
+                                None,
+                                Choice1Of2(
+                                    IdentListNode(
+                                        [ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ],
+                                        Range.Zero
+                                    )
+                                ),
+                                None,
+                                List.Empty,
+                                None,
+                                SingleTextNode("=", Range.Zero),
+                                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                                Range.Zero
+                            )
+                        )
                     )
                 }
 
