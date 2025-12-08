@@ -7,15 +7,18 @@ type WidgetDefinition =
       CreateView: Widget -> obj }
 
 module WidgetDefinitionStore =
+    let private _lock = obj()
     let private _widgets = ResizeArray<WidgetDefinition>()
-
     let mutable private _nextKey = 0
 
-    let get key = _widgets[key]
-    let set key value = _widgets[key] <- value
+    let get key = lock _lock (fun () -> _widgets[key])
+
+    let set key value =
+        lock _lock (fun () -> _widgets[key] <- value)
 
     let getNextKey() : WidgetKey =
-        _widgets.Add(Unchecked.defaultof<WidgetDefinition>)
-        let key = _nextKey
-        _nextKey <- _nextKey + 1
-        key
+        lock _lock (fun () ->
+            _widgets.Add(Unchecked.defaultof<WidgetDefinition>)
+            let key = _nextKey
+            _nextKey <- _nextKey + 1
+            key)

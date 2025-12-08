@@ -39,21 +39,25 @@ module WidgetCollectionAttributeDefinitions =
               Value = value }
 
 module AttributeDefinitionStore =
+    let private _lock = obj()
     let mutable private _scalarsCount = 0
     let mutable private _widgetsCount = 0
     let mutable private _widgetCollectionsCount = 0
 
     let getNextKeyForScalar() : ScalarAttributeKey =
-        let key = _scalarsCount * 1<scalarAttributeKey>
-        _scalarsCount <- _scalarsCount + 1
-        key
+        lock _lock (fun () ->
+            let key = _scalarsCount * 1<scalarAttributeKey>
+            _scalarsCount <- _scalarsCount + 1
+            key)
 
     let getNextKeyForWidget() : WidgetAttributeKey =
-        let key = _widgetsCount * 1<widgetAttributeKey>
-        _widgetsCount <- _widgetsCount + 1
-        key
+        lock _lock (fun () ->
+            let key = _widgetsCount * 1<widgetAttributeKey>
+            _widgetsCount <- _widgetsCount + 1
+            key)
 
     let getNextKeyForWidgetCollection() : WidgetCollectionAttributeKey =
-        let key = _widgetCollectionsCount * 1<widgetCollectionAttributeKey>
-        _widgetCollectionsCount <- _widgetCollectionsCount + 1
-        key
+        lock _lock (fun () ->
+            let key = _widgetCollectionsCount * 1<widgetCollectionAttributeKey>
+            _widgetCollectionsCount <- _widgetCollectionsCount + 1
+            key)
