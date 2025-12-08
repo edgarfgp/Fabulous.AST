@@ -125,28 +125,31 @@ type MyFloat = float
 
                 Abbrev("MyString", LongIdent "string")
 
-                TypeDefn.Abbrev(
-                    TypeDefnAbbrevNode(
-                        TypeNameNode(
-                            None,
-                            None,
-                            SingleTextNode("type", Range.Zero),
-                            Some(SingleTextNode("MyFloat", Range.Zero)),
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
-                            None,
+                EscapeHatch(
+                    TypeDefn.Abbrev(
+                        TypeDefnAbbrevNode(
+                            TypeNameNode(
+                                None,
+                                None,
+                                SingleTextNode("type", Range.Zero),
+                                Some(SingleTextNode("MyFloat", Range.Zero)),
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                                None,
+                                [],
+                                None,
+                                None,
+                                None,
+                                Range.Zero
+                            ),
+                            Type.LongIdent(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)
+                            ),
                             [],
-                            None,
-                            None,
-                            None,
                             Range.Zero
-                        ),
-                        Type.LongIdent(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)
-                        ),
-                        [],
-                        Range.Zero
+                        )
                     )
                 )
+
             }
         }
 

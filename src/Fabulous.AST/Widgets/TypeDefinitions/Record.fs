@@ -106,31 +106,25 @@ module RecordBuilders =
 
 type TypeDefnYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefn) : CollectionContent =
-        let moduleDecl = ModuleDecl.TypeDefn(x)
+    static member inline Yield
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefn>)
+        : CollectionContent =
+        let node = Gen.mkOak x
+        let moduleDecl = ModuleDecl.TypeDefn(node)
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefn>)
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefn> seq)
         : CollectionContent =
-        let node = Gen.mkOak x
-        TypeDefnYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefn seq) : CollectionContent =
         let widgets =
             x
-            |> Seq.map(fun t ->
-                let moduleDecl = ModuleDecl.TypeDefn(t)
+            |> Seq.map(fun wb ->
+                let node = Gen.mkOak wb
+                let moduleDecl = ModuleDecl.TypeDefn(node)
                 Ast.EscapeHatch(moduleDecl).Compile())
+            |> Seq.toArray
+            |> MutStackArray1.fromArray
 
-        { Widgets = MutStackArray1.fromArray(Seq.toArray widgets) }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefn> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        TypeDefnYieldExtensions.YieldFrom(this, nodes)
+        { Widgets = widgets }

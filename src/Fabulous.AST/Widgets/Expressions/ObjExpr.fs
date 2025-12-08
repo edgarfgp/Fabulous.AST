@@ -93,16 +93,11 @@ type ObjExprModifiers =
 
 type ObjExprYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<Expr, BindingNode>, x: BindingNode) : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Member(x))
-        { Widgets = MutStackArray1.One(widget.Compile()) }
-
-    [<Extension>]
     static member inline Yield
-        (this: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<BindingNode>)
+        (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<BindingNode>)
         : CollectionContent =
-        let node = Gen.mkOak x
-        ObjExprYieldExtensions.Yield(this, node)
+        let widget = Ast.EscapeHatch(MemberDefn.Member(Gen.mkOak x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
@@ -114,89 +109,55 @@ type ObjExprYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: MemberDefnInterfaceNode)
+        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>)
         : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.Interface(x)).Compile()
+        let widget = Ast.EscapeHatch(MemberDefn.Interface(Gen.mkOak x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (this: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<MemberDefnInterfaceNode>)
+        (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<ExprSingleNode>)
         : CollectionContent =
-        let node = Gen.mkOak x
-        ObjExprYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<Expr, BindingNode>, x: ExprSingleNode) : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.DoExpr(x)).Compile()
+        let widget = Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<ExprSingleNode>)
+    static member inline YieldFrom
+        (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<ExprSingleNode> seq)
         : CollectionContent =
-        let node = Gen.mkOak x
-        ObjExprYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom(_: CollectionBuilder<Expr, BindingNode>, x: ExprSingleNode seq) : CollectionContent =
         let widgets =
             x
-            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.DoExpr(node)).Compile())
+            |> Seq.map(fun wb -> Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak wb)).Compile())
             |> Seq.toArray
             |> MutStackArray1.fromArray
 
         { Widgets = widgets }
 
     [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<ExprSingleNode> seq)
+    static member inline Yield
+        (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<MemberDefn>)
         : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        ObjExprYieldExtensions.YieldFrom(this, nodes)
-
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<Expr, BindingNode>, x: MemberDefn) : CollectionContent =
-        match x with
+        match Gen.mkOak x with
         | MemberDefn.Member(bindingNode) ->
-            let widget = Ast.EscapeHatch(bindingNode)
-            { Widgets = MutStackArray1.One(widget.Compile()) }
+            let widget = Ast.EscapeHatch(bindingNode).Compile()
+            { Widgets = MutStackArray1.One(widget) }
         | _ -> failwith "Only MemberDefn.Member is supported in ObjExpr"
 
     [<Extension>]
     static member inline Yield
-        (this: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<MemberDefn>)
+        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<ExprSingleNode>)
         : CollectionContent =
-        let node = Gen.mkOak x
-        ObjExprYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline Yield(_: AttributeCollectionBuilder<Expr, MemberDefn>, x: ExprSingleNode) : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.DoExpr(x)).Compile()
+        let widget = Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak x)).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield
-        (this: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<ExprSingleNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        ObjExprYieldExtensions.Yield(this, node)
-
-    [<Extension>]
     static member inline YieldFrom
-        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: ExprSingleNode seq)
+        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<ExprSingleNode> seq)
         : CollectionContent =
         let widgets =
             x
-            |> Seq.map(fun node -> Ast.EscapeHatch(MemberDefn.DoExpr(node)).Compile())
+            |> Seq.map(fun wb -> Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak wb)).Compile())
             |> Seq.toArray
             |> MutStackArray1.fromArray
 
         { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<ExprSingleNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        ObjExprYieldExtensions.YieldFrom(this, nodes)
