@@ -154,3 +154,19 @@ module AppWithLambdaBuilders =
             =
             let arguments = arguments |> Seq.map Ast.ConstantExpr
             Ast.AppWithMatchLambdaExpr(Ast.ConstantExpr(funcName), arguments, clauses)
+
+        static member AppWithMatchLambdaExpr
+            (funcName: WidgetBuilder<Expr>, arguments: WidgetBuilder<Expr> seq, clause: WidgetBuilder<MatchClauseNode>)
+            =
+            Ast.AppWithMatchLambdaExpr(funcName, arguments, [ clause ])
+
+        static member AppWithMatchLambdaExpr
+            (funcName: string, arguments: WidgetBuilder<Expr> seq, clause: WidgetBuilder<MatchClauseNode>)
+            =
+            Ast.AppWithMatchLambdaExpr(Ast.ConstantExpr(funcName), arguments, clause)
+
+        static member AppWithMatchLambdaExpr
+            (funcName: string, arguments: string seq, clause: WidgetBuilder<MatchClauseNode>)
+            =
+            let arguments = arguments |> Seq.map Ast.ConstantExpr
+            Ast.AppWithMatchLambdaExpr(Ast.ConstantExpr(funcName), arguments, clause)

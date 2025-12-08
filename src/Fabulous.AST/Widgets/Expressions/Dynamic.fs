@@ -6,9 +6,9 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Dynamic =
-    let FunExpr = Attributes.defineWidget "Value"
+    let FunExpr = Attributes.defineWidget "FunExpr"
 
-    let ArgExpr = Attributes.defineWidget "Section"
+    let ArgExpr = Attributes.defineWidget "ArgExpr"
 
     let WidgetKey =
         Widgets.register "Dynamic" (fun widget ->
@@ -49,6 +49,9 @@ module DynamicBuilders =
 
         static member DynamicExpr(value: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.DynamicExpr(Ast.ConstantExpr(value), Ast.ConstantExpr(expr))
+
+        static member DynamicExpr(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.DynamicExpr(Ast.Constant(value), expr)
 
         static member DynamicExpr(value: string, expr: string) =
             Ast.DynamicExpr(Ast.Constant(value), Ast.Constant(expr))

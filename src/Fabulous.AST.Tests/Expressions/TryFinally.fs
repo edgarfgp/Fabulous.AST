@@ -36,3 +36,25 @@ try
 finally
     failwith "Not implemented"
 """
+
+    [<Fact>]
+    let ``TryFinally with Expr value and string finally``() =
+        Oak() { AnonymousModule() { TryFinallyExpr(AppExpr("compute", Int(10)), "cleanup()") } }
+        |> produces
+            """
+try
+    compute 10
+finally
+    cleanup()
+"""
+
+    [<Fact>]
+    let ``TryFinally with string value and Constant finally``() =
+        Oak() { AnonymousModule() { TryFinallyExpr("compute()", Int(0)) } }
+        |> produces
+            """
+try
+    compute()
+finally
+    0
+"""

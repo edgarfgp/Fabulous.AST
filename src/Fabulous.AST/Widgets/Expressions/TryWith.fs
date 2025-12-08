@@ -98,6 +98,30 @@ module TryWithBuilders =
             Ast.TryWithExpr(Ast.ConstantExpr(value), clauses)
 
         /// <summary>
+        /// Create a try-with expression with a single match clause.
+        /// </summary>
+        /// <param name="value">The expression to try.</param>
+        /// <param name="clause">The match clause for exception handling.</param>
+        static member TryWithExpr(value: WidgetBuilder<Expr>, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.TryWithExpr(value, [ clause ])
+
+        /// <summary>
+        /// Create a try-with expression with a constant value and a single match clause.
+        /// </summary>
+        /// <param name="value">The constant value to try.</param>
+        /// <param name="clause">The match clause for exception handling.</param>
+        static member TryWithExpr(value: WidgetBuilder<Constant>, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.TryWithExpr(Ast.ConstantExpr(value), clause)
+
+        /// <summary>
+        /// Create a try-with expression with a string literal value and a single match clause.
+        /// </summary>
+        /// <param name="value">The string literal to try.</param>
+        /// <param name="clause">The match clause for exception handling.</param>
+        static member TryWithExpr(value: string, clause: WidgetBuilder<MatchClauseNode>) =
+            Ast.TryWithExpr(Ast.Constant(value), clause)
+
+        /// <summary>
         /// Create a try-with expression with a single match clause for catching all exceptions.
         /// </summary>
         /// <param name="value">The expression to try.</param>

@@ -6,9 +6,9 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module TypeAppPostfix =
-    let First = Attributes.defineWidget "Type"
+    let First = Attributes.defineWidget "First"
 
-    let Last = Attributes.defineWidget "Type"
+    let Last = Attributes.defineWidget "Last"
 
     let WidgetKey =
         Widgets.register "TypeAppPostfix" (fun widget ->

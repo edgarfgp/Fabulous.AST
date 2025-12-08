@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module LibraryOnlyStaticOptimization =
-    let OptimizedValue = Attributes.defineWidget "Value"
+    let OptimizedValue = Attributes.defineWidget "OptimizedValue"
 
     let Value = Attributes.defineWidget "Value"
 

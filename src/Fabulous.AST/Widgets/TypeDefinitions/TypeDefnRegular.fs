@@ -10,7 +10,7 @@ open Fantomas.FCS.Text
 
 module TypeDefnRegular =
     let Name = Attributes.defineScalar<string> "Name"
-    let ImplicitConstructor = Attributes.defineWidget "SimplePats"
+    let ImplicitConstructor = Attributes.defineWidget "ImplicitConstructor"
     let Members = Attributes.defineWidgetCollection "Members"
 
     let WidgetKey =

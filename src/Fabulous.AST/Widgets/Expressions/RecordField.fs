@@ -31,7 +31,7 @@ module RecordField =
 module RecordFieldBuilders =
     type Ast with
 
-        static member inline RecordFieldExpr(name: string, expr: WidgetBuilder<Expr>) =
+        static member RecordFieldExpr(name: string, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<RecordFieldNode>(
                 RecordField.WidgetKey,
                 AttributesBundle(
@@ -41,8 +41,8 @@ module RecordFieldBuilders =
                 )
             )
 
-        static member inline RecordFieldExpr(name: string, expr: WidgetBuilder<Constant>) =
+        static member RecordFieldExpr(name: string, expr: WidgetBuilder<Constant>) =
             Ast.RecordFieldExpr(name, Ast.ConstantExpr(expr))
 
-        static member inline RecordFieldExpr(name: string, expr: string) =
+        static member RecordFieldExpr(name: string, expr: string) =
             Ast.RecordFieldExpr(name, Ast.Constant(expr))

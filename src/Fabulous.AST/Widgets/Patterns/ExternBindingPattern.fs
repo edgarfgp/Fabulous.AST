@@ -7,7 +7,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ExternBindingPattern =
-    let PatternVal = Attributes.defineWidget "DoExpression"
+    let PatternVal = Attributes.defineWidget "PatternVal"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"

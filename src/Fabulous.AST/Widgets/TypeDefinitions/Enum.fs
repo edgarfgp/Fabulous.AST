@@ -70,4 +70,5 @@ module EnumBuilders =
         /// }
         /// </code>
         static member Enum(name: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             CollectionBuilder<TypeDefn, EnumCaseNode>(Enum.WidgetKey, Enum.EnumCaseNode, Enum.Name.WithValue(name))

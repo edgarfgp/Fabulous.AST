@@ -199,3 +199,35 @@ with
 | :? System.InvalidOperationException as opEx -> handleOperationError opEx
 | ex -> handleGenericError ex
 """
+
+    [<Fact>]
+    let ``TryWith with single MatchClauseNode overloads``() =
+        Oak() {
+            AnonymousModule() {
+                // Expr value with single clause
+                TryWithExpr(AppExpr("compute", Int(10)), MatchClauseExpr("ex", ConstantExpr(Int(-1))))
+
+                // Constant value with single clause
+                TryWithExpr(Int(20), MatchClauseExpr("ex", ConstantExpr(Int(-1))))
+
+                // string value with single clause
+                TryWithExpr("computeValue()", MatchClauseExpr("ex", ConstantExpr(Int(-1))))
+            }
+        }
+        |> produces
+            """
+try
+    compute 10
+with
+| ex -> -1
+
+try
+    20
+with
+| ex -> -1
+
+try
+    computeValue()
+with
+| ex -> -1
+"""

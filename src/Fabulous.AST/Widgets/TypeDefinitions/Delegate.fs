@@ -85,6 +85,8 @@ module DelegateBuilders =
         static member private BaseDelegate
             (name: string, parameters: WidgetBuilder<Type> seq, returnType: WidgetBuilder<Type>)
             =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             WidgetBuilder<TypeDefn>(
                 Delegate.WidgetKey,
                 AttributesBundle(
