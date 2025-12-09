@@ -7,6 +7,7 @@
   "roles": ["admin", "user"],
   "address": {
     "street": "123 Main St",
+    "street2": "Apt 4B",
     "city": "Springfield",
     "zipCode": "12345"
   },

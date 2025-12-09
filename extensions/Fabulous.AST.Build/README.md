@@ -1,10 +1,10 @@
 # Fabulous.AST.Build
 
-An MSBuild task that automatically generates F# types from JSON files at build time.
+Automatically generate F# types from JSON files at build time.
 
-## What is it?
+## Overview
 
-Fabulous.AST.Build is a **build-time code generator** that:
+Fabulous.AST.Build is an **MSBuild task** that:
 
 - Watches JSON files in your project
 - Automatically generates F# record types during build
@@ -16,34 +16,35 @@ Fabulous.AST.Build is a **build-time code generator** that:
 - Keep type definitions in sync with JSON schemas
 - Automate type generation in CI/CD pipelines
 
-> **💡 Tip:** If you need programmatic control over generation, use [Fabulous.AST.Json](https://www.nuget.org/packages/Fabulous.AST.Json) directly.
+> **💡 Tip:** For programmatic control over generation, use [Fabulous.AST.Json](../Fabulous.AST.Json/README.md) directly.
 
 ## Installation
 
 ```bash
-dotnet add package Fabulous.AST.Json.Build
+dotnet add package Fabulous.AST.Build
 ```
 
 **Requirements:** .NET 8.0 or later
 
-## How to use
+## Tutorial
 
-### 1. Add JSON files to your project
+### Step 1: Create a JSON Schema File
 
-Create a JSON file with sample data, e.g., `Schemas/user.json`:
+Create a folder for your JSON schemas and add a sample file.
 
+**`schemas/user.json`:**
 ```json
 {
-  "id": 1,
-  "name": "Alice",
-  "email": "alice@example.com",
-  "isActive": true
+    "id": 1,
+    "name": "Alice",
+    "email": "alice@example.com",
+    "isActive": true
 }
 ```
 
-### 2. Configure your .fsproj
+### Step 2: Configure Your Project
 
-Add `FabulousAstJson` items to your project file:
+Add the `FabulousAstJson` item to your `.fsproj`:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -52,12 +53,12 @@ Add `FabulousAstJson` items to your project file:
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fabulous.AST.Json.Build" Version="1.0.0" />
+    <PackageReference Include="Fabulous.AST.Build" Version="1.0.0" />
   </ItemGroup>
 
-  <!-- Configure JSON files for type generation -->
+  <!-- Configure JSON file for type generation -->
   <ItemGroup>
-    <FabulousAstJson Include="Schemas/user.json" />
+    <FabulousAstJson Include="schemas/user.json" />
   </ItemGroup>
 
   <!-- Include the generated file in compilation -->
@@ -67,55 +68,100 @@ Add `FabulousAstJson` items to your project file:
 </Project>
 ```
 
-### 3. Build your project
+### Step 3: Build Your Project
 
 ```bash
 dotnet build
 ```
 
-The task generates `Generated/user.Generated.fs`:
+This generates `Generated/user.Generated.fs`:
 
 ```fsharp
-// Auto-generated from Schemas/user.json
-// Do not edit manually
+// Auto-generated from schemas/user.json
+// Hash: abc123...
+// Do not edit manually - changes will be overwritten
 
-type User = { 
+type User = {
     id: int
     name: string
     email: string
-    isActive: bool 
+    isActive: bool
 }
 ```
 
-## Configuration options
+### Step 4: Custom Root Type Name
 
-### Custom output directory
-
-```xml
-<PropertyGroup>
-  <FabulousAstJsonOutputDir>Types</FabulousAstJsonOutputDir>
-</PropertyGroup>
-```
-
-Generated files will be placed in the `Types/` directory.
-
-### Custom root type name
-
-By default, the root type name is derived from the JSON filename. Override it with `RootName`:
+By default, the root type name is derived from the filename. Override it with `RootName`:
 
 ```xml
 <ItemGroup>
-  <FabulousAstJson Include="Schemas/api-response.json" RootName="ApiResponse" />
+  <FabulousAstJson Include="schemas/api-response.json" RootName="ApiResponse" />
 </ItemGroup>
 ```
 
-### Multiple JSON files
+### Step 5: Add a Namespace
+
+Wrap generated types in a namespace:
 
 ```xml
 <ItemGroup>
-  <FabulousAstJson Include="Schemas/user.json" />
-  <FabulousAstJson Include="Schemas/product.json" RootName="Product" />
-  <FabulousAstJson Include="Schemas/order.json" RootName="CustomerOrder" />
+  <FabulousAstJson Include="schemas/user.json"
+                   RootName="User"
+                   Namespace="MyApp.Models" />
+</ItemGroup>
+```
+
+**Output:**
+```fsharp
+namespace MyApp.Models
+
+type User = {
+    id: int
+    name: string
+    email: string
+    isActive: bool
+}
+```
+
+### Step 6: Use a Module Instead
+
+Use `ModuleName` for a module wrapper:
+
+```xml
+<ItemGroup>
+  <FabulousAstJson Include="schemas/user.json"
+                   RootName="User"
+                   ModuleName="MyApp.Models" />
+</ItemGroup>
+```
+
+**Output:**
+```fsharp
+module MyApp.Models
+
+type User = {
+    id: int
+    name: string
+    email: string
+    isActive: bool
+}
+```
+
+### Step 7: Multiple JSON Files
+
+Process multiple schemas with different configurations:
+
+```xml
+<ItemGroup>
+  <FabulousAstJson Include="schemas/user.json"
+                   RootName="User"
+                   Namespace="MyApp.Models" />
+  <FabulousAstJson Include="schemas/product.json"
+                   RootName="Product"
+                   Namespace="MyApp.Models" />
+  <FabulousAstJson Include="schemas/order.json"
+                   RootName="CustomerOrder"
+                   Namespace="MyApp.Orders" />
 </ItemGroup>
 
 <ItemGroup>
@@ -125,79 +171,169 @@ By default, the root type name is derived from the JSON filename. Override it wi
 </ItemGroup>
 ```
 
-### Using glob patterns
+### Step 8: Custom Output Directory
+
+Change where generated files are placed:
+
+```xml
+<PropertyGroup>
+  <FabulousAstJsonOutputDir>Types/</FabulousAstJsonOutputDir>
+</PropertyGroup>
+```
+
+### Step 9: Glob Patterns
+
+Process all JSON files in a directory:
 
 ```xml
 <ItemGroup>
-  <FabulousAstJson Include="Schemas/**/*.json" />
+  <FabulousAstJson Include="schemas/**/*.json" />
 </ItemGroup>
 ```
 
-## Generated output
+### Step 10: Custom Output Filename
 
-### From objects
+Override the default `{filename}.Generated.fs` pattern:
 
-**Input (`user.json`):**
-```json
-{ "name": "Alice", "age": 30 }
+```xml
+<ItemGroup>
+  <FabulousAstJson Include="schemas/user.json"
+                   OutputFileName="UserTypes.fs" />
+</ItemGroup>
 ```
 
-**Output (`user.Generated.fs`):**
-```fsharp
-type User = { name: string; age: int }
-```
+## Configuration Reference
 
-### From arrays
+### Project Properties
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `FabulousAstJsonOutputDir` | `$(MSBuildProjectDirectory)\Generated\` | Output directory for generated files |
+| `EnableFabulousAstJsonGeneration` | `true` | Enable/disable generation (useful for CI) |
+
+### Item Metadata
+
+| Metadata | Default | Description |
+|----------|---------|-------------|
+| `RootName` | `Root` | Name of the root type |
+| `Namespace` | _(empty)_ | Namespace to wrap types in |
+| `ModuleName` | _(empty)_ | Module to wrap types in (alternative to Namespace) |
+| `OutputFileName` | `{InputName}.Generated.fs` | Custom output filename |
+
+## Type Inference
+
+The generator infers F# types from JSON values:
+
+| JSON Value | F# Type |
+|------------|---------|
+| `"string"` | `string` |
+| `123` | `int` |
+| `9999999999` | `int64` |
+| `123.45` | `float` |
+| `true`/`false` | `bool` |
+| `null` | `obj` |
+| `[...]` | `ElementType list` |
+| `{...}` | Record type |
+
+### Arrays Become List Types
 
 **Input (`users.json`):**
 ```json
-[{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }]
+[
+    { "id": 1, "name": "Alice" },
+    { "id": 2, "name": "Bob" }
+]
 ```
 
-**Output (`users.Generated.fs`):**
+**Output:**
 ```fsharp
 type UsersItem = { id: int; name: string }
 type Users = UsersItem list
 ```
 
-### Nested objects
+### Nested Objects Become Nested Types
 
 **Input (`company.json`):**
 ```json
 {
-  "name": "Acme Corp",
-  "address": {
-    "street": "123 Main St",
-    "city": "London"
-  }
+    "name": "Acme Corp",
+    "address": {
+        "street": "123 Main St",
+        "city": "London"
+    }
 }
 ```
 
-**Output (`company.Generated.fs`):**
+**Output:**
 ```fsharp
-type CompanyAddress = { street: string; city: string }
-type Company = { name: string; address: CompanyAddress }
+type Address = { street: string; city: string }
+type Company = { name: string; address: Address }
 ```
 
-## Incremental builds
+### Optional Fields
 
-The task uses content hashing to detect changes. Files are only regenerated when:
-- The JSON file content changes
-- The generated file is missing
-- Configuration options change
+Fields missing or null in some array objects become `option` types:
 
-This ensures fast incremental builds.
+**Input:**
+```json
+[
+    { "id": 1, "name": "Alice", "nickname": "Ali" },
+    { "id": 2, "name": "Bob" }
+]
+```
+
+**Output:**
+```fsharp
+type RootItem = { id: int; name: string; nickname: string option }
+type Root = RootItem list
+```
+
+## Special Field Name Handling
+
+### Leading Digits
+
+JSON fields starting with digits are prefixed with `_`:
+
+```json
+{ "2faEnabled": true }
+```
+
+Generates:
+```fsharp
+type Root = { _2faEnabled: bool }
+```
+
+### Reserved Keywords
+
+F# keywords are escaped with double backticks:
+
+```json
+{ "type": "admin", "class": "premium" }
+```
+
+Generates:
+```fsharp
+type Root = { ``type``: string; ``class``: string }
+```
+
+## Incremental Builds
+
+The task uses content hashing for smart rebuilds:
+
+- Files are only regenerated when JSON content changes
+- Configuration changes (RootName, Namespace, etc.) trigger regeneration
+- Generated files include a hash comment for verification
 
 ## Troubleshooting
 
-### Generated file not updating
+### Generated File Not Updating
 
-1. Ensure the JSON file is included as `FabulousAstJson`:
+1. Ensure the file is included as `FabulousAstJson`:
    ```xml
    <FabulousAstJson Include="path/to/file.json" />
    ```
 
-2. Check that the generated file is included in compilation:
+2. Ensure the generated file is in `Compile`:
    ```xml
    <Compile Include="Generated/file.Generated.fs" />
    ```
@@ -207,11 +343,29 @@ This ensures fast incremental builds.
    dotnet clean && dotnet build
    ```
 
-### Build errors in generated code
+### Task Assembly Not Found
 
-Check that your JSON is valid. The generator requires well-formed JSON input.
+If you see "Skipping generation because task assembly not found":
 
-## Related packages
+1. Ensure you've restored packages: `dotnet restore`
+2. For local development, build Fabulous.AST.Build first
+
+### Disable Generation
+
+Disable generation for CI or specific builds:
+
+```xml
+<PropertyGroup>
+  <EnableFabulousAstJsonGeneration>false</EnableFabulousAstJsonGeneration>
+</PropertyGroup>
+```
+
+Or via command line:
+```bash
+dotnet build -p:EnableFabulousAstJsonGeneration=false
+```
+
+## Related Packages
 
 - **[Fabulous.AST](https://www.nuget.org/packages/Fabulous.AST)** - Core DSL for generating F# code
 - **[Fabulous.AST.Json](https://www.nuget.org/packages/Fabulous.AST.Json)** - Programmatic API for JSON-to-F# generation

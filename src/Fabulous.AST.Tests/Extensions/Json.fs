@@ -357,3 +357,67 @@ type FunctionsItem =
 type Root = { Functions: FunctionsItem list }
 
 """
+
+    [<Fact>]
+    let ``Handles field names starting with digits``() =
+        Oak() { AnonymousModule() { Json("{ \"123field\": \"value\", \"1st\": 1 }") } }
+        |> produces
+            """
+
+type Root = { _123field: string; _1st: int }
+
+"""
+
+    [<Fact>]
+    let ``Handles large int64 numbers correctly``() =
+        Oak() { AnonymousModule() { Json("{ \"bigNum\": 9223372036854775807 }") } }
+        |> produces
+            """
+
+type Root = { bigNum: int64 }
+
+"""
+
+    [<Fact>]
+    let ``Handles floating point numbers``() =
+        Oak() { AnonymousModule() { Json("{ \"price\": 123.456789012345 }") } }
+        |> produces
+            """
+
+type Root = { price: float }
+
+"""
+
+    [<Fact>]
+    let ``Handles null-only fields as obj option``() =
+        Oak() { AnonymousModule() { Json("{ \"data\": null }") } }
+        |> produces
+            """
+
+type Root = { data: obj }
+
+"""
+
+    [<Fact>]
+    let ``Handles type name starting with digit in nested object``() =
+        Oak() { AnonymousModule() { Json("{ \"123nested\": { \"value\": 1 } }") } }
+        |> produces
+            """
+
+type _123nested = { value: int }
+type Root = { _123nested: _123nested }
+
+"""
+
+    [<Fact>]
+    let ``Escapes F# reserved keywords in field names``() =
+        Oak() { AnonymousModule() { Json("{ \"type\": \"post\", \"module\": \"core\", \"match\": true }") } }
+        |> produces
+            """
+
+type Root =
+    { ``type``: string
+      ``module``: string
+      ``match``: bool }
+
+"""

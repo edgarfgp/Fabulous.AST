@@ -1,0 +1,162 @@
+{
+  "apiVersion": "v2.1.0",
+  "requestId": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2025-01-15T10:30:00Z",
+  "success": true,
+  "pagination": {
+    "page": 1,
+    "pageSize": 25,
+    "totalItems": 1542,
+    "totalPages": 62,
+    "hasNextPage": true,
+    "hasPreviousPage": false
+  },
+  "metadata": {
+    "serverRegion": "us-west-2",
+    "responseTimeMs": 145.67,
+    "cacheHit": false,
+    "deprecationWarnings": null,
+    "experimentalFeatures": ["beta-search", "ai-recommendations"]
+  },
+  "data": {
+    "users": [
+      {
+        "id": 9223372036854775807,
+        "username": "alice_wonder",
+        "email": "alice@example.com",
+        "profile": {
+          "firstName": "Alice",
+          "lastName": "Wonder",
+          "displayName": "Alice W.",
+          "bio": "Software engineer and open source contributor",
+          "avatarUrl": "https://example.com/avatars/alice.png",
+          "coverImageUrl": null,
+          "dateOfBirth": "1990-05-15",
+          "timezone": "America/Los_Angeles"
+        },
+        "settings": {
+          "theme": "dark",
+          "language": "en-US",
+          "notifications": {
+            "email": true,
+            "push": true,
+            "sms": false,
+            "frequency": "daily"
+          },
+          "privacy": {
+            "profileVisibility": "public",
+            "showEmail": false,
+            "showActivity": true,
+            "allowTagging": true
+          },
+          "2faEnabled": true
+        },
+        "stats": {
+          "followers": 15420,
+          "following": 342,
+          "posts": 891,
+          "likes": 45230,
+          "reputation": 98.75,
+          "level": 42
+        },
+        "roles": ["user", "moderator", "beta-tester"],
+        "permissions": {
+          "canPost": true,
+          "canComment": true,
+          "canModerate": true,
+          "canAccessAdmin": false,
+          "maxUploadSizeMb": 100
+        },
+        "subscription": {
+          "plan": "premium",
+          "status": "active",
+          "startDate": "2024-01-01",
+          "renewalDate": "2025-01-01",
+          "price": 9.99,
+          "currency": "USD",
+          "features": ["ad-free", "priority-support", "early-access"]
+        },
+        "recentActivity": [
+          {
+            "type": "post",
+            "action": "created",
+            "targetId": "post-12345",
+            "timestamp": "2025-01-14T18:30:00Z",
+            "metadata": {
+              "title": "My First Post",
+              "category": "technology"
+            }
+          },
+          {
+            "type": "comment",
+            "action": "replied",
+            "targetId": "comment-67890",
+            "timestamp": "2025-01-14T19:45:00Z",
+            "metadata": {
+              "parentPostId": "post-11111",
+              "mentionedUsers": ["bob", "charlie"]
+            }
+          }
+        ],
+        "connectedAccounts": [
+          {
+            "provider": "github",
+            "providerId": "gh-123456",
+            "connectedAt": "2024-06-15T10:00:00Z",
+            "lastSync": "2025-01-15T08:00:00Z"
+          },
+          {
+            "provider": "google",
+            "providerId": "goog-789012",
+            "connectedAt": "2024-03-20T14:30:00Z",
+            "lastSync": "2025-01-15T09:15:00Z"
+          }
+        ],
+        "address": {
+          "line1": "123 Main Street",
+          "line2": "Apt 4B",
+          "city": "San Francisco",
+          "state": "CA",
+          "postalCode": "94102",
+          "country": "US",
+          "coordinates": {
+            "latitude": 37.7749,
+            "longitude": -122.4194
+          }
+        },
+        "createdAt": "2023-06-15T08:00:00Z",
+        "updatedAt": "2025-01-15T10:29:00Z",
+        "lastLoginAt": "2025-01-15T10:00:00Z",
+        "isVerified": true,
+        "isActive": true,
+        "deletedAt": null
+      }
+    ],
+    "summary": {
+      "totalUsers": 1542,
+      "activeUsers": 1398,
+      "newUsersToday": 23,
+      "premiumUsers": 456,
+      "averageSessionMinutes": 34.5
+    }
+  },
+  "errors": [],
+  "warnings": [
+    {
+      "code": "RATE_LIMIT_WARNING",
+      "message": "You are approaching the rate limit",
+      "details": {
+        "currentUsage": 850,
+        "limit": 1000,
+        "resetAt": "2025-01-15T11:00:00Z"
+      }
+    }
+  ],
+  "links": {
+    "self": "https://api.example.com/v2/users?page=1",
+    "next": "https://api.example.com/v2/users?page=2",
+    "prev": null,
+    "first": "https://api.example.com/v2/users?page=1",
+    "last": "https://api.example.com/v2/users?page=62"
+  }
+}
