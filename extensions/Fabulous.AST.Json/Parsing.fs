@@ -1,7 +1,6 @@
 namespace Fabulous.AST.Json
 
 open System
-open System.Diagnostics
 open System.Globalization
 open System.Text.Json
 open System.Text.Json.Nodes
@@ -28,18 +27,110 @@ module Parsing =
         if parts.Length = 0 then
             fallback
         else
-            parts
-            |> Array.map(fun p ->
-                if p.Length = 0 then
-                    p
-                else
-                    let first = Char.ToUpper(p[0], CultureInfo.InvariantCulture)
-
-                    if p.Length = 1 then
-                        string first
+            let result =
+                parts
+                |> Array.map(fun p ->
+                    if p.Length = 0 then
+                        p
                     else
-                        string first + p.Substring(1))
-            |> String.concat ""
+                        let first = Char.ToUpper(p[0], CultureInfo.InvariantCulture)
+
+                        if p.Length = 1 then
+                            string first
+                        else
+                            string first + p.Substring(1))
+                |> String.concat ""
+
+            // F# identifiers cannot start with a digit, prefix with underscore if needed
+            if result.Length > 0 && Char.IsDigit(result[0]) then
+                "_" + result
+            else
+                result
+
+    /// F# reserved keywords that cannot be used as identifiers
+    let private fsharpKeywords =
+        Set.ofList
+            [ "abstract"
+              "and"
+              "as"
+              "assert"
+              "base"
+              "begin"
+              "class"
+              "default"
+              "delegate"
+              "do"
+              "done"
+              "downcast"
+              "downto"
+              "elif"
+              "else"
+              "end"
+              "exception"
+              "extern"
+              "false"
+              "finally"
+              "fixed"
+              "for"
+              "fun"
+              "function"
+              "global"
+              "if"
+              "in"
+              "inherit"
+              "inline"
+              "interface"
+              "internal"
+              "lazy"
+              "let"
+              "match"
+              "member"
+              "module"
+              "mutable"
+              "namespace"
+              "new"
+              "not"
+              "null"
+              "of"
+              "open"
+              "or"
+              "override"
+              "private"
+              "public"
+              "rec"
+              "return"
+              "select"
+              "static"
+              "struct"
+              "then"
+              "to"
+              "true"
+              "try"
+              "type"
+              "upcast"
+              "use"
+              "val"
+              "void"
+              "when"
+              "while"
+              "with"
+              "yield"
+              // OCaml keywords for compatibility
+              "asr"
+              "land"
+              "lor"
+              "lsl"
+              "lsr"
+              "lxor"
+              "mod"
+              "sig" ]
+
+    /// Sanitize a field name for F# (handles leading digits and reserved keywords)
+    let sanitizeFieldName(name: string) : string =
+        if String.IsNullOrEmpty(name) then "_field"
+        elif Char.IsDigit(name[0]) then "_" + name
+        elif fsharpKeywords.Contains(name) then "``" + name + "``"
+        else name
 
     // ─────────────────────────────────────────────────────────────────────────
     // AST Helpers
@@ -66,8 +157,9 @@ module Parsing =
         try
             let _ = v.GetValue<'T>()
             true
-        with _ ->
-            false
+        with
+        | :? InvalidOperationException
+        | :? FormatException -> false
 
     /// Get the JsonValueKind for a JsonValue without throwing.
     /// Prefer JsonValue.GetValueKind() (STJ 8+) and fall back to obtaining a JsonElement.
@@ -88,12 +180,16 @@ module Parsing =
         | JsonValueKind.False -> longIdent "bool"
         | JsonValueKind.String -> longIdent "string"
         | JsonValueKind.Number ->
-            if tryJsonValue<int64> v then longIdent "int"
+            // Check int first, then int64 for large integers, then float for decimals
+            // Note: We use float (not decimal) as the default for floating-point numbers
+            // because it's more common in JSON APIs and F# serialization libraries
+            if tryJsonValue<int> v then longIdent "int"
+            elif tryJsonValue<int64> v then longIdent "int64"
             elif tryJsonValue<double> v then longIdent "float"
             else longIdent "float"
         | JsonValueKind.Null
         | JsonValueKind.Undefined
-        | _ -> longIdent "string"
+        | _ -> longIdent "obj"
 
     // ─────────────────────────────────────────────────────────────────────────
     // Generation State
@@ -237,14 +333,6 @@ module Parsing =
         (input: string)
         : ModuleOrNamespaceNode =
 
-        // Debug: surface selected JsonDocumentOptions used for parsing
-        Debug.WriteLine(
-            "[DEBUG_LOG] JsonDocumentOptions: AllowTrailingCommas={0}; CommentHandling={1}; MaxDepth={2}",
-            documentOptions.AllowTrailingCommas,
-            documentOptions.CommentHandling,
-            documentOptions.MaxDepth
-        )
-
         let root =
             try
                 JsonNode.Parse(input, nodeOptions, documentOptions)
@@ -334,7 +422,7 @@ module Parsing =
                             | Some t -> t, stAcc
                             | None ->
                                 if isNull fnode then
-                                    longIdent "string", stAcc
+                                    longIdent "obj", stAcc
                                 else
                                     genType (toPascalCase fname "Field") fnode stAcc
 
@@ -344,8 +432,11 @@ module Parsing =
                             else
                                 baseType
 
+                        // Sanitize field name for F# (handles leading digits)
+                        let sanitizedFieldName = sanitizeFieldName fname
+
                         let fieldNode =
-                            FieldNode(None, None, None, None, None, Some(ident fname), ftype, Range.Zero)
+                            FieldNode(None, None, None, None, None, Some(ident sanitizedFieldName), ftype, Range.Zero)
 
                         fieldNode :: accFields, stAcc')
 

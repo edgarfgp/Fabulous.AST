@@ -13,7 +13,7 @@
 
     <!-- Resolve the actual task assembly to load: prefer packaged path, fall back to local bin output -->
     <_FabulousAstJsonTaskAssembly Condition="Exists('$(_FabulousAstJsonTaskAssemblyPack)')">$(_FabulousAstJsonTaskAssemblyPack)</_FabulousAstJsonTaskAssembly>
-    <_FabulousAstJsonTaskAssembly Condition="'$( _FabulousAstJsonTaskAssembly )' == '' AND Exists('$(_FabulousAstJsonTaskAssemblyBin)')">$(_FabulousAstJsonTaskAssemblyBin)</_FabulousAstJsonTaskAssembly>
+    <_FabulousAstJsonTaskAssembly Condition="'$(_FabulousAstJsonTaskAssembly)' == '' AND Exists('$(_FabulousAstJsonTaskAssemblyBin)')">$(_FabulousAstJsonTaskAssemblyBin)</_FabulousAstJsonTaskAssembly>
   </PropertyGroup>
 
   <!-- Import the task assembly -->

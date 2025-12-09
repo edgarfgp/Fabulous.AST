@@ -6,6 +6,7 @@ open Microsoft.Build.Framework
 open Microsoft.Build.Utilities
 open Fabulous.AST
 open Fabulous.AST.Json
+open type Fabulous.AST.Ast
 
 /// MSBuild Task that generates F# types from JSON files
 type FabulousAstJsonTask() =
@@ -109,11 +110,12 @@ type FabulousAstJsonTask() =
           ModuleName = item.GetMetadata("ModuleName") }
 
     member private _.GenerateCode(jsonContent: string, config: JsonGenerationItem) : string =
-        let jsonWidget = Ast.Json(jsonContent).rootName(config.RootName)
+        let jsonWidget = Json(jsonContent).rootName(config.RootName)
 
         let oak =
-            match config.Namespace with
-            | ns when not(String.IsNullOrEmpty(ns)) -> Ast.Oak() { Ast.Namespace(ns) { jsonWidget } }
-            | _ -> Ast.Oak() { Ast.AnonymousModule() { jsonWidget } }
+            match config.Namespace, config.ModuleName with
+            | ns, _ when not(String.IsNullOrEmpty(ns)) -> Oak() { Namespace(ns) { jsonWidget } }
+            | _, m when not(String.IsNullOrEmpty(m)) -> Oak() { Module(m) { jsonWidget } }
+            | _ -> Oak() { AnonymousModule() { jsonWidget } }
 
         oak |> Gen.mkOak |> Gen.run
