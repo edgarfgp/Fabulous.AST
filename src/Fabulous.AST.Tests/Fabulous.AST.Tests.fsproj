@@ -150,4 +150,8 @@
       <ProjectReference Include="..\Fabulous.AST\Fabulous.AST.fsproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>
