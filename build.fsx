@@ -6,7 +6,6 @@ open Fun.Build
 
 let (</>) a b = Path.Combine(a, b)
 let sln = __SOURCE_DIRECTORY__ </> "Fabulous.AST.sln"
-let mainProj = __SOURCE_DIRECTORY__ </> "src/Fabulous.AST/Fabulous.AST.fsproj"
 let config = "Release"
 let nupkgs = __SOURCE_DIRECTORY__ </> "nupkgs"
 
