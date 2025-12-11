@@ -49,11 +49,11 @@ module AttributeDefinitionStore =
         key
 
     let getNextKeyForWidget() : WidgetAttributeKey =
-        let key = _scalarsCount * 1<widgetAttributeKey>
-        _scalarsCount <- _scalarsCount + 1
+        let key = _widgetsCount * 1<widgetAttributeKey>
+        _widgetsCount <- _widgetsCount + 1
         key
 
     let getNextKeyForWidgetCollection() : WidgetCollectionAttributeKey =
-        let key = _scalarsCount * 1<widgetCollectionAttributeKey>
-        _scalarsCount <- _scalarsCount + 1
+        let key = _widgetCollectionsCount * 1<widgetCollectionAttributeKey>
+        _widgetCollectionsCount <- _widgetCollectionsCount + 1
         key
