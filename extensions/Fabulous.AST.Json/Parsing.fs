@@ -125,12 +125,23 @@ module Parsing =
               "mod"
               "sig" ]
 
-    /// Sanitize a field name for F# (handles leading digits and reserved keywords)
+    /// Check if a string contains characters that require backtick escaping in F#
+    let private requiresBacktickEscaping(name: string) : bool =
+        name
+        |> Seq.exists(fun c -> not(Char.IsLetterOrDigit(c)) && c <> '_' && c <> '\'')
+
+    /// Sanitize a field name for F# (handles leading digits, reserved keywords, and special characters)
     let sanitizeFieldName(name: string) : string =
-        if String.IsNullOrEmpty(name) then "_field"
-        elif Char.IsDigit(name[0]) then "_" + name
-        elif fsharpKeywords.Contains(name) then "``" + name + "``"
-        else name
+        if String.IsNullOrEmpty(name) then
+            "_field"
+        elif Char.IsDigit(name[0]) then
+            "_" + name
+        elif fsharpKeywords.Contains(name) || requiresBacktickEscaping name then
+            // Escape any existing backticks by doubling them
+            let escaped = name.Replace("``", "````")
+            "``" + escaped + "``"
+        else
+            name
 
     // ─────────────────────────────────────────────────────────────────────────
     // AST Helpers

@@ -421,3 +421,48 @@ type Root =
       ``match``: bool }
 
 """
+
+    [<Fact>]
+    let ``Handles field names with special characters``() =
+        Oak() { AnonymousModule() { Json("{ \"field:name\": 1, \"field}name\": 2, \"field//comment\": 3 }") } }
+        |> produces
+            """
+
+type Root =
+    { ``field:name``: int
+      ``field}name``: int
+      ``field//comment``: int }
+
+"""
+
+    [<Fact>]
+    let ``Handles field names with backticks``() =
+        Oak() { AnonymousModule() { Json("{ \"field``name\": 1 }") } }
+        |> produces
+            """
+
+type Root = { ``field````name``: int }
+
+"""
+
+    [<Fact>]
+    let ``Handles field names with spaces``() =
+        Oak() { AnonymousModule() { Json("{ \"field name\": 1, \"another field\": 2 }") } }
+        |> produces
+            """
+
+type Root =
+    { ``field name``: int
+      ``another field``: int }
+
+"""
+
+    [<Fact>]
+    let ``Normal field names are not wrapped in backticks``() =
+        Oak() { AnonymousModule() { Json("{ \"normalName\": 1, \"another_field\": 2 }") } }
+        |> produces
+            """
+
+type Root = { normalName: int; another_field: int }
+
+"""
