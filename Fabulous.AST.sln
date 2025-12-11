@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -19,11 +19,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution items", "_Solutio
 		Directory.Packages.props = Directory.Packages.props
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONTRIBUTING.md = CONTRIBUTING.md
+		extensions\Fabulous.AST.Build\CHANGELOG.md = extensions\Fabulous.AST.Build\CHANGELOG.md
+		extensions\Fabulous.AST.Json\CHANGELOG.md = extensions\Fabulous.AST.Json\CHANGELOG.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{272B82D3-B8F4-4D4E-A62B-CFCA65F108F0}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Playground", "samples\Playground\Playground.fsproj", "{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", "{42F05179-6521-438E-8A48-88DAAF69613C}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Json", "extensions\Fabulous.AST.Json\Fabulous.AST.Json.fsproj", "{E24BB01E-F3B4-40E8-AF42-7717909D7AAC}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fabulous.AST.Build", "extensions\Fabulous.AST.Build\Fabulous.AST.Build.fsproj", "{D6BDB5DB-93E4-457C-872E-AB9D8223EB08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,8 +54,18 @@ Global
 		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E24BB01E-F3B4-40E8-AF42-7717909D7AAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E24BB01E-F3B4-40E8-AF42-7717909D7AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E24BB01E-F3B4-40E8-AF42-7717909D7AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E24BB01E-F3B4-40E8-AF42-7717909D7AAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6BDB5DB-93E4-457C-872E-AB9D8223EB08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6BDB5DB-93E4-457C-872E-AB9D8223EB08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6BDB5DB-93E4-457C-872E-AB9D8223EB08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6BDB5DB-93E4-457C-872E-AB9D8223EB08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{76EB077A-B82D-49D1-935D-C3AE91CAFA1A} = {272B82D3-B8F4-4D4E-A62B-CFCA65F108F0}
+		{E24BB01E-F3B4-40E8-AF42-7717909D7AAC} = {42F05179-6521-438E-8A48-88DAAF69613C}
+		{D6BDB5DB-93E4-457C-872E-AB9D8223EB08} = {42F05179-6521-438E-8A48-88DAAF69613C}
 	EndGlobalSection
 EndGlobal

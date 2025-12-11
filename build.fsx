@@ -24,7 +24,7 @@ pipeline "ci" {
 
     stage "lint" {
         run "dotnet tool restore"
-        run $"dotnet fantomas --check {__SOURCE_FILE__} src docs"
+        run $"dotnet fantomas --check {__SOURCE_FILE__} src docs extensions"
     }
 
     stage "build" {
@@ -35,6 +35,8 @@ pipeline "ci" {
 
     stage "docs" {
         run $"dotnet publish src/Fabulous.AST -f netstandard2.1 -c {config}"
+        run $"dotnet publish extensions/Fabulous.AST.Json -f net8.0 -c {config}"
+        run $"dotnet publish extensions/Fabulous.AST.Build -f net8.0 -c {config}"
         run $"dotnet fsdocs build --properties Configuration={config} --eval --strict"
     }
 
@@ -45,7 +47,13 @@ pipeline "ci" {
 
 pipeline "docs" {
     description "Run the documentation website"
-    stage "build" { run "dotnet publish src/Fabulous.AST -f netstandard2.1 -c Release" }
+
+    stage "build" {
+        run "dotnet publish src/Fabulous.AST -f netstandard2.1 -c Release"
+        run "dotnet publish extensions/Fabulous.AST.Json -f net8.0 -c Release"
+        run "dotnet publish extensions/Fabulous.AST.Build -f net8.0 -c Release"
+    }
+
     stage "watch" { run "dotnet fsdocs watch --eval --clean" }
     runIfOnlySpecified true
 }
