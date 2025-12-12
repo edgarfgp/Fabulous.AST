@@ -8,24 +8,24 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Val =
-    let XmlDocs = Attributes.defineWidget "XmlDocs"
-
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
     let LeadingKeyword = Attributes.defineScalar<SingleTextNode seq> "LeadingKeyword"
-
-    let IsInlined = Attributes.defineScalar<bool> "Inlined"
-
-    let IsMutable = Attributes.defineScalar<bool> "IsMutable"
 
     let Identifier = Attributes.defineScalar<string> "Identifier"
 
-    let ReturnType = Attributes.defineWidget "Identifier"
+    let ReturnType = Attributes.defineWidget "ReturnType"
 
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+    let XmlDocs = Attributes.defineWidget "ValXmlDocs"
 
-    let TypeParams = Attributes.defineWidget "TypeParams"
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode seq> "ValMultipleAttributes"
+
+    let Accessibility = Attributes.defineScalar<AccessControl> "ValAccessibility"
+
+    let TypeParams = Attributes.defineWidget "ValTypeParams"
+
+    let IsMutable = Attributes.defineScalar<bool> "ValIsMutable"
+
+    let IsInlined = Attributes.defineScalar<bool> "ValIsInlined"
 
     let WidgetKey =
         Widgets.register "ValNode" (fun widget ->
@@ -39,12 +39,10 @@ module Val =
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            let inlined = Widgets.tryGetScalarValue widget IsInlined
-
             let inlined =
-                match inlined with
-                | ValueSome _ -> Some(SingleTextNode.``inline``)
-                | ValueNone -> None
+                Widgets.tryGetScalarValue widget IsInlined
+                |> ValueOption.map(fun _ -> Some(SingleTextNode.``inline``))
+                |> ValueOption.defaultValue None
 
             let isMutable =
                 Widgets.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue(false)
@@ -341,33 +339,23 @@ type ValNodeModifiers =
 
 type ValYieldExtensions =
     [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ValNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.Val x
+    static member inline Yield
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ValNode>)
+        : CollectionContent =
+        let moduleDecl = ModuleDecl.Val(Gen.mkOak x)
         let widget = Ast.EscapeHatch(moduleDecl).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ValNode>)
+    static member inline YieldFrom
+        (_: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ValNode> seq)
         : CollectionContent =
-        let node = Gen.mkOak x
-        ValYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom(_: CollectionBuilder<'parent, ModuleDecl>, x: ValNode seq) : CollectionContent =
         let widgets =
             x
-            |> Seq.map(fun node ->
-                let moduleDecl = ModuleDecl.Val node
+            |> Seq.map(fun wb ->
+                let moduleDecl = ModuleDecl.Val(Gen.mkOak wb)
                 Ast.EscapeHatch(moduleDecl).Compile())
             |> Seq.toArray
             |> MutStackArray1.fromArray
 
         { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ValNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        ValYieldExtensions.YieldFrom(this, nodes)

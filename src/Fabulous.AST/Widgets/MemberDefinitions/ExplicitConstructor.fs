@@ -9,9 +9,6 @@ open Fantomas.FCS.Text
 module ExplicitConstructorMember =
     let XmlDocs = Attributes.defineWidget "XmlDocs"
 
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let Pat = Attributes.defineWidget "Pat"
@@ -23,17 +20,17 @@ module ExplicitConstructorMember =
     let WidgetKey =
         Widgets.register "ExplicitConstructorMember" (fun widget ->
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
             let accessControl =
-                Widgets.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget MemberDefn.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -52,17 +49,20 @@ module ExplicitConstructorMember =
 
             let expr = Widgets.getNodeFromWidget widget ExprValue
 
-            MemberDefnExplicitCtorNode(
-                xmlDocs,
-                attributes,
-                accessControl,
-                SingleTextNode.``new``,
-                pat,
-                alias,
-                SingleTextNode.equals,
-                expr,
-                Range.Zero
-            ))
+            let node =
+                MemberDefnExplicitCtorNode(
+                    xmlDocs,
+                    attributes,
+                    accessControl,
+                    SingleTextNode.``new``,
+                    pat,
+                    alias,
+                    SingleTextNode.equals,
+                    expr,
+                    Range.Zero
+                )
+
+            MemberDefn.ExplicitCtor(node))
 
 [<AutoOpen>]
 module ExplicitConstructorBuilders =
@@ -93,7 +93,7 @@ module ExplicitConstructorBuilders =
                 | Pattern.Paren _ -> pattern
                 | _ -> Ast.ParenPat(pattern)
 
-            WidgetBuilder<MemberDefnExplicitCtorNode>(
+            WidgetBuilder<MemberDefn>(
                 ExplicitConstructorMember.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
@@ -230,147 +230,6 @@ module ExplicitConstructorBuilders =
             Ast.Constructor(Ast.ConstantPat(pattern), expr)
 
 type ExplicitConstructorModifiers =
-    /// <summary>Sets the XmlDocs for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("MyClass", UnitPat()) {
-    ///             Constructor(
-    ///                 UnitPat(),
-    ///                 Constant("MyClass(0, 0, 0)")
-    ///             )
-    ///                 .xmlDocs(Summary("This is an explicit constructor"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(ExplicitConstructorMember.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("MyClass", UnitPat()) {
-    ///             Constructor(
-    ///                 UnitPat(),
-    ///                 Constant("MyClass(0, 0, 0)")
-    ///             )
-    ///                 .xmlDocs([ "This is an explicit constructor" ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<MemberDefnExplicitCtorNode>, xmlDocs: string seq) =
-        ExplicitConstructorModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the attributes for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("MyClass", UnitPat()) {
-    ///             Constructor(
-    ///                 UnitPat(),
-    ///                 Constant("MyClass(0, 0, 0)")
-    ///             )
-    ///                 .attributes([ Attribute("Serializable") ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attributes
-        (this: WidgetBuilder<MemberDefnExplicitCtorNode>, attributes: WidgetBuilder<AttributeNode> seq)
-        =
-        this.AddScalar(ExplicitConstructorMember.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
-
-    /// <summary>Sets the attribute for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attribute">The attribute to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("MyClass", UnitPat()) {
-    ///             Constructor(
-    ///                 UnitPat(),
-    ///                 Constant("MyClass(0, 0, 0)")
-    ///             )
-    ///                 .attribute(Attribute("Serializable"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attribute
-        (this: WidgetBuilder<MemberDefnExplicitCtorNode>, attribute: WidgetBuilder<AttributeNode>)
-        =
-        ExplicitConstructorModifiers.attributes(this, [ attribute ])
-
-    /// <summary>Sets the accessibility to private for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("MyClass", UnitPat()) {
-    ///             Constructor(
-    ///                 UnitPat(),
-    ///                 Constant("MyClass(0, 0, 0)")
-    ///             )
-    ///                 .toPrivate()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPrivate(this: WidgetBuilder<MemberDefnExplicitCtorNode>) =
-        this.AddScalar(ExplicitConstructorMember.Accessibility.WithValue(AccessControl.Private))
-
-    /// <summary>Sets the accessibility to public for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("MyClass", UnitPat()) {
-    ///             Constructor(
-    ///                 UnitPat(),
-    ///                 Constant("MyClass(0, 0, 0)")
-    ///             )
-    ///                 .toPublic()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPublic(this: WidgetBuilder<MemberDefnExplicitCtorNode>) =
-        this.AddScalar(ExplicitConstructorMember.Accessibility.WithValue(AccessControl.Public))
-
-    /// <summary>Sets the accessibility to internal for the current widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("MyClass", UnitPat()) {
-    ///             Constructor(
-    ///                 UnitPat(),
-    ///                 Constant("MyClass(0, 0, 0)")
-    ///             )
-    ///                 .toInternal()
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toInternal(this: WidgetBuilder<MemberDefnExplicitCtorNode>) =
-        this.AddScalar(ExplicitConstructorMember.Accessibility.WithValue(AccessControl.Internal))
-
     /// <summary>Sets the alias for the current widget.</summary>
     /// <param name="this">Current widget.</param>
     /// <param name="alias">The alias to set.</param>
@@ -388,5 +247,5 @@ type ExplicitConstructorModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline alias(this: WidgetBuilder<MemberDefnExplicitCtorNode>, alias: string) =
+    static member inline alias(this: WidgetBuilder<MemberDefn>, alias: string) =
         this.AddScalar(ExplicitConstructorMember.Alias.WithValue(alias))

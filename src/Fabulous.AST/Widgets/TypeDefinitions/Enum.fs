@@ -13,11 +13,6 @@ module Enum =
 
     let Name = Attributes.defineScalar<string> "Name"
 
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
-    let XmlDocs = Attributes.defineWidget "XmlDocs"
-
     let WidgetKey =
         Widgets.register "Enum" (fun widget ->
             let name =
@@ -27,32 +22,34 @@ module Enum =
                 Widgets.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
+                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget TypeDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
-            TypeDefnEnumNode(
-                TypeNameNode(
-                    xmlDocs,
-                    attributes,
-                    SingleTextNode.``type``,
-                    Some(SingleTextNode.Create(name)),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
-                    None,
+            TypeDefn.Enum(
+                TypeDefnEnumNode(
+                    TypeNameNode(
+                        xmlDocs,
+                        attributes,
+                        SingleTextNode.``type``,
+                        Some(SingleTextNode.Create(name)),
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
+                        None,
+                        [],
+                        None,
+                        None,
+                        None,
+                        Range.Zero
+                    ),
+                    enumCaseNodes,
                     [],
-                    None,
-                    None,
-                    None,
                     Range.Zero
-                ),
-                enumCaseNodes,
-                [],
-                Range.Zero
+                )
             ))
 
 [<AutoOpen>]
@@ -73,129 +70,5 @@ module EnumBuilders =
         /// }
         /// </code>
         static member Enum(name: string) =
-            CollectionBuilder<TypeDefnEnumNode, EnumCaseNode>(
-                Enum.WidgetKey,
-                Enum.EnumCaseNode,
-                Enum.Name.WithValue(name)
-            )
-
-type EnumModifiers =
-    /// <summary>Sets the XmlDocs for the current Enum definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         Enum("Color") {
-    ///            EnumCase("Red", Int(0))
-    ///            EnumCase("Green", Int(1))
-    ///            EnumCase("Blue", Int(2))
-    ///        }
-    ///        |> _.xmlDocs(Summary("This is a color enum"))
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnEnumNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(Enum.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current Enum definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         Enum("Color") {
-    ///             EnumCase("Red", Int(0))
-    ///             EnumCase("Green", Int(1))
-    ///             EnumCase("Blue", Int(2))
-    ///         }
-    ///         |> _.xmlDocs([ "This is a color enum" ])§
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<TypeDefnEnumNode>, xmlDocs: string seq) =
-        EnumModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the attributes for the current Enum definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         Enum("Color") {
-    ///             EnumCase("Red", Int(0))
-    ///             EnumCase("Green", Int(1))
-    ///             EnumCase("Blue", Int(2))
-    ///         }
-    ///         |> _.attributes([ Attribute("Serializable") ])
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attributes
-        (this: WidgetBuilder<TypeDefnEnumNode>, attributes: WidgetBuilder<AttributeNode> seq)
-        =
-        this.AddScalar(
-            Enum.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
-
-    /// <summary>Adds an attribute to the current Enum definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attribute">The attribute to add.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         Enum("Color") {
-    ///             EnumCase("Red", Int(0))
-    ///             EnumCase("Green", Int(1))
-    ///             EnumCase("Blue", Int(2))
-    ///         }
-    ///         |> _.attribute(Attribute("Serializable"))
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<TypeDefnEnumNode>, attribute: WidgetBuilder<AttributeNode>) =
-        EnumModifiers.attributes(this, [ attribute ])
-
-type EnumYieldExtensions =
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnEnumNode) : CollectionContent =
-        let typeDefn = TypeDefn.Enum(x)
-        let typeDefn = ModuleDecl.TypeDefn(typeDefn)
-        let widget = Ast.EscapeHatch(typeDefn).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnEnumNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        EnumYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: TypeDefnEnumNode seq)
-        : CollectionContent =
-        let widgets =
-            x
-            |> Seq.map(fun node ->
-                let typeDefn = TypeDefn.Enum(node)
-                let typeDefn = ModuleDecl.TypeDefn(typeDefn)
-                Ast.EscapeHatch(typeDefn).Compile())
-            |> Seq.toArray
-            |> MutStackArray1.fromArray
-
-        { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<TypeDefnEnumNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        EnumYieldExtensions.YieldFrom(this, nodes)
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            CollectionBuilder<TypeDefn, EnumCaseNode>(Enum.WidgetKey, Enum.EnumCaseNode, Enum.Name.WithValue(name))

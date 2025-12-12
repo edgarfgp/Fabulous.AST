@@ -108,20 +108,26 @@ let x = 3
     let ``Produces a top level module with IdentListNode and BindingNode``() =
         Oak() {
             Namespace("Fabulous.AST") {
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
+                EscapeHatch(
+                    ModuleDecl.TopLevelBinding(
+                        BindingNode(
+                            None,
+                            None,
+                            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                            false,
+                            None,
+                            None,
+                            Choice1Of2(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
+                            ),
+                            None,
+                            List.Empty,
+                            None,
+                            SingleTextNode("=", Range.Zero),
+                            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                            Range.Zero
+                        )
+                    )
                 )
             }
             |> _.toImplicit()

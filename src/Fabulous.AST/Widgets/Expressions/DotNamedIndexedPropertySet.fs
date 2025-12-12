@@ -6,13 +6,13 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module DotNamedIndexedPropertySet =
-    let Identifier = Attributes.defineWidget "SingleNode"
+    let Identifier = Attributes.defineWidget "Identifier"
 
-    let Name = Attributes.defineScalar<string> "Identifier"
+    let Name = Attributes.defineScalar<string> "Name"
 
-    let Property = Attributes.defineWidget "Value"
+    let Property = Attributes.defineWidget "Property"
 
-    let Setter = Attributes.defineWidget "Value"
+    let Setter = Attributes.defineWidget "Setter"
 
     let WidgetKey =
         Widgets.register "DotNamedIndexedPropertySet" (fun widget ->

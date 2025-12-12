@@ -28,7 +28,8 @@ module SigMember =
                 | false, true -> Some(MultipleTextsNode.Create([ SingleTextNode.``with``; SingleTextNode.set ]))
                 | false, false -> None
 
-            MemberDefnSigMemberNode(identifier, withGetSetText, Range.Zero))
+            let node = MemberDefnSigMemberNode(identifier, withGetSetText, Range.Zero)
+            MemberDefn.SigMember(node))
 
 [<AutoOpen>]
 module SigMemberBuilders =
@@ -53,7 +54,7 @@ module SigMemberBuilders =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
 
-            WidgetBuilder<MemberDefnSigMemberNode>(
+            WidgetBuilder<MemberDefn>(
                 SigMember.WidgetKey,
                 AttributesBundle(
                     StackList.two(SigMember.HasGetter.WithValue(hasGetter), SigMember.HasSetter.WithValue(hasSetter)),

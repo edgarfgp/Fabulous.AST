@@ -21,16 +21,21 @@ module IfThen =
 module IfThenBuilders =
     type Ast with
 
-        static member IfThenExpr(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+        static member private IfThenBaseExpr
+            (ifNode: IfKeywordNode, ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>)
+            =
             WidgetBuilder<Expr>(
                 IfThen.WidgetKey,
                 AttributesBundle(
-                    StackList.one(IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``if``))),
+                    StackList.one(IfThen.IfNode.WithValue(ifNode)),
                     [| IfThen.IfExpr.WithValue(ifExpr.Compile())
                        IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
                     Array.empty
                 )
             )
+
+        static member IfThenExpr(ifExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
+            Ast.IfThenBaseExpr(IfKeywordNode.SingleWord(SingleTextNode.``if``), ifExpr, thenExpr)
 
         static member IfThenExpr(ifExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>) =
             Ast.IfThenExpr(Ast.ConstantExpr(ifExpr), thenExpr)
@@ -48,15 +53,7 @@ module IfThenBuilders =
             Ast.IfThenExpr(ifExpr, Ast.Constant(thenExpr))
 
         static member ElIfThenExpr(elIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                IfThen.WidgetKey,
-                AttributesBundle(
-                    StackList.one(IfThen.IfNode.WithValue(IfKeywordNode.SingleWord(SingleTextNode.``elif``))),
-                    [| IfThen.IfExpr.WithValue(elIfExpr.Compile())
-                       IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
-                    Array.empty
-                )
-            )
+            Ast.IfThenBaseExpr(IfKeywordNode.SingleWord(SingleTextNode.``elif``), elIfExpr, thenExpr)
 
         static member ElIfThenExpr(elIfExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>) =
             Ast.ElIfThenExpr(Ast.ConstantExpr(elIfExpr), thenExpr)
@@ -74,20 +71,10 @@ module IfThenBuilders =
             Ast.ElIfThenExpr(elIfExpr, Ast.Constant(thenExpr))
 
         static member ElseIfThenExpr(elseIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
-            WidgetBuilder<Expr>(
-                IfThen.WidgetKey,
-                AttributesBundle(
-                    StackList.one(
-                        IfThen.IfNode.WithValue(
-                            IfKeywordNode.ElseIf(
-                                ElseIfNode(Range.Zero, Range.Zero, Unchecked.defaultof<Node>, Range.Zero)
-                            )
-                        )
-                    ),
-                    [| IfThen.IfExpr.WithValue(elseIfExpr.Compile())
-                       IfThen.ThenExpr.WithValue(thenExpr.Compile()) |],
-                    Array.empty
-                )
+            Ast.IfThenBaseExpr(
+                IfKeywordNode.ElseIf(ElseIfNode(Range.Zero, Range.Zero, Unchecked.defaultof<Node>, Range.Zero)),
+                elseIfExpr,
+                thenExpr
             )
 
         static member ElseIfThenExpr(elseIfExpr: WidgetBuilder<Constant>, thenExpr: WidgetBuilder<Expr>) =

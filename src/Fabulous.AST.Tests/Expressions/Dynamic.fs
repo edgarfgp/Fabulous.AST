@@ -25,3 +25,11 @@ module Dynamic =
 12?failwith "Not implemented"
 12?failwith "Not implemented"
 """
+
+    [<Fact>]
+    let ``Dynamic expression with string value and Constant arg``() =
+        Oak() { AnonymousModule() { DynamicExpr("obj", Int(42)) } }
+        |> produces
+            """
+obj?42
+"""

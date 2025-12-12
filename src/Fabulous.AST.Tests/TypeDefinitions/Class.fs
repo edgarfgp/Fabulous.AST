@@ -258,6 +258,58 @@ type Animal() =
     member this.Name = ""
 """
 
+    [<Fact>]
+    let ``Produces a class with DoExpr and additional constructor``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("MyClass", Constructor(TuplePat([ ParameterPat("x", Int()); ParameterPat("y", Int()) ]))) {
+                    DoExpr(AppExpr("printfn", [ String("%d %d"); Constant("x"); Constant("y") ])).addSpace(true)
+
+                    Constructor(
+                        ParenPat(TuplePat([ Constant("0"); Constant("0") ])),
+                        AppExpr("MyClass", ParenExpr(TupleExpr([ Constant("0"); Constant("0") ])))
+                    )
+                }
+            }
+        }
+        |> produces
+            """
+type MyClass(x: int, y: int) =
+    do printfn "%d %d" x y
+    new(0, 0) = MyClass (0, 0)
+"""
+
+    [<Fact>]
+    let ``Produces a class with let binding, do expr, method and property``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Person", Constructor(ParenPat(ParameterPat("dataIn", Int())))) {
+                    // Let binding creates a private field
+                    LetBindings([ Value("data", "dataIn") ])
+
+                    // Do binding runs initialization code
+                    DoExpr(AppExpr("self.PrintMessage", ConstantUnit())).addSpace(true)
+
+                    // Method that can access the private field
+                    Member(
+                        "this.PrintMessage()",
+                        AppExpr("printf", [ String("Creating Person with Data %d"); Constant("data") ])
+                    )
+
+                    // Property that returns the private field
+                    Member("this.Data", ConstantExpr("data"))
+                }
+            }
+        }
+        |> produces
+            """
+type Person(dataIn: int) =
+    let data = dataIn
+    do self.PrintMessage ()
+    member this.PrintMessage() = printf "Creating Person with Data %d" data
+    member this.Data = data
+"""
+
 module GenericClass =
     [<Fact>]
     let ``Produces a generic class``() =

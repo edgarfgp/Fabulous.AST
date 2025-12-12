@@ -39,3 +39,11 @@ module IndexRange =
 0..10
 0..10
 """
+
+    [<Fact>]
+    let ``let value with a IndexRangeWildcard expression``() =
+        Oak() { AnonymousModule() { IndexRangeWildcardExpr() } }
+        |> produces
+            """
+*
+"""

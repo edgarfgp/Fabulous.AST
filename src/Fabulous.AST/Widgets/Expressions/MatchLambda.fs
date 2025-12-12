@@ -21,3 +21,5 @@ module MatchLambdaBuilders =
             let clauses = clauses |> Seq.map Gen.mkOak
 
             WidgetBuilder<Expr>(MatchLambda.WidgetKey, MatchLambda.Clauses.WithValue(clauses))
+
+        static member MatchLambdaExpr(clause: WidgetBuilder<MatchClauseNode>) = Ast.MatchLambdaExpr([ clause ])

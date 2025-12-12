@@ -3,6 +3,74 @@ namespace Fabulous.AST
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Text
+
+module DefaultMember =
+    let Name = Attributes.defineScalar<string> "Name"
+
+    let Parameters = Attributes.defineScalar<Pattern seq> "Parameters"
+
+    let WidgetKey =
+        Widgets.register "DefaultMember" (fun widget ->
+            let name = Widgets.getScalarValue widget Name
+            let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
+            let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
+
+            let accessControl =
+                Widgets.tryGetScalarValue widget MemberDefn.Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
+            let xmlDocs =
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
+                |> ValueOption.map(fun x -> Some(x))
+                |> ValueOption.defaultValue None
+
+            let attributes =
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
+
+            let isInlined =
+                Widgets.tryGetScalarValue widget BindingNode.IsInlined
+                |> ValueOption.defaultValue false
+
+            let returnType = Widgets.tryGetNodeFromWidget widget BindingNode.Return
+
+            let returnType =
+                match returnType with
+                | ValueNone -> None
+                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
+
+            let typeParams =
+                Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
+                |> ValueOption.map Some
+                |> ValueOption.defaultValue None
+
+            let node =
+                BindingNode(
+                    xmlDocs,
+                    attributes,
+                    MultipleTextsNode([ SingleTextNode.``default`` ], Range.Zero),
+                    false,
+                    (if isInlined then Some(SingleTextNode.``inline``) else None),
+                    accessControl,
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
+                    typeParams,
+                    parameters,
+                    returnType,
+                    SingleTextNode.equals,
+                    bodyExpr,
+                    Range.Zero
+                )
+
+            MemberDefn.Member(node))
 
 [<AutoOpen>]
 module DefaultMemberBuilders =
@@ -26,14 +94,10 @@ module DefaultMemberBuilders =
         static member Default(name: string, parameters: WidgetBuilder<Pattern> seq, bodyExpr: WidgetBuilder<Expr>) =
             let parameters = parameters |> Seq.map Gen.mkOak |> List.ofSeq
 
-            WidgetBuilder<BindingNode>(
-                BindingFunction.WidgetKey,
+            WidgetBuilder<MemberDefn>(
+                DefaultMember.WidgetKey,
                 AttributesBundle(
-                    StackList.three(
-                        BindingFunction.Name.WithValue(name),
-                        BindingFunction.Parameters.WithValue(parameters),
-                        BindingFunction.Leading.WithValue(SingleTextNode.``default``)
-                    ),
+                    StackList.two(DefaultMember.Name.WithValue(name), DefaultMember.Parameters.WithValue(parameters)),
                     [| BindingNode.BodyExpr.WithValue(bodyExpr.Compile()) |],
                     Array.empty
                 )

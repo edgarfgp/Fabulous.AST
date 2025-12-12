@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ParenLambda =
-    let Value = Attributes.defineWidget "Lambda"
+    let Value = Attributes.defineWidget "Value"
 
     let Parameters = Attributes.defineScalar<Pattern seq> "Parameters"
 

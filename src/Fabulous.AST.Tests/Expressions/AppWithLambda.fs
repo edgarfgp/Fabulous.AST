@@ -46,3 +46,42 @@ c a (function
 c a (function
     | a -> 12)
 """
+
+    [<Fact>]
+    let ``AppWithMatchLambdaExpr with single clause - Expr funcName``() =
+        Oak() {
+            AnonymousModule() {
+                AppWithMatchLambdaExpr(
+                    ConstantExpr("process"),
+                    [ ConstantExpr("input") ],
+                    MatchClauseExpr("x", Int(42))
+                )
+            }
+        }
+        |> produces
+            """
+process input (function
+    | x -> 42)
+"""
+
+    [<Fact>]
+    let ``AppWithMatchLambdaExpr with single clause - string funcName and Expr args``() =
+        Oak() {
+            AnonymousModule() {
+                AppWithMatchLambdaExpr("process", [ ConstantExpr("input") ], MatchClauseExpr("x", Int(42)))
+            }
+        }
+        |> produces
+            """
+process input (function
+    | x -> 42)
+"""
+
+    [<Fact>]
+    let ``AppWithMatchLambdaExpr with single clause - string funcName and string args``() =
+        Oak() { AnonymousModule() { AppWithMatchLambdaExpr("process", [ "input" ], MatchClauseExpr("x", Int(42))) } }
+        |> produces
+            """
+process input (function
+    | x -> 42)
+"""

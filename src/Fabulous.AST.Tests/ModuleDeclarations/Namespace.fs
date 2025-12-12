@@ -62,20 +62,26 @@ let x = 3
     let ``Produces a namespace using the EscapeHatch widget``() =
         Oak() {
             Namespace("Fabulous.AST") {
-                BindingNode(
-                    None,
-                    None,
-                    MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
+                EscapeHatch(
+                    ModuleDecl.TopLevelBinding(
+                        BindingNode(
+                            None,
+                            None,
+                            MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                            false,
+                            None,
+                            None,
+                            Choice1Of2(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
+                            ),
+                            None,
+                            List.Empty,
+                            None,
+                            SingleTextNode("=", Range.Zero),
+                            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                            Range.Zero
+                        )
+                    )
                 )
             }
         }
@@ -91,22 +97,29 @@ let x = 12
         Oak() {
             Namespace("Fabulous") {
                 Module("AST") {
-                    BindingNode(
-                        None,
-                        None,
-                        MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
-                        false,
-                        None,
-                        None,
-                        Choice1Of2(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
-                        ),
-                        None,
-                        List.Empty,
-                        None,
-                        SingleTextNode("=", Range.Zero),
-                        Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                        Range.Zero
+                    EscapeHatch(
+                        ModuleDecl.TopLevelBinding(
+                            BindingNode(
+                                None,
+                                None,
+                                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                                false,
+                                None,
+                                None,
+                                Choice1Of2(
+                                    IdentListNode(
+                                        [ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ],
+                                        Range.Zero
+                                    )
+                                ),
+                                None,
+                                List.Empty,
+                                None,
+                                SingleTextNode("=", Range.Zero),
+                                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
+                                Range.Zero
+                            )
+                        )
                     )
                 }
             }
@@ -136,7 +149,7 @@ module AST =
                     { typename = name
                       props = props } ->
                     if Map.isEmpty props then
-                        Abbrev(name, Obj()) |> Gen.mkOak |> TypeDefn.Abbrev |> ModuleDecl.TypeDefn
+                        Abbrev(name, Obj()) |> Gen.mkOak |> ModuleDecl.TypeDefn
                     else
                         let rec mkType(value: string list) =
                             match value with
@@ -147,8 +160,7 @@ module AST =
                         let myFields =
                             props |> Map.toList |> List.map(fun (key, value) -> Field(key, mkType value))
 
-                        let fields = Record(name) { yield! myFields } |> Gen.mkOak
-                        let record = TypeDefn.Record(fields)
+                        let record = Record(name) { yield! myFields } |> Gen.mkOak
                         ModuleDecl.TypeDefn(record))
 
         Oak() {

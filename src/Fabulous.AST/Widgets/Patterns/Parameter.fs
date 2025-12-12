@@ -1,6 +1,5 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -9,9 +8,6 @@ open Fantomas.FCS.Text
 module Parameter =
     let Value = Attributes.defineWidget "Value"
     let TypeVal = Attributes.defineWidget "Type"
-
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
     let WidgetKey =
         Widgets.register "Parameter" (fun widget ->
@@ -23,7 +19,7 @@ module Parameter =
                 |> ValueOption.defaultValue None
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget Pattern.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -193,52 +189,3 @@ module ParameterBuilders =
         /// }
         /// </code>
         static member ParameterPat(name: string) = Ast.ParameterPat(Ast.Constant(name))
-
-type ParameterModifiers =
-    /// <summary>
-    /// Adds multiple attributes to a parameter pattern.
-    /// </summary>
-    /// <param name="this">The parameter pattern widget.</param>
-    /// <param name="attributes">The sequence of attributes to add.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn(
-    ///             "Class",
-    ///             Constructor(ParameterPat("c", Int()).attributes([ Attribute("Obsolete"); Attribute("Required") ]))
-    ///         ) {
-    ///             Member("this.Value", ConstantExpr(Int(0)))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attributes(this: WidgetBuilder<Pattern>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(
-            Parameter.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
-
-    /// <summary>
-    /// Adds an attribute to a parameter pattern.
-    /// </summary>
-    /// <param name="this">The parameter pattern widget.</param>
-    /// <param name="attribute">The attribute to add.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("Class", Constructor(ParameterPat("c", Int()).attribute(Attribute("Obsolete")))) {
-    ///             Member(
-    ///                 "this.First",
-    ///                 ParenPat(ParameterPat("a", String()).attribute(Attribute("Obsolete"))),
-    ///                 UnitExpr()
-    ///             )
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<Pattern>, attribute: WidgetBuilder<AttributeNode>) =
-        ParameterModifiers.attributes(this, [ attribute ])

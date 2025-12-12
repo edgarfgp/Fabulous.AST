@@ -10,7 +10,8 @@ module Inherit =
     let WidgetKey =
         Widgets.register "InheritMember" (fun widget ->
             let tp = Widgets.getNodeFromWidget widget TypeValue
-            MemberDefnInheritNode(SingleTextNode.``inherit``, tp, Range.Zero))
+            let node = MemberDefnInheritNode(SingleTextNode.``inherit``, tp, Range.Zero)
+            MemberDefn.Inherit(node))
 
 [<AutoOpen>]
 module InheritMemberBuilders =
@@ -29,7 +30,7 @@ module InheritMemberBuilders =
         /// }
         /// </code>
         static member Inherit(value: WidgetBuilder<Type>) =
-            WidgetBuilder<MemberDefnInheritNode>(Inherit.WidgetKey, Inherit.TypeValue.WithValue(value.Compile()))
+            WidgetBuilder<MemberDefn>(Inherit.WidgetKey, Inherit.TypeValue.WithValue(value.Compile()))
 
         /// <summary>
         /// Create inherit member with a given type.

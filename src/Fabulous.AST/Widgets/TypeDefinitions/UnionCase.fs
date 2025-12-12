@@ -269,15 +269,13 @@ type UnionCaseModifiers =
 
 type UnionCaseYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: UnionCaseNode)
-        : CollectionContent =
+    static member inline Yield(_: CollectionBuilder<TypeDefn, UnionCaseNode>, x: UnionCaseNode) : CollectionContent =
         let widget = Ast.EscapeHatch(x).Compile()
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
     static member inline Yield
-        (this: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode>)
+        (this: CollectionBuilder<TypeDefn, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         UnionCaseYieldExtensions.Yield(this, node)

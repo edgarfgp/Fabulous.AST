@@ -6,11 +6,11 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module NestedIndexWithoutDot =
-    let IdentifierExpr = Attributes.defineWidget "SingleNode"
+    let IdentifierExpr = Attributes.defineWidget "IdentifierExpr"
 
-    let IndexExpr = Attributes.defineWidget "Identifier"
+    let IndexExpr = Attributes.defineWidget "IndexExpr"
 
-    let ArgumentExpr = Attributes.defineWidget "Value"
+    let ArgumentExpr = Attributes.defineWidget "ArgumentExpr"
 
     let WidgetKey =
         Widgets.register "NestedIndexWithoutDot" (fun widget ->

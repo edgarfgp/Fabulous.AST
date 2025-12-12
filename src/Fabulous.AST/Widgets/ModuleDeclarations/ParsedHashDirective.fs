@@ -1,8 +1,6 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open Fabulous.AST
-open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -19,7 +17,8 @@ module ParsedHashDirectives =
                 |> Seq.map(fun arg ->
                     Choice2Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create arg) ], Range.Zero)))
 
-            ParsedHashDirectiveNode(ident, List.ofSeq arguments, Range.Zero))
+            let node = ParsedHashDirectiveNode(ident, List.ofSeq arguments, Range.Zero)
+            ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ])))
 
 [<AutoOpen>]
 module HashDirectiveBuilders =
@@ -34,7 +33,7 @@ module HashDirectiveBuilders =
                     | Constant.Unit _ -> None
                     | Constant.Measure _ -> None)
 
-            WidgetBuilder<ParsedHashDirectiveNode>(
+            WidgetBuilder<ModuleDecl>(
                 ParsedHashDirectives.WidgetKey,
                 ParsedHashDirectives.Ident.WithValue(ident),
                 ParsedHashDirectives.Arguments.WithValue(arguments)
@@ -169,41 +168,3 @@ module HashDirectiveBuilders =
         /// }
         /// </code>
         static member HashDirective(ident: string) = Ast.HashDirective(ident, [])
-
-type HashDirectiveNodeExtensions =
-
-    [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: ParsedHashDirectiveNode)
-        : CollectionContent =
-        let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ x ]))
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ParsedHashDirectiveNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        HashDirectiveNodeExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: ParsedHashDirectiveNode seq)
-        : CollectionContent =
-        let widgets =
-            x
-            |> Seq.map(fun node ->
-                let moduleDecl = ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ]))
-                Ast.EscapeHatch(moduleDecl).Compile())
-            |> Seq.toArray
-            |> MutStackArray1.fromArray
-
-        { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ParsedHashDirectiveNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        HashDirectiveNodeExtensions.YieldFrom(this, nodes)

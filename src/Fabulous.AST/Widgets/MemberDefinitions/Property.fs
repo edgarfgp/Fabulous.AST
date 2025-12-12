@@ -25,7 +25,7 @@ module BindingProperty =
                 |> ValueOption.defaultValue None
 
             let accessControl =
-                Widgets.tryGetScalarValue widget BindingNode.Accessibility
+                Widgets.tryGetScalarValue widget MemberDefn.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -36,12 +36,12 @@ module BindingProperty =
                 | Unknown -> None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
-                Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -52,7 +52,7 @@ module BindingProperty =
                 | ValueNone -> None
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
+                Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
@@ -63,21 +63,24 @@ module BindingProperty =
                   else
                       SingleTextNode.``member`` ]
 
-            BindingNode(
-                xmlDocs,
-                attributes,
-                MultipleTextsNode(multipleTextsNode, Range.Zero),
-                false,
-                inlineNode,
-                accessControl,
-                Choice2Of2(name),
-                typeParams,
-                [],
-                returnType,
-                SingleTextNode.equals,
-                bodyExpr,
-                Range.Zero
-            ))
+            let node =
+                BindingNode(
+                    xmlDocs,
+                    attributes,
+                    MultipleTextsNode(multipleTextsNode, Range.Zero),
+                    false,
+                    inlineNode,
+                    accessControl,
+                    Choice2Of2(name),
+                    typeParams,
+                    [],
+                    returnType,
+                    SingleTextNode.equals,
+                    bodyExpr,
+                    Range.Zero
+                )
+
+            MemberDefn.Member(node))
 
 [<AutoOpen>]
 module BindingPropertyBuilders =
@@ -85,7 +88,7 @@ module BindingPropertyBuilders =
         static member private BaseMember
             (name: WidgetBuilder<Pattern>, body: WidgetBuilder<Expr>, ?returnType: WidgetBuilder<Type>)
             =
-            WidgetBuilder<BindingNode>(
+            WidgetBuilder<MemberDefn>(
                 BindingProperty.WidgetKey,
                 AttributesBundle(
                     StackList.one(BindingProperty.Name.WithValue(Gen.mkOak name)),

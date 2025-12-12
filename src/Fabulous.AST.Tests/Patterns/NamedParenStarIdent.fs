@@ -16,3 +16,11 @@ module NamedParenStarIdent =
             """
 let ( a ) = 12
 """
+
+    [<Fact>]
+    let ``let value with a NamedParenStarIdent pattern with private accessibility``() =
+        Oak() { AnonymousModule() { Value(NamedParenStarIdentPat("a").toPrivate(), ConstantExpr(Int(12))) } }
+        |> produces
+            """
+let private ( a ) = 12
+"""

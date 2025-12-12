@@ -70,3 +70,39 @@ while true do
     printfn ""
     0 |> ignore
 """
+
+    [<Fact>]
+    let ``WhileExpr with Constant condition and Expr body``() =
+        Oak() { AnonymousModule() { WhileExpr(Bool(true), AppExpr("doSomething", ConstantExpr("()"))) } }
+        |> produces
+            """
+while true do
+    doSomething ()
+"""
+
+    [<Fact>]
+    let ``WhileExpr with string condition and Expr body``() =
+        Oak() { AnonymousModule() { WhileExpr("condition()", AppExpr("doSomething", ConstantExpr("()"))) } }
+        |> produces
+            """
+while condition() do
+    doSomething ()
+"""
+
+    [<Fact>]
+    let ``WhileExpr with Expr condition and Constant body``() =
+        Oak() { AnonymousModule() { WhileExpr(AppExpr("shouldContinue", ConstantExpr("()")), Int(0)) } }
+        |> produces
+            """
+while shouldContinue () do
+    0
+"""
+
+    [<Fact>]
+    let ``WhileExpr with Expr condition and string body``() =
+        Oak() { AnonymousModule() { WhileExpr(AppExpr("shouldContinue", ConstantExpr("()")), "processNext()") } }
+        |> produces
+            """
+while shouldContinue () do
+    processNext()
+"""

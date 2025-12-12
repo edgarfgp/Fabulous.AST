@@ -90,38 +90,44 @@ let internal x = 12
     let ``Produces Literal constant with escape hatch``() =
         Oak() {
             AnonymousModule() {
-                BindingNode(
-                    None,
-                    Some(
-                        MultipleAttributeListNode(
-                            [ AttributeListNode(
-                                  SingleTextNode("[<", Range.Zero),
-                                  [ SyntaxOak.AttributeNode(
-                                        IdentListNode(
-                                            [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.Zero)) ],
-                                            Range.Zero
-                                        ),
-                                        None,
-                                        None,
-                                        Range.Zero
-                                    ) ],
-                                  SingleTextNode(">]", Range.Zero),
-                                  Range.Zero
-                              ) ],
+                EscapeHatch(
+                    ModuleDecl.TopLevelBinding(
+                        BindingNode(
+                            None,
+                            Some(
+                                MultipleAttributeListNode(
+                                    [ AttributeListNode(
+                                          SingleTextNode("[<", Range.Zero),
+                                          [ SyntaxOak.AttributeNode(
+                                                IdentListNode(
+                                                    [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.Zero)) ],
+                                                    Range.Zero
+                                                ),
+                                                None,
+                                                None,
+                                                Range.Zero
+                                            ) ],
+                                          SingleTextNode(">]", Range.Zero),
+                                          Range.Zero
+                                      ) ],
+                                    Range.Zero
+                                )
+                            ),
+                            MultipleTextsNode([ SingleTextNode.Create("let") ], Range.Zero),
+                            false,
+                            None,
+                            None,
+                            Choice1Of2(
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
+                            ),
+                            None,
+                            List.Empty,
+                            None,
+                            SingleTextNode("=", Range.Zero),
+                            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
                             Range.Zero
                         )
-                    ),
-                    MultipleTextsNode([ SingleTextNode.Create("let") ], Range.Zero),
-                    false,
-                    None,
-                    None,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
-                    None,
-                    List.Empty,
-                    None,
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                    Range.Zero
+                    )
                 )
             }
         }

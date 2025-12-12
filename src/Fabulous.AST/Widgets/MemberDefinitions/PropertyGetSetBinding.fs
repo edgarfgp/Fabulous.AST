@@ -1920,16 +1920,6 @@ type PropertyGetSetBindingModifiers =
         this.AddScalar(PropertyGetSetBinding.Accessibility.WithValue(AccessControl.Internal))
 
     [<Extension>]
-    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
-    static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: WidgetBuilder<Type>) =
-        this.AddWidget(PropertyGetSetBinding.ReturnType.WithValue(value.Compile()))
-
-    [<Extension>]
-    [<Obsolete("Use the overload that takes a widget in the constructor instead.")>]
-    static member inline returnType(this: WidgetBuilder<PropertyGetSetBindingNode>, value: string) =
-        PropertyGetSetBindingModifiers.returnType(this, Ast.LongIdent(value))
-
-    [<Extension>]
     static member inline attributes
         (this: WidgetBuilder<PropertyGetSetBindingNode>, values: WidgetBuilder<AttributeNode> seq)
         =

@@ -16,11 +16,6 @@ module AbstractSlot =
     let HasGetterSetter =
         Attributes.defineScalar<(bool * AccessControl) * (bool * AccessControl)> "HasGetter"
 
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
-    let TypeParams = Attributes.defineWidget "TypeParams"
-
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
             let identifier = Widgets.getScalarValue widget Identifier
@@ -29,7 +24,7 @@ module AbstractSlot =
             let hasGetter, hasSetter = Widgets.getScalarValue widget HasGetterSetter
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
@@ -137,20 +132,23 @@ module AbstractSlot =
             let leadingKeywords = MultipleTextsNode.Create([ SingleTextNode.``abstract`` ])
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TypeParams
+                Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
                 |> ValueOption.map Some
                 |> ValueOption.defaultValue None
 
-            MemberDefnAbstractSlotNode(
-                xmlDocs,
-                attributes,
-                leadingKeywords,
-                SingleTextNode.Create(identifier),
-                typeParams,
-                returnType,
-                withGetSetText,
-                Range.Zero
-            ))
+            let node =
+                MemberDefnAbstractSlotNode(
+                    xmlDocs,
+                    attributes,
+                    leadingKeywords,
+                    SingleTextNode.Create(identifier),
+                    typeParams,
+                    returnType,
+                    withGetSetText,
+                    Range.Zero
+                )
+
+            MemberDefn.AbstractSlot(node))
 
 [<AutoOpen>]
 module AbstractMemberBuilders =
@@ -185,7 +183,7 @@ module AbstractMemberBuilders =
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
-            WidgetBuilder<MemberDefnAbstractSlotNode>(
+            WidgetBuilder<MemberDefn>(
                 AbstractSlot.WidgetKey,
                 AttributesBundle(
                     StackList.two(
@@ -274,7 +272,7 @@ module AbstractMemberBuilders =
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
-            WidgetBuilder<MemberDefnAbstractSlotNode>(
+            WidgetBuilder<MemberDefn>(
                 AbstractSlot.WidgetKey,
                 AttributesBundle(
                     StackList.three(
@@ -467,7 +465,7 @@ module AbstractMemberBuilders =
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
-            WidgetBuilder<MemberDefnAbstractSlotNode>(
+            WidgetBuilder<MemberDefn>(
                 AbstractSlot.WidgetKey,
                 AttributesBundle(
                     StackList.three(
@@ -645,7 +643,7 @@ type AbstractMemberModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
+    static member xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: WidgetBuilder<XmlDocNode>) =
         this.AddWidget(AbstractSlot.XmlDocs.WithValue(xmlDocs.Compile()))
 
     /// <summary>Sets the XmlDocs for the current member.</summary>
@@ -662,62 +660,5 @@ type AbstractMemberModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefnAbstractSlotNode>, xmlDocs: string seq) =
+    static member xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: string seq) =
         AbstractMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the attributes for the current member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ICircle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///                 .attributes([ Attribute("Obsolete") ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attributes
-        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, attributes: WidgetBuilder<AttributeNode> seq)
-        =
-        this.AddScalar(AbstractSlot.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
-
-    /// <summary>Sets the attributes for the current member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attribute">The attribute to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ICircle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///                 .attribute(Attribute("Obsolete"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attribute
-        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, attribute: WidgetBuilder<AttributeNode>)
-        =
-        AbstractMemberModifiers.attributes(this, [ attribute ])
-
-    /// <summary>Sets the type parameters for the current member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="typeParams">The type parameters to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ICircle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///                 .typeParams(PostfixList([ "'a" ]))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline typeParams
-        (this: WidgetBuilder<MemberDefnAbstractSlotNode>, typeParams: WidgetBuilder<TyparDecls>)
-        =
-        this.AddWidget(AbstractSlot.TypeParams.WithValue(typeParams.Compile()))

@@ -7,16 +7,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module ExceptionDefn =
-    let XmlDocs = Attributes.defineWidget "XmlDocs"
-
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
-
     let UnionCase = Attributes.defineWidget "UnionCase"
-
-    let WithKeyword = Attributes.defineScalar<bool> "WithKeyword"
 
     let Members = Attributes.defineWidgetCollection "MemberDefs"
 
@@ -24,17 +15,17 @@ module ExceptionDefn =
         Widgets.register "ExceptionDefn" (fun widget ->
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
+                Widgets.tryGetNodeFromWidget widget ModuleDecl.XmlDocs
                 |> ValueOption.map(Some)
                 |> ValueOption.defaultValue None
 
             let attributes =
-                Widgets.tryGetScalarValue widget MultipleAttributes
+                Widgets.tryGetScalarValue widget ModuleDecl.MultipleAttributes
                 |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
                 |> ValueOption.defaultValue None
 
             let accessControl =
-                Widgets.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget ModuleDecl.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -56,7 +47,10 @@ module ExceptionDefn =
                 else
                     None
 
-            ExceptionDefnNode(xmlDocs, attributes, accessControl, unionCase, withKeyword, memberDefs, Range.Zero))
+            let node =
+                ExceptionDefnNode(xmlDocs, attributes, accessControl, unionCase, withKeyword, memberDefs, Range.Zero)
+
+            ModuleDecl.Exception(node))
 
 [<AutoOpen>]
 module ExceptionDefnBuilders =
@@ -71,10 +65,7 @@ module ExceptionDefnBuilders =
         /// }
         /// </code>
         static member ExceptionDefn(value: WidgetBuilder<UnionCaseNode>) =
-            WidgetBuilder<ExceptionDefnNode>(
-                ExceptionDefn.WidgetKey,
-                ExceptionDefn.UnionCase.WithValue(value.Compile())
-            )
+            WidgetBuilder<ModuleDecl>(ExceptionDefn.WidgetKey, ExceptionDefn.UnionCase.WithValue(value.Compile()))
 
         /// <summary>Create an exception definition with a union case.</summary>
         /// <param name="value">The union case.</param>
@@ -193,36 +184,6 @@ module ExceptionDefnBuilders =
             Ast.ExceptionDefn(Ast.UnionCase(value, List.ofSeq parameters))
 
 type ExceptionDefnModifiers =
-    /// <summary>Sets the XmlDocs for the current exception definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         ExceptionDefn("Error", String())
-    ///             .xmlDocs(Summary("This is an exception definition"))
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ExceptionDefnNode>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(ExceptionDefn.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current exception definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         ExceptionDefn("Error", String())
-    ///             .xmlDocs([ "This is an exception definition" ])
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline xmlDocs(this: WidgetBuilder<ExceptionDefnNode>, xmlDocs: string seq) =
-        ExceptionDefnModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
     /// <summary>Sets the members for the current exception definition.</summary>
     /// <param name="this">Current widget.</param>
     /// <code lang="fsharp">
@@ -236,119 +197,5 @@ type ExceptionDefnModifiers =
     /// }
     /// </code>
     [<Extension>]
-    static member inline members(this: WidgetBuilder<ExceptionDefnNode>) =
-        AttributeCollectionBuilder<ExceptionDefnNode, MemberDefn>(this, ExceptionDefn.Members)
-
-    /// <summary>Sets the attributes for the current exception definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         ExceptionDefn("Error", String())
-    ///             .attributes([ Attribute("MyAttribute") ])
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attributes
-        (this: WidgetBuilder<ExceptionDefnNode>, attributes: WidgetBuilder<AttributeNode> seq)
-        =
-        this.AddScalar(
-            ExceptionDefn.MultipleAttributes.WithValue(
-                [ for attr in attributes do
-                      Gen.mkOak attr ]
-            )
-        )
-
-    /// <summary>Sets the attributes for the current exception definition.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attribute">The attribute to set.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         ExceptionDefn("Error", String())
-    ///             .attribute(Attribute("MyAttribute"))
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline attribute(this: WidgetBuilder<ExceptionDefnNode>, attribute: WidgetBuilder<AttributeNode>) =
-        ExceptionDefnModifiers.attributes(this, [ attribute ])
-
-    /// <summary>Sets the exception definition to be private.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         ExceptionDefn("Error", String())
-    ///             .toPrivate()
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPrivate(this: WidgetBuilder<ExceptionDefnNode>) =
-        this.AddScalar(ExceptionDefn.Accessibility.WithValue(AccessControl.Private))
-
-    /// <summary>Sets the exception definition to be public.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         ExceptionDefn("Error", String())
-    ///             .toPublic()
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toPublic(this: WidgetBuilder<ExceptionDefnNode>) =
-        this.AddScalar(ExceptionDefn.Accessibility.WithValue(AccessControl.Public))
-
-    /// <summary>Sets the exception definition to be internal.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <code lang="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         ExceptionDefn("Error", String())
-    ///             .toInternal()
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member inline toInternal(this: WidgetBuilder<ExceptionDefnNode>) =
-        this.AddScalar(ExceptionDefn.Accessibility.WithValue(AccessControl.Internal))
-
-type ExceptionDefnNodeYieldExtensions =
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ExceptionDefnNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.Exception x
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExceptionDefnNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        ExceptionDefnNodeYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom
-        (_: CollectionBuilder<'parent, ModuleDecl>, x: ExceptionDefnNode seq)
-        : CollectionContent =
-        let widgets =
-            x
-            |> Seq.map(fun node ->
-                let moduleDecl = ModuleDecl.Exception node
-                Ast.EscapeHatch(moduleDecl).Compile())
-            |> Seq.toArray
-            |> MutStackArray1.fromArray
-
-        { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExceptionDefnNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        ExceptionDefnNodeYieldExtensions.YieldFrom(this, nodes)
+    static member inline members(this: WidgetBuilder<ModuleDecl>) =
+        AttributeCollectionBuilder<ModuleDecl, MemberDefn>(this, ExceptionDefn.Members)

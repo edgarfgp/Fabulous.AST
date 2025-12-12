@@ -6,7 +6,7 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module While =
-    let WhileExpr = Attributes.defineWidget "EnumExpr"
+    let WhileExpr = Attributes.defineWidget "WhileExpr"
 
     let BodyExpr = Attributes.defineWidget "BodyExpr"
 
@@ -31,11 +31,23 @@ module WhileBuilders =
                 )
             )
 
+        static member WhileExpr(expr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.WhileExpr(Ast.ConstantExpr(expr), bodyExpr)
+
+        static member WhileExpr(expr: string, bodyExpr: WidgetBuilder<Expr>) =
+            Ast.WhileExpr(Ast.Constant(expr), bodyExpr)
+
+        static member WhileExpr(expr: WidgetBuilder<Expr>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.WhileExpr(expr, Ast.ConstantExpr(bodyExpr))
+
         static member WhileExpr(expr: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Constant>) =
             Ast.WhileExpr(Ast.ConstantExpr(expr), Ast.ConstantExpr(bodyExpr))
 
         static member WhileExpr(expr: string, bodyExpr: WidgetBuilder<Constant>) =
             Ast.WhileExpr(Ast.Constant(expr), bodyExpr)
+
+        static member WhileExpr(expr: WidgetBuilder<Expr>, bodyExpr: string) =
+            Ast.WhileExpr(expr, Ast.Constant(bodyExpr))
 
         static member WhileExpr(expr: WidgetBuilder<Constant>, bodyExpr: string) =
             Ast.WhileExpr(expr, Ast.Constant(bodyExpr))

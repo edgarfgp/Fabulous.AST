@@ -1,14 +1,11 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module Named =
     let Value = Attributes.defineScalar<string> "Value"
-
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let WidgetKey =
         Widgets.register "Named" (fun widget ->
@@ -18,7 +15,7 @@ module Named =
                 |> SingleTextNode.Create
 
             let accessControl =
-                Widgets.tryGetScalarValue widget Accessibility
+                Widgets.tryGetScalarValue widget Pattern.Accessibility
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let accessControl =
@@ -36,16 +33,3 @@ module NamedBuilders =
 
         static member NamedPat(value: string) =
             WidgetBuilder<Pattern>(Named.WidgetKey, Named.Value.WithValue(value))
-
-type NamedPatModifiers =
-    [<Extension>]
-    static member inline toPrivate(this: WidgetBuilder<Pattern>) =
-        this.AddScalar(Named.Accessibility.WithValue(AccessControl.Private))
-
-    [<Extension>]
-    static member inline toPublic(this: WidgetBuilder<Pattern>) =
-        this.AddScalar(Named.Accessibility.WithValue(AccessControl.Public))
-
-    [<Extension>]
-    static member inline toInternal(this: WidgetBuilder<Pattern>) =
-        this.AddScalar(Named.Accessibility.WithValue(AccessControl.Internal))

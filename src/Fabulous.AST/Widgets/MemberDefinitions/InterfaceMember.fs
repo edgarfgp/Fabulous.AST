@@ -26,7 +26,10 @@ module InterfaceMember =
                 else
                     Some(SingleTextNode.``with``)
 
-            MemberDefnInterfaceNode(SingleTextNode.``interface``, typeVal, withNode, members, Range.Zero))
+            let node =
+                MemberDefnInterfaceNode(SingleTextNode.``interface``, typeVal, withNode, members, Range.Zero)
+
+            MemberDefn.Interface(node))
 
 [<AutoOpen>]
 module InterfaceMemberBuilders =
@@ -47,7 +50,7 @@ module InterfaceMemberBuilders =
         /// }
         /// </code>
         static member InterfaceWith(value: WidgetBuilder<Type>) =
-            CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>(
+            CollectionBuilder<MemberDefn, MemberDefn>(
                 InterfaceMember.WidgetKey,
                 InterfaceMember.Members,
                 InterfaceMember.TypeValue.WithValue(value.Compile())
@@ -74,22 +77,20 @@ module InterfaceMemberBuilders =
 
 type InterfaceMemberYieldExtensions =
     [<Extension>]
-    static member inline Yield
-        (_: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, x: BindingNode)
-        : CollectionContent =
+    static member inline Yield(_: CollectionBuilder<MemberDefn, MemberDefn>, x: BindingNode) : CollectionContent =
         let widget = Ast.EscapeHatch(MemberDefn.Member(x))
         { Widgets = MutStackArray1.One(widget.Compile()) }
 
     [<Extension>]
     static member inline Yield
-        (this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, x: WidgetBuilder<BindingNode>)
+        (this: CollectionBuilder<MemberDefn, MemberDefn>, x: WidgetBuilder<BindingNode>)
         : CollectionContent =
         let node = Gen.mkOak x
         InterfaceMemberYieldExtensions.Yield(this, node)
 
     [<Extension>]
     static member inline YieldFrom
-        (_: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, xs: BindingNode seq)
+        (_: CollectionBuilder<MemberDefn, MemberDefn>, xs: BindingNode seq)
         : CollectionContent =
         let widgets =
             xs
@@ -101,7 +102,7 @@ type InterfaceMemberYieldExtensions =
 
     [<Extension>]
     static member inline YieldFrom
-        (this: CollectionBuilder<MemberDefnInterfaceNode, MemberDefn>, xs: WidgetBuilder<BindingNode> seq)
+        (this: CollectionBuilder<MemberDefn, MemberDefn>, xs: WidgetBuilder<BindingNode> seq)
         : CollectionContent =
         let nodes = xs |> Seq.map Gen.mkOak
         InterfaceMemberYieldExtensions.YieldFrom(this, nodes)

@@ -1,8 +1,6 @@
 namespace Fabulous.AST
 
-open System.Runtime.CompilerServices
 open Fabulous.AST
-open Fabulous.AST.StackAllocatedCollections
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -12,7 +10,7 @@ module Open =
     let WidgetKey =
         Widgets.register "OpenList" (fun widget ->
             let openList = Widgets.getScalarValue widget OpenList
-            OpenListNode([ openList ]))
+            ModuleDecl.OpenList(OpenListNode([ openList ])))
 
 [<AutoOpen>]
 module OpenBuilders =
@@ -35,7 +33,7 @@ module OpenBuilders =
             let value =
                 Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
 
-            WidgetBuilder<OpenListNode>(Open.WidgetKey, Open.OpenList.WithValue(value))
+            WidgetBuilder<ModuleDecl>(Open.WidgetKey, Open.OpenList.WithValue(value))
 
         /// <summary>Creates an Open widget with the specified value.</summary>
         /// <param name="value">The value to open.</param>
@@ -67,7 +65,7 @@ module OpenBuilders =
             let value =
                 Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
 
-            WidgetBuilder<OpenListNode>(Open.WidgetKey, Open.OpenList.WithValue(value))
+            WidgetBuilder<ModuleDecl>(Open.WidgetKey, Open.OpenList.WithValue(value))
 
         /// <summary>Creates an OpenGlobal widget with the specified value.</summary>
         /// <param name="value">The value to open.</param>
@@ -90,7 +88,7 @@ module OpenBuilders =
         /// }
         /// </code>
         static member OpenType(values: string seq) =
-            WidgetBuilder<OpenListNode>(
+            WidgetBuilder<ModuleDecl>(
                 Open.WidgetKey,
                 Open.OpenList.WithValue(
                     Open.Target(OpenTargetNode(Gen.mkOak(Ast.LongIdent(List.ofSeq values)), Range.Zero))
@@ -108,36 +106,3 @@ module OpenBuilders =
         /// }
         /// </code>
         static member OpenType(value: string) = Ast.OpenType([ value ])
-
-type OpenYieldExtensions =
-    [<Extension>]
-    static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: OpenListNode) : CollectionContent =
-        let moduleDecl = ModuleDecl.OpenList(x)
-        let widget = Ast.EscapeHatch(moduleDecl).Compile()
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline Yield
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenListNode>)
-        : CollectionContent =
-        let node = Gen.mkOak x
-        OpenYieldExtensions.Yield(this, node)
-
-    [<Extension>]
-    static member inline YieldFrom(_: CollectionBuilder<'parent, ModuleDecl>, x: OpenListNode seq) : CollectionContent =
-        let widgets =
-            x
-            |> Seq.map(fun node ->
-                let moduleDecl = ModuleDecl.OpenList(node)
-                Ast.EscapeHatch(moduleDecl).Compile())
-            |> Seq.toArray
-            |> MutStackArray1.fromArray
-
-        { Widgets = widgets }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<OpenListNode> seq)
-        : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
-        OpenYieldExtensions.YieldFrom(this, nodes)

@@ -8,7 +8,7 @@ open Fantomas.FCS.Text
 module TryFinally =
     let Value = Attributes.defineWidget "Value"
 
-    let Finally = Attributes.defineWidget "Section"
+    let Finally = Attributes.defineWidget "Finally"
 
     let WidgetKey =
         Widgets.register "TryFinally" (fun widget ->
@@ -48,6 +48,12 @@ module TryFinallyBuilders =
 
         static member TryFinallyExpr(value: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.TryFinallyExpr(Ast.ConstantExpr(value), Ast.ConstantExpr(expr))
+
+        static member TryFinallyExpr(value: WidgetBuilder<Expr>, expr: string) =
+            Ast.TryFinallyExpr(value, Ast.Constant(expr))
+
+        static member TryFinallyExpr(value: string, expr: WidgetBuilder<Constant>) =
+            Ast.TryFinallyExpr(Ast.Constant(value), expr)
 
         static member TryFinallyExpr(value: string, expr: string) =
             Ast.TryFinallyExpr(Ast.Constant(value), Ast.Constant(expr))
