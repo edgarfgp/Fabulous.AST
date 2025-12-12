@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
+## [1.9.0] - 2025-12-12
+
+### Fixed
+- fix key generation by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/165
+
 ## [1.8.0] - 2025-12-06
 
 ### Changed
