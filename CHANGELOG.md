@@ -8,41 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 _No unreleased changes_
 
-## [2.0.0] - 2025-12-11
+## [2.0.0-pre01] - 2025-12-12
 
 ### Breaking Changes
-- MemberDefn builders now return `WidgetBuilder<MemberDefn>` instead of specific node types (e.g., `AbstractSlot`, `AutoProperty`, `ExplicitConstructor`, `Method`, `Property`)
-- TypeDefn builders now return `WidgetBuilder<TypeDefn>` instead of specific node types (e.g., `Record`, `Union`, `Enum`, `Abbrev`, `Delegate`)
-- ModuleDecl builders now return `WidgetBuilder<ModuleDecl>` instead of specific node types (e.g., `Open`, `NestedModule`, `Val`)
-- Raw SyntaxOak nodes must now be wrapped with `EscapeHatch()` when yielding into collections
-- Removed obsolete per-node modifiers for MemberDefn types (use unified modifiers instead)
-- `NestedModule` builder now returns `CollectionBuilder<ModuleDecl, ModuleDecl>`
-- `Match` `YieldFrom` now expects `WidgetBuilder<MatchClauseNode> seq` instead of direct node variants
+- Widget builders now return unified base types instead of specific node types
+- Raw SyntaxOak nodes must now be wrapped with EscapeHatch when yielding into collections
+- Removed obsolete per-node modifiers
 
 ### Added
-- Unified modifier extensions for `MemberDefn` types: `xmlDocs`, `attributes`, `attribute`, `toPrivate`, `toPublic`, `toInternal`, `toMutable`, `toInlined`, `toStatic`, `typeParams`
-- Unified modifier extensions for `TypeDefn` types: `members`, `xmlDocs`, `attributes`, `attribute`, `typeParams`, `toPrivate`, `toPublic`, `toInternal`, `toRecursive`
-- Unified modifier extensions for `ModuleDecl` types with shared attributes
-- New `EscapeHatch` widget for wrapping raw SyntaxOak nodes
-- New `MatchLambdaExpr` single-clause overload
-- New `AppWithMatchLambdaExpr` single-clause overloads
-- New `TryWithExpr` single-clause overloads
-- New `TryFinallyExpr` mixed overloads
-- New `TraitCall` overloads accepting `WidgetBuilder<MemberDefn>` and `WidgetBuilder<Expr>`
-- New `DynamicExpr` overload accepting string and `WidgetBuilder<Constant>`
-- Collection yields for `BindingNode` and `ExternBindingNode` widgets in module declarations
+- Unified modifier extensions for widget types
+- New EscapeHatch widget for wrapping raw SyntaxOak nodes
+- New single-clause overloads for Match and Try expressions
 - Parallel test execution enabled
-- New documentation for Oak/EscapeHatch usage in `docs/widgets/Oak.fsx`
 
 ### Changed
-- Refactored MemberDefn, TypeDefn, and ModuleDecl systems to use shared attribute sets
-- Internal widget key handlers now wrap nodes appropriately (e.g., `MemberDefn.Method`, `TypeDefn.Record`)
-- Various attribute/key renames for consistency (e.g., "FunExpr", "ArgExpr", "IdentifierExpr", "IndexExpr", "OptimizedValue")
-- ObjExpr yields now accept `WidgetBuilder<BindingNode>`, `WidgetBuilder<ExprSingleNode>`, and `WidgetBuilder<MemberDefnInterfaceNode>`
+- Refactored widget systems to use shared attribute sets
+- Internal widget key handlers now wrap nodes appropriately
 
 ### Fixed
 - Widget key generation fixes
-- fix: clean dsl for v2 by @edgarfgp in https://github.com/edgarfgp/Fabulous.AST/pull/163
 
 ## [1.8.0] - 2025-12-06
 
@@ -356,7 +340,7 @@ _No unreleased changes_
 - Initial release
 
 [unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0...HEAD
-[2.0.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0
+[2.0.0-pre01]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0
 [1.8.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.8.0
 [1.7.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.7.0
 [1.6.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.6.0
