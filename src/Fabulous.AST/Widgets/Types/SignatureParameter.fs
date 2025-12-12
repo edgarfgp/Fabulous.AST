@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -10,6 +11,9 @@ module SignatureParameter =
 
     let TypedValue = Attributes.defineWidget "TypedValue"
 
+    let MultipleAttributes =
+        Attributes.defineScalar<AttributeNode seq> "SignatureParameter_MultipleAttributes"
+
     let WidgetKey =
         Widgets.register "SignatureParameter" (fun widget ->
             let identifier =
@@ -19,7 +23,12 @@ module SignatureParameter =
 
             let value = Widgets.getNodeFromWidget<Type> widget TypedValue
 
-            Type.SignatureParameter(TypeSignatureParameterNode(None, identifier, value, Range.Zero)))
+            let attributes =
+                Widgets.tryGetScalarValue widget MultipleAttributes
+                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
+                |> ValueOption.defaultValue None
+
+            Type.SignatureParameter(TypeSignatureParameterNode(attributes, identifier, value, Range.Zero)))
 
 [<AutoOpen>]
 module SignatureParameterBuilders =
@@ -43,3 +52,23 @@ module SignatureParameterBuilders =
 
         static member SignatureParameter(identifier: string, tp: string) =
             Ast.SignatureParameter(identifier, Ast.LongIdent tp)
+
+type SignatureParameterModifiers =
+    /// <summary>Sets the attributes for the signature parameter.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    [<Extension>]
+    static member inline attributes(this: WidgetBuilder<Type>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(
+            SignatureParameter.MultipleAttributes.WithValue(
+                [ for attr in attributes do
+                      Gen.mkOak attr ]
+            )
+        )
+
+    /// <summary>Sets an attribute for the signature parameter.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    [<Extension>]
+    static member inline attribute(this: WidgetBuilder<Type>, attribute: WidgetBuilder<AttributeNode>) =
+        SignatureParameterModifiers.attributes(this, [ attribute ])

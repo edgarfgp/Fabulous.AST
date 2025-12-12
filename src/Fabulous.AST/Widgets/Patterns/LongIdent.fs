@@ -36,8 +36,25 @@ module LongIdentPattern =
                 |> ValueOption.map(fun value -> [ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ])
                 |> ValueOption.defaultValue []
 
+            let accessControl =
+                Widgets.tryGetScalarValue widget Pattern.Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
             Pattern.LongIdent(
-                PatLongIdentNode(None, IdentListNode(identifier, Range.Zero), typeParams, List.ofSeq items, Range.Zero)
+                PatLongIdentNode(
+                    accessControl,
+                    IdentListNode(identifier, Range.Zero),
+                    typeParams,
+                    List.ofSeq items,
+                    Range.Zero
+                )
             ))
 
 [<AutoOpen>]

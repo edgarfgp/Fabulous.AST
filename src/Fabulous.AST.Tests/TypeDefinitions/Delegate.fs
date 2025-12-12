@@ -98,3 +98,19 @@ type internal Delegate3 = delegate of int -> int
 /// This is a delegate
 type Delegate = delegate of int -> int
 """
+
+    [<Fact>]
+    let ``Produces a delegate with signature parameter attributes``() =
+        Oak() {
+            AnonymousModule() {
+                Delegate(
+                    "MyDelegate",
+                    SignatureParameter("args", Array(String())).attribute(Attribute("ParamArray")),
+                    Int()
+                )
+            }
+        }
+        |> produces
+            """
+type MyDelegate = delegate of [<ParamArray>] args: string[] -> int
+"""

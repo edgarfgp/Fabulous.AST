@@ -13,9 +13,20 @@ module NamedParenStarIdent =
             let value =
                 Widgets.getScalarValue widget Value |> PrettyNaming.NormalizeIdentifierBackticks
 
+            let accessControl =
+                Widgets.tryGetScalarValue widget Pattern.Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
             Pattern.NamedParenStarIdent(
                 PatNamedParenStarIdentNode(
-                    None,
+                    accessControl,
                     SingleTextNode.leftParenthesis,
                     SingleTextNode.Create(value),
                     SingleTextNode.rightParenthesis,

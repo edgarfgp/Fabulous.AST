@@ -21,6 +21,8 @@ module Field =
 
     let LeadingKeyword = Attributes.defineScalar<SingleTextNode> "LeadingKeyword"
 
+    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
+
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
             let xmlDocs =
@@ -54,7 +56,18 @@ module Field =
                 |> ValueOption.map(fun x -> Some(MultipleTextsNode.Create([ x ])))
                 |> ValueOption.defaultValue None
 
-            FieldNode(xmlDocs, attributes, leadingKeyword, mutableKeyword, None, name, fieldType, Range.Zero))
+            let accessControl =
+                Widgets.tryGetScalarValue widget Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
+            FieldNode(xmlDocs, attributes, leadingKeyword, mutableKeyword, accessControl, name, fieldType, Range.Zero))
 
     let ValFieldWidgetKey =
         Widgets.register "ValField" (fun widget ->
@@ -90,8 +103,28 @@ module Field =
                 |> ValueOption.map(fun x -> Some(MultipleTextsNode.Create([ x ])))
                 |> ValueOption.defaultValue None
 
+            let accessControl =
+                Widgets.tryGetScalarValue widget MemberDefn.Accessibility
+                |> ValueOption.defaultValue AccessControl.Unknown
+
+            let accessControl =
+                match accessControl with
+                | Public -> Some(SingleTextNode.``public``)
+                | Private -> Some(SingleTextNode.``private``)
+                | Internal -> Some(SingleTextNode.``internal``)
+                | Unknown -> None
+
             let node =
-                FieldNode(xmlDocs, attributes, leadingKeyword, mutableKeyword, None, name, fieldType, Range.Zero)
+                FieldNode(
+                    xmlDocs,
+                    attributes,
+                    leadingKeyword,
+                    mutableKeyword,
+                    accessControl,
+                    name,
+                    fieldType,
+                    Range.Zero
+                )
 
             MemberDefn.ValField(node))
 
@@ -305,3 +338,48 @@ type FieldModifiers =
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<FieldNode>, attribute: WidgetBuilder<AttributeNode>) =
         FieldModifiers.attributes(this, [ attribute ])
+
+    /// <summary>Sets the field to be private.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Person") {
+    ///             Field("name", String()).toPrivate()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toPrivate(this: WidgetBuilder<FieldNode>) =
+        this.AddScalar(Field.Accessibility.WithValue(AccessControl.Private))
+
+    /// <summary>Sets the field to be public.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Person") {
+    ///             Field("name", String()).toPublic()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toPublic(this: WidgetBuilder<FieldNode>) =
+        this.AddScalar(Field.Accessibility.WithValue(AccessControl.Public))
+
+    /// <summary>Sets the field to be internal.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Person") {
+    ///             Field("name", String()).toInternal()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toInternal(this: WidgetBuilder<FieldNode>) =
+        this.AddScalar(Field.Accessibility.WithValue(AccessControl.Internal))

@@ -201,3 +201,48 @@ type B = { X: float }
             """
 type Color = { R: int; G: int; B: int }
 """
+
+    [<Fact>]
+    let ``Produces a record with private field``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Person") {
+                    Field("Name", String()).toPrivate()
+                    Field("Age", Int())
+                }
+            }
+        }
+        |> produces
+            """
+type Person = { private Name: string; Age: int }
+"""
+
+    [<Fact>]
+    let ``Produces a record with internal field``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Person") {
+                    Field("Name", String()).toInternal()
+                    Field("Age", Int())
+                }
+            }
+        }
+        |> produces
+            """
+type Person = { internal Name: string; Age: int }
+"""
+
+    [<Fact>]
+    let ``Produces a record with public field``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Person") {
+                    Field("Name", String()).toPublic()
+                    Field("Age", Int())
+                }
+            }
+        }
+        |> produces
+            """
+type Person = { public Name: string; Age: int }
+"""

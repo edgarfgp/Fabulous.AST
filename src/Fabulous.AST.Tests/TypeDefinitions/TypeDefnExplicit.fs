@@ -135,6 +135,23 @@ type Y(a: int) =
     end
             """
 
+    [<Fact>]
+    let ``Produces a struct end with private ValField``() =
+        Oak() {
+            AnonymousModule() {
+                StructEnd("Point", Constructor(ParameterPat("x", Int()))) {
+                    ValField("x", Int()).toMutable().toPrivate()
+                }
+            }
+        }
+        |> produces
+            """
+type Point(x: int) =
+    struct
+        val mutable private x: int
+    end
+            """
+
 module InterfaceEnd =
     [<Fact>]
     let ``Produces an interface end``() =

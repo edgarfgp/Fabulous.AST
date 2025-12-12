@@ -16,6 +16,9 @@ module Expr =
     let WidgetNullKey =
         Widgets.register "ExprNull" (fun _ -> Expr.Null(SingleTextNode.``null``))
 
+    let WidgetIndexRangeWildcardKey =
+        Widgets.register "ExprIndexRangeWildcard" (fun _ -> Expr.IndexRangeWildcard(SingleTextNode.star))
+
 [<AutoOpen>]
 module ExprBuilders =
     type Ast with
@@ -53,6 +56,17 @@ module ExprBuilders =
         /// }
         /// </code>
         static member UnitExpr() = Ast.ConstantExpr(Ast.ConstantUnit())
+
+        /// <summary>Creates an index range wildcard expression (*).</summary>
+        /// <code lang="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         IndexRangeWildcardExpr()
+        ///     }
+        /// }
+        /// </code>
+        static member IndexRangeWildcardExpr() =
+            WidgetBuilder<Expr>(Expr.WidgetIndexRangeWildcardKey)
 
 type ExprYieldExtensions =
     [<Extension>]

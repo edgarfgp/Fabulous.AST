@@ -40,3 +40,11 @@ let x B A = 12
 
 let x<'a, 'b> B A = 12
 """
+
+    [<Fact>]
+    let ``let value with a LongIdent pattern with private accessibility``() =
+        Oak() { AnonymousModule() { Value(LongIdentPat("x", [ NamedPat("a") ]).toPrivate(), ConstantExpr(Int(12))) } }
+        |> produces
+            """
+let private x a = 12
+"""
