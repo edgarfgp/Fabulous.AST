@@ -39,6 +39,9 @@
 
     <!-- Reference the core library -->
     <ProjectReference Include="../Fabulous.AST.Json/Fabulous.AST.Json.fsproj" PrivateAssets="all" />
+
+    <!-- Ensure FSharp.Core is copied next to the task assembly at build time -->
+    <PackageReference Include="FSharp.Core" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
