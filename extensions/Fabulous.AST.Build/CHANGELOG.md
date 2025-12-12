@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.0.0-pre2] - 2025-12-12
+## [2.0.0-pre02] - 2025-12-12
 
 ### Fixed
 - Ensure `FSharp.Core` is deployed alongside the MSBuild task assembly to prevent `FileNotFoundException` when loading `FabulousAstJsonTask` during builds.
