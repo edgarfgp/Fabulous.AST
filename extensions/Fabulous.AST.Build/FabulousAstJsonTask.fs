@@ -121,7 +121,7 @@ type FabulousAstJsonTask() =
 
         let oak =
             if hasMod then
-                // Use implicit namespace (emits: module A.B)
+                // Use file-level module (emits: module A.B)
                 Oak() { (Namespace(config.ModuleName) { jsonWidget }).toImplicit() }
             else
                 Oak() { AnonymousModule() { jsonWidget } }
