@@ -26,10 +26,10 @@
     <ItemGroup>
         <FabulousAstJson Include="schemas\user.json"
                          RootName="User"
-                         Namespace="Playground.Generated" />
+                         ModuleName="Playground.Generated.User" />
         <FabulousAstJson Include="schemas\complex-api.json"
                          RootName="ApiResponse"
-                         Namespace="Playground.Generated.Api" />
+                         ModuleName="Playground.Generated.Api" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Generated\" />

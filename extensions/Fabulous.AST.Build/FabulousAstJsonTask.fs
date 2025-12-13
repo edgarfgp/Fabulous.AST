@@ -100,22 +100,30 @@ type FabulousAstJsonTask() =
             | value -> value
 
         let baseName = Path.GetFileNameWithoutExtension(inputPath)
-        let outputFileName = getMetadata "OutputFileName" (baseName + ".Generated.fs")
+
+        let outputFileName =
+            match getMetadata "OutputFileName" "" with
+            | "" -> baseName + ".Generated.fs"
+            | name -> name
+
         let outputPath = Path.Combine(outputDir, outputFileName)
 
         { InputPath = inputPath
           OutputPath = outputPath
           RootName = getMetadata "RootName" "Root"
-          Namespace = item.GetMetadata("Namespace")
           ModuleName = item.GetMetadata("ModuleName") }
 
     member private _.GenerateCode(jsonContent: string, config: JsonGenerationItem) : string =
         let jsonWidget = Json(jsonContent).rootName(config.RootName)
 
+        // Only support module-based codegen (module A.B). If ModuleName is empty, use anonymous module.
+        let hasMod = not(String.IsNullOrWhiteSpace(config.ModuleName))
+
         let oak =
-            match config.Namespace, config.ModuleName with
-            | ns, _ when not(String.IsNullOrEmpty(ns)) -> Oak() { Namespace(ns) { jsonWidget } }
-            | _, m when not(String.IsNullOrEmpty(m)) -> Oak() { Module(m) { jsonWidget } }
-            | _ -> Oak() { AnonymousModule() { jsonWidget } }
+            if hasMod then
+                // Use file-level module (emits: module A.B)
+                Oak() { (Namespace(config.ModuleName) { jsonWidget }).toImplicit() }
+            else
+                Oak() { AnonymousModule() { jsonWidget } }
 
         oak |> Gen.mkOak |> Gen.run

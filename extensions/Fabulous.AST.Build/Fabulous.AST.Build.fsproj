@@ -53,4 +53,17 @@
     </None>
   </ItemGroup>
 
+  <!-- Ensure the task's runtime dependencies are packaged next to the task DLL -->
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);PackTaskDependencies</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <Target Name="PackTaskDependencies">
+    <ItemGroup>
+      <!-- Include all dependency DLLs and the .deps.json produced by build -->
+      <BuildOutputInPackage Include="$(OutputPath)/**/*.dll;$(OutputPath)/**/*.deps.json"
+                            Exclude="$(OutputPath)/Fabulous.AST.Build.dll;$(OutputPath)/**/*.runtimeconfig.json" />
+    </ItemGroup>
+  </Target>
+
 </Project>
