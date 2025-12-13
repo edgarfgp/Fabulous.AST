@@ -2,8 +2,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
+    <!-- Suffix for the output files, e.g., MyFile.cg.fs -->
+    <FabulousAstJsonOutputSuffix Condition="'$(FabulousAstJsonOutputSuffix)' == ''">cg</FabulousAstJsonOutputSuffix>
+
     <!-- Output directory for generated files -->
-    <FabulousAstJsonOutputDir Condition="'$(FabulousAstJsonOutputDir)' == ''">$(MSBuildProjectDirectory)\Generated\</FabulousAstJsonOutputDir>
+    <FabulousAstJsonOutputDirSegment Condition="'$(FabulousAstJsonOutputDirSegment)' == ''">Generated</FabulousAstJsonOutputDirSegment>
+    <FabulousAstJsonOutputDir Condition="'$(FabulousAstJsonOutputDir)' == ''">$(MSBuildProjectDirectory)\$(FabulousAstJsonOutputDirSegment)\</FabulousAstJsonOutputDir>
 
     <!-- Set to false to disable generation -->
     <EnableFabulousAstJsonGeneration Condition="'$(EnableFabulousAstJsonGeneration)' == ''">true</EnableFabulousAstJsonGeneration>
