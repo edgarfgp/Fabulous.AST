@@ -298,7 +298,7 @@ type Root = { ``type``: string; ``class``: string }
 The task uses content hashing for smart rebuilds:
 
 - Files are only regenerated when JSON content changes
-- Configuration changes (RootName, Namespace, etc.) trigger regeneration
+- Configuration changes (RootName, ModuleName, etc.) trigger regeneration
 - Generated files include a hash comment for verification
 
 ## IDE Integration
