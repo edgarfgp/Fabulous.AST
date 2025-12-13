@@ -60,9 +60,9 @@
 
   <Target Name="PackTaskDependencies">
     <ItemGroup>
-      <!-- Include all dependency DLLs and the .deps.json produced by build -->
-      <BuildOutputInPackage Include="$(OutputPath)/**/*.dll;$(OutputPath)/**/*.deps.json"
-                            Exclude="$(OutputPath)/Fabulous.AST.Build.dll;$(OutputPath)/**/*.runtimeconfig.json" />
+      <!-- Include dependency DLLs (not localized resources in subdirs) and .deps.json -->
+      <BuildOutputInPackage Include="$(OutputPath)/*.dll;$(OutputPath)/*.deps.json"
+                            Exclude="$(OutputPath)/Fabulous.AST.Build.dll" />
     </ItemGroup>
   </Target>
 

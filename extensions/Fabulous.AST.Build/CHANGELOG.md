@@ -10,17 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0-pre03] - 2025-12-13
 
 ### Fixed
-- Fix module code generation to emit proper file-level modules (`module A.B`) without backticks or equals sign
+- Fix module code generation to emit proper file-level modules `module A.B` without backticks or equals sign
 - Fix clean target to correctly delete files with custom `OutputFileName`
 
 ### Changed
 - Simplify MSBuild targets and props configuration
-- Remove redundant metadata options (`GeneratedFileName`, `OutFile`) - use `OutputFileName` instead
+- Remove redundant metadata options `GeneratedFileName`, `OutFile` use `OutputFileName` instead
 - Drop namespace support - only file-level modules via `ModuleName` are now supported
 
 ### Removed
-- `FabulousAstJsonOutputFileNameSuffix` property (hardcoded to `.Generated.fs`)
-- `GeneratedFileName` and `OutFile` item metadata (use `OutputFileName`)
+- `FabulousAstJsonOutputFileNameSuffix` property hardcoded to `.Generated.fs`
+- `GeneratedFileName` and `OutFile` item metadata use `OutputFileName`
 
 ## [2.0.0-pre02] - 2025-12-12
 
