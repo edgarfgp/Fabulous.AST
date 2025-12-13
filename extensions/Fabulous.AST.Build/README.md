@@ -99,33 +99,9 @@ By default, the root type name is derived from the filename. Override it with `R
 </ItemGroup>
 ```
 
-### Step 5: Add a Namespace
+### Step 5: Add a Module
 
-Wrap generated types in a namespace:
-
-```xml
-<ItemGroup>
-  <FabulousAstJson Include="schemas/user.json"
-                   RootName="User"
-                   Namespace="MyApp.Models" />
-</ItemGroup>
-```
-
-**Output:**
-```fsharp
-namespace MyApp.Models
-
-type User = {
-    id: int
-    name: string
-    email: string
-    isActive: bool
-}
-```
-
-### Step 6: Use a Module Instead
-
-Use `ModuleName` for a module wrapper:
+Wrap generated types in a file-level module using `ModuleName`:
 
 ```xml
 <ItemGroup>
@@ -147,7 +123,7 @@ type User = {
 }
 ```
 
-### Step 7: Multiple JSON Files
+### Step 6: Multiple JSON Files
 
 Process multiple schemas with different configurations:
 
@@ -155,13 +131,13 @@ Process multiple schemas with different configurations:
 <ItemGroup>
   <FabulousAstJson Include="schemas/user.json"
                    RootName="User"
-                   Namespace="MyApp.Models" />
+                   ModuleName="MyApp.Models.User" />
   <FabulousAstJson Include="schemas/product.json"
                    RootName="Product"
-                   Namespace="MyApp.Models" />
+                   ModuleName="MyApp.Models.Product" />
   <FabulousAstJson Include="schemas/order.json"
                    RootName="CustomerOrder"
-                   Namespace="MyApp.Orders" />
+                   ModuleName="MyApp.Orders" />
 </ItemGroup>
 
 <ItemGroup>
@@ -171,7 +147,9 @@ Process multiple schemas with different configurations:
 </ItemGroup>
 ```
 
-### Step 8: Custom Output Directory
+> **Note:** Each file must have a unique module name since file-level modules cannot share the same fully-qualified name.
+
+### Step 7: Custom Output Directory
 
 Change where generated files are placed:
 
@@ -181,7 +159,7 @@ Change where generated files are placed:
 </PropertyGroup>
 ```
 
-### Step 9: Glob Patterns
+### Step 8: Glob Patterns
 
 Process all JSON files in a directory:
 
@@ -191,7 +169,7 @@ Process all JSON files in a directory:
 </ItemGroup>
 ```
 
-### Step 10: Custom Output Filename
+### Step 9: Custom Output Filename
 
 Override the default `{filename}.Generated.fs` pattern:
 
@@ -216,8 +194,7 @@ Override the default `{filename}.Generated.fs` pattern:
 | Metadata | Default | Description |
 |----------|---------|-------------|
 | `RootName` | `Root` | Name of the root type |
-| `Namespace` | _(empty)_ | Namespace to wrap types in |
-| `ModuleName` | _(empty)_ | Module to wrap types in (alternative to Namespace) |
+| `ModuleName` | _(empty)_ | File-level module name (e.g., `MyApp.Models`) |
 | `OutputFileName` | `{InputName}.Generated.fs` | Custom output filename |
 
 ## Type Inference
@@ -324,40 +301,51 @@ The task uses content hashing for smart rebuilds:
 - Configuration changes (RootName, Namespace, etc.) trigger regeneration
 - Generated files include a hash comment for verification
 
+## IDE Integration
+
+Generated files are created during build. Your IDE may not immediately see newly generated files.
+
+### Recommended: Explicit File Listing
+
+For the best IDE experience, explicitly list generated files:
+
+```xml
+<Compile Include="Generated/user.Generated.fs" />
+```
+
+The IDE knows about the file path upfront and will recognize it once generated.
+
+### Using Glob Patterns
+
+With glob patterns like `<Compile Include="Generated/*.fs" />`, you may need to reload the project after the first build for the IDE to pick up new files.
+
+### Tips
+
+- **Keep generated files in source control** - Avoids first-build issues
+- **Don't delete generated files** - Incremental build only regenerates when JSON changes
+
 ## Troubleshooting
+
+### IDE Not Seeing Generated Files
+
+1. Reload/refresh the project
+2. Switch from glob patterns to explicit file listing
+3. Ensure the file exists in `Generated/`
+
+### Build Fails After Clean
+
+Expected when using glob patterns. Run `dotnet build` again.
 
 ### Generated File Not Updating
 
-1. Ensure the file is included as `FabulousAstJson`:
-   ```xml
-   <FabulousAstJson Include="path/to/file.json" />
-   ```
-
-2. Ensure the generated file is in `Compile`:
-   ```xml
-   <Compile Include="Generated/file.Generated.fs" />
-   ```
-
-3. Try a clean rebuild:
-   ```bash
-   dotnet clean && dotnet build
-   ```
-
-### Task Assembly Not Found
-
-If you see "Skipping generation because task assembly not found":
-
-1. Ensure you've restored packages: `dotnet restore`
-2. For local development, build Fabulous.AST.Build first
+```bash
+dotnet clean && dotnet build
+```
 
 ### Disable Generation
 
-Disable generation for CI or specific builds:
-
 ```xml
-<PropertyGroup>
-  <EnableFabulousAstJsonGeneration>false</EnableFabulousAstJsonGeneration>
-</PropertyGroup>
+<EnableFabulousAstJsonGeneration>false</EnableFabulousAstJsonGeneration>
 ```
 
 Or via command line:

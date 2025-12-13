@@ -77,27 +77,9 @@ Override the default `Root` type name:
 <FabulousAstJson Include="schemas/user.json" RootName="User" />
 ```
 
-### Add a Namespace
+### Add a Module
 
-Wrap types in a namespace:
-
-```xml
-<FabulousAstJson Include="schemas/user.json"
-                 RootName="User"
-                 Namespace="MyApp.Models" />
-```
-
-Generates:
-
-```fsharp
-namespace MyApp.Models
-
-type User = { id: int; name: string; email: string; isActive: bool }
-```
-
-### Use a Module
-
-Use `ModuleName` instead of `Namespace`:
+Wrap types in a file-level module:
 
 ```xml
 <FabulousAstJson Include="schemas/user.json"
@@ -112,6 +94,8 @@ module MyApp.Models
 
 type User = { id: int; name: string; email: string; isActive: bool }
 ```
+
+> **Note:** Each file must have a unique module name since file-level modules cannot share the same fully-qualified name.
 
 ### Custom Output Directory
 
@@ -139,10 +123,10 @@ Override the default `{name}.Generated.fs` pattern:
 <ItemGroup>
   <FabulousAstJson Include="schemas/user.json"
                    RootName="User"
-                   Namespace="MyApp.Models" />
+                   ModuleName="MyApp.Models.User" />
   <FabulousAstJson Include="schemas/product.json"
                    RootName="Product"
-                   Namespace="MyApp.Models" />
+                   ModuleName="MyApp.Models.Product" />
 </ItemGroup>
 
 <ItemGroup>
@@ -255,19 +239,20 @@ Generates: ``` ``type``: string ```
 
 ### Project Properties
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `FabulousAstJsonOutputDir` | `Generated/` | Output directory |
-| `EnableFabulousAstJsonGeneration` | `true` | Enable/disable generation |
+|| Property | Default | Description |
+||----------|---------|-------------|
+|| `FabulousAstJsonOutputDir` | `Generated/` | Output directory |
+|| `EnableFabulousAstJsonGeneration` | `true` | Enable/disable generation (set to `false` to skip) |
+
+> **Note:** `EnableFabulousAstJsonGeneration` defaults to `true`, so you only need to set it explicitly if you want to disable generation.
 
 ### Item Metadata
 
-| Metadata | Default | Description |
-|----------|---------|-------------|
-| `RootName` | `Root` | Root type name |
-| `Namespace` | _(empty)_ | Namespace wrapper |
-| `ModuleName` | _(empty)_ | Module wrapper |
-| `OutputFileName` | `{InputName}.Generated.fs` | Output filename |
+|| Metadata | Default | Description |
+||----------|---------|-------------|
+|| `RootName` | `Root` | Root type name |
+|| `ModuleName` | _(empty)_ | File-level module name (e.g., `MyApp.Models`) |
+|| `OutputFileName` | `{InputName}.Generated.fs` | Output filename |
 
 ## Incremental Builds
 
@@ -277,13 +262,57 @@ The task uses content hashing for efficient builds:
 - Configuration changes trigger regeneration
 - Generated files include hash comments for verification
 
+## IDE Integration
+
+Generated files are created during the build process. Due to how MSBuild evaluates projects, your IDE may not immediately recognize newly generated files.
+
+### Recommended: Explicit File Listing
+
+For the best IDE experience, explicitly list generated files in your project:
+
+```xml
+<ItemGroup>
+  <Compile Include="Generated/user.Generated.fs" />
+</ItemGroup>
+```
+
+This way, the IDE knows about the file path upfront and will recognize it once generated.
+
+### Using Glob Patterns
+
+If you prefer glob patterns:
+
+```xml
+<ItemGroup>
+  <Compile Include="Generated/*.fs" />
+</ItemGroup>
+```
+
+Note that after the first build (or after clean), you may need to reload the project in your IDE for it to pick up the new files.
+
+### Tips
+
+- **Keep generated files in source control** - This avoids the "first build" issue and ensures CI builds work immediately.
+- **Don't delete generated files** - The incremental build only regenerates when JSON content or configuration changes.
+
 ## Troubleshooting
+
+### IDE Not Seeing Generated Files
+
+If your IDE doesn't recognize the generated types after building:
+1. Try reloading/refreshing the project
+2. Switch from glob patterns to explicit file listing
+3. Ensure the generated file exists in the `Generated/` folder
 
 ### File Not Updating
 
 ```bash
 dotnet clean && dotnet build
 ```
+
+### Build Fails After Clean
+
+This is expected on the first build after `dotnet clean` when using glob patterns. The generated file doesn't exist when MSBuild evaluates `<Compile Include="Generated/*.fs" />`. Simply run `dotnet build` again.
 
 ### Disable Generation
 

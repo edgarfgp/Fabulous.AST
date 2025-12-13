@@ -1,6 +1,6 @@
 namespace Playground
 
-open Playground.Generated
+open Playground.Generated.User
 open Playground.Generated.Api
 
 module Main =
@@ -51,7 +51,7 @@ module Main =
               longitude = -122.4194 }
 
         let apiAddress =
-            { Api.Address.line1 = "123 Main Street"
+            { Address.line1 = "123 Main Street"
               line2 = "Apt 4B"
               city = "San Francisco"
               state = "CA"
