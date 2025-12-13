@@ -26,6 +26,9 @@ type FabulousAstJsonTask() =
     [<Required>]
     member val OutputDirectory: string = null with get, set
 
+    [<Required>]
+    member val FabulousAstJsonOutputSuffix: string = null with get, set
+
     // Output Properties
 
     /// Generated F# files to include in compilation
@@ -92,7 +95,7 @@ type FabulousAstJsonTask() =
 
             Some(TaskItem(config.OutputPath) :> ITaskItem)
 
-    member private _.ParseConfig(item: ITaskItem, inputPath: string, outputDir: string) : JsonGenerationItem =
+    member private x.ParseConfig(item: ITaskItem, inputPath: string, outputDir: string) : JsonGenerationItem =
         let getMetadata (name: string) (defaultValue: string) =
             match item.GetMetadata(name) with
             | null
@@ -103,7 +106,7 @@ type FabulousAstJsonTask() =
 
         let outputFileName =
             match getMetadata "OutputFileName" "" with
-            | "" -> baseName + ".Generated.fs"
+            | "" -> baseName + $".{x.FabulousAstJsonOutputSuffix}.fs"
             | name -> name
 
         let outputPath = Path.Combine(outputDir, outputFileName)

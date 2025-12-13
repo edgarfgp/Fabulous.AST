@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <!-- Task assembly: prefer NuGet package, fall back to local build -->
-    <_FabulousAstTaskDll>$(MSBuildThisFileDirectory)..\tasks\net8.0\Fabulous.AST.Build.dll</_FabulousAstTaskDll>
+    <_FabulousAstTaskDll Condition="'$(_FabulousAstTaskDll)' == ''">$(MSBuildThisFileDirectory)..\tasks\net8.0\Fabulous.AST.Build.dll</_FabulousAstTaskDll>
     <_FabulousAstTaskDll Condition="!Exists('$(_FabulousAstTaskDll)')">$(MSBuildThisFileDirectory)..\bin\$(Configuration)\net8.0\Fabulous.AST.Build.dll</_FabulousAstTaskDll>
   </PropertyGroup>
 
@@ -13,17 +13,21 @@
   <!-- Compute effective output filename for each item -->
   <ItemGroup>
     <FabulousAstJson Update="@(FabulousAstJson)">
-      <_OutputFile Condition="'%(OutputFileName)' == ''">%(Filename).Generated.fs</_OutputFile>
+      <_OutputFile Condition="'%(OutputFileName)' == ''">%(Filename).$(FabulousAstJsonOutputSuffix).fs</_OutputFile>
       <_OutputFile Condition="'%(OutputFileName)' != ''">%(OutputFileName)</_OutputFile>
     </FabulousAstJson>
   </ItemGroup>
 
   <!-- Main generation target -->
   <Target Name="FabulousAstJsonGenerate" BeforeTargets="BeforeCompile"
-          Condition="'$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != '' AND Exists('$(_FabulousAstTaskDll)')"
+          Condition="$(DesignTimeBuild) != 'true' AND '$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != '' AND Exists('$(_FabulousAstTaskDll)')"
           Inputs="@(FabulousAstJson)" Outputs="@(FabulousAstJson->'$(FabulousAstJsonOutputDir)%(_OutputFile)')">
     <MakeDir Directories="$(FabulousAstJsonOutputDir)" />
-    <FabulousAstJsonTask JsonFiles="@(FabulousAstJson)" ProjectDirectory="$(MSBuildProjectDirectory)" OutputDirectory="$(FabulousAstJsonOutputDir)">
+    <FabulousAstJsonTask
+        JsonFiles="@(FabulousAstJson)"
+        ProjectDirectory="$(MSBuildProjectDirectory)"
+        OutputDirectory="$(FabulousAstJsonOutputDir)"
+        FabulousAstJsonOutputSuffix="$(FabulousAstJsonOutputSuffix)">
       <Output TaskParameter="GeneratedFiles" ItemName="_GeneratedFiles" />
     </FabulousAstJsonTask>
     <Message Importance="high" Text="Fabulous.AST.Json: Generated %(_GeneratedFiles.Identity)" Condition="'@(_GeneratedFiles)' != ''" />
@@ -39,5 +43,17 @@
   <Target Name="FabulousAstJsonClean" BeforeTargets="Clean" Condition="'@(FabulousAstJson)' != ''">
     <Delete Files="@(FabulousAstJson->'$(FabulousAstJsonOutputDir)%(_OutputFile)')" />
   </Target>
+
+  <!-- Reload generated files -->
+    <Target Name="RecomputeGeneratedItems"
+            BeforeTargets="BeforeCompile"
+            AfterTargets="FabulousAstJsonGenerate"
+            Condition="'$(EnableFabulousAstJsonGeneration)' == 'true'">
+        <ItemGroup>
+            <Reload Include="%(Compile.Identity)%(Compile.FabulousFile)" />
+            <Compile Remove="$(FabulousAstJsonOutputDirSegment);*.*;**/*.*" />
+            <Compile Include="%(Reload.Identity)" KeepDuplicates="false" />
+        </ItemGroup>
+    </Target>
 
 </Project>

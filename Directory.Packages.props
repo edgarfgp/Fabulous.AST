@@ -6,7 +6,7 @@
     <PackageVersion Include="Fantomas.Core" Version="[7.0.1]" />
     <PackageVersion Include="FSharp.Core" Version="8.0.403" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     <PackageVersion Include="xunit.v3" Version="3.2.1"/>
     <PackageVersion Include="Verify.XunitV3" Version="27.1.0" />
     <PackageVersion Include="FsCheck.Xunit" Version="2.16.6" />
