@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-pre04] - 2025-12-15
+
+### Changed
+- Renamed properties for future extensibility such as OpenAPI support
+- Renamed ReorderCompileItems target to FabulousAstReorderCompile
+- Default file suffix changed from .cg.fs to .g.fs
+
+### Added
+- FabulousAstGeneratedFiles property as glob pattern for IDE visibility
+- DependsOnFabulousAst compile item metadata for correct F# file ordering
+
+### Fixed
+- Fixed MSBuild property evaluation order
+- Fixed IDE IntelliSense not recognizing generated files
+- Skip FabulousAstReorderCompile target during design-time builds to prevent IDE confusion
+
 ## [2.0.0-pre03] - 2025-12-13
 
 ### Fixed
@@ -33,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0-pre01] - 2025-12-11
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST.Build/compare/2.0.0-pre03...HEAD
-[2.0.0-pre03]: https://github.com/edgarfgp/Fabulous.AST.Build/releases/tag/2.0.0-pre03
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre04...HEAD
+[2.0.0-pre04]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre04
+[2.0.0-pre03]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre03
 [2.0.0-pre02]: https://github.com/edgarfgp/Fabulous.AST.Build/releases/tag/2.0.0-pre02
 [2.0.0-pre01]: https://github.com/edgarfgp/Fabulous.AST.Build/releases/tag/2.0.0-pre01

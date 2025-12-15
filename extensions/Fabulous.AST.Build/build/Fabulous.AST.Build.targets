@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <!-- Task assembly: prefer NuGet package, fall back to local build -->
-    <_FabulousAstTaskDll>$(MSBuildThisFileDirectory)..\tasks\net8.0\Fabulous.AST.Build.dll</_FabulousAstTaskDll>
+    <_FabulousAstTaskDll Condition="'$(_FabulousAstTaskDll)' == ''">$(MSBuildThisFileDirectory)..\tasks\net8.0\Fabulous.AST.Build.dll</_FabulousAstTaskDll>
     <_FabulousAstTaskDll Condition="!Exists('$(_FabulousAstTaskDll)')">$(MSBuildThisFileDirectory)..\bin\$(Configuration)\net8.0\Fabulous.AST.Build.dll</_FabulousAstTaskDll>
   </PropertyGroup>
 
@@ -13,17 +13,21 @@
   <!-- Compute effective output filename for each item -->
   <ItemGroup>
     <FabulousAstJson Update="@(FabulousAstJson)">
-      <_OutputFile Condition="'%(OutputFileName)' == ''">%(Filename).Generated.fs</_OutputFile>
+      <_OutputFile Condition="'%(OutputFileName)' == ''">%(Filename).$(FabulousAstJsonSuffix).fs</_OutputFile>
       <_OutputFile Condition="'%(OutputFileName)' != ''">%(OutputFileName)</_OutputFile>
     </FabulousAstJson>
   </ItemGroup>
 
-  <!-- Main generation target -->
+  <!-- Main generation target: JSON -->
   <Target Name="FabulousAstJsonGenerate" BeforeTargets="BeforeCompile"
-          Condition="'$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != '' AND Exists('$(_FabulousAstTaskDll)')"
-          Inputs="@(FabulousAstJson)" Outputs="@(FabulousAstJson->'$(FabulousAstJsonOutputDir)%(_OutputFile)')">
-    <MakeDir Directories="$(FabulousAstJsonOutputDir)" />
-    <FabulousAstJsonTask JsonFiles="@(FabulousAstJson)" ProjectDirectory="$(MSBuildProjectDirectory)" OutputDirectory="$(FabulousAstJsonOutputDir)">
+          Condition="'$(DesignTimeBuild)' != 'true' AND '$(EnableFabulousAstJson)' == 'true' AND '@(FabulousAstJson)' != '' AND Exists('$(_FabulousAstTaskDll)')"
+          Inputs="@(FabulousAstJson)" Outputs="@(FabulousAstJson->'$(FabulousAstOutputPath)%(_OutputFile)')">
+    <MakeDir Directories="$(FabulousAstOutputPath)" />
+    <FabulousAstJsonTask
+        JsonFiles="@(FabulousAstJson)"
+        ProjectDirectory="$(MSBuildProjectDirectory)"
+        OutputDirectory="$(FabulousAstOutputPath)"
+        FabulousAstJsonSuffix="$(FabulousAstJsonSuffix)">
       <Output TaskParameter="GeneratedFiles" ItemName="_GeneratedFiles" />
     </FabulousAstJsonTask>
     <Message Importance="high" Text="Fabulous.AST.Json: Generated %(_GeneratedFiles.Identity)" Condition="'@(_GeneratedFiles)' != ''" />
@@ -31,13 +35,32 @@
 
   <!-- Warning when task assembly not found -->
   <Target Name="_FabulousAstJsonNoTask" BeforeTargets="BeforeCompile"
-          Condition="'$(EnableFabulousAstJsonGeneration)' == 'true' AND '@(FabulousAstJson)' != '' AND !Exists('$(_FabulousAstTaskDll)')">
+          Condition="'$(EnableFabulousAstJson)' == 'true' AND '@(FabulousAstJson)' != '' AND !Exists('$(_FabulousAstTaskDll)')">
     <Warning Text="Fabulous.AST.Build: Task assembly not found. Run 'dotnet restore' or build Fabulous.AST.Build first." />
   </Target>
 
   <!-- Clean generated files -->
   <Target Name="FabulousAstJsonClean" BeforeTargets="Clean" Condition="'@(FabulousAstJson)' != ''">
-    <Delete Files="@(FabulousAstJson->'$(FabulousAstJsonOutputDir)%(_OutputFile)')" />
+    <Delete Files="@(FabulousAstJson->'$(FabulousAstOutputPath)%(_OutputFile)')" />
+  </Target>
+
+  <!-- Shared: Ensure correct compile order for all generators -->
+  <Target Name="FabulousAstReorderCompile"
+          BeforeTargets="BeforeCompile"
+          AfterTargets="FabulousAstJsonGenerate"
+          Condition="'$(DesignTimeBuild)' != 'true' AND '$(EnableFabulousAstJson)' == 'true'">
+    <ItemGroup>
+      <!-- Save items that depend on generated code -->
+      <_DependentItems Include="@(Compile)" Condition="'%(Compile.DependsOnFabulousAst)' == 'true'" />
+      <!-- Remove them temporarily -->
+      <Compile Remove="@(_DependentItems)" />
+      <!-- Ensure generated files are in Compile (handles clean builds where glob didn't match) -->
+      <Compile Include="$(FabulousAstOutputPath)*.$(FabulousAstJsonSuffix).fs" KeepDuplicates="false" />
+      <!-- Re-add dependent items after generated files -->
+      <Compile Include="@(_DependentItems)" />
+      <!-- Cleanup -->
+      <_DependentItems Remove="@(_DependentItems)" />
+    </ItemGroup>
   </Target>
 
 </Project>

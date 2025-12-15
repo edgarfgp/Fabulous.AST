@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-_No unreleased changes_
+
+## [2.0.0-pre04] - 2025-12-15
+
+### Changed
+- No changes
 
 ## [2.0.0-pre03] - 2025-12-13
 
@@ -349,7 +353,8 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre03...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre04...HEAD
+[2.0.0-pre04]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre04
 [2.0.0-pre03]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre03
 [2.0.0-pre02]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre02
 [2.0.0-pre01]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre01
