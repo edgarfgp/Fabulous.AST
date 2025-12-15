@@ -27,7 +27,7 @@ type FabulousAstJsonTask() =
     member val OutputDirectory: string = null with get, set
 
     [<Required>]
-    member val FabulousAstJsonOutputSuffix: string = null with get, set
+    member val FabulousAstJsonSuffix: string = null with get, set
 
     // Output Properties
 
@@ -41,7 +41,7 @@ type FabulousAstJsonTask() =
         try
             let generatedFiles = ResizeArray<ITaskItem>()
 
-            // Create output directory
+            // Create an output directory
             Directory.CreateDirectory(this.OutputDirectory) |> ignore
 
             for item in this.JsonFiles do
@@ -106,7 +106,7 @@ type FabulousAstJsonTask() =
 
         let outputFileName =
             match getMetadata "OutputFileName" "" with
-            | "" -> baseName + $".{x.FabulousAstJsonOutputSuffix}.fs"
+            | "" -> baseName + $".{x.FabulousAstJsonSuffix}.fs"
             | name -> name
 
         let outputPath = Path.Combine(outputDir, outputFileName)

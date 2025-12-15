@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- Per-generator properties: JSON -->
   <PropertyGroup>
-    <!-- Suffix for the output files, e.g., MyFile.cg.fs -->
-    <FabulousAstJsonOutputSuffix Condition="'$(FabulousAstJsonOutputSuffix)' == ''">cg</FabulousAstJsonOutputSuffix>
+    <!-- Suffix for JSON-generated files, e.g., MyFile.g.fs -->
+    <FabulousAstJsonSuffix Condition="'$(FabulousAstJsonSuffix)' == ''">g</FabulousAstJsonSuffix>
 
-    <!-- Output directory for generated files -->
-    <FabulousAstJsonOutputDirSegment Condition="'$(FabulousAstJsonOutputDirSegment)' == ''">Generated</FabulousAstJsonOutputDirSegment>
-    <FabulousAstJsonOutputDir Condition="'$(FabulousAstJsonOutputDir)' == ''">$(MSBuildProjectDirectory)\$(FabulousAstJsonOutputDirSegment)\</FabulousAstJsonOutputDir>
-
-    <!-- Set to false to disable generation -->
-    <EnableFabulousAstJsonGeneration Condition="'$(EnableFabulousAstJsonGeneration)' == ''">true</EnableFabulousAstJsonGeneration>
+    <!-- Set to false to disable JSON generation -->
+    <EnableFabulousAstJson Condition="'$(EnableFabulousAstJson)' == ''">true</EnableFabulousAstJson>
   </PropertyGroup>
 
-  <!-- Define the FabulousAstJson item type -->
+  <!-- Shared properties (used by all Fabulous.AST generators) -->
+  <PropertyGroup>
+    <!-- Output folder for generated files -->
+    <FabulousAstOutputFolder Condition="'$(FabulousAstOutputFolder)' == ''">Generated</FabulousAstOutputFolder>
+    <FabulousAstOutputPath Condition="'$(FabulousAstOutputPath)' == ''">$(MSBuildProjectDirectory)\$(FabulousAstOutputFolder)\</FabulousAstOutputPath>
+
+    <!-- Helper: glob pattern for generated files (use in Compile Include) -->
+    <FabulousAstGeneratedFiles>$(FabulousAstOutputFolder)/*.$(FabulousAstJsonSuffix).fs</FabulousAstGeneratedFiles>
+  </PropertyGroup>
+
+  <!-- Define item types -->
   <ItemGroup>
     <AvailableItemName Include="FabulousAstJson" />
   </ItemGroup>
@@ -22,8 +29,6 @@
   <ItemDefinitionGroup>
     <FabulousAstJson>
       <RootName>Root</RootName>
-      <ModuleName></ModuleName>
-      <OutputFileName></OutputFileName>
     </FabulousAstJson>
   </ItemDefinitionGroup>
 

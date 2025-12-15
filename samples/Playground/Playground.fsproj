@@ -11,14 +11,10 @@
     <ItemGroup>
         <Compile Include="Common.fs" />
         <Compile Include="Generator.fs" />
-        <!-- Explicitly include generated files - IDE will see these -->
-        <!-- Option 1 -->
-        <Compile Include="$(FabulousAstJsonOutputDirSegment)" >
-            <FabulousFile>\*.$(FabulousAstJsonOutputSuffix).fs</FabulousFile>
-        </Compile>
-        <!-- Option 2 -->
-        <!-- <Compile Include="$(FabulousAstJsonOutputDirSegment)" FabulousFile="\*.$(FabulousAstJsonOutputSuffix).fs" /> -->
-        <Compile Include="Program.fs" />
+        <!-- Generated files: glob for IDE visibility (expands when files exist) -->
+        <Compile Include="$(FabulousAstGeneratedFiles)" />
+        <!-- Files that depend on generated code -->
+        <Compile Include="Program.fs" DependsOnFabulousAst="true" />
     </ItemGroup>
 
     <ItemGroup>
@@ -36,10 +32,6 @@
                          RootName="ApiResponse"
                          ModuleName="Playground.Generated.Api" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Generated" />
-    </ItemGroup>
-
     <!-- Import Fabulous.AST.Build targets -->
     <Import Project="..\..\extensions\Fabulous.AST.Build\build\Fabulous.AST.Build.targets" />
 
