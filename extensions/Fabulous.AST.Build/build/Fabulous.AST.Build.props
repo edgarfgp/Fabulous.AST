@@ -12,11 +12,11 @@
 
   <!-- Shared properties (used by all Fabulous.AST generators) -->
   <PropertyGroup>
-    <!-- Output folder for generated files -->
+    <!-- Output folder for generated files (relative to project directory) -->
     <FabulousAstOutputFolder Condition="'$(FabulousAstOutputFolder)' == ''">Generated</FabulousAstOutputFolder>
+    <!-- Absolute path to output folder -->
     <FabulousAstOutputPath Condition="'$(FabulousAstOutputPath)' == ''">$(MSBuildProjectDirectory)\$(FabulousAstOutputFolder)\</FabulousAstOutputPath>
 
-    <!-- Helper: glob pattern for generated files (use in Compile Include) -->
     <FabulousAstGeneratedFiles>$(FabulousAstOutputFolder)/*.$(FabulousAstJsonSuffix).fs</FabulousAstGeneratedFiles>
   </PropertyGroup>
 
@@ -24,6 +24,7 @@
   <ItemGroup>
     <AvailableItemName Include="FabulousAstJson" />
   </ItemGroup>
+
 
   <!-- Default metadata for FabulousAstJson items -->
   <ItemDefinitionGroup>
