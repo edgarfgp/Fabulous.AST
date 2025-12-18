@@ -34,7 +34,7 @@
     <!-- Step 2: Clear Compile list -->
     <Compile Remove="@(Compile)" />
     <!-- Step 3: Add generated files FIRST (computed from FabulousAstJson items) -->
-    <Compile Include="@(FabulousAstJson->'$(FabulousAstOutputFolder)/%(_OutputFile)')" />
+    <Compile Include="@(FabulousAstJson->'$(FabulousAstOutputFolder)/%(_OutputFile)')" KeepDuplicates="false" />
     <!-- Step 4: Re-add user's source files AFTER generated files -->
     <Compile Include="@(_FabulousAstSavedCompile)" />
     <!-- Cleanup temporary item -->
