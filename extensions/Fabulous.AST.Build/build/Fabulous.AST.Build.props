@@ -17,7 +17,6 @@
     <!-- Absolute path to output folder -->
     <FabulousAstOutputPath Condition="'$(FabulousAstOutputPath)' == ''">$(MSBuildProjectDirectory)\$(FabulousAstOutputFolder)\</FabulousAstOutputPath>
 
-    <FabulousAstGeneratedFiles>$(FabulousAstOutputFolder)/*.$(FabulousAstJsonSuffix).fs</FabulousAstGeneratedFiles>
   </PropertyGroup>
 
   <!-- Define item types -->
