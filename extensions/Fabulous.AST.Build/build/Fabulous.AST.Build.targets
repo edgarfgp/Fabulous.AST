@@ -19,27 +19,37 @@
   </ItemGroup>
 
   <!--
-    STATIC ITEMGROUP: Reorder Compile items so generated files come BEFORE user source files.
-    This runs at project load time (not in a target), so IDEs see the correct order.
+    DYNAMIC REORDERING: Ensure generated files come BEFORE user source files.
+    This runs in a target before compilation so that only existing generated files
+    are added to Compile items, avoiding IDE errors for missing files on first load.
 
     Steps:
     1. Save all current Compile items (user's source files)
     2. Clear the Compile list
-    3. Add generated files first
-    4. Re-add user's source files after
+    3. Compute paths for generated files and include only those that exist
+    4. Add existing generated files first
+    5. Re-add user's source files after
   -->
-  <ItemGroup Condition="'$(EnableFabulousAstJson)' == 'true' AND '@(FabulousAstJson)' != ''">
-    <!-- Step 1: Save user's source files -->
-    <_FabulousAstSavedCompile Include="@(Compile)" />
-    <!-- Step 2: Clear Compile list -->
-    <Compile Remove="@(Compile)" />
-    <!-- Step 3: Add generated files FIRST (computed from FabulousAstJson items) -->
-    <Compile Include="@(FabulousAstJson->'$(FabulousAstOutputFolder)/%(_OutputFile)')" />
-    <!-- Step 4: Re-add user's source files AFTER generated files -->
-    <Compile Include="@(_FabulousAstSavedCompile)" />
-    <!-- Cleanup temporary item -->
-    <_FabulousAstSavedCompile Remove="@(_FabulousAstSavedCompile)" />
-  </ItemGroup>
+  <Target Name="_FabulousAstOrderGeneratedFirst"
+          BeforeTargets="BeforeCompile"
+          Condition="'$(EnableFabulousAstJson)' == 'true' AND '@(FabulousAstJson)' != ''">
+    <ItemGroup>
+      <!-- Step 1: Save user's source files -->
+      <_FabulousAstSavedCompile Include="@(Compile)" />
+      <!-- Step 2: Clear Compile list -->
+      <Compile Remove="@(Compile)" />
+      <!-- Step 3: Compute generated file paths and keep only those that currently exist -->
+      <_FabulousAstGenerated Include="@(FabulousAstJson->'$(FabulousAstOutputFolder)/%(_OutputFile)')"
+                             Condition="Exists('%(Identity)')" />
+      <!-- Step 4: Add existing generated files FIRST -->
+      <Compile Include="@(_FabulousAstGenerated)" />
+      <!-- Step 5: Re-add user's source files AFTER generated files -->
+      <Compile Include="@(_FabulousAstSavedCompile)" />
+      <!-- Cleanup temporary items -->
+      <_FabulousAstSavedCompile Remove="@(_FabulousAstSavedCompile)" />
+      <_FabulousAstGenerated Remove="@(_FabulousAstGenerated)" />
+    </ItemGroup>
+  </Target>
 
   <!-- Main generation target: JSON -->
   <Target Name="FabulousAstJsonGenerate" BeforeTargets="BeforeCompile"
