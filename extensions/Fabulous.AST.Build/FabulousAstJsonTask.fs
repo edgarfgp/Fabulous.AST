@@ -84,7 +84,7 @@ type FabulousAstJsonTask() =
 
                 let generatedCode = this.GenerateCode(jsonContent, config)
                 let relativeInputPath = Path.GetRelativePath(this.ProjectDirectory, inputPath)
-                let header = HashUtils.generateHeader hash relativeInputPath
+                let header = HashUtils.generateHeader hash relativeInputPath inputPath
                 File.WriteAllText(config.OutputPath, header + generatedCode)
             else
                 this.Log.LogMessage(

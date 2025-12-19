@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    buildMultiTargeting: Runs once in the outer build for multi-targeting projects.
+    Generation happens here before dispatching to inner TFM builds.
+  -->
 
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
@@ -19,38 +23,10 @@
   </ItemGroup>
 
   <!--
-    STATIC ITEMGROUP: Reorder Compile items so generated files come BEFORE user source files.
-    This runs at project load time (not in a target), so IDEs see the correct order.
-
-    Steps:
-    1. Save all current Compile items (user's source files)
-    2. Clear the Compile list
-    3. Add generated files first
-    4. Re-add user's source files after
+    Generation target for multi-targeting projects.
+    Runs once in the outer build before dispatching to inner TFM builds.
   -->
-  <ItemGroup Condition="'$(EnableFabulousAstJson)' == 'true' AND '@(FabulousAstJson)' != ''">
-    <!-- Step 1: Save user's source files -->
-    <_FabulousAstSavedCompile Include="@(Compile)" />
-    <!-- Step 2: Clear Compile list -->
-    <Compile Remove="@(Compile)" />
-    <!-- Step 3: Add generated files FIRST (computed from FabulousAstJson items) -->
-    <Compile Include="@(FabulousAstJson->'$(FabulousAstOutputFolder)/%(_OutputFile)')" KeepDuplicates="false" />
-    <!-- Step 4: Re-add user's source files AFTER generated files -->
-    <Compile Include="@(_FabulousAstSavedCompile)" />
-    <!-- Cleanup temporary item -->
-    <_FabulousAstSavedCompile Remove="@(_FabulousAstSavedCompile)" />
-  </ItemGroup>
-
-  <!--
-    Main generation target: JSON.
-    Runs for:
-    - Single-targeting projects (TargetFrameworks is empty)
-    - Inner builds of multi-targeting projects (TargetFramework is set)
-    The hash-based check in the task prevents unnecessary regeneration.
-    For command-line builds, buildMultiTargeting runs generation once in outer build.
-    For IDE builds (like Rider), this target runs in inner builds as fallback.
-  -->
-  <Target Name="FabulousAstJsonGenerate" BeforeTargets="BeforeCompile"
+  <Target Name="FabulousAstJsonGenerate" BeforeTargets="DispatchToInnerBuilds"
           Condition="'$(DesignTimeBuild)' != 'true' AND '$(EnableFabulousAstJson)' == 'true' AND '@(FabulousAstJson)' != '' AND Exists('$(_FabulousAstTaskDll)')"
           Inputs="@(FabulousAstJson)" Outputs="@(FabulousAstJson->'$(FabulousAstOutputPath)%(_OutputFile)')">
     <MakeDir Directories="$(FabulousAstOutputPath)" />
@@ -65,7 +41,7 @@
   </Target>
 
   <!-- Warning when task assembly not found -->
-  <Target Name="_FabulousAstJsonNoTask" BeforeTargets="BeforeCompile"
+  <Target Name="_FabulousAstJsonNoTask" BeforeTargets="DispatchToInnerBuilds"
           Condition="'$(EnableFabulousAstJson)' == 'true' AND '@(FabulousAstJson)' != '' AND !Exists('$(_FabulousAstTaskDll)')">
     <Warning Text="Fabulous.AST.Build: Task assembly not found. Run 'dotnet restore' or build Fabulous.AST.Build first." />
   </Target>
@@ -74,13 +50,5 @@
   <Target Name="FabulousAstJsonClean" BeforeTargets="Clean" Condition="'@(FabulousAstJson)' != ''">
     <Delete Files="@(FabulousAstJson->'$(FabulousAstOutputPath)%(_OutputFile)')" />
   </Target>
-
-  <!--
-    For multi-targeting projects using direct imports (not NuGet), import the
-    buildMultiTargeting targets which override FabulousAstJsonGenerate to run
-    once in the outer build before DispatchToInnerBuilds.
-  -->
-  <Import Project="../buildMultiTargeting/Fabulous.AST.Build.targets"
-          Condition="'$(TargetFrameworks)' != '' AND '$(TargetFramework)' == ''" />
 
 </Project>

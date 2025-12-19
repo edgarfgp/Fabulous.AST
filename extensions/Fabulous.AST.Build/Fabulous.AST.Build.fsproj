@@ -47,6 +47,7 @@
   <ItemGroup>
     <!-- Include props/targets in the NuGet package -->
     <None Include="build/**" Pack="true" PackagePath="build/" />
+    <None Include="buildMultiTargeting/**" Pack="true" PackagePath="buildMultiTargeting/" />
     <None Include="README.md">
       <PackagePath>/</PackagePath>
       <Pack>true</Pack>

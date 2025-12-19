@@ -8,13 +8,11 @@
     <!-- Import Fabulous.AST.Json.Build props -->
     <Import Project="..\..\extensions\Fabulous.AST.Build\build\Fabulous.AST.Build.props" />
 
+    <!-- Generated files are automatically included by Fabulous.AST.Build targets -->
     <ItemGroup>
         <Compile Include="Common.fs" />
         <Compile Include="Generator.fs" />
-        <!-- Generated files: glob for IDE visibility (expands when files exist) -->
-        <Compile Include="$(FabulousAstGeneratedFiles)" />
-        <!-- Files that depend on generated code -->
-        <Compile Include="Program.fs" DependsOnFabulousAst="true" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>

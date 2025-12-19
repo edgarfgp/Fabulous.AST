@@ -53,20 +53,17 @@ Add the `FabulousAstJson` item to your `.fsproj`:
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fabulous.AST.Build" Version="1.0.0" />
+    <PackageReference Include="Fabulous.AST.Build" Version="2.0.0" />
   </ItemGroup>
 
   <!-- Configure JSON file for type generation -->
   <ItemGroup>
     <FabulousAstJson Include="schemas/user.json" />
   </ItemGroup>
-
-  <!-- Include the generated file in compilation -->
-  <ItemGroup>
-    <Compile Include="Generated/user.Generated.fs" />
-  </ItemGroup>
 </Project>
 ```
+
+> **Note:** Generated files are automatically included in compilation. No manual `<Compile Include="...">` is needed.
 
 ### Step 3: Build Your Project
 
@@ -139,12 +136,6 @@ Process multiple schemas with different configurations:
                    RootName="CustomerOrder"
                    ModuleName="MyApp.Orders" />
 </ItemGroup>
-
-<ItemGroup>
-  <Compile Include="Generated/user.Generated.fs" />
-  <Compile Include="Generated/product.Generated.fs" />
-  <Compile Include="Generated/order.Generated.fs" />
-</ItemGroup>
 ```
 
 > **Note:** Each file must have a unique module name since file-level modules cannot share the same fully-qualified name.
@@ -155,7 +146,7 @@ Change where generated files are placed:
 
 ```xml
 <PropertyGroup>
-  <FabulousAstJsonOutputDir>Types/</FabulousAstJsonOutputDir>
+  <FabulousAstOutputFolder>Types</FabulousAstOutputFolder>
 </PropertyGroup>
 ```
 
@@ -186,8 +177,8 @@ Override the default `{filename}.Generated.fs` pattern:
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `FabulousAstJsonOutputDir` | `$(MSBuildProjectDirectory)\Generated\` | Output directory for generated files |
-| `EnableFabulousAstJsonGeneration` | `true` | Enable/disable generation (useful for CI) |
+| `FabulousAstOutputFolder` | `Generated` | Output folder for generated files (relative to project directory) |
+| `EnableFabulousAstJson` | `true` | Enable/disable generation (useful for CI) |
 
 ### Item Metadata
 
@@ -195,7 +186,7 @@ Override the default `{filename}.Generated.fs` pattern:
 |----------|---------|-------------|
 | `RootName` | `Root` | Name of the root type |
 | `ModuleName` | _(empty)_ | File-level module name (e.g., `MyApp.Models`) |
-| `OutputFileName` | `{InputName}.Generated.fs` | Custom output filename |
+| `OutputFileName` | `{InputName}.g.fs` | Custom output filename |
 
 ## Type Inference
 
@@ -303,38 +294,28 @@ The task uses content hashing for smart rebuilds:
 
 ## IDE Integration
 
-Generated files are created during build. Your IDE may not immediately see newly generated files.
+Generated files are automatically included in compilation and placed before your source files, ensuring proper compile order.
 
-### Recommended: Explicit File Listing
+### IDE Recognition
 
-For the best IDE experience, explicitly list generated files:
+Since generated files are added at project load time, most IDEs will recognize them after the first build. If your IDE doesn't see the generated types:
 
-```xml
-<Compile Include="Generated/user.Generated.fs" />
-```
-
-The IDE knows about the file path upfront and will recognize it once generated.
-
-### Using Glob Patterns
-
-With glob patterns like `<Compile Include="Generated/*.fs" />`, you may need to reload the project after the first build for the IDE to pick up new files.
+1. Build the project once (`dotnet build`)
+2. Reload/refresh the project in your IDE
 
 ### Tips
 
-- **Keep generated files in source control** - Avoids first-build issues
+- **Keep generated files in source control** - Avoids first-build issues and ensures CI builds work immediately
 - **Don't delete generated files** - Incremental build only regenerates when JSON changes
+- **Multi-targeting works automatically** - Generation runs once before all target framework builds
 
 ## Troubleshooting
 
 ### IDE Not Seeing Generated Files
 
-1. Reload/refresh the project
-2. Switch from glob patterns to explicit file listing
-3. Ensure the file exists in `Generated/`
-
-### Build Fails After Clean
-
-Expected when using glob patterns. Run `dotnet build` again.
+1. Build the project: `dotnet build`
+2. Reload/refresh the project in your IDE
+3. Ensure the file exists in the `Generated/` folder
 
 ### Generated File Not Updating
 
@@ -345,12 +326,12 @@ dotnet clean && dotnet build
 ### Disable Generation
 
 ```xml
-<EnableFabulousAstJsonGeneration>false</EnableFabulousAstJsonGeneration>
+<EnableFabulousAstJson>false</EnableFabulousAstJson>
 ```
 
 Or via command line:
 ```bash
-dotnet build -p:EnableFabulousAstJsonGeneration=false
+dotnet build -p:EnableFabulousAstJson=false
 ```
 
 ## Related Packages
