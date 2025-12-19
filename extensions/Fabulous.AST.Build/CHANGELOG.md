@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-pre05] - 2025-12-19
+
+### Added
+- Multi-targeting support via buildMultiTargeting folder for projects targeting multiple .NET versions
+
+### Changed
+- Generated files are now automatically included in compilation (no manual Compile Include needed)
+- Timestamps in generated file headers now use source file modification time for deterministic output
+- Simplified compile ordering using static ItemGroup instead of runtime target
+
+### Removed
+- FabulousAstGeneratedFiles property (generated files are now auto-included)
+- DependsOnFabulousAst compile item metadata (ordering is now automatic)
+- FabulousAstReorderCompile target (replaced by static ItemGroup reordering)
+
 ## [2.0.0-pre04] - 2025-12-15
 
 ### Changed
@@ -49,7 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0-pre01] - 2025-12-11
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre04...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre05...HEAD
+[2.0.0-pre05]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre05
 [2.0.0-pre04]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre04
 [2.0.0-pre03]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre03
 [2.0.0-pre02]: https://github.com/edgarfgp/Fabulous.AST.Build/releases/tag/2.0.0-pre02

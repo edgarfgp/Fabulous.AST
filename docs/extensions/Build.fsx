@@ -44,11 +44,9 @@ Add to your `.fsproj`:
 <ItemGroup>
   <FabulousAstJson Include="schemas/user.json" />
 </ItemGroup>
-
-<ItemGroup>
-  <Compile Include="Generated/user.Generated.fs" />
-</ItemGroup>
 ```
+
+> **Note:** Generated files are automatically included in compilation. No manual `<Compile Include="...">` is needed.
 
 ### 3. Build
 
@@ -103,13 +101,13 @@ Change the output location:
 
 ```xml
 <PropertyGroup>
-  <FabulousAstJsonOutputDir>Types/</FabulousAstJsonOutputDir>
+  <FabulousAstOutputFolder>Types</FabulousAstOutputFolder>
 </PropertyGroup>
 ```
 
 ### Custom Output Filename
 
-Override the default `{name}.Generated.fs` pattern:
+Override the default `{name}.g.fs` pattern:
 
 ```xml
 <FabulousAstJson Include="schemas/user.json" OutputFileName="UserTypes.fs" />
@@ -127,11 +125,6 @@ Override the default `{name}.Generated.fs` pattern:
   <FabulousAstJson Include="schemas/product.json"
                    RootName="Product"
                    ModuleName="MyApp.Models.Product" />
-</ItemGroup>
-
-<ItemGroup>
-  <Compile Include="Generated/user.Generated.fs" />
-  <Compile Include="Generated/product.Generated.fs" />
 </ItemGroup>
 ```
 
@@ -241,10 +234,10 @@ Generates: ``` ``type``: string ```
 
 || Property | Default | Description |
 ||----------|---------|-------------|
-|| `FabulousAstJsonOutputDir` | `Generated/` | Output directory |
-|| `EnableFabulousAstJsonGeneration` | `true` | Enable/disable generation (set to `false` to skip) |
+|| `FabulousAstOutputFolder` | `Generated` | Output folder for generated files (relative to project directory) |
+|| `EnableFabulousAstJson` | `true` | Enable/disable generation (set to `false` to skip) |
 
-> **Note:** `EnableFabulousAstJsonGeneration` defaults to `true`, so you only need to set it explicitly if you want to disable generation.
+> **Note:** `EnableFabulousAstJson` defaults to `true`, so you only need to set it explicitly if you want to disable generation.
 
 ### Item Metadata
 
@@ -252,7 +245,7 @@ Generates: ``` ``type``: string ```
 ||----------|---------|-------------|
 || `RootName` | `Root` | Root type name |
 || `ModuleName` | _(empty)_ | File-level module name (e.g., `MyApp.Models`) |
-|| `OutputFileName` | `{InputName}.Generated.fs` | Output filename |
+|| `OutputFileName` | `{InputName}.g.fs` | Output filename |
 
 ## Incremental Builds
 
@@ -264,45 +257,28 @@ The task uses content hashing for efficient builds:
 
 ## IDE Integration
 
-Generated files are created during the build process. Due to how MSBuild evaluates projects, your IDE may not immediately recognize newly generated files.
+Generated files are automatically included in compilation and placed before your source files, ensuring proper compile order.
 
-### Recommended: Explicit File Listing
+### IDE Recognition
 
-For the best IDE experience, explicitly list generated files in your project:
+Since generated files are added at project load time, most IDEs will recognize them after the first build. If your IDE doesn't see the generated types:
 
-```xml
-<ItemGroup>
-  <Compile Include="Generated/user.Generated.fs" />
-</ItemGroup>
-```
-
-This way, the IDE knows about the file path upfront and will recognize it once generated.
-
-### Using Glob Patterns
-
-If you prefer glob patterns:
-
-```xml
-<ItemGroup>
-  <Compile Include="Generated/*.fs" />
-</ItemGroup>
-```
-
-Note that after the first build (or after clean), you may need to reload the project in your IDE for it to pick up the new files.
+1. Build the project once (`dotnet build`)
+2. Reload/refresh the project in your IDE
 
 ### Tips
 
-- **Keep generated files in source control** - This avoids the "first build" issue and ensures CI builds work immediately.
-- **Don't delete generated files** - The incremental build only regenerates when JSON content or configuration changes.
+- **Keep generated files in source control** - Avoids first-build issues and ensures CI builds work immediately
+- **Don't delete generated files** - Incremental build only regenerates when JSON changes
+- **Multi-targeting works automatically** - Generation runs once before all target framework builds
 
 ## Troubleshooting
 
 ### IDE Not Seeing Generated Files
 
-If your IDE doesn't recognize the generated types after building:
-1. Try reloading/refreshing the project
-2. Switch from glob patterns to explicit file listing
-3. Ensure the generated file exists in the `Generated/` folder
+1. Build the project: `dotnet build`
+2. Reload/refresh the project in your IDE
+3. Ensure the file exists in the `Generated/` folder
 
 ### File Not Updating
 
@@ -310,20 +286,16 @@ If your IDE doesn't recognize the generated types after building:
 dotnet clean && dotnet build
 ```
 
-### Build Fails After Clean
-
-This is expected on the first build after `dotnet clean` when using glob patterns. The generated file doesn't exist when MSBuild evaluates `<Compile Include="Generated/*.fs" />`. Simply run `dotnet build` again.
-
 ### Disable Generation
 
 Via project property:
 ```xml
-<EnableFabulousAstJsonGeneration>false</EnableFabulousAstJsonGeneration>
+<EnableFabulousAstJson>false</EnableFabulousAstJson>
 ```
 
 Via command line:
 ```bash
-dotnet build -p:EnableFabulousAstJsonGeneration=false
+dotnet build -p:EnableFabulousAstJson=false
 ```
 
 ## Next Steps
