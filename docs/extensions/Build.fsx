@@ -232,20 +232,20 @@ Generates: ``` ``type``: string ```
 
 ### Project Properties
 
-|| Property | Default | Description |
-||----------|---------|-------------|
-|| `FabulousAstOutputFolder` | `Generated` | Output folder for generated files (relative to project directory) |
-|| `EnableFabulousAstJson` | `true` | Enable/disable generation (set to `false` to skip) |
+| Property | Default | Description |
+|----------|---------|-------------|
+| `FabulousAstOutputFolder` | `Generated` | Output folder for generated files (relative to project directory) |
+| `EnableFabulousAstJson` | `true` | Enable/disable generation (set to `false` to skip) |
 
 > **Note:** `EnableFabulousAstJson` defaults to `true`, so you only need to set it explicitly if you want to disable generation.
 
 ### Item Metadata
 
-|| Metadata | Default | Description |
-||----------|---------|-------------|
-|| `RootName` | `Root` | Root type name |
-|| `ModuleName` | _(empty)_ | File-level module name (e.g., `MyApp.Models`) |
-|| `OutputFileName` | `{InputName}.g.fs` | Output filename |
+| Metadata | Default | Description |
+|----------|---------|-------------|
+| `RootName` | `Root` | Root type name |
+| `ModuleName` | _(empty)_ | File-level module name (e.g., `MyApp.Models`) |
+| `OutputFileName` | `{InputName}.g.fs` | Output filename |
 
 ## Incremental Builds
 
