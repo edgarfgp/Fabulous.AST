@@ -445,3 +445,221 @@ let x = 1
 let y = 2
 let z = 3
 """
+
+    // ============================================================================
+    // Auto-escaping tests for all Value(string, ...) and Use(string, ...) overloads
+    // ============================================================================
+
+    [<Fact>]
+    let ``Value(string, WidgetBuilder<Expr>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", ConstantExpr(Int(42))) } }
+        |> produces
+            """
+
+let ``my value`` = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, WidgetBuilder<Expr>, WidgetBuilder<Type>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", ConstantExpr(Int(42)), Int()) } }
+        |> produces
+            """
+
+let ``my value``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, WidgetBuilder<Expr>, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", ConstantExpr(Int(42)), "int") } }
+        |> produces
+            """
+
+let ``my value``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, WidgetBuilder<Constant>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", Int(42)) } }
+        |> produces
+            """
+
+let ``my value`` = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, WidgetBuilder<Constant>, WidgetBuilder<Type>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", Int(42), Int()) } }
+        |> produces
+            """
+
+let ``my value``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, WidgetBuilder<Constant>, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", Int(42), "int") } }
+        |> produces
+            """
+
+let ``my value``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", "42") } }
+        |> produces
+            """
+
+let ``my value`` = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, string, WidgetBuilder<Type>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", "42", Int()) } }
+        |> produces
+            """
+
+let ``my value``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Value(string, string, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Value("my value", "42", "int") } }
+        |> produces
+            """
+
+let ``my value``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, WidgetBuilder<Expr>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", ConstantExpr(Int(42))) } }
+        |> produces
+            """
+
+use ``my resource`` = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, WidgetBuilder<Expr>, WidgetBuilder<Type>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", ConstantExpr(Int(42)), Int()) } }
+        |> produces
+            """
+
+use ``my resource``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, WidgetBuilder<Expr>, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", ConstantExpr(Int(42)), "int") } }
+        |> produces
+            """
+
+use ``my resource``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, WidgetBuilder<Constant>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", Int(42)) } }
+        |> produces
+            """
+
+use ``my resource`` = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, WidgetBuilder<Constant>, WidgetBuilder<Type>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", Int(42), Int()) } }
+        |> produces
+            """
+
+use ``my resource``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, WidgetBuilder<Constant>, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", Int(42), "int") } }
+        |> produces
+            """
+
+use ``my resource``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", "42") } }
+        |> produces
+            """
+
+use ``my resource`` = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, string, WidgetBuilder<Type>) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", "42", Int()) } }
+        |> produces
+            """
+
+use ``my resource``: int = 42
+
+"""
+
+    [<Fact>]
+    let ``Use(string, string, string) auto-escapes identifier``() =
+        Oak() { AnonymousModule() { Use("my resource", "42", "int") } }
+        |> produces
+            """
+
+use ``my resource``: int = 42
+
+"""
+
+    // Tests for various escaping scenarios (keywords, digits, special chars)
+    [<Theory>]
+    [<InlineData("class", "``class``")>]
+    [<InlineData("let", "``let``")>]
+    [<InlineData("match", "``match``")>]
+    [<InlineData("123abc", "``123abc``")>]
+    [<InlineData("my-value", "``my-value``")>]
+    [<InlineData("normalName", "normalName")>]
+    [<InlineData("_underscoreName", "_underscoreName")>]
+    let ``Value auto-escapes various identifier types`` (input: string) (expected: string) =
+        Oak() { AnonymousModule() { Value(input, Int(1)) } }
+        |> produces
+            $$"""
+
+let {{expected}} = 1
+
+"""
+
+    [<Theory>]
+    [<InlineData("class", "``class``")>]
+    [<InlineData("use", "``use``")>]
+    [<InlineData("for", "``for``")>]
+    [<InlineData("456def", "``456def``")>]
+    [<InlineData("my-resource", "``my-resource``")>]
+    [<InlineData("normalResource", "normalResource")>]
+    let ``Use auto-escapes various identifier types`` (input: string) (expected: string) =
+        Oak() { AnonymousModule() { Use(input, Int(1)) } }
+        |> produces
+            $$"""
+
+use {{expected}} = 1
+
+"""
