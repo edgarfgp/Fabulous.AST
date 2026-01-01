@@ -3,7 +3,6 @@ namespace Fabulous.AST.Tests.ModuleDeclarations.TopLevelBindings
 open Fabulous.AST
 open Fabulous.AST.Tests
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 open Xunit
 
@@ -19,14 +18,23 @@ module Value =
     [<InlineData(" net6.0 ", "`` net6.0 ``")>]
     [<InlineData("class", "``class``")>]
     [<InlineData("2013", "``2013``")>]
-    let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
-        let value = PrettyNaming.NormalizeIdentifierBackticks value
-
+    [<InlineData("some value", "``some value``")>]
+    let ``Produces a let binding with auto-escaped identifier`` (value: string) (expected: string) =
         Oak() { AnonymousModule() { Value(value, ConstantExpr(Int(12))) } }
         |> produces
             $$"""
 
 let {{expected}} = 12
+"""
+
+    [<Fact>]
+    let ``Value with string name and constant auto-escapes identifiers`` () =
+        Oak() { AnonymousModule() { Value("some value", Int(42)) } }
+        |> produces
+            """
+
+let ``some value`` = 42
+
 """
 
     [<Fact>]

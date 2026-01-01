@@ -313,6 +313,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Expr>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``let``)
 
         /// <summary>
@@ -329,6 +330,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``let``, returnType)
 
         /// <summary>
@@ -345,6 +347,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Expr>, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``let``, Ast.LongIdent(returnType))
 
         /// <summary>
@@ -360,6 +363,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Constant>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(value), SingleTextNode.``let``)
 
         /// <summary>
@@ -376,6 +380,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(value),
@@ -397,6 +403,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Constant>, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(value),
@@ -417,6 +425,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(Ast.Constant(value)),
@@ -437,6 +447,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: string, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(Ast.Constant(value)),
@@ -458,6 +470,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: string, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(Ast.Constant(value)),
@@ -626,6 +640,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Expr>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(name), value, SingleTextNode.``use``)
 
         /// <summary>
@@ -642,6 +657,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(name), value, SingleTextNode.``use``, returnType)
 
         /// <summary>
@@ -658,6 +674,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Expr>, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``use``, Ast.LongIdent(returnType))
 
         /// <summary>
@@ -673,6 +690,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Constant>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(name), Ast.ConstantExpr(value), SingleTextNode.``use``)
 
         /// <summary>
@@ -689,6 +707,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
             Ast.BaseValue(Ast.ConstantPat(name), Ast.ConstantExpr(value), SingleTextNode.``use``, returnType)
 
         /// <summary>
@@ -705,6 +724,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Constant>, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(name),
                 Ast.ConstantExpr(value),
@@ -725,6 +746,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(Ast.Constant(value)),
@@ -745,6 +768,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: string, returnType: WidgetBuilder<Type>) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(Ast.Constant(value)),
@@ -766,6 +791,8 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: string, returnType: string) =
+            let name = PrettyNaming.NormalizeIdentifierBackticks name
+
             Ast.BaseValue(
                 Ast.ConstantPat(Ast.Constant(name)),
                 Ast.ConstantExpr(Ast.Constant(value)),
