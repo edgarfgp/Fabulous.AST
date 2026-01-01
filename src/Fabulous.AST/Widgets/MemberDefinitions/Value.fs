@@ -3,7 +3,6 @@ namespace Fabulous.AST
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module BindingValue =
@@ -313,7 +312,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``let``)
+            Ast.BaseValue(Ast.NamedPat(name), value, SingleTextNode.``let``)
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -329,7 +328,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``let``, returnType)
+            Ast.BaseValue(Ast.NamedPat(name), value, SingleTextNode.``let``, returnType)
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -345,7 +344,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Expr>, returnType: string) =
-            Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``let``, Ast.LongIdent(returnType))
+            Ast.BaseValue(Ast.NamedPat(name), value, SingleTextNode.``let``, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -360,7 +359,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Constant>) =
-            Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), Ast.ConstantExpr(value), SingleTextNode.``let``)
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(value), SingleTextNode.``let``)
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -376,12 +375,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
-                Ast.ConstantExpr(value),
-                SingleTextNode.``let``,
-                returnType
-            )
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(value), SingleTextNode.``let``, returnType)
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -398,7 +392,7 @@ module BindingValueBuilders =
         /// </code>
         static member Value(name: string, value: WidgetBuilder<Constant>, returnType: string) =
             Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
+                Ast.NamedPat(name),
                 Ast.ConstantExpr(value),
                 SingleTextNode.``let``,
                 Ast.LongIdent(returnType)
@@ -417,11 +411,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: string) =
-            Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
-                Ast.ConstantExpr(Ast.Constant(value)),
-                SingleTextNode.``let``
-            )
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(Ast.Constant(value)), SingleTextNode.``let``)
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -437,12 +427,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Value(name: string, value: string, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
-                Ast.ConstantExpr(Ast.Constant(value)),
-                SingleTextNode.``let``,
-                returnType
-            )
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(Ast.Constant(value)), SingleTextNode.``let``, returnType)
 
         /// <summary>
         /// Create a binding with the given name and value.
@@ -459,7 +444,7 @@ module BindingValueBuilders =
         /// </code>
         static member Value(name: string, value: string, returnType: string) =
             Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
+                Ast.NamedPat(name),
                 Ast.ConstantExpr(Ast.Constant(value)),
                 SingleTextNode.``let``,
                 Ast.LongIdent(returnType)
@@ -626,7 +611,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Expr>) =
-            Ast.BaseValue(Ast.ConstantPat(name), value, SingleTextNode.``use``)
+            Ast.BaseValue(Ast.NamedPat(name), value, SingleTextNode.``use``)
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -642,7 +627,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Expr>, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValue(Ast.ConstantPat(name), value, SingleTextNode.``use``, returnType)
+            Ast.BaseValue(Ast.NamedPat(name), value, SingleTextNode.``use``, returnType)
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -658,7 +643,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Expr>, returnType: string) =
-            Ast.BaseValue(Ast.ConstantPat(Ast.Constant(name)), value, SingleTextNode.``use``, Ast.LongIdent(returnType))
+            Ast.BaseValue(Ast.NamedPat(name), value, SingleTextNode.``use``, Ast.LongIdent(returnType))
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -673,7 +658,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Constant>) =
-            Ast.BaseValue(Ast.ConstantPat(name), Ast.ConstantExpr(value), SingleTextNode.``use``)
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(value), SingleTextNode.``use``)
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -689,7 +674,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Constant>, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValue(Ast.ConstantPat(name), Ast.ConstantExpr(value), SingleTextNode.``use``, returnType)
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(value), SingleTextNode.``use``, returnType)
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -706,7 +691,7 @@ module BindingValueBuilders =
         /// </code>
         static member Use(name: string, value: WidgetBuilder<Constant>, returnType: string) =
             Ast.BaseValue(
-                Ast.ConstantPat(name),
+                Ast.NamedPat(name),
                 Ast.ConstantExpr(value),
                 SingleTextNode.``use``,
                 Ast.LongIdent(returnType)
@@ -725,11 +710,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: string) =
-            Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
-                Ast.ConstantExpr(Ast.Constant(value)),
-                SingleTextNode.``use``
-            )
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(Ast.Constant(value)), SingleTextNode.``use``)
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -745,12 +726,7 @@ module BindingValueBuilders =
         /// }
         /// </code>
         static member Use(name: string, value: string, returnType: WidgetBuilder<Type>) =
-            Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
-                Ast.ConstantExpr(Ast.Constant(value)),
-                SingleTextNode.``use``,
-                returnType
-            )
+            Ast.BaseValue(Ast.NamedPat(name), Ast.ConstantExpr(Ast.Constant(value)), SingleTextNode.``use``, returnType)
 
         /// <summary>
         /// Create a use binding with the given name and value.
@@ -767,7 +743,7 @@ module BindingValueBuilders =
         /// </code>
         static member Use(name: string, value: string, returnType: string) =
             Ast.BaseValue(
-                Ast.ConstantPat(Ast.Constant(name)),
+                Ast.NamedPat(name),
                 Ast.ConstantExpr(Ast.Constant(value)),
                 SingleTextNode.``use``,
                 Ast.LongIdent(returnType)

@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-_No unreleased changes_
+
+### Added
+- Auto-escape let-binding names with backticks when using `Value(name: string, ...)` and `Use(name: string, ...)` overloads (#170)
+  - `Value("some value", Int(42))` now correctly produces `let ``some value`` = 42`
+  - Names with spaces, F# keywords, and names starting with digits are automatically escaped
 
 ## [1.9.0] - 2025-12-12
 
