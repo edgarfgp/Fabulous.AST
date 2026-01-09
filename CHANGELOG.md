@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes_
+
+## [2.0.0-pre06] - 2026-01-09
+
 ### Added
 - Auto-escape let-binding names with backticks when using `Value(name: string, ...)` and `Use(name: string, ...)` overloads (#170)
   - `Value("some value", Int(42))` now correctly produces `let ``some value`` = 42`
@@ -363,7 +367,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre05...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre06...HEAD
+[2.0.0-pre06]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre06
 [2.0.0-pre05]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre05
 [2.0.0-pre04]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre04
 [2.0.0-pre03]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre03
