@@ -6,7 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 _No unreleased changes_
+
+## [1.10.0] - 2026-01-09
+
+### Added
+- Auto-escape let-binding names with backticks when using `Value(name: string, ...)` and `Use(name: string, ...)` overloads (#170)
+  - `Value("some value", Int(42))` now correctly produces `let ``some value`` = 42`
+  - Names with spaces, F# keywords, and names starting with digits are automatically escaped
 
 ## [1.9.0] - 2025-12-12
 
@@ -324,7 +332,9 @@ _No unreleased changes_
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.8.0...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/1.10.0...HEAD
+[1.10.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.10.0
+[1.9.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.9.0
 [1.8.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.8.0
 [1.7.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.7.0
 [1.6.0]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/1.6.0
