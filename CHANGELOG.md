@@ -12,9 +12,7 @@ _No unreleased changes_
 ## [2.0.0-pre06] - 2026-01-09
 
 ### Added
-- Auto-escape let-binding names with backticks when using `Value(name: string, ...)` and `Use(name: string, ...)` overloads (#170)
-  - `Value("some value", Int(42))` now correctly produces `let ``some value`` = 42`
-  - Names with spaces, F# keywords, and names starting with digits are automatically escaped
+- Auto-escape let-binding names with backticks when needed for Value and Use string overloads (#170)
 
 ## [2.0.0-pre05] - 2025-12-19
 
