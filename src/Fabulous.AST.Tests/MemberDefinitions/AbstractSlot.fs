@@ -678,3 +678,57 @@ type X =
     abstract Add: a: int -> b: int -> int with public get, set
     abstract Add: a: int * b: int -> int with public get, set
 """
+
+    [<Fact>]
+    let ``Abstract member with static modifier``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X") {
+                    AbstractMember(
+                        "Add",
+                        [ ("a", Int()); ("b", Int()) ],
+                        Int(),
+                        false
+                    ).toStatic()
+
+                    AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), true).toStatic()
+
+                }
+            }
+        }
+        |> produces
+            """
+type X =
+    static abstract Add: a: int -> b: int -> int
+    static abstract Add: a: int * b: int -> int
+"""
+    [<Fact>]
+    let ``Abstract member with xml documentation``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X") {
+                    AbstractMember(
+                        "Add",
+                        [ ("a", Int()); ("b", Int()) ],
+                        Int(),
+                        false
+                    ).xmlDocs([ "<summary>"; "Summary"; "</summary>" ])
+
+                    AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), true)
+                        .xmlDocs([ "<summary>"; "Second Summary"; "</summary>" ])
+
+                }
+            }
+        }
+        |> produces
+            """
+type X =
+    /// <summary>
+    /// Summary
+    /// </summary>
+    abstract Add: a: int -> b: int -> int
+    /// <summary>
+    /// Second Summary
+    /// </summary>
+    abstract Add: a: int * b: int -> int
+"""

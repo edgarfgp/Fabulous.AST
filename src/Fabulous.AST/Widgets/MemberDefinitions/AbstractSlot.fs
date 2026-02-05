@@ -8,10 +8,11 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module AbstractSlot =
-    let XmlDocs = Attributes.defineWidget "XmlDocs"
+    let XmlDocs = MemberDefn.XmlDocs
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
+    let IsStatic = BindingNode.IsStatic
 
     let HasGetterSetter =
         Attributes.defineScalar<(bool * AccessControl) * (bool * AccessControl)> "HasGetter"
@@ -129,7 +130,17 @@ module AbstractSlot =
                 | [], returnType -> returnType
                 | parameters, returnType -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
 
-            let leadingKeywords = MultipleTextsNode.Create([ SingleTextNode.``abstract`` ])
+            let isStatic =
+                Widgets.tryGetScalarValue widget IsStatic
+                |> ValueOption.defaultValue false
+
+            let leadingKeywords =
+                MultipleTextsNode.Create(
+                    if isStatic then
+                        [ SingleTextNode.``static``; SingleTextNode.``abstract`` ]
+                    else
+                        [ SingleTextNode.``abstract`` ]
+                    )
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
@@ -662,3 +673,25 @@ type AbstractMemberModifiers =
     [<Extension>]
     static member xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: string seq) =
         AbstractMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
+
+    /// <summary>Sets the attributes for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    [<Extension>]
+    static member attributes(this: WidgetBuilder<MemberDefn>, attributes: WidgetBuilder<AttributeNode> seq) =
+        this.AddScalar(MemberDefn.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+
+    /// <summary>Sets the attribute for the current member definition widget.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    [<Extension>]
+    static member attribute(this: WidgetBuilder<MemberDefn>, attribute: WidgetBuilder<AttributeNode>) =
+        AbstractMemberModifiers.attributes(this, [ attribute ])
+
+    /// <summary>
+    /// Sets the current member definition widget to be static.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member toStatic(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(AbstractSlot.IsStatic.WithValue(true))
