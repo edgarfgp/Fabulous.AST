@@ -684,12 +684,7 @@ type X =
         Oak() {
             AnonymousModule() {
                 TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false
-                    ).toStatic()
+                    AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), false).toStatic()
 
                     AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), true).toStatic()
 
@@ -702,17 +697,14 @@ type X =
     static abstract Add: a: int -> b: int -> int
     static abstract Add: a: int * b: int -> int
 """
+
     [<Fact>]
     let ``Abstract member with xml documentation``() =
         Oak() {
             AnonymousModule() {
                 TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false
-                    ).xmlDocs([ "<summary>"; "Summary"; "</summary>" ])
+                    AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), false)
+                        .xmlDocs([ "<summary>"; "Summary"; "</summary>" ])
 
                     AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), true)
                         .xmlDocs([ "<summary>"; "Second Summary"; "</summary>" ])

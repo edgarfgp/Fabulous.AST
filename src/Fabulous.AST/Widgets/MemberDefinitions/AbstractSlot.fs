@@ -131,8 +131,7 @@ module AbstractSlot =
                 | parameters, returnType -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
 
             let isStatic =
-                Widgets.tryGetScalarValue widget IsStatic
-                |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
 
             let leadingKeywords =
                 MultipleTextsNode.Create(
@@ -140,7 +139,7 @@ module AbstractSlot =
                         [ SingleTextNode.``static``; SingleTextNode.``abstract`` ]
                     else
                         [ SingleTextNode.``abstract`` ]
-                    )
+                )
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
