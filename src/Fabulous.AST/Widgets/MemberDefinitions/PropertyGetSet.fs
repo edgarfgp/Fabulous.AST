@@ -7,17 +7,9 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module PropertyGetSetMember =
-    let XmlDocs = Attributes.defineWidget "XmlDocs"
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let FirstBindingWidget = Attributes.defineWidget "GetterWidget"
     let LastBindingWidget = Attributes.defineWidget "SetterWidget"
-    let IsInlined = Attributes.defineScalar<bool> "IsInlined"
-
-    let MultipleAttributes =
-        Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
-
-    let IsStatic = Attributes.defineScalar<bool> "IsStatic"
-    let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
 
     let WidgetKey =
         Widgets.register "PropertyGetSetMember" (fun widget ->
@@ -40,17 +32,15 @@ module PropertyGetSetMember =
 
             let attributes =
                 Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let isStatic =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
             let multipleTextsNode =
                 MultipleTextsNode(
@@ -67,17 +57,11 @@ module PropertyGetSetMember =
                 IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero)
 
             let firstBinding =
-                Widgets.tryGetNodeFromWidget<PropertyGetSetBindingNode> widget FirstBindingWidget
-
-            let firstBinding =
-                match firstBinding with
-                | ValueSome value -> value
-                | ValueNone -> failwith "Getter is required"
+                Widgets.getNodeFromWidget<PropertyGetSetBindingNode> widget FirstBindingWidget
 
             let lastBindingWidget =
                 Widgets.tryGetNodeFromWidget<PropertyGetSetBindingNode> widget LastBindingWidget
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                |> ValueOption.toOption
 
             let andKeyword =
                 if lastBindingWidget.IsSome then

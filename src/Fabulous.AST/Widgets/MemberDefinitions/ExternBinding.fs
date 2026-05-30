@@ -22,20 +22,17 @@ module ExternBinding =
 
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
-            let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let xmlDocs = Widgets.tryGetNodeFromWidget widget XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let multipleAttributes =
                 Widgets.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode([ x ], Range.Zero)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun x -> MultipleAttributeListNode([ x ], Range.Zero))
+                |> ValueOption.toOption
 
             let tp = Widgets.getNodeFromWidget widget TypeVal
 
