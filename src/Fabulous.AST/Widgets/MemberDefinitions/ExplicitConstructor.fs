@@ -20,14 +20,12 @@ module ExplicitConstructorMember =
     let WidgetKey =
         Widgets.register "ExplicitConstructorMember" (fun widget ->
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let accessControl =
                 Widgets.tryGetScalarValue widget MemberDefn.Accessibility

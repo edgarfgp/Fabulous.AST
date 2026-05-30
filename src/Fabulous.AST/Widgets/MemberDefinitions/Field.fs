@@ -25,22 +25,19 @@ module Field =
 
     let WidgetKey =
         Widgets.register "Field" (fun widget ->
-            let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let xmlDocs = Widgets.tryGetNodeFromWidget widget XmlDocs |> ValueOption.toOption
 
             let name =
                 Widgets.tryGetScalarValue widget Name
-                |> ValueOption.map(fun x -> Some(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun x -> SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks x))
+                |> ValueOption.toOption
 
             let fieldType = Widgets.getNodeFromWidget widget FieldType
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let mutableKeyword =
                 Widgets.tryGetScalarValue widget Mutable |> ValueOption.defaultValue false
@@ -53,8 +50,8 @@ module Field =
 
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget LeadingKeyword
-                |> ValueOption.map(fun x -> Some(MultipleTextsNode.Create([ x ])))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun x -> MultipleTextsNode.Create([ x ]))
+                |> ValueOption.toOption
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Accessibility
@@ -72,21 +69,19 @@ module Field =
     let ValFieldWidgetKey =
         Widgets.register "ValField" (fun widget ->
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
             let name =
                 Widgets.tryGetScalarValue widget Name
-                |> ValueOption.map(fun x -> Some(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun x -> SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks x))
+                |> ValueOption.toOption
 
             let fieldType = Widgets.getNodeFromWidget widget FieldType
 
             let attributes =
                 Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let mutableKeyword =
                 Widgets.tryGetScalarValue widget MemberDefn.IsMutable
@@ -100,8 +95,8 @@ module Field =
 
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget LeadingKeyword
-                |> ValueOption.map(fun x -> Some(MultipleTextsNode.Create([ x ])))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun x -> MultipleTextsNode.Create([ x ]))
+                |> ValueOption.toOption
 
             let accessControl =
                 Widgets.tryGetScalarValue widget MemberDefn.Accessibility

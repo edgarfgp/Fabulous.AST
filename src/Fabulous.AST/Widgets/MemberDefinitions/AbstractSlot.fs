@@ -1,21 +1,17 @@
 namespace Fabulous.AST
 
-open System.Linq
-open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module AbstractSlot =
-    let XmlDocs = MemberDefn.XmlDocs
     let Identifier = Attributes.defineScalar<string> "Identifier"
-    let ReturnType = Attributes.defineWidget "Type"
+    let ReturnType = Attributes.defineWidget "ReturnType"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
-    let IsStatic = BindingNode.IsStatic
 
     let HasGetterSetter =
-        Attributes.defineScalar<(bool * AccessControl) * (bool * AccessControl)> "HasGetter"
+        Attributes.defineScalar<(bool * AccessControl) * (bool * AccessControl)> "HasGetterSetter"
 
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
@@ -26,112 +22,55 @@ module AbstractSlot =
 
             let attributes =
                 Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
-            let returnType =
+            let separatorAt index lastIndex isTupled =
+                if isTupled && index < lastIndex then
+                    SingleTextNode.star
+                else
+                    SingleTextNode.rightArrow
+
+            let parameterList =
                 match parameters with
-                | ValueNone -> [], returnType
+                | ValueNone -> []
                 | ValueSome(UnNamed(parameters, isTupled)) ->
-                    let parameters =
-                        parameters
-                        |> Seq.mapi(fun index value ->
-                            let separator =
-                                if index < Seq.length parameters - 1 && isTupled then
-                                    SingleTextNode.star
-                                else
-                                    SingleTextNode.rightArrow
+                    let parameters = List.ofSeq parameters
+                    let lastIndex = List.length parameters - 1
 
-                            (Gen.mkOak value, separator))
-
-                    List.ofSeq parameters, returnType
+                    parameters
+                    |> List.mapi(fun index value -> Gen.mkOak value, separatorAt index lastIndex isTupled)
                 | ValueSome(Named(parameters, isTupled)) ->
-                    let parameters =
-                        parameters
-                        |> Seq.mapi(fun index (name, value) ->
-                            let separator =
-                                if index < Seq.length parameters - 1 && isTupled then
-                                    SingleTextNode.star
-                                else
-                                    SingleTextNode.rightArrow
+                    let parameters = List.ofSeq parameters
+                    let lastIndex = List.length parameters - 1
 
-                            if System.String.IsNullOrEmpty(name) then
-                                failwith "Named parameters must have a name"
-
-                            let value =
-                                Type.SignatureParameter(
-                                    TypeSignatureParameterNode(
-                                        None,
-                                        Some(SingleTextNode.Create(name)),
-                                        Gen.mkOak(value),
-                                        Range.Zero
-                                    )
+                    parameters
+                    |> List.mapi(fun index (name, value) ->
+                        let signatureParam =
+                            Type.SignatureParameter(
+                                TypeSignatureParameterNode(
+                                    None,
+                                    Some(SingleTextNode.Create(name)),
+                                    Gen.mkOak(value),
+                                    Range.Zero
                                 )
+                            )
 
-                            (value, separator))
-
-                    List.ofSeq parameters, returnType
-
-            let withGetSetText =
-                match hasGetter, hasSetter with
-                | (true, getterAccessibility), (true, setterAccessibility) ->
-                    Some(
-                        MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``
-                              // Getter
-                              match getterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.Create("get,")
-                              // Setter
-                              match setterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.set ]
-                        )
-                    )
-                | (true, getterAccessibility), (false, _) ->
-                    Some(
-                        MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``
-                              match getterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.get ]
-                        )
-                    )
-                | (false, _), (true, setterAccessibility) ->
-                    Some(
-                        MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``
-                              match setterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.set ]
-                        )
-                    )
-                | (false, _), (false, _) -> None
+                        signatureParam, separatorAt index lastIndex isTupled)
 
             let returnType =
-                match returnType with
-                | [], returnType -> returnType
-                | parameters, returnType -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
+                match parameterList with
+                | [] -> returnType
+                | parameters -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
+
+            let withGetSetText = MultipleTextsNode.CreateGetSet(hasGetter, hasSetter)
 
             let isStatic =
-                Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget BindingNode.IsStatic
+                |> ValueOption.defaultValue false
 
             let leadingKeywords =
                 MultipleTextsNode.Create(
@@ -143,8 +82,7 @@ module AbstractSlot =
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                |> ValueOption.toOption
 
             let node =
                 MemberDefnAbstractSlotNode(
@@ -327,11 +265,11 @@ module AbstractMemberBuilders =
                 ?getterAccessibility: AccessControl,
                 ?setterAccessibility: AccessControl
             ) =
+            let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
-            let isTupled = defaultArg isTupled false
             let parameters = parameters |> Seq.map Ast.LongIdent
 
             Ast.AbstractMember(
@@ -421,12 +359,12 @@ module AbstractMemberBuilders =
                 ?getterAccessibility: AccessControl,
                 ?setterAccessibility: AccessControl
             ) =
-            let parameters = parameters |> Seq.map Ast.LongIdent
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+            let parameters = parameters |> Seq.map Ast.LongIdent
             let returnType = Ast.LongIdent(returnType)
 
             Ast.AbstractMember(
@@ -474,6 +412,12 @@ module AbstractMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
+
+            let parameters = List.ofSeq parameters
+
+            for (name, _) in parameters do
+                if System.String.IsNullOrEmpty name then
+                    invalidArg "parameters" "Named parameters must all have a non-empty name"
 
             WidgetBuilder<MemberDefn>(
                 AbstractSlot.WidgetKey,
@@ -525,9 +469,7 @@ module AbstractMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
-
-            let parameters =
-                parameters |> Seq.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
+            let parameters = parameters |> Seq.map(fun (name, tp) -> name, Ast.LongIdent(tp))
 
             Ast.AbstractMember(
                 identifier,
@@ -621,10 +563,7 @@ module AbstractMemberBuilders =
             let hasSetter = defaultArg hasSetter false
             let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
             let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
-
-            let parameters =
-                parameters |> Seq.map(fun (name, tp) -> Ast.LongIdent(tp) |> fun tp -> name, tp)
-
+            let parameters = parameters |> Seq.map(fun (name, tp) -> name, Ast.LongIdent(tp))
             let returnType = Ast.LongIdent(returnType)
 
             Ast.AbstractMember(
@@ -637,60 +576,3 @@ module AbstractMemberBuilders =
                 getterAccessibility,
                 setterAccessibility
             )
-
-type AbstractMemberModifiers =
-    /// <summary>Sets the XmlDocs for the current member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ICircle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///                 .xmlDocs(Summary("This is the area"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(AbstractSlot.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ICircle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///                 .xmlDocs([ "This is the area" ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: string seq) =
-        AbstractMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the attributes for the current member definition widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    [<Extension>]
-    static member attributes(this: WidgetBuilder<MemberDefn>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(MemberDefn.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
-
-    /// <summary>Sets the attribute for the current member definition widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attribute">The attribute to set.</param>
-    [<Extension>]
-    static member attribute(this: WidgetBuilder<MemberDefn>, attribute: WidgetBuilder<AttributeNode>) =
-        AbstractMemberModifiers.attributes(this, [ attribute ])
-
-    /// <summary>
-    /// Sets the current member definition widget to be static.
-    /// </summary>
-    /// <param name="this">Current widget.</param>
-    [<Extension>]
-    static member toStatic(this: WidgetBuilder<MemberDefn>) =
-        this.AddScalar(AbstractSlot.IsStatic.WithValue(true))

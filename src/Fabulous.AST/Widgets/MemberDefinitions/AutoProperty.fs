@@ -15,7 +15,6 @@ module AutoPropertyMember =
     let HasGetter = Attributes.defineScalar<bool * AccessControl> "HasGetter"
     let HasSetter = Attributes.defineScalar<bool * AccessControl> "HasSetter"
 
-    let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
     let BodyExpr = Attributes.defineWidget "BodyExpr"
 
@@ -38,26 +37,20 @@ module AutoPropertyMember =
 
             let attributes =
                 Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let isStatic =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
-            let returnType = Widgets.tryGetNodeFromWidget widget ReturnType
+            let returnType =
+                Widgets.tryGetNodeFromWidget widget ReturnType |> ValueOption.toOption
 
             let bodyExpr = Widgets.getNodeFromWidget widget BodyExpr
 
-            let returnType =
-                match returnType with
-                | ValueSome tp -> Some tp
-                | ValueNone -> None
-
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
             let multipleTextsNode =
                 MultipleTextsNode(
@@ -71,53 +64,7 @@ module AutoPropertyMember =
                     Range.Zero
                 )
 
-            let withGetSetText =
-                match hasGetter, hasSetter with
-                | (true, getterAccessibility), (true, setterAccessibility) ->
-                    Some(
-                        MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``
-                              // Getter
-                              match getterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.Create("get,")
-                              // Setter
-                              match setterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.set ]
-                        )
-                    )
-                | (true, getterAccessibility), (false, _) ->
-                    Some(
-                        MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``
-                              match getterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.get ]
-                        )
-                    )
-                | (false, _), (true, setterAccessibility) ->
-                    Some(
-                        MultipleTextsNode.Create(
-                            [ SingleTextNode.``with``
-                              match setterAccessibility with
-                              | Public -> SingleTextNode.``public``
-                              | Private -> SingleTextNode.``private``
-                              | Internal -> SingleTextNode.``internal``
-                              | Unknown -> ()
-                              SingleTextNode.set ]
-                        )
-                    )
-                | (false, _), (false, _) -> None
+            let withGetSetText = MultipleTextsNode.CreateGetSet(hasGetter, hasSetter)
 
             let node =
                 MemberDefnAutoPropertyNode(

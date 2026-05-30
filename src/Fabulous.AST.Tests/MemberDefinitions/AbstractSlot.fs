@@ -724,3 +724,26 @@ type X =
     /// </summary>
     abstract Add: a: int * b: int -> int
 """
+
+    [<Fact>]
+    let ``Static abstract property accessors``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X") {
+                    AbstractMember("Area", Float(), hasGetter = true).toStatic()
+                    AbstractMember("Area2", Float(), hasGetter = true, hasSetter = true).toStatic()
+                }
+            }
+        }
+        |> produces
+            """
+type X =
+    static abstract Area: float with get
+    static abstract Area2: float with get, set
+"""
+
+    [<Fact>]
+    let ``AbstractMember rejects empty named parameter name``() =
+        Assert.Throws<System.ArgumentException>(fun () ->
+            AbstractMember("Add", [ ("", Int()); ("b", Int()) ], Int()) |> ignore)
+        |> ignore
