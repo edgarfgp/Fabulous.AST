@@ -69,13 +69,6 @@ module CommonExtensions =
             )
 
 [<RequireQualifiedAccess>]
-module ValueOption =
-    let inline toOption(vopt: 'a voption) : 'a option =
-        match vopt with
-        | ValueSome v -> Some v
-        | ValueNone -> None
-
-[<RequireQualifiedAccess>]
 module List =
     let intersperse separator (source: List<'T>) =
         let mutable coll = new ListCollector<'T>()
