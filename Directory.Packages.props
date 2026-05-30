@@ -10,6 +10,7 @@
     <PackageVersion Include="xunit.v3" Version="3.2.1"/>
     <PackageVersion Include="Verify.XunitV3" Version="27.1.0" />
     <PackageVersion Include="FsCheck.Xunit" Version="2.16.6" />
+    <PackageVersion Include="FsCheck" Version="2.16.6" />
     <PackageVersion Include="FsUnit.xUnit" Version="6.0.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
     <!-- MSBuild task dependencies -->
