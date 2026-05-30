@@ -25,6 +25,33 @@ module CommonExtensions =
         static member Create(texts: SingleTextNode seq) =
             MultipleTextsNode(List.ofSeq texts, Range.Zero)
 
+        /// Builds the optional `with [acc?] get [, [acc?] set]` clause for
+        /// property-like members. Returns `None` when neither accessor is present.
+        static member CreateGetSet(getter: bool * AccessControl, setter: bool * AccessControl) =
+            let accTexts =
+                function
+                | Public -> [ SingleTextNode.``public`` ]
+                | Private -> [ SingleTextNode.``private`` ]
+                | Internal -> [ SingleTextNode.``internal`` ]
+                | Unknown -> []
+
+            match getter, setter with
+            | (true, gAcc), (true, sAcc) ->
+                Some(
+                    MultipleTextsNode.Create(
+                        [ SingleTextNode.``with``
+                          yield! accTexts gAcc
+                          SingleTextNode.Create "get,"
+                          yield! accTexts sAcc
+                          SingleTextNode.set ]
+                    )
+                )
+            | (true, gAcc), (false, _) ->
+                Some(MultipleTextsNode.Create([ SingleTextNode.``with``; yield! accTexts gAcc; SingleTextNode.get ]))
+            | (false, _), (true, sAcc) ->
+                Some(MultipleTextsNode.Create([ SingleTextNode.``with``; yield! accTexts sAcc; SingleTextNode.set ]))
+            | (false, _), (false, _) -> None
+
     type Type with
         static member Create(name: string) =
             Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))
@@ -40,6 +67,13 @@ module CommonExtensions =
                   ) ],
                 Range.Zero
             )
+
+[<RequireQualifiedAccess>]
+module ValueOption =
+    let inline toOption(vopt: 'a voption) : 'a option =
+        match vopt with
+        | ValueSome v -> Some v
+        | ValueNone -> None
 
 [<RequireQualifiedAccess>]
 module List =
