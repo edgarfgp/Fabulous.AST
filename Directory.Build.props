@@ -20,6 +20,20 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
+  <!--
+    Per-package release notes, sourced from env vars set by the release workflow.
+    MSBuild auto-imports env vars as properties, so the values come in as
+    opaque strings without going through any command-line parser. Avoids the
+    fragility of `-p:PackageReleaseNotes=...` on the dotnet pack command line,
+    which has to deal with shell quoting, MSBuild `;` property delimiters,
+    `/` switch prefixes, and embedded newlines.
+  -->
+  <PropertyGroup>
+    <PackageReleaseNotes Condition="'$(MSBuildProjectName)' == 'Fabulous.AST' AND '$(RELEASE_NOTES)' != ''">$(RELEASE_NOTES)</PackageReleaseNotes>
+    <PackageReleaseNotes Condition="'$(MSBuildProjectName)' == 'Fabulous.AST.Json' AND '$(JSON_RELEASE_NOTES)' != ''">$(JSON_RELEASE_NOTES)</PackageReleaseNotes>
+    <PackageReleaseNotes Condition="'$(MSBuildProjectName)' == 'Fabulous.AST.Build' AND '$(BUILD_RELEASE_NOTES)' != ''">$(BUILD_RELEASE_NOTES)</PackageReleaseNotes>
+  </PropertyGroup>
+
   <PropertyGroup>
     <OtherFlags>$(OtherFlags) --test:GraphBasedChecking --test:ParallelOptimization --test:ParallelIlxGen --strict-indentation+ --realsig+</OtherFlags>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
