@@ -57,6 +57,13 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore
         run: dotnet restore ${SLN_FILE}
+      # Fabulous.AST.Build ships an MSBuild task that samples/Playground consumes
+      # via <UsingTask> in Fabulous.AST.Build.targets. UsingTask conditions are
+      # evaluated at project-load time, so the task DLL must exist on disk before
+      # we build anything that imports those targets. build.fsx already handles
+      # this; the release workflow must too.
+      - name: Pre-build Fabulous.AST.Build
+        run: dotnet build ${BUILD_FILE} -p:Version=${RELEASE_VERSION} -c ${CONFIG} --no-restore
       - name: Build
         run: dotnet build ${SLN_FILE} -p:Version=${RELEASE_VERSION} -c ${CONFIG} --no-restore
       - name: Test
