@@ -140,6 +140,7 @@
         <Compile Include="Specialized\RealWorld.fs" />
         <Compile Include="Specialized\Properties.fs" />
         <Compile Include="Core\GenParseTests.fs" />
+        <Compile Include="Rewrite\RewriteExprTests.fs" />
     </ItemGroup>
 
     <ItemGroup>

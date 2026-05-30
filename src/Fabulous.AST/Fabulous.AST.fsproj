@@ -196,6 +196,7 @@
         <Compile Include="Widgets\ModuleDeclarations\Exception.fs" />
         <Compile Include="Widgets\ModuleOrNamespace.fs" />
         <Compile Include="Widgets\Oak.fs" />
+        <Compile Include="Rewrite\Rewrite.fs" />
     </ItemGroup>
 
     <ItemGroup>
