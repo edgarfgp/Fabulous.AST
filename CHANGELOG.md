@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes_
+### Added
+- Target `net10.0` alongside `net8.0` and `netstandard2.1` for the main library; tests now multi-target `net8.0;net10.0` (#178)
+- `SigMember` builder now accepts `getterAccessibility` / `setterAccessibility` parameters, matching the accessibility support already exposed on `AbstractMember` and `AutoProperty` (#178)
+- Builder-time validation: `AbstractMember(..., (string * _) seq, ...)` overloads now throw `ArgumentException` when any parameter name is empty, instead of failing at render time with a `failwith` (#178)
+
+### Changed
+- Bump `FSharp.Core` from `8.0.403` to `10.1.300` (#178)
+- Internal: extract a shared `MultipleTextsNode.CreateGetSet` helper for property-accessor rendering, used by `AbstractSlot`, `AutoProperty`, and `SigMember` (#178)
+- Internal: `AbstractSlot` materializes parameter sequences before mapping to eliminate O(n²) `Seq.length` lookups and lazy-seq re-evaluation (#178)
+
+### Fixed
+- XML docs and `static abstract` rendering for abstract slots, by deleting the duplicate `AbstractMemberModifiers` extensions that shadowed the canonical `MemberDefnModifiers` ones (#178, follow-up to #176)
+- Eliminate parallel-build race that prevented `samples/Playground` from finding `FabulousAstJsonTask` on fresh checkouts; `build.fsx` now pre-builds `Fabulous.AST.Build` before the solution build (#178)
+
+### Removed
+- Dead scalar definitions in `AutoProperty.IsStatic` and `PropertyGetSet` (`IsInlined`, `MultipleAttributes`, `IsStatic`, `Accessibility`) that were never read by any widget key (#178)
 
 ## [2.0.0-pre06] - 2026-01-09
 
