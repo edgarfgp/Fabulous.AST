@@ -75,14 +75,22 @@ jobs:
         # other special characters in the changelog get interpreted as shell
         # syntax (command substitution, etc.). With env-var passing, the
         # content is just data at runtime.
+        #
+        # MSBuild's `-p:Key=Value` syntax treats `;` as a delimiter between
+        # properties. Escape `;` in property values as `%3B` so multi-line
+        # changelog content containing semicolons (e.g. `net8.0;net10.0`,
+        # or English sentences with `;` clauses) doesn't get split mid-value.
         env:
           RELEASE_NOTES: ${{ steps.changelog_reader.outputs.changes }}
           JSON_RELEASE_NOTES: ${{ steps.json_changelog.outputs.changes }}
           BUILD_RELEASE_NOTES: ${{ steps.build_changelog.outputs.changes }}
         run: |
-          dotnet pack ${SLN_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$RELEASE_NOTES" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
-          dotnet pack ${JSON_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$JSON_RELEASE_NOTES" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
-          dotnet pack ${BUILD_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$BUILD_RELEASE_NOTES" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          RELEASE_NOTES_ESC="${RELEASE_NOTES//;/%3B}"
+          JSON_RELEASE_NOTES_ESC="${JSON_RELEASE_NOTES//;/%3B}"
+          BUILD_RELEASE_NOTES_ESC="${BUILD_RELEASE_NOTES//;/%3B}"
+          dotnet pack ${SLN_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$RELEASE_NOTES_ESC" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${JSON_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$JSON_RELEASE_NOTES_ESC" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${BUILD_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$BUILD_RELEASE_NOTES_ESC" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
