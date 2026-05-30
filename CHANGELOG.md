@@ -7,19 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes_
+
+## [2.0.0-pre07] - 2026-05-30
+
 ### Added
 - Target `net10.0` alongside `net8.0` and `netstandard2.1` for the main library; tests now multi-target `net8.0;net10.0` (#178)
 - `SigMember` builder now accepts `getterAccessibility` / `setterAccessibility` parameters, matching the accessibility support already exposed on `AbstractMember` and `AutoProperty` (#178)
 - Builder-time validation: `AbstractMember(..., (string * _) seq, ...)` overloads now throw `ArgumentException` when any parameter name is empty, instead of failing at render time with a `failwith` (#178)
+- `toOverride()` modifier on `WidgetBuilder<BindingNode>` and `WidgetBuilder<MemberDefn>` so generated members can render F#'s `override` keyword. Applies to `Method`, `Property`, `AutoProperty`, and `PropertyGetSet` widgets (#183)
+- 21 specialized tests under `src/Fabulous.AST.Tests/Specialized/` covering composition scenarios, F# 8/9/10 features (IWSAMs, anonymous struct records, units of measure, type extensions via `Augmentation`), real-world fixtures, and FsCheck property tests (#181)
 
 ### Changed
 - Bump `FSharp.Core` from `8.0.403` to `10.1.300` (#178)
 - Internal: extract a shared `MultipleTextsNode.CreateGetSet` helper for property-accessor rendering, used by `AbstractSlot`, `AutoProperty`, and `SigMember` (#178)
 - Internal: `AbstractSlot` materializes parameter sequences before mapping to eliminate O(n²) `Seq.length` lookups and lazy-seq re-evaluation (#178)
+- Internal: replace ~46 sites of `ValueOption.map Some |> defaultValue None` with the canonical `ValueOption.toOption` across the widget tree, now that FSharp.Core 10 exposes it natively (#180)
+- Internal: materialize ~28 lazy `Seq.map Gen.mkOak` sequences with `Seq.toArray` at widget-attribute boundaries, eliminating re-iteration footguns when source sequences are single-shot (#180)
 
 ### Fixed
 - XML docs and `static abstract` rendering for abstract slots, by deleting the duplicate `AbstractMemberModifiers` extensions that shadowed the canonical `MemberDefnModifiers` ones (#178, follow-up to #176)
 - Eliminate parallel-build race that prevented `samples/Playground` from finding `FabulousAstJsonTask` on fresh checkouts; `build.fsx` now pre-builds `Fabulous.AST.Build` before the solution build (#178)
+- `Delegate` widget: materialize parameters with `List.ofSeq` before `mapi` to eliminate O(n²) `Seq.length` re-evaluation and lazy-seq re-walk (#179)
+- `ObjExpr` widget's `Yield` extension: replace `failwith` with `invalidArg` for argument-shape mismatches; the new message names the expected shape and the offending case (#179)
+- `Measure` widget: rename the `Denominator` scalar key string from `"DivOp"` (a copy-paste leftover from the sibling scalar) to `"Denominator"` so debug output disambiguates the two scalars (#179)
+- `.toRecursive()` modifier is no longer silently a no-op on `Abbrev`, `Enum`, `TypeDefnExplicit`, and `Measure`. These four widget keys now read `TypeDefn.IsRecursive` and emit `and` instead of `type` when set, so mutually-recursive type groups can include these kinds (#182)
 
 ### Removed
 - Dead scalar definitions in `AutoProperty.IsStatic` and `PropertyGetSet` (`IsInlined`, `MultipleAttributes`, `IsStatic`, `Accessibility`) that were never read by any widget key (#178)
@@ -380,7 +392,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre06...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre07...HEAD
+[2.0.0-pre07]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre07
 [2.0.0-pre06]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre06
 [2.0.0-pre05]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre05
 [2.0.0-pre04]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre04
