@@ -108,6 +108,30 @@ let result =
 """
 
     [<Fact>]
+    let ``Type extension via Augmentation (type X with member ...)``() =
+        Oak() {
+            AnonymousModule() {
+                Augmentation("List") {
+                    Member(
+                        "this.Second",
+                        AppExpr(ConstantExpr(Constant "List.head"), [ ConstantExpr(Constant "this.Tail") ])
+                    )
+
+                    Member(
+                        "this.IsEmpty2",
+                        InfixAppExpr(ConstantExpr(Constant "List.length this"), "=", ConstantExpr(Int 0))
+                    )
+                }
+            }
+        }
+        |> produces
+            """
+type List with
+    member this.Second = List.head this.Tail
+    member this.IsEmpty2 = List.length this = 0
+"""
+
+    [<Fact>]
     let ``For-each loop over a list``() =
         Oak() {
             AnonymousModule() {
