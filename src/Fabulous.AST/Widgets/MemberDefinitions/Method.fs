@@ -21,6 +21,10 @@ module BindingMethodNode =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
+            let isOverride =
+                Widgets.tryGetScalarValue widget BindingNode.IsOverride
+                |> ValueOption.defaultValue false
+
             let returnType =
                 Widgets.tryGetNodeFromWidget widget BindingNode.Return
                 |> ValueOption.map(fun value -> BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
@@ -58,7 +62,8 @@ module BindingMethodNode =
             let multipleTextsNode =
                 [ if isStatic then
                       SingleTextNode.``static``
-                      SingleTextNode.``member``
+                  if isOverride then
+                      SingleTextNode.``override``
                   else
                       SingleTextNode.``member`` ]
 

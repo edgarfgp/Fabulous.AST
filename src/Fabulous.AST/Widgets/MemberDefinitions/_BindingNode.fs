@@ -12,6 +12,7 @@ module BindingNode =
     let XmlDocs = Attributes.defineWidget "XmlDocs"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
+    let IsOverride = Attributes.defineScalar<bool> "IsOverride"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
@@ -186,6 +187,28 @@ type BindingNodeModifiers =
         this.AddScalar(BindingNode.IsStatic.WithValue(true))
 
     /// <summary>
+    /// Marks the current member widget as an override (renders `override` instead
+    /// of `member`). Only meaningful for method / property / auto-property members
+    /// inside a class that inherits from a base type with a virtual / abstract
+    /// member of the same name.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Derived", UnitPat()) {
+    ///             Inherit("Base()")
+    ///             Member("this.Show", UnitPat(), ConstantExpr(String "derived"))
+    ///                 .toOverride()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toOverride(this: WidgetBuilder<BindingNode>) =
+        this.AddScalar(BindingNode.IsOverride.WithValue(true))
+
+    /// <summary>
     /// Sets the type parameters for the current widget.
     /// </summary>
     /// <param name="this">Current widget.</param>
@@ -266,6 +289,17 @@ type MemberDefnModifiers =
     [<Extension>]
     static member inline toStatic(this: WidgetBuilder<MemberDefn>) =
         this.AddScalar(BindingNode.IsStatic.WithValue(true))
+
+    /// <summary>
+    /// Marks the current member definition widget as an override (renders
+    /// <c>override</c> instead of <c>member</c>). Only meaningful for method /
+    /// property members in a class that inherits a virtual or abstract member of
+    /// the same name.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    [<Extension>]
+    static member inline toOverride(this: WidgetBuilder<MemberDefn>) =
+        this.AddScalar(BindingNode.IsOverride.WithValue(true))
 
     /// <summary>Sets the type parameters for the current member definition widget.</summary>
     /// <param name="this">Current widget.</param>

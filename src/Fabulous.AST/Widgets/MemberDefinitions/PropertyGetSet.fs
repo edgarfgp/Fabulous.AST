@@ -39,15 +39,21 @@ module PropertyGetSetMember =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
+            let isOverride =
+                Widgets.tryGetScalarValue widget BindingNode.IsOverride
+                |> ValueOption.defaultValue false
+
             let xmlDocs =
                 Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
             let multipleTextsNode =
                 MultipleTextsNode(
-                    (if isStatic then
-                         [ SingleTextNode.``static``; SingleTextNode.``member`` ]
-                     else
-                         [ SingleTextNode.``member`` ]),
+                    [ if isStatic then
+                          SingleTextNode.``static``
+                      if isOverride then
+                          SingleTextNode.``override``
+                      else
+                          SingleTextNode.``member`` ],
                     Range.Zero
                 )
 
