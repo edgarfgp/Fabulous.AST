@@ -10,7 +10,6 @@ module AbstractSlot =
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let ReturnType = Attributes.defineWidget "Type"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
-    let IsStatic = BindingNode.IsStatic
 
     let HasGetterSetter =
         Attributes.defineScalar<(bool * AccessControl) * (bool * AccessControl)> "HasGetter"
@@ -129,7 +128,7 @@ module AbstractSlot =
                 | parameters, returnType -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
 
             let isStatic =
-                Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false
+                Widgets.tryGetScalarValue widget BindingNode.IsStatic |> ValueOption.defaultValue false
 
             let leadingKeywords =
                 MultipleTextsNode.Create(
