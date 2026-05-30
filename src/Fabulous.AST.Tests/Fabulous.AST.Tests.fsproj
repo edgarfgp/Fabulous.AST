@@ -134,10 +134,15 @@
         <Compile Include="Types\LongIdent.fs" />
         <Compile Include="Types\Measures.fs" />
         <Compile Include="Extensions\Json.fs" />
+        <Compile Include="Specialized\Composition.fs" />
+        <Compile Include="Specialized\FSharpFeatures.fs" />
+        <Compile Include="Specialized\RealWorld.fs" />
+        <Compile Include="Specialized\Properties.fs" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="FsCheck.Xunit" />
+        <PackageReference Include="FsCheck" />
         <PackageReference Include="FsUnit.xUnit" />
         <PackageReference Include="Verify.XunitV3" />
         <PackageReference Include="xunit.v3" />
