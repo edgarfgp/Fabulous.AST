@@ -29,12 +29,17 @@ module Enum =
                 |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget TypeDefn.IsRecursive
+                |> ValueOption.map(fun _ -> SingleTextNode.``and``)
+                |> ValueOption.defaultValue SingleTextNode.``type``
+
             TypeDefn.Enum(
                 TypeDefnEnumNode(
                     TypeNameNode(
                         xmlDocs,
                         attributes,
-                        SingleTextNode.``type``,
+                        leadingKeyword,
                         Some(SingleTextNode.Create(name)),
                         IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
                         None,

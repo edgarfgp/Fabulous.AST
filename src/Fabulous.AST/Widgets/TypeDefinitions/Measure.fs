@@ -33,11 +33,16 @@ module TypeNameNode =
                 | Some(multipleAttributes) -> measureAttribute @ List.ofSeq multipleAttributes
                 | None -> measureAttribute
 
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget TypeDefn.IsRecursive
+                |> ValueOption.map(fun _ -> SingleTextNode.``and``)
+                |> ValueOption.defaultValue SingleTextNode.``type``
+
             TypeDefn.None(
                 TypeNameNode(
                     xmlDocs,
                     Some(MultipleAttributeListNode.Create(attributes)),
-                    SingleTextNode.``type``,
+                    leadingKeyword,
                     Some(SingleTextNode.Create(name)),
                     IdentListNode([], Range.Zero),
                     None,

@@ -345,6 +345,25 @@ type Person<'a, 'b>() =
 """
 
     [<Fact>]
+    let ``Recursive explicit type definition renders with `and` keyword``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Foo", UnitPat()) { Member("this.X", ConstantExpr(Int 0)) }
+
+                TypeDefn("Bar", UnitPat()) { Member("this.Y", ConstantExpr(Int 0)) }
+                |> _.toRecursive()
+            }
+        }
+        |> produces
+            """
+type Foo() =
+    member this.X = 0
+
+and Bar() =
+    member this.Y = 0
+"""
+
+    [<Fact>]
     let ``Produces a struct generic class with a constructor``() =
         Oak() {
             AnonymousModule() {

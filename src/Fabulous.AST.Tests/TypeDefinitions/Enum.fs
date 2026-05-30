@@ -280,6 +280,24 @@ type Sizes =
 """
 
     [<Fact>]
+    let ``Recursive enum renders with `and` keyword``() =
+        Oak() {
+            AnonymousModule() {
+                Enum("Sizes") { EnumCase("Small", Int(0)) }
+
+                Enum("Colors") { EnumCase("Red", Int(0)) } |> _.toRecursive()
+            }
+        }
+        |> produces
+            """
+type Sizes =
+    | Small = 0
+
+and Colors =
+    | Red = 0
+"""
+
+    [<Fact>]
     let ``yield! multiple enum cases``() =
         Oak() {
             AnonymousModule() {
