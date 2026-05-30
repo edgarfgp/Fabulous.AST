@@ -163,6 +163,22 @@ type MyFloat = float
 """
 
     [<Fact>]
+    let ``Recursive abbreviation renders with `and` keyword``() =
+        Oak() {
+            AnonymousModule() {
+                Union("Tree") { UnionCase("Leaf") }
+
+                Abbrev("Forest", AppPrefix(LongIdent "list", [ LongIdent "Tree" ]))
+                |> _.toRecursive()
+            }
+        }
+        |> produces
+            """
+type Tree = | Leaf
+and Forest = list<Tree>
+"""
+
+    [<Fact>]
     let ``yield! multiple type abbreviations``() =
         Oak() {
             AnonymousModule() {

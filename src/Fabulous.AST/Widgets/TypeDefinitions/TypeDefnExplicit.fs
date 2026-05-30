@@ -56,12 +56,17 @@ module TypeDefnExplicit =
                 Widgets.tryGetNodesFromWidgetCollection widget Members
                 |> ValueOption.defaultValue []
 
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget TypeDefn.IsRecursive
+                |> ValueOption.map(fun _ -> SingleTextNode.``and``)
+                |> ValueOption.defaultValue SingleTextNode.``type``
+
             TypeDefn.Explicit(
                 TypeDefnExplicitNode(
                     TypeNameNode(
                         xmlDocs,
                         attributes,
-                        SingleTextNode.``type``,
+                        leadingKeyword,
                         accessControl,
                         IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                         typeParams,

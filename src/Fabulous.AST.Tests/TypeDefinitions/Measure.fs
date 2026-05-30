@@ -125,3 +125,19 @@ type Ml = cm^3
 [<Measure; Obsolete>]
 type cm
 """
+
+    [<Fact>]
+    let ``Recursive measure renders with `and` keyword``() =
+        Oak() {
+            AnonymousModule() {
+                Measure("m")
+                Measure("s") |> _.toRecursive()
+            }
+        }
+        |> produces
+            """
+[<Measure>]
+type m
+
+and [<Measure>] s
+"""

@@ -31,12 +31,17 @@ module TypeDefnAbbrevNode =
                 |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
+            let leadingKeyword =
+                Widgets.tryGetScalarValue widget TypeDefn.IsRecursive
+                |> ValueOption.map(fun _ -> SingleTextNode.``and``)
+                |> ValueOption.defaultValue SingleTextNode.``type``
+
             TypeDefn.Abbrev(
                 TypeDefnAbbrevNode(
                     TypeNameNode(
                         xmlDocs,
                         attributes,
-                        SingleTextNode.``type``,
+                        leadingKeyword,
                         None,
                         IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
                         typeParams,
