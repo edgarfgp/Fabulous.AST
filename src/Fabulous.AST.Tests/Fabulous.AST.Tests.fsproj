@@ -43,6 +43,7 @@
         <Compile Include="MemberDefinitions\AbstractSlot.fs" />
         <Compile Include="MemberDefinitions\AutoProperty.fs" />
         <Compile Include="MemberDefinitions\PropertyGetSet.fs" />
+        <Compile Include="MemberDefinitions\Override.fs" />
         <Compile Include="MemberDefinitions\InheritConstructor.fs" />
         <Compile Include="MemberDefinitions\Inherit.fs" />
         <Compile Include="MemberDefinitions\ExplicitConstructor.fs" />

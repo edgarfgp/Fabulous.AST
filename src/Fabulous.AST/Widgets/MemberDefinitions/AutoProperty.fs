@@ -44,6 +44,10 @@ module AutoPropertyMember =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
                 |> ValueOption.defaultValue false
 
+            let isOverride =
+                Widgets.tryGetScalarValue widget BindingNode.IsOverride
+                |> ValueOption.defaultValue false
+
             let returnType =
                 Widgets.tryGetNodeFromWidget widget ReturnType |> ValueOption.toOption
 
@@ -56,11 +60,11 @@ module AutoPropertyMember =
                 MultipleTextsNode(
                     [ if isStatic then
                           SingleTextNode.``static``
-                          SingleTextNode.``member``
-                          SingleTextNode.``val``
+                      if isOverride then
+                          SingleTextNode.``override``
                       else
                           SingleTextNode.``member``
-                          SingleTextNode.``val`` ],
+                      SingleTextNode.``val`` ],
                     Range.Zero
                 )
 
