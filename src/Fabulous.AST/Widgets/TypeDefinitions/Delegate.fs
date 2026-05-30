@@ -23,16 +23,16 @@ module Delegate =
 
             let returnType = Widgets.getNodeFromWidget<Type> widget Return
 
-            let parameters = Widgets.getScalarValue widget Parameters
+            let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
+            let lastIndex = List.length parameters - 1
 
             let parameters =
                 parameters
-                |> Seq.mapi(fun i t ->
-                    if i = Seq.length parameters - 1 then
+                |> List.mapi(fun i t ->
+                    if i = lastIndex then
                         (t, SingleTextNode.arrow)
                     else
                         (t, SingleTextNode.star))
-                |> List.ofSeq
 
             let xmlDocs =
                 Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
