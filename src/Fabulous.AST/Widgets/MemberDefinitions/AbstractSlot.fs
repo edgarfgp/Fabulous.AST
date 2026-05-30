@@ -1,7 +1,5 @@
 namespace Fabulous.AST
 
-open System.Linq
-open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -637,60 +635,3 @@ module AbstractMemberBuilders =
                 getterAccessibility,
                 setterAccessibility
             )
-
-type AbstractMemberModifiers =
-    /// <summary>Sets the XmlDocs for the current member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ICircle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///                 .xmlDocs(Summary("This is the area"))
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: WidgetBuilder<XmlDocNode>) =
-        this.AddWidget(AbstractSlot.XmlDocs.WithValue(xmlDocs.Compile()))
-
-    /// <summary>Sets the XmlDocs for the current member.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="xmlDocs">The XmlDocs to set.</param>
-    /// <code language="fsharp">
-    /// Oak() {
-    ///     AnonymousModule() {
-    ///         TypeDefn("ICircle") {
-    ///             AbstractMember("Area", Float(), true)
-    ///                 .xmlDocs([ "This is the area" ])
-    ///         }
-    ///     }
-    /// }
-    /// </code>
-    [<Extension>]
-    static member xmlDocs(this: WidgetBuilder<MemberDefn>, xmlDocs: string seq) =
-        AbstractMemberModifiers.xmlDocs(this, Ast.XmlDocs(xmlDocs))
-
-    /// <summary>Sets the attributes for the current member definition widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attributes">The attributes to set.</param>
-    [<Extension>]
-    static member attributes(this: WidgetBuilder<MemberDefn>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(MemberDefn.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
-
-    /// <summary>Sets the attribute for the current member definition widget.</summary>
-    /// <param name="this">Current widget.</param>
-    /// <param name="attribute">The attribute to set.</param>
-    [<Extension>]
-    static member attribute(this: WidgetBuilder<MemberDefn>, attribute: WidgetBuilder<AttributeNode>) =
-        AbstractMemberModifiers.attributes(this, [ attribute ])
-
-    /// <summary>
-    /// Sets the current member definition widget to be static.
-    /// </summary>
-    /// <param name="this">Current widget.</param>
-    [<Extension>]
-    static member toStatic(this: WidgetBuilder<MemberDefn>) =
-        this.AddScalar(AbstractSlot.IsStatic.WithValue(true))

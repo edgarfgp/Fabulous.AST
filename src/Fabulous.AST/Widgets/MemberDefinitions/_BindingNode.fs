@@ -222,7 +222,7 @@ type MemberDefnModifiers =
     /// <param name="attributes">The attributes to set.</param>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<MemberDefn>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(MemberDefn.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+        this.AddScalar(MemberDefn.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
 
     /// <summary>Sets the attribute for the current member definition widget.</summary>
     /// <param name="this">Current widget.</param>
