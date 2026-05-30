@@ -29,6 +29,11 @@ pipeline "ci" {
 
     stage "build" {
         run $"dotnet restore {sln}"
+        // Fabulous.AST.Build ships an MSBuild task that samples/Playground consumes
+        // via <UsingTask> in Fabulous.AST.Build.targets. UsingTask conditions are
+        // evaluated at project-load time, so the task DLL must exist on disk before
+        // we build anything that imports those targets. Build it first.
+        run $"dotnet build extensions/Fabulous.AST.Build -c {config} --no-restore"
         run $"dotnet build {sln} -c {config} --no-restore"
         run $"dotnet test {sln} -c {config} --no-build"
     }
