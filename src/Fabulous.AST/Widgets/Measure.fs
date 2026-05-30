@@ -10,7 +10,7 @@ module RationalConstNode =
 
     let DivOp = Attributes.defineScalar<string> "DivOp"
 
-    let Denominator = Attributes.defineScalar<string> "DivOp"
+    let Denominator = Attributes.defineScalar<string> "Denominator"
 
     let Node = Attributes.defineWidget "Node"
 

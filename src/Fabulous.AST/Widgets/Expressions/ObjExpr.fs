@@ -141,7 +141,10 @@ type ObjExprYieldExtensions =
         | MemberDefn.Member(bindingNode) ->
             let widget = Ast.EscapeHatch(bindingNode).Compile()
             { Widgets = MutStackArray1.One(widget) }
-        | _ -> failwith "Only MemberDefn.Member is supported in ObjExpr"
+        | other ->
+            invalidArg
+                "x"
+                $"ObjExpr only accepts MemberDefn.Member items (e.g. Member(...)). Got: %A{other.GetType().Name}"
 
     [<Extension>]
     static member inline Yield
