@@ -18,7 +18,7 @@ module CompExprBodyBuilders =
     type Ast with
 
         static member CompExprBodyExpr(values: WidgetBuilder<ComputationExpressionStatement> seq) =
-            let statements = values |> Seq.map Gen.mkOak
+            let statements = values |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(CompExprBody.WidgetKey, CompExprBody.Statements.WithValue(statements))
 

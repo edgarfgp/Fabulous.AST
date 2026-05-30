@@ -45,7 +45,7 @@ type ModuleDeclModifiers =
     /// <param name="attributes">The attributes to set.</param>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ModuleDecl>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(ModuleDecl.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+        this.AddScalar(ModuleDecl.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
 
     /// <summary>Sets the attribute for the current module declaration widget.</summary>
     /// <param name="this">Current widget.</param>

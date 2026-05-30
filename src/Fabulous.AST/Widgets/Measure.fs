@@ -304,7 +304,7 @@ module MeasureBuilders =
         /// <summary>Creates a sequence of measures.</summary>
         /// <param name="value">The seq of measures.</param>
         static member MeasureSeq(value: WidgetBuilder<Measure> seq) =
-            let measures = value |> Seq.map Gen.mkOak
+            let measures = value |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Measure>(Measure.WidgetSequenceKey, Measure.Measures.WithValue(measures))
 

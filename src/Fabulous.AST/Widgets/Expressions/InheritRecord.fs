@@ -36,7 +36,7 @@ module InheritRecordBuilders =
             WidgetBuilder<Expr>(
                 InheritRecord.WidgetKey,
                 AttributesBundle(
-                    StackList.one(InheritRecord.Fields.WithValue(fields |> Seq.map Gen.mkOak)),
+                    StackList.one(InheritRecord.Fields.WithValue(fields |> Seq.map Gen.mkOak |> Seq.toArray)),
                     [| InheritRecord.InheritConstructor.WithValue(value.Compile()) |],
                     Array.empty
                 )

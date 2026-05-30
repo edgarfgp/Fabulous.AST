@@ -35,7 +35,7 @@ module ArrayOrListBuilders =
         /// }
         /// </code>
         static member ListExpr(value: WidgetBuilder<Expr> seq) =
-            let parameters = value |> Seq.map Gen.mkOak
+            let parameters = value |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 ArrayOrList.WidgetKey,
@@ -108,7 +108,7 @@ module ArrayOrListBuilders =
         /// }
         /// </code>
         static member ArrayExpr(value: WidgetBuilder<Expr> seq) =
-            let parameters = value |> Seq.map Gen.mkOak
+            let parameters = value |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 ArrayOrList.WidgetKey,

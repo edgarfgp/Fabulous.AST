@@ -23,7 +23,7 @@ module TuplePatBuilders =
     type Ast with
 
         static member TuplePat(value: WidgetBuilder<Pattern> seq) =
-            let parameters = value |> Seq.map Gen.mkOak
+            let parameters = value |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Pattern>(TuplePat.WidgetKey, TuplePat.Parameters.WithValue(parameters))
 

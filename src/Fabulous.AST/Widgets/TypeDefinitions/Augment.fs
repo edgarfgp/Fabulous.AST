@@ -22,18 +22,14 @@ module Augmentation =
 
             let attributes =
                 Widgets.tryGetScalarValue widget TypeDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams |> ValueOption.toOption
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs |> ValueOption.toOption
 
             let accessControl =
                 Widgets.tryGetScalarValue widget TypeDefn.Accessibility

@@ -20,7 +20,7 @@ module StructTuplePatBuilders =
         static member StructTuplePat(values: WidgetBuilder<Pattern> seq) =
             WidgetBuilder<Pattern>(
                 StructTuplePat.WidgetKey,
-                StructTuplePat.Parameters.WithValue(values |> Seq.map Gen.mkOak)
+                StructTuplePat.Parameters.WithValue(values |> Seq.map Gen.mkOak |> Seq.toArray)
             )
 
         static member StructTuplePat(values: WidgetBuilder<Constant> seq) =

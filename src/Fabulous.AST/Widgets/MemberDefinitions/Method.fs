@@ -91,7 +91,7 @@ module BindingMethodBuilders =
                 body: WidgetBuilder<Expr>,
                 ?returnType: WidgetBuilder<Type>
             ) =
-            let parameters = parameters |> Seq.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<MemberDefn>(
                 BindingMethodNode.WidgetKey,

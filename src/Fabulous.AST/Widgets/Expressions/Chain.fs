@@ -17,7 +17,7 @@ module ChainBuilders =
     type Ast with
 
         static member ChainExpr(value: WidgetBuilder<ChainLink> seq) =
-            let chains = value |> Seq.map Gen.mkOak
+            let chains = value |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(Chain.WidgetKey, Chain.Value.WithValue(chains))
 

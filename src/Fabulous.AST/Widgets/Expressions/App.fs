@@ -22,7 +22,7 @@ module AppBuilders =
     type Ast with
 
         static member AppExpr(name: WidgetBuilder<Expr>, items: WidgetBuilder<Expr> seq) =
-            let items = items |> Seq.map Gen.mkOak
+            let items = items |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 App.WidgetKey,

@@ -20,4 +20,7 @@ module RecordPatBuilders =
     type Ast with
 
         static member RecordPat(fields: WidgetBuilder<PatRecordField> seq) =
-            WidgetBuilder<Pattern>(RecordPat.WidgetKey, RecordPat.Fields.WithValue(fields |> Seq.map Gen.mkOak))
+            WidgetBuilder<Pattern>(
+                RecordPat.WidgetKey,
+                RecordPat.Fields.WithValue(fields |> Seq.map Gen.mkOak |> Seq.toArray)
+            )

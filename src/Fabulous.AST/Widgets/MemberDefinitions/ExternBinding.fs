@@ -92,7 +92,7 @@ module ExternBindingNodeBuilders =
         static member ExternBinding
             (tp: WidgetBuilder<Type>, name: string, parameters: WidgetBuilder<ExternBindingPatternNode> seq)
             =
-            let parameters = parameters |> Seq.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<ExternBindingNode>(
                 ExternBinding.WidgetKey,
@@ -255,7 +255,7 @@ type ExternBindingNodeModifiers =
     static member inline attributes
         (this: WidgetBuilder<ExternBindingNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(ExternBinding.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+        this.AddScalar(ExternBinding.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
 
     /// <summary>
     /// Sets the attribute for the current widget.
@@ -364,5 +364,5 @@ type ExternBindingNodeYieldExtensions =
     static member inline YieldFrom
         (this: CollectionBuilder<'parent, ModuleDecl>, x: WidgetBuilder<ExternBindingNode> seq)
         : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
+        let nodes = x |> Seq.map Gen.mkOak |> Seq.toArray
         ExternBindingNodeYieldExtensions.YieldFrom(this, nodes)

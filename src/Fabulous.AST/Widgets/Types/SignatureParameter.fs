@@ -18,15 +18,15 @@ module SignatureParameter =
         Widgets.register "SignatureParameter" (fun widget ->
             let identifier =
                 Widgets.tryGetScalarValue widget Identifier
-                |> ValueOption.map(fun x -> Some(SingleTextNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map SingleTextNode.Create
+                |> ValueOption.toOption
 
             let value = Widgets.getNodeFromWidget<Type> widget TypedValue
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             Type.SignatureParameter(TypeSignatureParameterNode(attributes, identifier, value, Range.Zero)))
 

@@ -28,7 +28,7 @@ module MatchBuilders =
             WidgetBuilder<Expr>(
                 Match.WidgetKey,
                 AttributesBundle(
-                    StackList.one(Match.MatchClauses.WithValue(clauses |> Seq.map Gen.mkOak)),
+                    StackList.one(Match.MatchClauses.WithValue(clauses |> Seq.map Gen.mkOak |> Seq.toArray)),
                     [| Match.MatchExpr.WithValue(value.Compile()) |],
                     Array.empty
                 )

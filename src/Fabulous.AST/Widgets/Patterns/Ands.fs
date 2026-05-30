@@ -17,7 +17,7 @@ module AndsBuilders =
     type Ast with
 
         static member AndsPat(values: WidgetBuilder<Pattern> seq) =
-            WidgetBuilder<Pattern>(Ands.WidgetKey, Ands.Items.WithValue(values |> Seq.map Gen.mkOak))
+            WidgetBuilder<Pattern>(Ands.WidgetKey, Ands.Items.WithValue(values |> Seq.map Gen.mkOak |> Seq.toArray))
 
         static member AndsPat(values: WidgetBuilder<Constant> seq) =
             let values = values |> Seq.map Ast.ConstantPat

@@ -26,15 +26,12 @@ module EnumCase =
 
             let value = Widgets.getNodeFromWidget widget Value
 
-            let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let xmlDocs = Widgets.tryGetNodeFromWidget widget XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             EnumCaseNode(
                 xmlDocs,

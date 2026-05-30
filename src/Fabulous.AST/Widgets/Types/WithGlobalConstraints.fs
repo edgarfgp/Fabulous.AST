@@ -17,7 +17,7 @@ module WithGlobalConstraints =
 module WithGlobalConstraintsBuilders =
     type Ast with
         static member WithGlobal(tp: WidgetBuilder<Type>, constraints: WidgetBuilder<TypeConstraint> seq) =
-            let constraints = constraints |> Seq.map Gen.mkOak
+            let constraints = constraints |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Type>(
                 WithGlobalConstraints.WidgetKey,

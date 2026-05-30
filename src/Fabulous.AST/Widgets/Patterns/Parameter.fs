@@ -13,15 +13,12 @@ module Parameter =
         Widgets.register "Parameter" (fun widget ->
             let value = Widgets.getNodeFromWidget<Pattern> widget Value
 
-            let typeValue =
-                Widgets.tryGetNodeFromWidget widget TypeVal
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let typeValue = Widgets.tryGetNodeFromWidget widget TypeVal |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget Pattern.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             Pattern.Parameter(PatParameterNode(attributes, value, typeValue, Range.Zero)))
 

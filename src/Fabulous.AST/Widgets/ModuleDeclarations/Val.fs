@@ -30,19 +30,17 @@ module Val =
     let WidgetKey =
         Widgets.register "ValNode" (fun widget ->
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget<XmlDocNode> widget XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget<XmlDocNode> widget XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let inlined =
                 Widgets.tryGetScalarValue widget IsInlined
-                |> ValueOption.map(fun _ -> Some(SingleTextNode.``inline``))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun _ -> SingleTextNode.``inline``)
+                |> ValueOption.toOption
 
             let isMutable =
                 Widgets.tryGetScalarValue widget IsMutable |> ValueOption.defaultValue(false)
@@ -64,16 +62,14 @@ module Val =
                 | Unknown -> None
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeParams |> ValueOption.toOption
 
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget LeadingKeyword
                 |> ValueOption.map(List.ofSeq)
                 |> ValueOption.filter(_.IsEmpty >> not)
-                |> ValueOption.map(fun nodes -> Some(MultipleTextsNode(nodes, Range.Zero)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun nodes -> MultipleTextsNode(nodes, Range.Zero))
+                |> ValueOption.toOption
 
             ValNode(
                 xmlDocs,
@@ -263,7 +259,7 @@ type ValNodeModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<ValNode>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(Val.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+        this.AddScalar(Val.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
 
     /// <summary>Sets the attribute for the current Val.</summary>
     /// <param name="this">Current widget.</param>

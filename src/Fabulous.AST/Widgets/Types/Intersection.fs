@@ -24,7 +24,7 @@ module Intersection =
 module IntersectionBuilders =
     type Ast with
         static member Intersection(values: WidgetBuilder<Type> seq) =
-            let values = values |> Seq.map Gen.mkOak
+            let values = values |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Type>(Intersection.WidgetKey, Intersection.Values.WithValue(values))
 

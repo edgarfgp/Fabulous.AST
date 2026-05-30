@@ -21,7 +21,7 @@ module LambdaBuilders =
     type Ast with
 
         static member LambdaExpr(parameters: WidgetBuilder<Pattern> seq, value: WidgetBuilder<Expr>) =
-            let parameters = parameters |> Seq.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 Lambda.WidgetKey,

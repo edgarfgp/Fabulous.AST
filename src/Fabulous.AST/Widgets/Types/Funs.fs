@@ -30,7 +30,7 @@ module FunsBuilders =
             WidgetBuilder<Type>(
                 TypeFuns.WidgetKey,
                 AttributesBundle(
-                    StackList.one(TypeFuns.Parameters.WithValue(parameters |> Seq.map Gen.mkOak)),
+                    StackList.one(TypeFuns.Parameters.WithValue(parameters |> Seq.map Gen.mkOak |> Seq.toArray)),
                     [| TypeFuns.Return.WithValue(returnType.Compile()) |],
                     Array.empty
                 )

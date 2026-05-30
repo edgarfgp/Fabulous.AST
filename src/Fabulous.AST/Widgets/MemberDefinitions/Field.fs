@@ -315,7 +315,7 @@ type FieldModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<FieldNode>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(Field.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+        this.AddScalar(Field.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
 
     /// <summary>Sets the attributes for the current measure ValField definition.</summary>
     /// <param name="this">Current widget.</param>

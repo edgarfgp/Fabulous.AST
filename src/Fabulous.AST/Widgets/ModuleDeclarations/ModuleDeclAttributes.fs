@@ -13,8 +13,8 @@ module ModuleDeclAttributes =
 
             let attributes =
                 Widgets.tryGetScalarValue widget ModuleDecl.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let node = ModuleDeclAttributesNode(attributes, doExpression, Range.Zero)
             ModuleDecl.Attributes(node))

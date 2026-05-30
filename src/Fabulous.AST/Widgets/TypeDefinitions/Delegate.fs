@@ -35,14 +35,12 @@ module Delegate =
                         (t, SingleTextNode.star))
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget TypeDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let accessControl =
                 Widgets.tryGetScalarValue widget TypeDefn.Accessibility
@@ -92,7 +90,7 @@ module DelegateBuilders =
                 AttributesBundle(
                     StackList.two(
                         Delegate.Name.WithValue(name),
-                        Delegate.Parameters.WithValue(parameters |> Seq.map Gen.mkOak)
+                        Delegate.Parameters.WithValue(parameters |> Seq.map Gen.mkOak |> Seq.toArray)
                     ),
                     [| Delegate.Return.WithValue(returnType.Compile()) |],
                     Array.empty

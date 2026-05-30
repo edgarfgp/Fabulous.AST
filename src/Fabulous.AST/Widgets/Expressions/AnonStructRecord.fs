@@ -46,7 +46,7 @@ module AnonStructRecordBuilders =
             WidgetBuilder<Expr>(
                 AnonStructRecord.WidgetKey,
                 AttributesBundle(
-                    StackList.one(AnonStructRecord.Fields.WithValue(fields |> Seq.map Gen.mkOak)),
+                    StackList.one(AnonStructRecord.Fields.WithValue(fields |> Seq.map Gen.mkOak |> Seq.toArray)),
                     copyInfo,
                     Array.empty
                 )

@@ -52,6 +52,6 @@ module NamePatPairsBuilders =
         static member NamePatPairsPat(ident: string, pairs: WidgetBuilder<NamePatPair> seq) =
             WidgetBuilder<Pattern>(
                 NamePatPairs.WidgetKey,
-                NamePatPairs.Pairs.WithValue(pairs |> Seq.map Gen.mkOak),
+                NamePatPairs.Pairs.WithValue(pairs |> Seq.map Gen.mkOak |> Seq.toArray),
                 NamePatPairs.Identifiers.WithValue(ident)
             )

@@ -122,7 +122,7 @@ type ModuleDeclAttributeCollectionBuilderExtensions =
     static member inline YieldFrom
         (this: AttributeCollectionBuilder<'parent, MemberDefn>, xs: WidgetBuilder<MemberDefn> seq)
         : CollectionContent =
-        let nodes = xs |> Seq.map Gen.mkOak
+        let nodes = xs |> Seq.map Gen.mkOak |> Seq.toArray
         ModuleDeclAttributeCollectionBuilderExtensions.YieldFrom(this, nodes)
 
     [<Extension>]

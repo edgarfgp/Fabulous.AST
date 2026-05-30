@@ -34,13 +34,10 @@ module UnionCase =
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
-            let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let xmlDocs = Widgets.tryGetNodeFromWidget widget XmlDocs |> ValueOption.toOption
 
             UnionCaseNode(xmlDocs, attributes, None, name, fields, Range.Zero))
 
@@ -82,7 +79,7 @@ module UnionCaseBuilders =
                 AttributesBundle(
                     StackList.two(
                         UnionCase.Name.WithValue(name),
-                        UnionCase.Fields.WithValue(fields |> Seq.map Gen.mkOak)
+                        UnionCase.Fields.WithValue(fields |> Seq.map Gen.mkOak |> Seq.toArray)
                     ),
                     Array.empty,
                     Array.empty
@@ -296,5 +293,5 @@ type UnionCaseYieldExtensions =
     static member inline YieldFrom
         (this: CollectionBuilder<TypeDefnUnionNode, UnionCaseNode>, x: WidgetBuilder<UnionCaseNode> seq)
         : CollectionContent =
-        let nodes = x |> Seq.map Gen.mkOak
+        let nodes = x |> Seq.map Gen.mkOak |> Seq.toArray
         UnionCaseYieldExtensions.YieldFrom(this, nodes)

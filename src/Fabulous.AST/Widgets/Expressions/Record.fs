@@ -50,7 +50,7 @@ module RecordExprBuilders =
                     StackList.three(
                         RecordExpr.OpenBrace.WithValue(leftSingleNode),
                         RecordExpr.CloseBrace.WithValue(rightSingleNode),
-                        RecordExpr.Fields.WithValue(fields |> Seq.map Gen.mkOak)
+                        RecordExpr.Fields.WithValue(fields |> Seq.map Gen.mkOak |> Seq.toArray)
                     ),
                     copyInfo,
                     Array.empty
