@@ -15,14 +15,12 @@ module ExceptionDefn =
         Widgets.register "ExceptionDefn" (fun widget ->
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget ModuleDecl.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget ModuleDecl.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget ModuleDecl.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let accessControl =
                 Widgets.tryGetScalarValue widget ModuleDecl.Accessibility

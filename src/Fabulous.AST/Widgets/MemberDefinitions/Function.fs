@@ -35,14 +35,12 @@ module BindingFunction =
                 | Unknown -> None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let isInlined =
                 Widgets.tryGetScalarValue widget BindingNode.IsInlined
@@ -57,8 +55,7 @@ module BindingFunction =
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                |> ValueOption.toOption
 
             BindingNode(
                 xmlDocs,
@@ -87,7 +84,7 @@ module BindingFunctionBuilders =
                 ?returnType: WidgetBuilder<Type>
             ) =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
-            let parameters = parameters |> Seq.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<BindingNode>(
                 BindingFunction.WidgetKey,

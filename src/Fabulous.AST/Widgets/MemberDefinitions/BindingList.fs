@@ -36,7 +36,7 @@ module LetBindingMemberBuilders =
         static member LetBindings(bindings: WidgetBuilder<BindingNode> seq) =
             WidgetBuilder<MemberDefn>(
                 BindingList.WidgetKey,
-                BindingList.Bindings.WithValue(bindings |> Seq.map Gen.mkOak)
+                BindingList.Bindings.WithValue(bindings |> Seq.map Gen.mkOak |> Seq.toArray)
             )
 
         /// <summary>

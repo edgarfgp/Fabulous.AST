@@ -21,8 +21,8 @@ module BindingProperty =
 
             let returnType =
                 Widgets.tryGetNodeFromWidget widget BindingNode.Return
-                |> ValueOption.map(fun value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun value -> BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
+                |> ValueOption.toOption
 
             let accessControl =
                 Widgets.tryGetScalarValue widget MemberDefn.Accessibility
@@ -36,14 +36,12 @@ module BindingProperty =
                 | Unknown -> None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let inlineNode =
                 match isInlined with
@@ -53,8 +51,7 @@ module BindingProperty =
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                |> ValueOption.toOption
 
             let multipleTextsNode =
                 [ if isStatic then

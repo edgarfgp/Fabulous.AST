@@ -22,18 +22,14 @@ module TypeDefnExplicit =
 
             let attributes =
                 Widgets.tryGetScalarValue widget TypeDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs |> ValueOption.toOption
 
             let typeParams =
-                Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams |> ValueOption.toOption
 
             let implicitConstructor =
                 Widgets.tryGetNodeFromWidget<ImplicitConstructorNode> widget Constructor

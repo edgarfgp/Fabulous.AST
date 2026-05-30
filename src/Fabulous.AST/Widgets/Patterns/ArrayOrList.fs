@@ -27,7 +27,7 @@ module ArrayOrListPatBuilders =
         static member ListPat(values: WidgetBuilder<Pattern> seq) =
             WidgetBuilder<Pattern>(
                 ArrayOrListPat.WidgetKey,
-                ArrayOrListPat.Parameters.WithValue(values |> Seq.map Gen.mkOak),
+                ArrayOrListPat.Parameters.WithValue(values |> Seq.map Gen.mkOak |> Seq.toArray),
                 ArrayOrListPat.OpenTextNode.WithValue(SingleTextNode.leftBracket),
                 ArrayOrListPat.CloseTextNode.WithValue(SingleTextNode.rightBracket)
             )
@@ -41,7 +41,7 @@ module ArrayOrListPatBuilders =
         static member ArrayPat(values: WidgetBuilder<Pattern> seq) =
             WidgetBuilder<Pattern>(
                 ArrayOrListPat.WidgetKey,
-                ArrayOrListPat.Parameters.WithValue(values |> Seq.map Gen.mkOak),
+                ArrayOrListPat.Parameters.WithValue(values |> Seq.map Gen.mkOak |> Seq.toArray),
                 ArrayOrListPat.OpenTextNode.WithValue(SingleTextNode.leftArray),
                 ArrayOrListPat.CloseTextNode.WithValue(SingleTextNode.rightArray)
             )

@@ -16,8 +16,8 @@ module FillExprNode =
 
             let identifier =
                 Widgets.tryGetScalarValue widget Identifier
-                |> ValueOption.map(fun x -> Some(SingleTextNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map SingleTextNode.Create
+                |> ValueOption.toOption
 
             FillExprNode(expr, identifier, Range.Zero))
 

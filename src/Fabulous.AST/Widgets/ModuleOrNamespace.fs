@@ -63,15 +63,12 @@ module ModuleOrNamespace =
                     | Internal -> Some(SingleTextNode.``internal``)
                     | Unknown -> None
 
-                let xmlDocs =
-                    Widgets.tryGetNodeFromWidget widget XmlDocs
-                    |> ValueOption.map(fun x -> Some(x))
-                    |> ValueOption.defaultValue None
+                let xmlDocs = Widgets.tryGetNodeFromWidget widget XmlDocs |> ValueOption.toOption
 
                 let attributes =
                     Widgets.tryGetScalarValue widget MultipleAttributes
-                    |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                    |> ValueOption.defaultValue None
+                    |> ValueOption.map MultipleAttributeListNode.Create
+                    |> ValueOption.toOption
 
                 let header =
                     Some(
@@ -292,7 +289,7 @@ type NamespaceModifiers =
     static member inline attributes
         (this: WidgetBuilder<ModuleOrNamespaceNode>, attributes: WidgetBuilder<AttributeNode> seq)
         =
-        this.AddScalar(ModuleOrNamespace.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+        this.AddScalar(ModuleOrNamespace.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
 
     /// <summary>Sets the attributes for the current namespace.</summary>
     /// <param name="this">Current widget.</param>

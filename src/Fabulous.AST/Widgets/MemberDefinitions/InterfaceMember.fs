@@ -104,5 +104,5 @@ type InterfaceMemberYieldExtensions =
     static member inline YieldFrom
         (this: CollectionBuilder<MemberDefn, MemberDefn>, xs: WidgetBuilder<BindingNode> seq)
         : CollectionContent =
-        let nodes = xs |> Seq.map Gen.mkOak
+        let nodes = xs |> Seq.map Gen.mkOak |> Seq.toArray
         InterfaceMemberYieldExtensions.YieldFrom(this, nodes)

@@ -24,7 +24,10 @@ module TypeStructTuple =
 module TypeStructTupleBuilders =
     type Ast with
         static member StructTuple(items: WidgetBuilder<Type> seq) =
-            WidgetBuilder<Type>(TypeStructTuple.WidgetKey, TypeStructTuple.Items.WithValue(items |> Seq.map Gen.mkOak))
+            WidgetBuilder<Type>(
+                TypeStructTuple.WidgetKey,
+                TypeStructTuple.Items.WithValue(items |> Seq.map Gen.mkOak |> Seq.toArray)
+            )
 
         static member StructTuple(items: string seq) =
             let items = items |> Seq.map Ast.LongIdent

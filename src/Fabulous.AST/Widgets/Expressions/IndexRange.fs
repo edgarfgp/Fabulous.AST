@@ -12,15 +12,9 @@ module IndexRange =
 
     let WidgetKey =
         Widgets.register "IndexRange" (fun widget ->
-            let fromExpr =
-                Widgets.tryGetNodeFromWidget widget FromExpr
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let fromExpr = Widgets.tryGetNodeFromWidget widget FromExpr |> ValueOption.toOption
 
-            let toExpr =
-                Widgets.tryGetNodeFromWidget widget ToExpr
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let toExpr = Widgets.tryGetNodeFromWidget widget ToExpr |> ValueOption.toOption
 
             Expr.IndexRange(ExprIndexRangeNode(fromExpr, SingleTextNode.Create(".."), toExpr, Range.Zero)))
 

@@ -56,8 +56,8 @@ module AppWithLambdaBuilders =
                 parameters: WidgetBuilder<Pattern> seq,
                 value: WidgetBuilder<Expr>
             ) =
-            let arguments = arguments |> Seq.map Gen.mkOak
-            let parameters = parameters |> Seq.map Gen.mkOak
+            let arguments = arguments |> Seq.map Gen.mkOak |> Seq.toArray
+            let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 AppWithLambda.WidgetKey,
@@ -128,8 +128,8 @@ module AppWithLambdaBuilders =
                 arguments: WidgetBuilder<Expr> seq,
                 clauses: WidgetBuilder<MatchClauseNode> seq
             ) =
-            let clauses = clauses |> Seq.map Gen.mkOak
-            let arguments = arguments |> Seq.map Gen.mkOak
+            let clauses = clauses |> Seq.map Gen.mkOak |> Seq.toArray
+            let arguments = arguments |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 AppWithLambda.WidgetKey,

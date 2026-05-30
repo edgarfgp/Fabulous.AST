@@ -31,9 +31,9 @@ module PropertyGetSetBinding =
                 |> ValueOption.defaultValue AccessControl.Unknown
 
             let inlined =
-                Widgets.tryGetScalarValue widget IsInlined
-                |> ValueOption.map(fun x -> if x then Some SingleTextNode.``inline`` else None)
-                |> ValueOption.defaultValue None
+                match Widgets.tryGetScalarValue widget IsInlined with
+                | ValueSome true -> Some SingleTextNode.``inline``
+                | _ -> None
 
             let accessControl =
                 match accessControl with
@@ -61,8 +61,8 @@ module PropertyGetSetBinding =
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             PropertyGetSetBindingNode(
                 inlined,

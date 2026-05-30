@@ -29,14 +29,12 @@ module BindingValue =
                 | Unknown -> None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget BindingNode.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget BindingNode.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let isMutable =
                 Widgets.tryGetScalarValue widget BindingNode.IsMutable
@@ -48,13 +46,12 @@ module BindingValue =
 
             let returnType =
                 Widgets.tryGetNodeFromWidget widget BindingNode.Return
-                |> ValueOption.map(fun x -> Some(BindingReturnInfoNode(SingleTextNode.colon, x, Range.Zero)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map(fun x -> BindingReturnInfoNode(SingleTextNode.colon, x, Range.Zero))
+                |> ValueOption.toOption
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                |> ValueOption.toOption
 
             BindingNode(
                 xmlDocs,

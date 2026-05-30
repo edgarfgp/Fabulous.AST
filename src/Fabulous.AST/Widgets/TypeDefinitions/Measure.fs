@@ -20,16 +20,13 @@ module TypeNameNode =
             let name = Widgets.getScalarValue widget Name
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs |> ValueOption.toOption
 
             let measureAttribute = Widgets.getScalarValue widget MeasureAttribute |> List.ofSeq
 
             let multipleAttributes =
                 Widgets.tryGetScalarValue widget TypeDefn.MultipleAttributes
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                |> ValueOption.toOption
 
             let attributes =
                 match multipleAttributes with

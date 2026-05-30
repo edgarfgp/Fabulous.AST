@@ -23,7 +23,7 @@ module TupleBuilders =
     type Ast with
 
         static member TupleExpr(value: WidgetBuilder<Expr> seq) =
-            let parameters = value |> Seq.map Gen.mkOak
+            let parameters = value |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(Tuple.WidgetKey, Tuple.Items.WithValue(parameters))
 

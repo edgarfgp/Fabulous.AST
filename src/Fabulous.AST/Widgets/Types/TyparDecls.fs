@@ -22,8 +22,8 @@ module TyparDeclNode =
 
             let attributes =
                 Widgets.tryGetScalarValue widget MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let intersectionConstrains =
                 Widgets.getScalarValue widget IntersectionConstrains
@@ -51,7 +51,7 @@ module TyparDeclNodeBuilders =
     type Ast with
 
         static member TyparDecl(tyPar: string, constraints: WidgetBuilder<Type> seq) =
-            let constrains = constraints |> Seq.map Gen.mkOak
+            let constrains = constraints |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<TyparDeclNode>(
                 TyparDeclNode.WidgetKey,
@@ -120,7 +120,7 @@ module TyparDeclsBuilders =
         static member SinglePrefix(value: string) = Ast.SinglePrefix(Ast.TyparDecl(value))
 
         static member PrefixList(decls: WidgetBuilder<TyparDeclNode> seq) =
-            let decls = decls |> Seq.map Gen.mkOak
+            let decls = decls |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<TyparDecls>(TyparDecls.WidgetPrefixListKey, TyparDecls.Decls.WithValue(decls))
 
@@ -135,8 +135,8 @@ module TyparDeclsBuilders =
         static member PostfixList
             (decls: WidgetBuilder<TyparDeclNode> seq, constraints: WidgetBuilder<TypeConstraint> seq)
             =
-            let decls = decls |> Seq.map Gen.mkOak
-            let constraints = constraints |> Seq.map Gen.mkOak
+            let decls = decls |> Seq.map Gen.mkOak |> Seq.toArray
+            let constraints = constraints |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<TyparDecls>(
                 TyparDecls.WidgetPostfixListKey,

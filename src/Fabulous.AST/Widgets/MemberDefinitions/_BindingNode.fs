@@ -70,7 +70,7 @@ type BindingNodeModifiers =
     /// </code>
     [<Extension>]
     static member inline attributes(this: WidgetBuilder<BindingNode>, attributes: WidgetBuilder<AttributeNode> seq) =
-        this.AddScalar(BindingNode.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak))
+        this.AddScalar(BindingNode.MultipleAttributes.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
 
     /// <summary>
     /// Sets the attributes for the current widget.

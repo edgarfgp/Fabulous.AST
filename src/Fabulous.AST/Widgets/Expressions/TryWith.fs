@@ -40,7 +40,7 @@ module TryWithBuilders =
         /// }
         /// </code>
         static member TryWithExpr(value: WidgetBuilder<Expr>, clauses: WidgetBuilder<MatchClauseNode> seq) =
-            let clauses = clauses |> Seq.map Gen.mkOak
+            let clauses = clauses |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 TryWith.WidgetKey,

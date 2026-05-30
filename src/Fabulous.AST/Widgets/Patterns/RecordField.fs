@@ -26,8 +26,8 @@ module RecordFieldPat =
                 Widgets.tryGetScalarValue widget Prefix
                 |> ValueOption.map(fun value ->
                     let value = PrettyNaming.NormalizeIdentifierBackticks value
-                    Some(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero)))
-                |> ValueOption.defaultValue None
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
+                |> ValueOption.toOption
 
             PatRecordField(prefix, SingleTextNode.Create(fieldName), SingleTextNode.equals, pattern, Range.Zero))
 

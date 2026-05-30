@@ -27,12 +27,12 @@ module TypeTuple =
 module TypeTupleBuilders =
     type Ast with
         static member Tuple(items: WidgetBuilder<Type> seq) =
-            let items = items |> Seq.map Gen.mkOak
+            let items = items |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Type>(TypeTuple.WidgetKey, TypeTuple.Items.WithValue(items))
 
         static member Tuple(items: WidgetBuilder<Type> seq, exponent: string) =
-            let items = items |> Seq.map Gen.mkOak
+            let items = items |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Type>(
                 TypeTuple.WidgetKey,

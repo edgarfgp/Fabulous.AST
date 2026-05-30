@@ -30,7 +30,7 @@ module TypeAppBuilders =
     type Ast with
 
         static member TypeAppExpr(value: WidgetBuilder<Expr>, parameters: WidgetBuilder<Type> seq) =
-            let parameters = parameters |> Seq.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 TypeApp.WidgetKey,

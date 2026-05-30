@@ -28,14 +28,12 @@ module DefaultMember =
                 | Unknown -> None
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs
-                |> ValueOption.map(fun x -> Some(x))
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget MemberDefn.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget MemberDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             let isInlined =
                 Widgets.tryGetScalarValue widget BindingNode.IsInlined
@@ -50,8 +48,7 @@ module DefaultMember =
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget MemberDefn.TypeParams
-                |> ValueOption.map Some
-                |> ValueOption.defaultValue None
+                |> ValueOption.toOption
 
             let node =
                 BindingNode(

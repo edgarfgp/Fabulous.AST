@@ -14,15 +14,12 @@ module AttributeNode =
 
     let WidgetKey =
         Widgets.register "AttributeNode" (fun widget ->
-            let expr =
-                Widgets.tryGetNodeFromWidget widget Value
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+            let expr = Widgets.tryGetNodeFromWidget widget Value |> ValueOption.toOption
 
             let target =
                 Widgets.tryGetScalarValue widget Target
-                |> ValueOption.map(fun target -> Some(SingleTextNode.Create(target)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map SingleTextNode.Create
+                |> ValueOption.toOption
 
             let typeName = Widgets.getScalarValue widget TypeName
 

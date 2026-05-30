@@ -29,7 +29,7 @@ module ParenLambdaBuilders =
     type Ast with
 
         static member ParenLambdaExpr(parameters: WidgetBuilder<Pattern> seq, value: WidgetBuilder<Expr>) =
-            let parameters = parameters |> Seq.map Gen.mkOak
+            let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 ParenLambda.WidgetKey,

@@ -64,7 +64,7 @@ module LongIdentPatternBuilders =
         static member LongIdentPat(pairs: WidgetBuilder<Pattern> seq) =
             WidgetBuilder<Pattern>(
                 LongIdentPattern.WidgetKey,
-                LongIdentPattern.Pairs.WithValue(pairs |> Seq.map Gen.mkOak)
+                LongIdentPattern.Pairs.WithValue(pairs |> Seq.map Gen.mkOak |> Seq.toArray)
             )
 
         static member LongIdentPat(pair: WidgetBuilder<Pattern>) = Ast.LongIdentPat([ pair ])
@@ -85,7 +85,7 @@ module LongIdentPatternBuilders =
                 AttributesBundle(
                     StackList.two(
                         LongIdentPattern.Identifiers.WithValue(ident),
-                        LongIdentPattern.Pairs.WithValue(pairs |> Seq.map Gen.mkOak)
+                        LongIdentPattern.Pairs.WithValue(pairs |> Seq.map Gen.mkOak |> Seq.toArray)
                     ),
                     Array.empty,
                     Array.empty

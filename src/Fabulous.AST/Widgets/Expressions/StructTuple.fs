@@ -30,7 +30,7 @@ module StructTupleBuilders =
     type Ast with
 
         static member StructTupleExpr(value: WidgetBuilder<Expr> seq) =
-            let parameters = value |> Seq.map Gen.mkOak
+            let parameters = value |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(StructTuple.WidgetKey, StructTuple.Items.WithValue(parameters))
 

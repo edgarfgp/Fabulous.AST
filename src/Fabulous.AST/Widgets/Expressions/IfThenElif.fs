@@ -33,7 +33,7 @@ module IfThenElif =
 module IfThenElifBuilders =
     type Ast with
         static member IfThenElifExpr(branches: WidgetBuilder<Expr> seq, elseExpr: WidgetBuilder<Expr>) =
-            let branches = branches |> Seq.map Gen.mkOak
+            let branches = branches |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 IfThenElif.WidgetKey,
@@ -71,7 +71,10 @@ module IfThenElifBuilders =
             Ast.IfThenElifExpr(branches, Ast.Constant(elseExpr))
 
         static member IfThenElifExpr(branches: WidgetBuilder<Expr> seq) =
-            WidgetBuilder<Expr>(IfThenElif.WidgetKey, IfThenElif.Branches.WithValue(branches |> Seq.map Gen.mkOak))
+            WidgetBuilder<Expr>(
+                IfThenElif.WidgetKey,
+                IfThenElif.Branches.WithValue(branches |> Seq.map Gen.mkOak |> Seq.toArray)
+            )
 
         static member IfThenElifExpr(branches: WidgetBuilder<Constant> seq) =
             Ast.IfThenElifExpr(branches |> Seq.map Ast.ConstantExpr)

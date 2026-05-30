@@ -45,7 +45,7 @@ module TypeAppPrefix =
 module TypeAppPrefixBuilders =
     type Ast with
         static member AppPrefix(t: WidgetBuilder<Type>, arguments: WidgetBuilder<Type> seq) =
-            let arguments = arguments |> Seq.map Gen.mkOak
+            let arguments = arguments |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,
@@ -78,7 +78,7 @@ module TypeAppPrefixBuilders =
         static member AppPrefix
             (t: WidgetBuilder<Type>, postIdentifier: string seq, arguments: WidgetBuilder<Type> seq)
             =
-            let arguments = arguments |> Seq.map Gen.mkOak
+            let arguments = arguments |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Type>(
                 TypeAppPrefix.WidgetKey,

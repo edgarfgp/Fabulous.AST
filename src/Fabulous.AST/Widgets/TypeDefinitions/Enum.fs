@@ -22,14 +22,12 @@ module Enum =
                 Widgets.getNodesFromWidgetCollection<EnumCaseNode> widget EnumCaseNode
 
             let xmlDocs =
-                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs
-                |> ValueOption.map(Some)
-                |> ValueOption.defaultValue None
+                Widgets.tryGetNodeFromWidget widget TypeDefn.XmlDocs |> ValueOption.toOption
 
             let attributes =
                 Widgets.tryGetScalarValue widget TypeDefn.MultipleAttributes
-                |> ValueOption.map(fun x -> Some(MultipleAttributeListNode.Create(x)))
-                |> ValueOption.defaultValue None
+                |> ValueOption.map MultipleAttributeListNode.Create
+                |> ValueOption.toOption
 
             TypeDefn.Enum(
                 TypeDefnEnumNode(

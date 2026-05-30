@@ -33,7 +33,7 @@ module LibraryOnlyStaticOptimizationBuilders =
                 constraints: WidgetBuilder<StaticOptimizationConstraint> seq,
                 expr: WidgetBuilder<Expr>
             ) =
-            let constraints = constraints |> Seq.map Gen.mkOak
+            let constraints = constraints |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<Expr>(
                 LibraryOnlyStaticOptimization.WidgetKey,
