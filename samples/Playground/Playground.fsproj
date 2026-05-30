@@ -18,6 +18,11 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Fabulous.AST\Fabulous.AST.fsproj" />
         <ProjectReference Include="..\..\extensions\Fabulous.AST.Json\Fabulous.AST.Json.fsproj" />
+        <!-- Build-order dependency: Fabulous.AST.Build provides the MSBuild task DLL
+             imported by Fabulous.AST.Build.targets below. ReferenceOutputAssembly=false
+             keeps it out of Playground's runtime assembly references. -->
+        <ProjectReference Include="..\..\extensions\Fabulous.AST.Build\Fabulous.AST.Build.fsproj"
+                          ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 
