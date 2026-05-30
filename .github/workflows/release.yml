@@ -69,28 +69,22 @@ jobs:
       - name: Test
         run: dotnet test ${SLN_FILE} -p:Version=${RELEASE_VERSION} -c ${CONFIG} --no-build
       - name: Pack
-        # Pass the changelog content via env vars rather than ${{ … }} template
-        # interpolation. Direct interpolation embeds the content into the bash
-        # script body before bash parses it, which means backticks, parens, and
-        # other special characters in the changelog get interpreted as shell
-        # syntax (command substitution, etc.). With env-var passing, the
-        # content is just data at runtime.
-        #
-        # MSBuild's `-p:Key=Value` syntax treats `;` as a delimiter between
-        # properties. Escape `;` in property values as `%3B` so multi-line
-        # changelog content containing semicolons (e.g. `net8.0;net10.0`,
-        # or English sentences with `;` clauses) doesn't get split mid-value.
+        # Release notes are sourced via env vars that Directory.Build.props
+        # picks up as MSBuild properties (auto-imported). This avoids the
+        # fragility of `-p:PackageReleaseNotes="..."` on the command line,
+        # which has to navigate shell quoting (backticks → command
+        # substitution), MSBuild `;` property delimiters, `/` switch prefixes,
+        # and embedded newlines. By the time MSBuild evaluates
+        # $(RELEASE_NOTES) inside Directory.Build.props, the value is an
+        # opaque string from the environment with no parser between us and it.
         env:
           RELEASE_NOTES: ${{ steps.changelog_reader.outputs.changes }}
           JSON_RELEASE_NOTES: ${{ steps.json_changelog.outputs.changes }}
           BUILD_RELEASE_NOTES: ${{ steps.build_changelog.outputs.changes }}
         run: |
-          RELEASE_NOTES_ESC="${RELEASE_NOTES//;/%3B}"
-          JSON_RELEASE_NOTES_ESC="${JSON_RELEASE_NOTES//;/%3B}"
-          BUILD_RELEASE_NOTES_ESC="${BUILD_RELEASE_NOTES//;/%3B}"
-          dotnet pack ${SLN_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$RELEASE_NOTES_ESC" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
-          dotnet pack ${JSON_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$JSON_RELEASE_NOTES_ESC" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
-          dotnet pack ${BUILD_FILE} -p:Version=${RELEASE_VERSION} -p:PackageReleaseNotes="$BUILD_RELEASE_NOTES_ESC" -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${SLN_FILE} -p:Version=${RELEASE_VERSION} -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${JSON_FILE} -p:Version=${RELEASE_VERSION} -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
+          dotnet pack ${BUILD_FILE} -p:Version=${RELEASE_VERSION} -c ${CONFIG} --property PackageOutputPath=${PWD}/nupkgs
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
