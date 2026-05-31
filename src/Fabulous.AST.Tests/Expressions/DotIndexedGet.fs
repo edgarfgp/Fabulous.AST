@@ -27,7 +27,7 @@ module DotIndexedGet =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 a.[d]
 a.[d]

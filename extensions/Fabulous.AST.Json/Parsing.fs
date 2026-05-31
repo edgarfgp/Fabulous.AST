@@ -137,9 +137,10 @@ module Parsing =
         elif Char.IsDigit(name[0]) then
             "_" + name
         elif fsharpKeywords.Contains(name) || requiresBacktickEscaping name then
-            // Escape any existing backticks by doubling them
-            let escaped = name.Replace("``", "````")
-            "``" + escaped + "``"
+            // A double-backtick-quoted identifier cannot itself contain backticks,
+            // so replace any with underscores before quoting.
+            let safe = name.Replace("`", "_")
+            "``" + safe + "``"
         else
             name
 

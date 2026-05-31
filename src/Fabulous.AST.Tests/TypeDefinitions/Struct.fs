@@ -24,7 +24,7 @@ module Struct =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X =
     struct
@@ -50,7 +50,7 @@ type Y =
                 |> _.attribute(Attribute("Struct"))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [<Struct>]

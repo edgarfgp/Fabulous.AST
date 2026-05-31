@@ -36,7 +36,7 @@ module ExceptionDefn =
                 ExceptionDefn("Error9", [ ("a", "string"); ("b", "int") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 exception Error
 exception Error1 of string
@@ -69,7 +69,7 @@ exception Error9 of a: string * b: int
                       } ]
             }
         }
-        |> produces
+        |> producesValid
             """
 exception Error
 exception Error1 of string

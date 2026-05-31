@@ -40,7 +40,7 @@ module ExplicitConstructor =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     new(x, y, z) as this = { X = x; Y = y; Z = z }
@@ -69,7 +69,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(x0, y0, z0) =
     new() = MyClass (0, 0, 0)
@@ -125,7 +125,7 @@ type MyClass(x0, y0, z0) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(x0, y0, z0) =
     new(x) = MyClass (x, 0, 0)
@@ -159,7 +159,7 @@ type MyClass(x0, y0, z0) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(x0, y0, z0) =
     new(x, y, z) = MyClass (x, 0, 0)
@@ -196,7 +196,7 @@ type MyClass(x0, y0, z0) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(x0, y0, z0) =
     /// This is an explicit constructor.
@@ -229,7 +229,7 @@ type MyClass(x0, y0, z0) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(x0, y0, z0) =
     new(x) = MyClass (x, 0, 0)

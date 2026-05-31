@@ -13,7 +13,7 @@ module Namespace =
     [<Fact>]
     let ``Produces a namespace with binding``() =
         Oak() { Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) } }
-        |> produces
+        |> producesValid
             """
 namespace Fabulous.AST
 
@@ -27,7 +27,7 @@ let x = 3
 
             Namespace("Fabulous.DSL") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) }
         }
-        |> produces
+        |> producesValid
             """
 namespace Fabulous.AST
 
@@ -40,7 +40,7 @@ let x = 3
     [<Fact>]
     let ``Produces a global namespace``() =
         Oak() { GlobalNamespace() { TypeDefn("MyClass", UnitPat()) { Member("this.Prop1", String("X")) } } }
-        |> produces
+        |> producesValid
             """
 namespace global
 
@@ -51,7 +51,7 @@ type MyClass() =
     [<Fact>]
     let ``Produces a rec namespace with binding``() =
         Oak() { (Namespace("Fabulous.AST") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(3))) }).toRecursive() }
-        |> produces
+        |> producesValid
             """
 namespace rec Fabulous.AST
 
@@ -85,7 +85,7 @@ let x = 3
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 namespace Fabulous.AST
 
@@ -124,7 +124,7 @@ let x = 12
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 namespace Fabulous
 
@@ -169,7 +169,7 @@ module AST =
                     EscapeHatch(recordType)
             }
         }
-        |> produces
+        |> producesValid
             """
 namespace Json
 

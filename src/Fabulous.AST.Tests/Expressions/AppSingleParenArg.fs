@@ -12,7 +12,7 @@ module AppSingleParenArg =
     [<Fact>]
     let ``AppSingleParenArg expression``() =
         Oak() { AnonymousModule() { AppSingleParenArgExpr("MyClass", ParenExpr(TupleExpr([ "0"; "0"; "0" ]))) } }
-        |> produces
+        |> producesValid
             """
 MyClass (0, 0, 0)
 """

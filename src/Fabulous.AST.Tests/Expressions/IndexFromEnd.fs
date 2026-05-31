@@ -12,7 +12,7 @@ module IndexFromEnd =
     [<Fact>]
     let ``IndexFromEnd expression``() =
         Oak() { AnonymousModule() { IndexFromEndExpr(ConstantExpr(Int(0))) } }
-        |> produces
+        |> producesValid
             """
 ^0
 """

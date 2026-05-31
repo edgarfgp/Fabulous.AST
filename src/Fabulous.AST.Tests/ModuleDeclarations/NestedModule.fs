@@ -14,7 +14,7 @@ module NestedModule =
     let ``Produces a NestedModule``() =
         Oak() { AnonymousModule() { Module("A") { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } } }
 
-        |> produces
+        |> producesValid
             """
 
 module A =
@@ -31,7 +31,7 @@ module A =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 /// I'm a xml comment
@@ -49,7 +49,7 @@ module A =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 [<AutoOpen>]
@@ -91,7 +91,7 @@ module A =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 module A =
@@ -108,7 +108,7 @@ module A =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 module rec A =
@@ -124,7 +124,7 @@ module rec A =
                 |> _.toPrivate()
             }
         }
-        |> produces
+        |> producesValid
             """
 
 module private A =
@@ -140,7 +140,7 @@ module private A =
                 |> _.toInternal()
             }
         }
-        |> produces
+        |> producesValid
             """
 
 module internal A =
@@ -181,7 +181,7 @@ module internal A =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 namespace Fabulous.AST
 
@@ -224,7 +224,7 @@ module Foo =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 namespace Fabulous.AST
 
@@ -246,7 +246,7 @@ module Bar =
                       Module("C") { Value(ConstantPat(Constant("z")), ConstantExpr(Int(3))) } ]
             }
         }
-        |> produces
+        |> producesValid
             """
 module A =
     let x = 1

@@ -18,7 +18,7 @@ module Class =
                 TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), EscapeHatch(expr)) }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name = name
@@ -33,7 +33,7 @@ type Person() =
                 TypeDefn("Person", UnitPat()) { Member(ConstantPat(Constant("this.Name")), ConstantExpr(String "")) }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name = ""
@@ -49,7 +49,7 @@ type Person() =
                 |> _.toPrivate()
             }
         }
-        |> produces
+        |> producesValid
             """
 type private Person() =
     member this.Name = ""
@@ -77,7 +77,7 @@ type private Person() =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name, lastName, age) =
     member this.Name = name
@@ -103,7 +103,7 @@ type Person(name, lastName, age) =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name, lastName, age) =
     member this.Name = name
@@ -128,7 +128,7 @@ type Person(name, lastName, age) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name: string, lastName: string, ?age: int) =
     member this.Name = name
@@ -151,7 +151,7 @@ type Person(name: string, lastName: string, ?age: int) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name: string, age: int) =
     member this.Name = name
@@ -175,7 +175,7 @@ type Person(name: string, age: int) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name: string, age: int) =
     member this.Name = name
@@ -192,7 +192,7 @@ type Person(name: string, age: int) =
                     .attribute(Attribute("Struct"))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Struct>]
 type Person(name: string) =
@@ -210,7 +210,7 @@ type Person(name: string) =
                     .attribute(Attribute("Struct"))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Struct>]
 type Person(name: string) =
@@ -228,7 +228,7 @@ type Person(name: string) =
                     .attributes([ Attribute("Sealed"); Attribute("AbstractClass") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Sealed; AbstractClass>]
 type Person() =
@@ -249,7 +249,7 @@ type Person() =
                       } ]
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name = ""
@@ -272,7 +272,7 @@ type Animal() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(x: int, y: int) =
     do printfn "%d %d" x y
@@ -301,7 +301,7 @@ type MyClass(x: int, y: int) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(dataIn: int) =
     let data = dataIn
@@ -320,7 +320,7 @@ module GenericClass =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person<'a, 'b>() =
     member this.Name = ""
@@ -337,7 +337,7 @@ type Person<'a, 'b>() =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person<'a, 'b>() =
     member this.Name = ""
@@ -354,7 +354,7 @@ type Person<'a, 'b>() =
                 |> _.toRecursive()
             }
         }
-        |> produces
+        |> producesValid
             """
 type Foo() =
     member this.X = 0
@@ -373,7 +373,7 @@ and Bar() =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Struct>]
 type Person<'a, 'b>() =

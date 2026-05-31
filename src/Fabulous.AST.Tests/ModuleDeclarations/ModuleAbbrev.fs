@@ -13,7 +13,7 @@ module ModuleAbbrev =
     let ``Produces a ModuleAbbrev``() =
         Oak() { AnonymousModule() { ModuleAbbrev("SizeType", "()") } }
 
-        |> produces
+        |> producesValid
             """
 
 module SizeType = ()

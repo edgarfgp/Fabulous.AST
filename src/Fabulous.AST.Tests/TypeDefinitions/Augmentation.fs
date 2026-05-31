@@ -17,7 +17,7 @@ module Augmentation =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type DateTime with
     member this.Print = ()
@@ -44,7 +44,7 @@ type DateTime with
                 Function("main", "argv", Constant("0")).attribute(Attribute("EntryPoint"))
             }
         }
-        |> produces
+        |> producesValid
             """
 open Microsoft.FSharp.Core
 
@@ -62,7 +62,7 @@ let main argv = 0
     [<Fact>]
     let ``Produces an augmentation with accessors``() =
         Oak() { AnonymousModule() { Augmentation("A") { Member("this.Y", "this.X") } |> _.toPrivate() } }
-        |> produces
+        |> producesValid
             """
 type private A with
     member this.Y = this.X
@@ -76,7 +76,7 @@ type private A with
                 |> _.xmlDocs([ "This is a test" ])
             }
         }
-        |> produces
+        |> producesValid
             """
 /// This is a test
 type A with
@@ -91,7 +91,7 @@ type A with
                 |> _.attributes([ Attribute("Test") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Test>]
 type A with
@@ -106,7 +106,7 @@ type A with
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
             }
         }
-        |> produces
+        |> producesValid
             """
 type A<'T when 'T: equality> with
     member this.Y = this.X
@@ -120,7 +120,7 @@ type A<'T when 'T: equality> with
                 |> _.typeParams(PostfixList(TyparDecl("'T"), ConstraintSingle("'T", "equality")))
             }
         }
-        |> produces
+        |> producesValid
             """
 type A<'T when 'T: equality> with
     member this.Y = this.X
@@ -142,7 +142,7 @@ type A<'T when 'T: equality> with
             }
             |> _.toImplicit()
         }
-        |> produces
+        |> producesValid
             """
 module Extensions
 

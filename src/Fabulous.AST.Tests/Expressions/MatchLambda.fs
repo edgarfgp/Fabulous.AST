@@ -12,7 +12,7 @@ module MatchLambda =
     [<Fact>]
     let ``let value with a MatchLambda expression``() =
         Oak() { AnonymousModule() { MatchLambdaExpr([ MatchClauseExpr("a", Int(3)) ]) } }
-        |> produces
+        |> producesValid
             """
 function
 | a -> 3
@@ -21,7 +21,7 @@ function
     [<Fact>]
     let ``MatchLambda with single clause overload``() =
         Oak() { AnonymousModule() { MatchLambdaExpr(MatchClauseExpr("x", Int(42))) } }
-        |> produces
+        |> producesValid
             """
 function
 | x -> 42

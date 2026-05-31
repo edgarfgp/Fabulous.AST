@@ -16,7 +16,7 @@ module Trivia =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 // Comment before
 let x = 10
@@ -29,7 +29,7 @@ let x = 10
                 Value("x", "10").triviaBefore([ SingleLine("Comment before"); SingleLine("Another comment") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 // Comment before
 // Another comment
@@ -39,7 +39,7 @@ let x = 10
     [<Fact>]
     let ``Produces line comment before with a new line before``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaBefore([ Newline(); SingleLine("Comment before") ]) } }
-        |> produces
+        |> producesValid
             """
 
 // Comment before
@@ -49,7 +49,7 @@ let x = 10
     [<Fact>]
     let ``Produces line comment before with a new line after``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaBefore([ SingleLine("Comment before"); Newline() ]) } }
-        |> produces
+        |> producesValid
             """
 // Comment before
 
@@ -61,7 +61,7 @@ let x = 10
         Oak() {
             AnonymousModule() { Value("x", "10").triviaBefore([ Newline(); SingleLine("Comment before"); Newline() ]) }
         }
-        |> produces
+        |> producesValid
             """
 
 // Comment before
@@ -85,7 +85,7 @@ let x =// Comment after source code
     [<Fact>]
     let ``Produces block comment before``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaBefore([ BlockComment("Comment before") ]) } }
-        |> produces
+        |> producesValid
             """
 (*Comment before*) let x = 10
 """
@@ -97,7 +97,7 @@ let x =// Comment after source code
                 Value("x", "10").triviaBefore([ BlockComment("Comment before", newlineBefore = true) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 (*
 Comment before*) let x = 10
@@ -108,7 +108,7 @@ Comment before*) let x = 10
         Oak() {
             AnonymousModule() { Value("x", "10").triviaBefore([ BlockComment("Comment before", newlineAfter = true) ]) }
         }
-        |> produces
+        |> producesValid
             """
 (*Comment before
 *)
@@ -123,7 +123,7 @@ let x = 10
                     .triviaBefore([ BlockComment("Comment before", newlineBefore = true, newlineAfter = true) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 
 (*
@@ -144,7 +144,7 @@ let x = 10
                     )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 (*
@@ -168,7 +168,7 @@ let x = 10
                     )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 (*
@@ -187,7 +187,7 @@ let x = 10
     [<Fact>]
     let ``Produces line comment after``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaAfter([ SingleLine("Comment after") ]) } }
-        |> produces
+        |> producesValid
             """
 let x = 10
 // Comment after
@@ -200,7 +200,7 @@ let x = 10
                 Value("x", "10").triviaAfter([ SingleLine("Comment after"); SingleLine("Another comment") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10
 // Comment after
@@ -210,7 +210,7 @@ let x = 10
     [<Fact>]
     let ``Produces line comment after with a new line before``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaAfter([ Newline(); SingleLine("Comment after") ]) } }
-        |> produces
+        |> producesValid
             """
 let x = 10
 
@@ -220,7 +220,7 @@ let x = 10
     [<Fact>]
     let ``Produces line comment after with a new line after``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaAfter([ SingleLine("Comment after"); Newline() ]) } }
-        |> produces
+        |> producesValid
             """
 let x = 10
 // Comment after
@@ -232,7 +232,7 @@ let x = 10
         Oak() {
             AnonymousModule() { Value("x", "10").triviaAfter([ Newline(); SingleLine("Comment after"); Newline() ]) }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10
 
@@ -247,7 +247,7 @@ let x = 10
                 Value("x", "10").triviaAfter([ LineCommentAfterSourceCode("Comment after source code") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10 // Comment after source code
 """
@@ -255,7 +255,7 @@ let x = 10 // Comment after source code
     [<Fact>]
     let ``Produces block comment after``() =
         Oak() { AnonymousModule() { Value("x", "10").triviaAfter([ BlockComment("Comment after") ]) } }
-        |> produces
+        |> producesValid
             """
 let x = 10 (*Comment after*)
 """
@@ -265,7 +265,7 @@ let x = 10 (*Comment after*)
         Oak() {
             AnonymousModule() { Value("x", "10").triviaAfter([ BlockComment("Comment after", newlineBefore = true) ]) }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10
 (*
@@ -277,7 +277,7 @@ Comment after*)
         Oak() {
             AnonymousModule() { Value("x", "10").triviaAfter([ BlockComment("Comment after", newlineAfter = true) ]) }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10 (*Comment after
 *)
@@ -291,7 +291,7 @@ let x = 10 (*Comment after
                     .triviaAfter([ BlockComment("Comment after", newlineBefore = true, newlineAfter = true) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10
 (*
@@ -310,7 +310,7 @@ Comment after
                     )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10
 
@@ -334,7 +334,7 @@ Comment after
                     )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10
 
@@ -364,7 +364,7 @@ Another comment
                     )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 10
 
@@ -397,7 +397,7 @@ Another comment
                     .triviaBefore(Directive("#r \"nuget: Fantomas.Core.SyntaxOak\""))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Comment before
 let x = 1

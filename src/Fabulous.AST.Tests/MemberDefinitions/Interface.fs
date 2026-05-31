@@ -32,7 +32,7 @@ module InterfaceMembers =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 type IMyInterface =
     abstract GetValue: unit -> string
@@ -73,7 +73,7 @@ type Colors<'other> =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type IMyInterface =
@@ -101,7 +101,7 @@ type MyRecord =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Meh =
     abstract Name: string
@@ -139,7 +139,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type IFoo =
     abstract Name: string
@@ -183,7 +183,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type IMyInterface =
     abstract GetValue: unit -> string

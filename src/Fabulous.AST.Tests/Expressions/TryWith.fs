@@ -59,7 +59,7 @@ with
                 TryWithExpr("computeValue()", [ MatchClauseExpr("ex", ConstantExpr(Int(-1))) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 try
     compute 10
@@ -91,7 +91,7 @@ with
                 TryWithExpr("computeValue()", "ex", ConstantExpr(Int(-1)))
             }
         }
-        |> produces
+        |> producesValid
             """
 try
     parseInput "input"
@@ -136,7 +136,7 @@ with
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 try
     parseInput "input"
@@ -182,7 +182,7 @@ with
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 try
     try
@@ -214,7 +214,7 @@ with
                 TryWithExpr("computeValue()", MatchClauseExpr("ex", ConstantExpr(Int(-1))))
             }
         }
-        |> produces
+        |> producesValid
             """
 try
     compute 10

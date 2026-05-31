@@ -20,6 +20,37 @@ module Record =
 
             let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
 
+            // Accessibility modifiers are not permitted on individual record fields;
+            // F# only allows accessibility on the whole representation. Lift any
+            // field-level accessibility onto the record (most restrictive wins) and
+            // strip it from the fields.
+            let fieldAccessibility =
+                fields
+                |> List.choose(fun field -> field.Accessibility)
+                |> List.sortBy(fun node ->
+                    match node.Text with
+                    | "private" -> 0
+                    | "internal" -> 1
+                    | _ -> 2)
+                |> List.tryHead
+
+            let fields =
+                fields
+                |> List.map(fun field ->
+                    match field.Accessibility with
+                    | None -> field
+                    | Some _ ->
+                        FieldNode(
+                            field.XmlDoc,
+                            field.Attributes,
+                            field.LeadingKeyword,
+                            field.MutableKeyword,
+                            None,
+                            field.Name,
+                            field.Type,
+                            Range.Zero
+                        ))
+
             let members =
                 Widgets.tryGetNodesFromWidgetCollection widget TypeDefn.Members
                 |> ValueOption.defaultValue []
@@ -53,7 +84,7 @@ module Record =
                 | Public -> Some(SingleTextNode.``public``)
                 | Private -> Some(SingleTextNode.``private``)
                 | Internal -> Some(SingleTextNode.``internal``)
-                | Unknown -> None
+                | Unknown -> fieldAccessibility
 
             TypeDefn.Record(
                 TypeDefnRecordNode(

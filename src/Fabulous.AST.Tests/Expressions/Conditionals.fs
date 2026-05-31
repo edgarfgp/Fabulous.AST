@@ -32,7 +32,7 @@ module IfThen =
             )
 
         Oak() { AnonymousModule() { IfThenExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr)) } }
-        |> produces
+        |> producesValid
             """
 
 if x = 12 then
@@ -78,7 +78,7 @@ if x = 12 then
 
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let res =
@@ -108,7 +108,7 @@ let res3 =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 if x = 12 then
@@ -200,7 +200,7 @@ module IfThenElif =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 if x = 12 then
     ()
@@ -226,7 +226,7 @@ elif x = 11 then
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 if x = 12 then ()
 elif x = 11 then ()
@@ -274,7 +274,7 @@ else ()
             )
 
         Oak() { AnonymousModule() { IfThenElseExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr), EscapeHatch(elseExpr)) } }
-        |> produces
+        |> producesValid
             """
 
     if x = 12 then () else ()
@@ -292,7 +292,7 @@ else ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 if x = 12 then () else ()

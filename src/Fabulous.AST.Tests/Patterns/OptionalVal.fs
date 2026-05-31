@@ -12,7 +12,7 @@ module OptionalVal =
     [<Fact>]
     let ``let value with a OptionalVal pattern``() =
         Oak() { AnonymousModule() { Value(OptionalValPat("a"), ConstantExpr(Int(12))) } }
-        |> produces
+        |> producesValid
             """
 let a = 12
 """

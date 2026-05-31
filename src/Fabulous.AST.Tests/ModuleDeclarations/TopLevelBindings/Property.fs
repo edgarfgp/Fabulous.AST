@@ -32,7 +32,7 @@ module PropertyMember =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -73,7 +73,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -99,7 +99,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -119,7 +119,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -145,7 +145,7 @@ type Colors =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type Colors<'other> =
@@ -173,7 +173,7 @@ type Colors<'other> =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type Colors<'other> =
@@ -197,7 +197,7 @@ type Colors<'other> =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name1 = "name"
@@ -217,7 +217,7 @@ type Person() =
                 |> _.typeParams(PostfixList([ "'other" ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person<'other>() =
     member this.Name1 = "name"
@@ -235,7 +235,7 @@ type Person<'other>() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     /// This is a comment
@@ -266,7 +266,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member public this.Name = "name"
@@ -286,7 +286,7 @@ type Person() =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name: int = 23
@@ -301,7 +301,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member inline this.Name = "name"
@@ -318,7 +318,7 @@ type Person() =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     [<Obsolete>]
@@ -335,7 +335,7 @@ type Person() =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person =
     { Name: string }
@@ -356,7 +356,7 @@ type Person =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person<'other> =
     { Name: 'other }
@@ -373,7 +373,7 @@ type Person<'other> =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person =
     | Name
@@ -392,7 +392,7 @@ type Person =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person =
     | Name
@@ -419,7 +419,7 @@ type Person =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Colors<'other> =
     | Red of a: string * b: 'other
@@ -449,7 +449,7 @@ type Colors<'other> =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Colors<'other> =
     | Red of a: string * b: 'other
@@ -471,7 +471,7 @@ type Colors<'other> =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0
@@ -490,7 +490,7 @@ type Object3D() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0
@@ -509,7 +509,7 @@ type Object3D() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0
@@ -528,7 +528,7 @@ type Object3D() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0
@@ -547,7 +547,7 @@ type Object3D() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0
@@ -566,7 +566,7 @@ type Object3D() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0
@@ -585,7 +585,7 @@ type Object3D() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0
@@ -604,7 +604,7 @@ type Object3D() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     let mutable _position = 0.0

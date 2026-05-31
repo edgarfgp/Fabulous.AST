@@ -12,7 +12,7 @@ module NamedParenStarIdent =
     [<Fact>]
     let ``let value with a NamedParenStarIdent pattern``() =
         Oak() { AnonymousModule() { Value(NamedParenStarIdentPat("a"), ConstantExpr(Int(12))) } }
-        |> produces
+        |> producesValid
             """
 let ( a ) = 12
 """

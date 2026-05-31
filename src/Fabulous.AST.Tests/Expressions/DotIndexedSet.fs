@@ -29,7 +29,7 @@ module DotIndexedSet =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 a.[c] <- d
 a.[c] <- d

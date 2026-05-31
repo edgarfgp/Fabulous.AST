@@ -11,7 +11,7 @@ module Measures =
     [<Fact>]
     let ``Basic measure``() =
         Oak() { AnonymousModule() { ConstantExpr(ConstantMeasure(Constant("1.0"), MeasureSingle("cm"))) } }
-        |> produces
+        |> producesValid
             """
 1.0<cm>
 """
@@ -19,7 +19,7 @@ module Measures =
     [<Fact>]
     let ``Integer with measure``() =
         Oak() { AnonymousModule() { ConstantExpr(ConstantMeasure(Int(42), MeasureSingle("kg"))) } }
-        |> produces
+        |> producesValid
             """
 42<kg>
 """
@@ -27,7 +27,7 @@ module Measures =
     [<Fact>]
     let ``Float with measure``() =
         Oak() { AnonymousModule() { ConstantExpr(ConstantMeasure(Float(3.14), MeasureSingle("rad"))) } }
-        |> produces
+        |> producesValid
             """
 3.14<rad>
 """
@@ -43,7 +43,7 @@ module Measures =
     [<Fact>]
     let ``Measure division``() =
         Oak() { AnonymousModule() { ConstantExpr(ConstantMeasure(Float(55.0), MeasureDivide("km", "h"))) } }
-        |> produces
+        |> producesValid
             """
 55.0<km / h>
 """
@@ -51,7 +51,7 @@ module Measures =
     [<Fact>]
     let ``Measure multiplication (operator)``() =
         Oak() { AnonymousModule() { ConstantExpr(ConstantMeasure(Int(10), MeasureOperator("*", "N", "m"))) } }
-        |> produces
+        |> producesValid
             """
 10<N * m>
 """
@@ -63,7 +63,7 @@ module Measures =
                 ConstantExpr(ConstantMeasure(Double(42.0), MeasureSeq([ "kg"; "*"; "m"; "/"; "s"; "^"; "2" ])))
             }
         }
-        |> produces
+        |> producesValid
             """
 42.0<kg * m / s ^ 2>
 """
@@ -75,7 +75,7 @@ module Measures =
                 ConstantExpr(ConstantMeasure(Float(100.0), MeasurePower(MeasureSingle("m"), Integer("2"))))
             }
         }
-        |> produces
+        |> producesValid
             """
 100.0<m^2>
 """
@@ -87,7 +87,7 @@ module Measures =
                 ConstantExpr(ConstantMeasure(Float(10.0), MeasureSeq([ MeasurePower("s", Negate(Integer("1"))) ])))
             }
         }
-        |> produces
+        |> producesValid
             """
 10.0<s^-1>
 """
@@ -97,7 +97,7 @@ module Measures =
         Oak() {
             AnonymousModule() { ConstantExpr(ConstantMeasure(Float(2.0), MeasurePower("L", Rational("1", "/", "2")))) }
         }
-        |> produces
+        |> producesValid
             """
 2.0<L^(1/2)>
 """
@@ -111,7 +111,7 @@ module Measures =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 5.0<(J / K)>
 """
@@ -147,7 +147,7 @@ module Measures =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Measure>]
 type m
@@ -181,7 +181,7 @@ let acceleration: float<m / s^2> = 9.81<m / s^2>
                 Value("minutesFromSeconds", InfixAppExpr("seconds", "/", Float(60.0)), AppPrefix(Float(), "min"))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Measure>]
 type s
@@ -221,7 +221,7 @@ let minutesFromSeconds: float<min> = seconds / 60.0
                 Value("force", InfixAppExpr("mass", "*", "acceleration"), AppPrefix(Float(), "N"))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Measure>]
 type m

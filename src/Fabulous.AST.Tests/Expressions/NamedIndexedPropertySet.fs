@@ -27,7 +27,7 @@ module NamedIndexedPropertySet =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 a c <- d
 a c <- d

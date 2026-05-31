@@ -19,7 +19,7 @@ module PrefixApp =
                 PrefixAppExpr("?getPropertyValue", "--statusBarHeight")
             }
         }
-        |> produces
+        |> producesValid
             """
 ?getPropertyValue --statusBarHeight
 ?getPropertyValue --statusBarHeight

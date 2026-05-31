@@ -25,7 +25,7 @@ module NamedComputation =
                 NamedComputationExpr("task", "a")
             }
         }
-        |> produces
+        |> producesValid
             """
 task { "a" }
 task { return"a" }
@@ -46,7 +46,7 @@ task { a }
                 SeqExpr([ "1"; "2" ])
             }
         }
-        |> produces
+        |> producesValid
             """
 seq {
     "a"

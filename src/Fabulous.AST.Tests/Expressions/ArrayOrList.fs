@@ -19,7 +19,7 @@ module ArrayOrList =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = [| 1; 2; 3 |]
@@ -35,7 +35,7 @@ let x = [| 1; 2; 3 |]
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = [ 1; 2; 3 ]
@@ -49,7 +49,7 @@ let x = [ 1; 2; 3 ]
                 ListExpr([ TripleNumberIndexRangeExpr("-24.0", "-1.0", "-30.0") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [| -24.0 .. -1.0 .. -30.0 |]
@@ -77,7 +77,7 @@ let x = [ hello; world; ! ]
     [<Fact>]
     let ``Array expression with constant widgets``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ArrayExpr([ Int 1; Int 2; Int 3 ])) } }
-        |> produces
+        |> producesValid
             """
 
 let x = [| 1; 2; 3 |]
@@ -86,7 +86,7 @@ let x = [| 1; 2; 3 |]
     [<Fact>]
     let ``List expression with constant widgets``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ListExpr([ Int 1; Int 2; Int 3 ])) } }
-        |> produces
+        |> producesValid
             """
 
 let x = [ 1; 2; 3 ]
@@ -95,7 +95,7 @@ let x = [ 1; 2; 3 ]
     [<Fact>]
     let ``Empty array expression``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), EmptyArrayExpr()) } }
-        |> produces
+        |> producesValid
             """
 
 let x = [||]
@@ -104,7 +104,7 @@ let x = [||]
     [<Fact>]
     let ``Empty list expression``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), EmptyListExpr()) } }
-        |> produces
+        |> producesValid
             """
 
 let x = []
@@ -124,7 +124,7 @@ let x = []
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = [| 1; a; 2 + 3 |]
@@ -144,7 +144,7 @@ let x = [| 1; a; 2 + 3 |]
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = [ 1; a; 2 + 3 ]
@@ -160,7 +160,7 @@ let x = [ 1; a; 2 + 3 ]
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = [| 1; [ 2; 3 ] |]
@@ -176,7 +176,7 @@ let x = [| 1; [ 2; 3 ] |]
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = [ 1; [| 2; 3 |] ]
@@ -192,7 +192,7 @@ let x = [ 1; [| 2; 3 |] ]
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let result = Array.sum [| 1; 2; 3 |]
@@ -208,7 +208,7 @@ let result = Array.sum [| 1; 2; 3 |]
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let result = List.sum [ 1; 2; 3 ]

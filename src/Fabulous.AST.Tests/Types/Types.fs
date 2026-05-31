@@ -72,7 +72,7 @@ module Types =
                 Value(ConstantPat(Constant "t"), ConstantExpr(Constant "obj"), Obj())
             }
         }
-        |> produces
+        |> producesValid
             """
 let a: bool = false
 let b: byte = 0uy
@@ -198,7 +198,7 @@ let c: int -> string = false
 
             }
         }
-        |> produces
+        |> producesValid
             """
 let a: string option = false
 let b: string option = false
@@ -273,7 +273,7 @@ let n: string[][] = false
                 Value(ConstantPat(Constant("v")), ConstantExpr(Bool(false)), TaskPrefix(String()))
             }
         }
-        |> produces
+        |> producesValid
             """
 let a: option<string> = false
 let b: option<string> = false
@@ -429,7 +429,7 @@ let v: Task<string> = false
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 type Class1<'T when 'T :> System.Exception> = class end
 type Class11<'T when 'T :> System.Exception> = class end
@@ -476,7 +476,7 @@ type Class14<'T, 'U when 'T: equality and 'U: equality> = class end
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let test (env: 't & #System.Numerics.INumber<'t> & #IEquatable<'t>) = ()
 """
@@ -497,7 +497,7 @@ let test (env: 't & #System.Numerics.INumber<'t> & #IEquatable<'t>) = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let test (env: #ILogger1: #ILogger2) = ()
 """

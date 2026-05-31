@@ -19,7 +19,7 @@ module Tuple =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 1, 2, 3
@@ -35,7 +35,7 @@ let x = 1, 2, 3
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = (1, 2, 3)

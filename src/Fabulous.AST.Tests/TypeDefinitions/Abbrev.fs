@@ -15,7 +15,7 @@ module Abbrev =
     let ``Produces type Abbrev``() =
         Oak() { AnonymousModule() { Abbrev("MyInt", Int()) } }
 
-        |> produces
+        |> producesValid
             """
 
 type MyInt = int
@@ -31,7 +31,7 @@ type MyInt = int
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type SizeType = uint32
@@ -50,7 +50,7 @@ type Transform<'a> = 'a -> 'a
             }
         }
 
-        |> produces
+        |> producesValid
             """
 open System
 
@@ -62,7 +62,7 @@ type MyInt = int
     [<Fact>]
     let ``Produces type Abbrev with xml comments``() =
         Oak() { AnonymousModule() { Abbrev("MyInt", Int()).xmlDocs([ "hello world" ]) } }
-        |> produces
+        |> producesValid
             """
 /// hello world
 type MyInt = int
@@ -72,7 +72,7 @@ type MyInt = int
     [<Fact>]
     let ``Produces type Abbrev with multiple xml comments``() =
         Oak() { AnonymousModule() { Abbrev("MyInt", Int()).xmlDocs([ "First comment"; "Second comment" ]) } }
-        |> produces
+        |> producesValid
             """
 /// First comment
 /// Second comment
@@ -109,7 +109,7 @@ type MyInt = int
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type MyInt = int
@@ -153,7 +153,7 @@ type MyFloat = float
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type MyInt = int
@@ -172,7 +172,7 @@ type MyFloat = float
                 |> _.toRecursive()
             }
         }
-        |> produces
+        |> producesValid
             """
 type Tree = | Leaf
 and Forest = list<Tree>
@@ -188,7 +188,7 @@ and Forest = list<Tree>
                       Abbrev("MyFloat", Float()) ]
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyInt = int
 type MyString = string

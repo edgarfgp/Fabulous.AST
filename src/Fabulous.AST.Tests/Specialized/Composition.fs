@@ -55,7 +55,7 @@ module Composition =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 /// Shape with measurable area and perimeter.
 type IShape =
@@ -103,7 +103,7 @@ type Circle(radius: float) =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 /// A computation that may fail with a typed error.
 type Result<'T, 'E> =
@@ -150,7 +150,7 @@ let tryDivide x y =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type IFormattable =
     abstract Format: unit -> string
@@ -196,7 +196,7 @@ type Person =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 namespace MyApp.Domain
 
@@ -229,7 +229,7 @@ module Money =
                 |> _.toRecursive()
             }
         }
-        |> produces
+        |> producesValid
             """
 type Tree<'a> =
     | Leaf

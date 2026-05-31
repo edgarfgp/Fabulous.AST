@@ -12,7 +12,7 @@ module While =
     [<Fact>]
     let ``let value with a WhileExpr expression``() =
         Oak() { AnonymousModule() { WhileExpr(ConstantExpr(Bool(true)), ConstantExpr(Int(0))) } }
-        |> produces
+        |> producesValid
             """
 while true do
     0
@@ -28,7 +28,7 @@ while true do
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 while true do
     0 |> ignore
@@ -48,7 +48,7 @@ while true do
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 while true do
     printfn ""
@@ -63,7 +63,7 @@ while true do
                 WhileExpr(ConstantExpr(Bool(true)), CompExprBodyExpr([ "printfn \"\""; "printfn \"\""; "0 |> ignore" ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 while true do
     printfn ""
@@ -74,7 +74,7 @@ while true do
     [<Fact>]
     let ``WhileExpr with Constant condition and Expr body``() =
         Oak() { AnonymousModule() { WhileExpr(Bool(true), AppExpr("doSomething", ConstantExpr("()"))) } }
-        |> produces
+        |> producesValid
             """
 while true do
     doSomething ()
@@ -83,7 +83,7 @@ while true do
     [<Fact>]
     let ``WhileExpr with string condition and Expr body``() =
         Oak() { AnonymousModule() { WhileExpr("condition()", AppExpr("doSomething", ConstantExpr("()"))) } }
-        |> produces
+        |> producesValid
             """
 while condition() do
     doSomething ()
@@ -92,7 +92,7 @@ while condition() do
     [<Fact>]
     let ``WhileExpr with Expr condition and Constant body``() =
         Oak() { AnonymousModule() { WhileExpr(AppExpr("shouldContinue", ConstantExpr("()")), Int(0)) } }
-        |> produces
+        |> producesValid
             """
 while shouldContinue () do
     0
@@ -101,7 +101,7 @@ while shouldContinue () do
     [<Fact>]
     let ``WhileExpr with Expr condition and string body``() =
         Oak() { AnonymousModule() { WhileExpr(AppExpr("shouldContinue", ConstantExpr("()")), "processNext()") } }
-        |> produces
+        |> producesValid
             """
 while shouldContinue () do
     processNext()

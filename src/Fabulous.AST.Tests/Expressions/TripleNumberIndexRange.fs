@@ -12,7 +12,7 @@ module TripleNumberIndexRange =
     [<Fact>]
     let ``TripleNumberIndexRange expression``() =
         Oak() { AnonymousModule() { TripleNumberIndexRangeExpr("1", "2", "3") } }
-        |> produces
+        |> producesValid
             """
 1..2..3
 """

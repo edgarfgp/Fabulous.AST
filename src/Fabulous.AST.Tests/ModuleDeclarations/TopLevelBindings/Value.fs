@@ -21,7 +21,7 @@ module Value =
     [<InlineData("some value", "``some value``")>]
     let ``Produces a let binding with auto-escaped identifier`` (value: string) (expected: string) =
         Oak() { AnonymousModule() { Value(value, ConstantExpr(Int(12))) } }
-        |> produces
+        |> producesValid
             $$"""
 
 let {{expected}} = 12
@@ -30,7 +30,7 @@ let {{expected}} = 12
     [<Fact>]
     let ``Value with string name and constant auto-escapes identifiers``() =
         Oak() { AnonymousModule() { Value("some value", Int(42)) } }
-        |> produces
+        |> producesValid
             """
 
 let ``some value`` = 42
@@ -47,7 +47,7 @@ let ``some value`` = 42
                 Use(ConstantPat(Constant("x")), Int(12))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 12
@@ -76,7 +76,7 @@ use x = 12
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 namespace Gdmt.Launcher
@@ -96,7 +96,7 @@ module Subcommands =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x, y, z = 1, 2, 3
@@ -113,7 +113,7 @@ let x, y, z = 1, 2, 3
                 Value(ConstantPat(Constant("z")), ConstantExpr(TripleQuotedString(Int(12))))
             }
         }
-        |> produces
+        |> producesValid
             "
 let x: int = 12
 let y = @\"12\"
@@ -141,7 +141,7 @@ let z = \"\"\"12\"\"\"
                 Value(ConstantPat(Constant("c")), ConstantExpr(Int(12)), HashConstraint(LongIdent("int")))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x: int = 12
@@ -156,7 +156,7 @@ let c: #int = 12
     [<Fact>]
     let ``Simple Let binding with an expression``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))) } }
-        |> produces
+        |> producesValid
             """
 
 let x = 12
@@ -173,7 +173,7 @@ let x = 12
                     .typeParams(PostfixList([ TyparDecl("'a"); TyparDecl("'b"); TyparDecl("'c") ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x<'T> = 12
@@ -193,7 +193,7 @@ let x<'a, 'b, 'c> = 12
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).typeParams(PostfixList([ "'a"; "'b"; "'c" ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x<'T> = 12
 let x<'a, 'b, 'c> = 12
@@ -203,7 +203,7 @@ let x<'a, 'b, 'c> = 12
     [<Fact>]
     let ``Simple Let private binding``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toPrivate() } }
-        |> produces
+        |> producesValid
             """
 
 let private x = 12
@@ -213,7 +213,7 @@ let private x = 12
     [<Fact>]
     let ``Simple Let internal binding``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toInternal() } }
-        |> produces
+        |> producesValid
             """
 
 let internal x = 12
@@ -227,7 +227,7 @@ let internal x = 12
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).xmlDocs([ "This is a comment" ])
             }
         }
-        |> produces
+        |> producesValid
             """
 
 /// This is a comment
@@ -248,7 +248,7 @@ let x = 12
 
             }
         }
-        |> produces
+        |> producesValid
             """
 
 /// This is a fist comment
@@ -266,7 +266,7 @@ let x = 12
 
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Obsolete>]
 let x = 12
@@ -282,7 +282,7 @@ let x = 12
 
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [<EditorBrowsable; Obsolete>]
@@ -317,7 +317,7 @@ let x = 12
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 12
@@ -351,7 +351,7 @@ let x = 12
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 12
@@ -361,7 +361,7 @@ let x = 12
     [<Fact>]
     let ``Produces a top level mutable let binding``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toMutable() } }
-        |> produces
+        |> producesValid
             """
 
 let mutable x = 12
@@ -371,7 +371,7 @@ let mutable x = 12
     [<Fact>]
     let ``Produces a top level mutable let binding with return type``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12)), Int()).toMutable() } }
-        |> produces
+        |> producesValid
             """
 
 let mutable x: int = 12
@@ -381,7 +381,7 @@ let mutable x: int = 12
     [<Fact>]
     let ``Produces a top level mutable let binding with an expression``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).toMutable() } }
-        |> produces
+        |> producesValid
             """
 
 let mutable x = 12
@@ -397,7 +397,7 @@ let mutable x = 12
                     .typeParams(PostfixList(TyparDecl("'a")))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let inline x<'a> = 12
@@ -431,7 +431,7 @@ let inline x<'a> = 12
                 Value(ConstantPat(Constant("res5")), AppLongIdentAndSingleParenArgExpr([ "conn"; "Open" ], "()"))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let res = conn.Open()
@@ -451,7 +451,7 @@ let res5 = conn.Open ()
                       Value(ConstantPat(Constant("z")), ConstantExpr(Int(3))) ]
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 1
 let y = 2
@@ -465,7 +465,7 @@ let z = 3
     [<Fact>]
     let ``Value(string, WidgetBuilder<Expr>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", ConstantExpr(Int(42))) } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value`` = 42
@@ -475,7 +475,7 @@ let ``my value`` = 42
     [<Fact>]
     let ``Value(string, WidgetBuilder<Expr>, WidgetBuilder<Type>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", ConstantExpr(Int(42)), Int()) } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value``: int = 42
@@ -485,7 +485,7 @@ let ``my value``: int = 42
     [<Fact>]
     let ``Value(string, WidgetBuilder<Expr>, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", ConstantExpr(Int(42)), "int") } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value``: int = 42
@@ -495,7 +495,7 @@ let ``my value``: int = 42
     [<Fact>]
     let ``Value(string, WidgetBuilder<Constant>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", Int(42)) } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value`` = 42
@@ -505,7 +505,7 @@ let ``my value`` = 42
     [<Fact>]
     let ``Value(string, WidgetBuilder<Constant>, WidgetBuilder<Type>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", Int(42), Int()) } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value``: int = 42
@@ -515,7 +515,7 @@ let ``my value``: int = 42
     [<Fact>]
     let ``Value(string, WidgetBuilder<Constant>, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", Int(42), "int") } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value``: int = 42
@@ -525,7 +525,7 @@ let ``my value``: int = 42
     [<Fact>]
     let ``Value(string, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", "42") } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value`` = 42
@@ -535,7 +535,7 @@ let ``my value`` = 42
     [<Fact>]
     let ``Value(string, string, WidgetBuilder<Type>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", "42", Int()) } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value``: int = 42
@@ -545,7 +545,7 @@ let ``my value``: int = 42
     [<Fact>]
     let ``Value(string, string, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Value("my value", "42", "int") } }
-        |> produces
+        |> producesValid
             """
 
 let ``my value``: int = 42
@@ -555,7 +555,7 @@ let ``my value``: int = 42
     [<Fact>]
     let ``Use(string, WidgetBuilder<Expr>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", ConstantExpr(Int(42))) } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource`` = 42
@@ -565,7 +565,7 @@ use ``my resource`` = 42
     [<Fact>]
     let ``Use(string, WidgetBuilder<Expr>, WidgetBuilder<Type>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", ConstantExpr(Int(42)), Int()) } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource``: int = 42
@@ -575,7 +575,7 @@ use ``my resource``: int = 42
     [<Fact>]
     let ``Use(string, WidgetBuilder<Expr>, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", ConstantExpr(Int(42)), "int") } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource``: int = 42
@@ -585,7 +585,7 @@ use ``my resource``: int = 42
     [<Fact>]
     let ``Use(string, WidgetBuilder<Constant>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", Int(42)) } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource`` = 42
@@ -595,7 +595,7 @@ use ``my resource`` = 42
     [<Fact>]
     let ``Use(string, WidgetBuilder<Constant>, WidgetBuilder<Type>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", Int(42), Int()) } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource``: int = 42
@@ -605,7 +605,7 @@ use ``my resource``: int = 42
     [<Fact>]
     let ``Use(string, WidgetBuilder<Constant>, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", Int(42), "int") } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource``: int = 42
@@ -615,7 +615,7 @@ use ``my resource``: int = 42
     [<Fact>]
     let ``Use(string, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", "42") } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource`` = 42
@@ -625,7 +625,7 @@ use ``my resource`` = 42
     [<Fact>]
     let ``Use(string, string, WidgetBuilder<Type>) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", "42", Int()) } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource``: int = 42
@@ -635,7 +635,7 @@ use ``my resource``: int = 42
     [<Fact>]
     let ``Use(string, string, string) auto-escapes identifier``() =
         Oak() { AnonymousModule() { Use("my resource", "42", "int") } }
-        |> produces
+        |> producesValid
             """
 
 use ``my resource``: int = 42
@@ -653,7 +653,7 @@ use ``my resource``: int = 42
     [<InlineData("_underscoreName", "_underscoreName")>]
     let ``Value auto-escapes various identifier types`` (input: string) (expected: string) =
         Oak() { AnonymousModule() { Value(input, Int(1)) } }
-        |> produces
+        |> producesValid
             $$"""
 
 let {{expected}} = 1
@@ -669,7 +669,7 @@ let {{expected}} = 1
     [<InlineData("normalResource", "normalResource")>]
     let ``Use auto-escapes various identifier types`` (input: string) (expected: string) =
         Oak() { AnonymousModule() { Use(input, Int(1)) } }
-        |> produces
+        |> producesValid
             $$"""
 
 use {{expected}} = 1

@@ -21,7 +21,7 @@ module ImplicitConstructor =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person private (name: string) =
     member this.Name = name
@@ -36,7 +36,7 @@ type Person private (name: string) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person internal (name: string) =
     member this.Name = name
@@ -51,7 +51,7 @@ type Person internal (name: string) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person public (name: string) =
     member this.Name = name
@@ -66,7 +66,7 @@ type Person public (name: string) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name: string) as self =
     member self.Name = name
@@ -81,7 +81,7 @@ type Person(name: string) as self =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person [<Obsolete>] (name: string) =
     member this.Name = name
@@ -96,7 +96,7 @@ type Person [<Obsolete>] (name: string) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person
     /// Creates a new Person

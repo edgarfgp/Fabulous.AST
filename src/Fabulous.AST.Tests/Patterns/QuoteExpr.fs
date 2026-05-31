@@ -12,7 +12,7 @@ module QuoteExpr =
     [<Fact>]
     let ``let value with a QuoteExpr pattern``() =
         Oak() { AnonymousModule() { Value(QuoteExprPat(ConstantExpr(Int(345))), ConstantExpr(Int(12))) } }
-        |> produces
+        |> producesValid
             """
 let <@ 345 @> = 12
 """

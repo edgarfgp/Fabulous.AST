@@ -11,7 +11,7 @@ module AnonymousModule =
     [<Fact>]
     let ``Produces a simple hello world console app``() =
         Oak() { AnonymousModule() { AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String("hello, world"))) } }
-        |> produces
+        |> producesValid
             """
 
 printfn "hello, world"
@@ -29,7 +29,7 @@ printfn "hello, world"
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 let x = "hello, world"
@@ -46,7 +46,7 @@ printfn "%s" x
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 printfn "%s" 0
@@ -58,7 +58,7 @@ printfn "%s" 2
     [<Fact>]
     let ``AnonymousModule inside of top level module``() =
         Oak() { Namespace("MyModule") { AnonymousModule() { () } } |> _.toImplicit() }
-        |> produces
+        |> producesValid
             """
 module MyModule
 """

@@ -12,7 +12,7 @@ module Constant =
     [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantString``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(String("a"))) } }
-        |> produces
+        |> producesValid
             """
 
 let x = "a"
@@ -25,7 +25,7 @@ let x = "a"
                 Value(ConstantPat(Constant("x")), ConstantExpr(ConstantMeasure(Constant("1.0"), MeasureSingle("cm"))))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 1.0<cm>
@@ -48,7 +48,7 @@ let x = 1.0<cm>
                 Value("y", ConstantExpr(ConstantMeasure(Constant("1.0"), MeasureSeq([ "cm"; "/"; "m" ]))))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 1.0<cm / m>
@@ -58,7 +58,7 @@ let y = 1.0<cm / m>
     [<Fact>]
     let ``let value with a ConstantExpr expression with ConstantUnit``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ConstantExpr(ConstantUnit())) } }
-        |> produces
+        |> producesValid
             """
 
 let x = ()
@@ -79,7 +79,7 @@ let x = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 55.0f<miles * hour>
@@ -97,7 +97,7 @@ let x = 55.0f<miles * hour>
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 55.0f<miles / hour>
@@ -119,7 +119,7 @@ let x = 55.0f<miles / hour>
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 55.0f / 1000.0<g / kg>

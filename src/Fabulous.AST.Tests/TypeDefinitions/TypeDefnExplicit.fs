@@ -20,7 +20,7 @@ module TypeDefnExplicit =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass = class end
 
@@ -38,7 +38,7 @@ type MyClass3(name: string) =
     [<Fact>]
     let ``Produces a class end with constructor``() =
         Oak() { AnonymousModule() { ClassEnd("MyClass", UnitPat()) { () } } }
-        |> produces
+        |> producesValid
             """
 type MyClass() = class end
             """
@@ -51,7 +51,7 @@ type MyClass() = class end
 
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Sealed; AbstractClass>]
 type MyClass = class end
@@ -66,7 +66,7 @@ type MyClass = class end
 
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Sealed; AbstractClass>]
 type MyClass(name: string) = class end
@@ -81,7 +81,7 @@ type MyClass(name: string) = class end
                     .typeParams(PostfixList([ "'a" ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Sealed; AbstractClass>]
 type MyClass<'a>(name: string) = class end
@@ -90,7 +90,7 @@ type MyClass<'a>(name: string) = class end
     [<Fact>]
     let ``Produces a class end with type params``() =
         Oak() { AnonymousModule() { ClassEnd("MyClass") { () } |> _.typeParams(PostfixList([ "'a"; "'b" ])) } }
-        |> produces
+        |> producesValid
             """
 type MyClass<'a, 'b> = class end
             """
@@ -98,7 +98,7 @@ type MyClass<'a, 'b> = class end
     [<Fact>]
     let ``Produces a class end with constructor and  type params``() =
         Oak() { AnonymousModule() { (ClassEnd("MyClass", UnitPat()) { () }).typeParams(PostfixList([ "'a"; "'b" ])) } }
-        |> produces
+        |> producesValid
             """
 type MyClass<'a, 'b>() = class end
             """
@@ -107,7 +107,7 @@ module StructEnd =
     [<Fact>]
     let ``Produces a struct end empty constructor``() =
         Oak() { AnonymousModule() { StructEnd("MyClass", UnitPat()) { () } } }
-        |> produces
+        |> producesValid
             """
 type MyClass() = struct end
             """
@@ -124,7 +124,7 @@ type MyClass() = struct end
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(a: string) = struct end
 
@@ -144,7 +144,7 @@ type Y(a: int) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Point(x: int) =
     struct
@@ -156,7 +156,7 @@ module InterfaceEnd =
     [<Fact>]
     let ``Produces an interface end``() =
         Oak() { AnonymousModule() { InterfaceEnd("IFoo") { () } } }
-        |> produces
+        |> producesValid
             """
 type IFoo = interface end
                     """
@@ -164,7 +164,7 @@ type IFoo = interface end
     [<Fact>]
     let ``Produces an interface with members``() =
         Oak() { AnonymousModule() { InterfaceEnd("IMarker") { AbstractMember("Name", String()) } } }
-        |> produces
+        |> producesValid
             """
 type IMarker =
     interface

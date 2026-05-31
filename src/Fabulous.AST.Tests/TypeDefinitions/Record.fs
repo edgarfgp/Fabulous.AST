@@ -18,7 +18,7 @@ module Record =
     [<InlineData("2013", "``2013``")>]
     let ``Produces a record with fields with backticks`` (value: string) (expected: string) =
         Oak() { AnonymousModule() { Record("Person") { Field(value, LongIdent("int")) } } }
-        |> produces
+        |> producesValid
             $$"""
 
 type Person = { {{expected}}: int }
@@ -36,7 +36,7 @@ type Person = { {{expected}}: int }
                     .attribute(Attribute "Serializable")
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [<Serializable>]
@@ -56,7 +56,7 @@ type Colors = { Red: int; Green: int; Blue: int }
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -80,7 +80,7 @@ type Colors =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type Colors<'other> =
@@ -104,7 +104,7 @@ type Colors<'other> =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 [<Struct>]
 type Colors<'other> =
@@ -129,7 +129,7 @@ type Colors<'other> =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 [<Struct; Obsolete>]
 type Colors<'other> =
@@ -157,7 +157,7 @@ type Colors<'other> =
                 |> _.toRecursive()
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person =
     { Name: string
@@ -185,7 +185,7 @@ and Address =
 
         [ "G"; "B" ]
         |> generateModel
-        |> produces
+        |> producesValid
             """
 type R = { X: float }
 type G = { X: float }
@@ -197,7 +197,7 @@ type B = { X: float }
         Oak() {
             AnonymousModule() { Record("Color") { yield! [ Field("R", Int()); Field("G", Int()); Field("B", Int()) ] } }
         }
-        |> produces
+        |> producesValid
             """
 type Color = { R: int; G: int; B: int }
 """
@@ -212,9 +212,9 @@ type Color = { R: int; G: int; B: int }
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
-type Person = { private Name: string; Age: int }
+type Person = private { Name: string; Age: int }
 """
 
     [<Fact>]
@@ -227,9 +227,9 @@ type Person = { private Name: string; Age: int }
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
-type Person = { internal Name: string; Age: int }
+type Person = internal { Name: string; Age: int }
 """
 
     [<Fact>]
@@ -242,7 +242,7 @@ type Person = { internal Name: string; Age: int }
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
-type Person = { public Name: string; Age: int }
+type Person = public { Name: string; Age: int }
 """
