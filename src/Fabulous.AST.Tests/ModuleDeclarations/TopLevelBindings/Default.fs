@@ -18,7 +18,7 @@ module Default =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     abstract GetValue: unit -> string
@@ -35,7 +35,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     abstract GetValue: unit -> string
@@ -53,7 +53,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     abstract GetValue: unit -> string

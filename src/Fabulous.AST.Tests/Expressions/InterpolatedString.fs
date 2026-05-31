@@ -37,7 +37,7 @@ module InterpolatedString =
                 InterpolatedStringExpr([ "12"; "12"; "12" ])
             }
         }
-        |> produces
+        |> producesValid
             """
 $"{12}"
 $"{12}"
@@ -65,7 +65,7 @@ $"{12}{12}{12}"
                 InterpolatedStringExpr([ Expr(FillExpr("12"), 5) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 $"{{12}}"
 $"{{{12}}}"
@@ -133,7 +133,7 @@ $"{{{{{12}}}}}"
 
             }
         }
-        |> produces
+        |> producesValid
             """
 $"%0.3f{System.Math.PI}"
 $"0x%08x{43962}"
@@ -184,7 +184,7 @@ $"{System.DateTime.UtcNow:``yyyy-MM-dd``}"
                 InterpolatedStringExpr([ Text("'{a}'"); Text(" is not a valid number") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 $"This is a test: {12}"
 $"This is a test: {12}"
@@ -237,7 +237,7 @@ $"'{a}' is not a valid number"
                 InterpolatedStringExpr([ Text("'{a}'"); Text(" is not a valid number") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 $"This is a test: {{12}}"
 $"This is a test: {12}"
@@ -510,7 +510,7 @@ $"Multiple {{{{nested}}}} braces with {value}"
                 InterpolatedStringExpr([ Expr(FillExpr(TupleExpr([ "value"; "10" ]), "F2"), 1) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 $"{value, 10}"
 $"{value, -10}"
@@ -567,7 +567,7 @@ $"Conditional: {if condition then "Yes" else "No"}"
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let message1 = $"Hello {name}"
 let message2 = $"Age: {age}"

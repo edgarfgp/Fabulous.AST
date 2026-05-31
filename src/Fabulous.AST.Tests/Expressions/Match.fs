@@ -19,7 +19,7 @@ module Match =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 match [ 1; 2 ] with
@@ -33,7 +33,7 @@ match [ 1; 2 ] with
                 MatchExpr(ConstantExpr(Constant("[ 1; 2 ]")), MatchClauseExpr(NamedPat("a"), ConstantExpr(Int(3))))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 match [ 1; 2 ] with
@@ -58,7 +58,7 @@ match [ 1; 2 ] with
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 match value with
 | Member.C.C7b7df1dc arg1 -> failwith "Not implemented"

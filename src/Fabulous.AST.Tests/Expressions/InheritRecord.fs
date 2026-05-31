@@ -36,7 +36,7 @@ module InheritRecord =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 { inherit Foo() }
 { inherit Foo() }

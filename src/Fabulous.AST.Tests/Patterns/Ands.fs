@@ -18,7 +18,7 @@ module Ands =
                 Value(AndsPat([ "A"; "B" ]), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let A & B = 12

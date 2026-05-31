@@ -25,7 +25,7 @@ module Inherit =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name: string) =
     inherit BaseClass()

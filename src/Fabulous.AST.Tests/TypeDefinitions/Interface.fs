@@ -16,7 +16,7 @@ module Interface =
                 TypeDefn("INumericDotNet") { AbstractMember("Add", [ Int(); Int() ], Int(), true) }
             }
         }
-        |> produces
+        |> producesValid
             """
 type INumericFSharp =
     abstract Add: int -> int -> int
@@ -42,7 +42,7 @@ module GenericInterface =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyInterface<'other, 'another> =
     abstract Add: int -> int -> string -> int

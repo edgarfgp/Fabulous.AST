@@ -12,7 +12,7 @@ module Lambda =
     [<Fact>]
     let ``let value with a Lambda expression``() =
         Oak() { AnonymousModule() { LambdaExpr([ "a" ], "a") } }
-        |> produces
+        |> producesValid
             """
 fun a -> a
 """
@@ -20,7 +20,7 @@ fun a -> a
     [<Fact>]
     let ``let value with a Lambda expression with a constant``() =
         Oak() { AnonymousModule() { LambdaExpr([ Constant("a") ], Int(1)) } }
-        |> produces
+        |> producesValid
             """
 fun a -> 1
 """
@@ -28,7 +28,7 @@ fun a -> 1
     [<Fact>]
     let ``let value with a Lambda expression with a constant list``() =
         Oak() { AnonymousModule() { LambdaExpr([ Constant("a"); Constant("b") ], Int(1)) } }
-        |> produces
+        |> producesValid
             """
 fun a b -> 1
 """
@@ -36,7 +36,7 @@ fun a b -> 1
     [<Fact>]
     let ``let value with a Lambda expression with a constant list and a constant``() =
         Oak() { AnonymousModule() { LambdaExpr([ Constant("a"); Constant("b") ], Constant("c")) } }
-        |> produces
+        |> producesValid
             """
 fun a b -> c
 """

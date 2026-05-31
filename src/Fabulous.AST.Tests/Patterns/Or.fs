@@ -17,7 +17,7 @@ module Or =
                 Value(OrPat("A", "B"), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let A | B = 12
@@ -32,7 +32,7 @@ let A | B = 12
                 Value(OrPat("A", "B"), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let A | B = 12

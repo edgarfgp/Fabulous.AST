@@ -36,7 +36,7 @@ module Chain =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 A.B.C(D).E().F(G).[H]
 """

@@ -17,7 +17,7 @@ module Parameter =
                 Value("a", ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 let a = 12
 let a = 12
@@ -32,7 +32,7 @@ let a = 12
                 Value(ParameterPat("c", "string"), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 let a: string = 12
 let b: string = 12
@@ -42,7 +42,7 @@ let c: string = 12
     [<Fact>]
     let ``let value with a Parameter string pattern``() =
         Oak() { AnonymousModule() { Value(ParameterPat(ConstantPat(Constant "a")), ConstantExpr(Int(12))) } }
-        |> produces
+        |> producesValid
             """
 let a = 12
 """
@@ -54,7 +54,7 @@ let a = 12
                 Value(ParameterPat(ConstantPat(Constant("a")), LongIdent "string"), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 let a: string = 12
 """
@@ -72,7 +72,7 @@ let a: string = 12
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Class([<Obsolete>] c: int) =
     member this.First([<Obsolete>] a: string) = ()
@@ -95,7 +95,7 @@ type Class([<Obsolete>] c: int) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Class([<Obsolete>] a: int, [<Required>] b: string) =
     member this.Value = 0
@@ -114,7 +114,7 @@ type Class([<Obsolete>] a: int, [<Required>] b: string) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Class() =
     member this.Second([<A>] a: string -> int) = ()
@@ -132,7 +132,7 @@ type Class() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Class([<Obsolete; Required>] c: int) =
     member this.Value = 0

@@ -11,7 +11,7 @@ module Paren =
     [<Fact>]
     let ``let value with a expression wrapped parenthesis``() =
         Oak() { AnonymousModule() { Value(ConstantPat(Constant("x")), ParenExpr(ConstantExpr(Int(12)))) } }
-        |> produces
+        |> producesValid
             """
 
 let x = (12)

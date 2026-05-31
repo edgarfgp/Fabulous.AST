@@ -29,7 +29,7 @@ module Single =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = a b

@@ -19,7 +19,7 @@ module TryFinally =
                 TryFinallyExpr(Int(12), FailWithExpr(String("Not implemented")))
             }
         }
-        |> produces
+        |> producesValid
             """
 try
     12
@@ -40,7 +40,7 @@ finally
     [<Fact>]
     let ``TryFinally with Expr value and string finally``() =
         Oak() { AnonymousModule() { TryFinallyExpr(AppExpr("compute", Int(10)), "cleanup()") } }
-        |> produces
+        |> producesValid
             """
 try
     compute 10
@@ -51,7 +51,7 @@ finally
     [<Fact>]
     let ``TryFinally with string value and Constant finally``() =
         Oak() { AnonymousModule() { TryFinallyExpr("compute()", Int(0)) } }
-        |> produces
+        |> producesValid
             """
 try
     compute()

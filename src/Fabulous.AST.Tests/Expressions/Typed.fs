@@ -17,7 +17,7 @@ module Typed =
                 Value(ConstantPat(Constant("x")), TypedExpr("2", ":", "int"))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = 2: int

@@ -18,7 +18,7 @@ module Computation =
                 ComputationExpr "12"
             }
         }
-        |> produces
+        |> producesValid
             """
 { "a" }
 { "a" }

@@ -14,7 +14,7 @@ module LongIdent =
         Oak() {
             AnonymousModule() { Value("x", UnitExpr(), LongIdent([ "System"; "Collections"; "Generic"; "List" ])) }
         }
-        |> produces
+        |> producesValid
             """
 let x: System.Collections.Generic.List = ()
 """
@@ -22,7 +22,7 @@ let x: System.Collections.Generic.List = ()
     [<Fact>]
     let ``Long identifier with single part``() =
         Oak() { AnonymousModule() { Value("x", UnitExpr(), LongIdent("int")) } }
-        |> produces
+        |> producesValid
             """
 let x: int = ()
 """
@@ -57,7 +57,7 @@ let x: int = ()
                 Value("x", UnitExpr(), Null())
             }
         }
-        |> produces
+        |> producesValid
             """
 let a: bool = ()
 let b: byte = ()

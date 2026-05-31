@@ -131,7 +131,7 @@ module PropertyGetSet =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     member this.Position
@@ -223,7 +223,7 @@ type Person(name: string, age: int) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     member this.Position

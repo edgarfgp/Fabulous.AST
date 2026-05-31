@@ -12,7 +12,7 @@ module ParenFunctionNameWithStar =
     [<Fact>]
     let ``ParenFunctionNameWithStar expression``() =
         Oak() { AnonymousModule() { ParenFunctionNameWithStarExpr("a") } }
-        |> produces
+        |> producesValid
             """
 ( a )
 """

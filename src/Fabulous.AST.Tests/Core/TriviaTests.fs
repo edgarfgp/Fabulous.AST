@@ -14,7 +14,7 @@ module TriviaTests =
         Oak() {
             AnonymousModule() { Value("x", ConstantExpr(Int(42)), "int").triviaBefore(SingleLine("This is a comment")) }
         }
-        |> produces
+        |> producesValid
             """
 // This is a comment
 let x: int = 42
@@ -27,7 +27,7 @@ let x: int = 42
                 Value("x", ConstantExpr(Int(42)), "int").triviaAfter(LineCommentAfterSourceCode("This is a comment"))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x: int = 42 // This is a comment
 """
@@ -39,7 +39,7 @@ let x: int = 42 // This is a comment
                 Value("x", ConstantExpr(Int(42)), "int").triviaBefore(BlockComment("This is a block comment"))
             }
         }
-        |> produces
+        |> producesValid
             """
 (*This is a block comment*) let x: int = 42
 """
@@ -52,7 +52,7 @@ let x: int = 42 // This is a comment
                     .triviaBefore(BlockComment("This is a block comment", true, true))
             }
         }
-        |> produces
+        |> producesValid
             """
 (*
 This is a block comment
@@ -77,7 +77,7 @@ let x: int = 42
                 Value("y", ConstantExpr(Int(43)), "int")
             }
         }
-        |> produces
+        |> producesValid
             """
 let x: int = 42
 
@@ -93,7 +93,7 @@ let y: int = 43
                     .triviaBefore([ SingleLine("First comment"); SingleLine("Second comment") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 // First comment
 // Second comment
@@ -108,7 +108,7 @@ let x: int = 42
                     .triviaAfter([ LineCommentAfterSourceCode("First comment"); Newline() ])
             }
         }
-        |> produces
+        |> producesValid
             """
 let x: int = 42 // First comment
 
@@ -141,7 +141,7 @@ let
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let (*Block pattern comment*) 42 = "value"
 """
@@ -156,7 +156,7 @@ let (*Block pattern comment*) 42 = "value"
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let 42 = // After pattern
     "value"
@@ -217,7 +217,7 @@ module ExprTriviaTests =
     [<Fact>]
     let ``Expr trivia before with single line comment``() =
         Oak() { AnonymousModule() { Value("x", ConstantExpr(Int(42)).triviaBefore(SingleLine("Expr comment"))) } }
-        |> produces
+        |> producesValid
             """
 let x =
     // Expr comment
@@ -229,7 +229,7 @@ let x =
         Oak() {
             AnonymousModule() { Value("x", ConstantExpr(Int(42)).triviaBefore(BlockComment("Block expr comment"))) }
         }
-        |> produces
+        |> producesValid
             """
 let x = (*Block expr comment*) 42
 """
@@ -241,7 +241,7 @@ let x = (*Block expr comment*) 42
                 Value("x", ConstantExpr(Int(42)).triviaAfter(LineCommentAfterSourceCode("After expr")))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 42 // After expr
 """
@@ -253,7 +253,7 @@ let x = 42 // After expr
                 Value("x", ConstantExpr(Int(42)).triviaBefore([ SingleLine("First"); SingleLine("Second") ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x =
     // First
@@ -268,7 +268,7 @@ let x =
                 Value("x", ConstantExpr(Int(42)).triviaBefore(TriviaNode(SingleLine("TriviaNode comment"))))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x =
     // TriviaNode comment
@@ -283,7 +283,7 @@ let x =
                 Value("y", ConstantExpr(Int(43)))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x =
     42
@@ -304,7 +304,7 @@ let y = 43
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let result =
     // Conditional expression
@@ -320,7 +320,7 @@ module TypeTriviaTests =
                 Value("x", ConstantExpr(Int(42)), LongIdent("int").triviaBefore(SingleLine("Type comment")))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x
     :
@@ -336,7 +336,7 @@ let x
                 Value("x", ConstantExpr(Int(42)), LongIdent("int").triviaBefore(BlockComment("Block type comment")))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x: (*Block type comment*) int = 42
 """
@@ -352,7 +352,7 @@ let x: (*Block type comment*) int = 42
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x: int // After type
     =
@@ -370,7 +370,7 @@ let x: int // After type
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x
     :
@@ -391,7 +391,7 @@ let x
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x
     :
@@ -409,7 +409,7 @@ module TypeDefnTriviaTests =
                 (Record("Person") { Field("Name", LongIdent("string")) }).triviaBefore(SingleLine("Person record"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Person record
 type Person = { Name: string }
@@ -423,7 +423,7 @@ type Person = { Name: string }
                     .triviaBefore(BlockComment("Block type comment", true, true))
             }
         }
-        |> produces
+        |> producesValid
             """
 (*
 Block type comment
@@ -439,7 +439,7 @@ type Person = { Name: string }
                     .triviaAfter(LineCommentAfterSourceCode("End of Person"))
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person = { Name: string } // End of Person
 """
@@ -452,7 +452,7 @@ type Person = { Name: string } // End of Person
                     .triviaBefore(SingleLine("MyClass definition"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // MyClass definition
 type MyClass() =
@@ -470,7 +470,7 @@ type MyClass() =
                     .triviaBefore(SingleLine("Shape union"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Shape union
 type Shape =
@@ -486,7 +486,7 @@ type Shape =
                     .triviaBefore([ SingleLine("Data record"); SingleLine("More info") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 // Data record
 // More info
@@ -501,7 +501,7 @@ type Data = { Value: int }
                     .triviaBefore(TriviaNode(SingleLine("TriviaNode type def comment")))
             }
         }
-        |> produces
+        |> producesValid
             """
 // TriviaNode type def comment
 type Item = { Id: int }
@@ -518,7 +518,7 @@ type Item = { Id: int }
                     .triviaBefore(SingleLine("Color enum"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Color enum
 type Color =
@@ -538,7 +538,7 @@ module MemberDefnTriviaTests =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     // Value member
@@ -555,7 +555,7 @@ type MyClass() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     (*Block member comment*) member this.Value = 42
@@ -571,7 +571,7 @@ type MyClass() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     member this.Value = 42 // End of Value
@@ -587,7 +587,7 @@ type MyClass() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     // Primary value
@@ -605,7 +605,7 @@ type MyClass() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     // TriviaNode member comment
@@ -625,7 +625,7 @@ type MyClass() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     // X coordinate
@@ -643,7 +643,7 @@ module ModuleDeclTriviaTests =
                 (Module("Inner") { Value("x", ConstantExpr(Int(42))) }).triviaBefore(SingleLine("Inner module"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Inner module
 module Inner =
@@ -658,7 +658,7 @@ module Inner =
                     .triviaBefore(BlockComment("Block module comment", true, true))
             }
         }
-        |> produces
+        |> producesValid
             """
 (*
 Block module comment
@@ -675,7 +675,7 @@ module Inner =
                     .triviaAfter(LineCommentAfterSourceCode("End of Inner"))
             }
         }
-        |> produces
+        |> producesValid
             """
 module Inner =
     let x = 42 // End of Inner
@@ -689,7 +689,7 @@ module Inner =
                     .triviaBefore([ SingleLine("Utility functions"); SingleLine("For internal use") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 // Utility functions
 // For internal use
@@ -705,7 +705,7 @@ module Utils =
                     .triviaBefore(TriviaNode(SingleLine("TriviaNode module comment")))
             }
         }
-        |> produces
+        |> producesValid
             """
 // TriviaNode module comment
 module Core =
@@ -715,7 +715,7 @@ module Core =
     [<Fact>]
     let ``Open declaration with trivia``() =
         Oak() { AnonymousModule() { Open("System").triviaBefore(SingleLine("System namespace")) } }
-        |> produces
+        |> producesValid
             """
 // System namespace
 open System
@@ -728,7 +728,7 @@ open System
                 Value("config", ConstantExpr(String("default"))).triviaBefore(SingleLine("Configuration value"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Configuration value
 let config = "default"
@@ -742,7 +742,7 @@ let config = "default"
                     .triviaBefore(SingleLine("Adds two numbers"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Adds two numbers
 let add a b = a + b
@@ -774,7 +774,7 @@ let add a b = a + b
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyType() =
     member this.MyMethod
@@ -803,7 +803,7 @@ module CombinedTriviaTests =
                     .triviaAfter(LineCommentAfterSourceCode("Comment after"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Comment before
 let x = 42 // Comment after
@@ -821,7 +821,7 @@ let x = 42 // Comment after
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let result =
     // The answer
@@ -861,7 +861,7 @@ let
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x
     :
@@ -880,7 +880,7 @@ let x
                     .triviaAfter(LineCommentAfterSourceCode("End of Person"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Person record definition
 type Person = { Name: string } // End of Person
@@ -897,7 +897,7 @@ type Person = { Name: string } // End of Person
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     // Value property
@@ -913,7 +913,7 @@ type MyClass() =
                     .triviaAfter(LineCommentAfterSourceCode("End of Utils"))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Utility module
 module Utils =
@@ -929,7 +929,7 @@ module Utils =
                     .triviaAfter(Directive("#endif"))
             }
         }
-        |> produces
+        |> producesValid
             """
 #if DEBUG
 let debugValue = 42
@@ -945,7 +945,7 @@ let debugValue = 42
                     .triviaAfter([ LineCommentAfterSourceCode("After comment"); Newline() ])
             }
         }
-        |> produces
+        |> producesValid
             """
 // First comment
 // Second comment
@@ -970,7 +970,7 @@ let x = 42 // After comment
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     member this.Process
@@ -993,7 +993,7 @@ module TriviaNodeAfterTests =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let 42 = // After pattern
     "value"
@@ -1025,7 +1025,7 @@ let 42 // Comment
                 Value("x", ConstantExpr(Int(42)).triviaAfter(TriviaNode(LineCommentAfterSourceCode("After expr"))))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x = 42 // After expr
 """
@@ -1041,7 +1041,7 @@ let x = 42 // After expr
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x =
     42 // Comment
@@ -1059,7 +1059,7 @@ let x =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x: int // After type
     =
@@ -1081,7 +1081,7 @@ let x: int // After type
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x
     : int // Type comment
@@ -1100,7 +1100,7 @@ let x
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     member this.Value = 42 // After member
@@ -1119,7 +1119,7 @@ type MyClass() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass() =
     member this.Value = 42 // Member comment
@@ -1134,7 +1134,7 @@ type MyClass() =
                     .triviaAfter(TriviaNode(LineCommentAfterSourceCode("End of Person")))
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person = { Name: string } // End of Person
 """
@@ -1150,7 +1150,7 @@ type Person = { Name: string } // End of Person
                     )
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person = { Name: string } // Person record
 
@@ -1164,7 +1164,7 @@ type Person = { Name: string } // Person record
                     .triviaAfter(TriviaNode(LineCommentAfterSourceCode("End of Inner")))
             }
         }
-        |> produces
+        |> producesValid
             """
 module Inner =
     let x = 42 // End of Inner
@@ -1181,7 +1181,7 @@ module Inner =
                     )
             }
         }
-        |> produces
+        |> producesValid
             """
 module Inner =
     let x = 42 // Module comment
@@ -1197,7 +1197,7 @@ module Inner =
                     .triviaAfter(TriviaNode(LineCommentAfterSourceCode("After comment")))
             }
         }
-        |> produces
+        |> producesValid
             """
 // Before comment
 let x = 42 // After comment

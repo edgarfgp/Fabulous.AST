@@ -20,7 +20,7 @@ module New =
                 Value(ConstantPat(Constant("x")), NewExpr("MyType", "12"))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = new MyType 12
@@ -37,7 +37,7 @@ let x = new MyType 12
                 Value(ConstantPat(Constant("x")), NewExpr(LongIdent "MyType", ParenExpr(ConstantExpr(Int(12)))))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = new MyType(12)

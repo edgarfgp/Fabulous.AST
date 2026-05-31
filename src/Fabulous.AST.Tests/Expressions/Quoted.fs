@@ -17,7 +17,7 @@ module Quoted =
                 Value(ConstantPat(Constant("x")), QuotedExpr "12")
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = <@ 12 @>

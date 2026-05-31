@@ -26,7 +26,7 @@ module NestedIndexWithoutDot =
                 NestedIndexWithoutDotExpr(Int(1), Constant("c"), IdentExpr("d"))
             }
         }
-        |> produces
+        |> producesValid
             """
 a[c]d
 a[c]d

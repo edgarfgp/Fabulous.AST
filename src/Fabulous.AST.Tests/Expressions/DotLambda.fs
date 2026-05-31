@@ -12,7 +12,7 @@ module DotLambda =
     [<Fact>]
     let ``let value with a DotLambda expression``() =
         Oak() { AnonymousModule() { DotLambdaExpr(ConstantExpr("x")) } }
-        |> produces
+        |> producesValid
             """
 
 _.x
@@ -26,7 +26,7 @@ _.x
                 DotLambdaExpr(String("x"))
             }
         }
-        |> produces
+        |> producesValid
             """
 _.x
 _."x"
@@ -35,7 +35,7 @@ _."x"
     [<Fact>]
     let ``let value with a DotLambda string``() =
         Oak() { AnonymousModule() { DotLambdaExpr("x") } }
-        |> produces
+        |> producesValid
             """
 _.x
 """

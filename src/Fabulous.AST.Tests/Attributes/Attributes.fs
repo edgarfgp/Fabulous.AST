@@ -16,7 +16,7 @@ module AttributesNodes =
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).attribute(Attribute "Obsolete")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Obsolete>]
 let x = 12
@@ -30,7 +30,7 @@ let x = 12
                     .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(String("This is obsolete")))))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Obsolete("This is obsolete")>]
 let x = 12
@@ -44,7 +44,7 @@ let x = 12
                     .attributes([ Attribute("Obsolete", ParenExpr(String("This is obsolete"))) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Obsolete("This is obsolete")>]
 let x = 12
@@ -57,7 +57,7 @@ let x = 12
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).attribute(AttributeTarget("Struct", "return"))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<return: Struct>]
 let x = 12
@@ -78,7 +78,7 @@ let x = 12
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Object3D() =
     [<X>]

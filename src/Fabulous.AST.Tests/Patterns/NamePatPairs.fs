@@ -24,7 +24,7 @@ module NamePatPairsPat =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x (A = B; B = A) = 12
@@ -42,7 +42,7 @@ let x (A = B; B = A) = 12
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x<'a, 'b> (A = B; B = A) = 12

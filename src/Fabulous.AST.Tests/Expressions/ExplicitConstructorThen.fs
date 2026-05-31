@@ -26,7 +26,7 @@ module ExplicitConstructorThen =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type MyClass(x0, y0, z0) =
     new() =

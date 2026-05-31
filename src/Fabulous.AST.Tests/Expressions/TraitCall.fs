@@ -34,7 +34,7 @@ module TraitCall =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 ((^N): (static member Bar: _ -> _) source)
 ((^N): (static member Bar: _ -> _) source)
@@ -54,7 +54,7 @@ module TraitCall =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 ((^I or ^R): (static member Map: ^I * ^F -> ^R) source, mapping)
 """

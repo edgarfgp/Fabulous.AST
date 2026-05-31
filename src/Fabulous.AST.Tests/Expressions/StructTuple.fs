@@ -19,7 +19,7 @@ module StructTuple =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = struct (1, 2, 3)
@@ -35,7 +35,7 @@ let x = struct (1, 2, 3)
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = (struct (1, 2, 3))

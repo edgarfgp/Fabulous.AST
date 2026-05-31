@@ -19,7 +19,7 @@ module AnonStructRecord =
     [<InlineData("2013", "``2013``")>]
     let ``Produces an AnonStructRecordExpr with fields with backticks`` (value: string) (expected: string) =
         Oak() { AnonymousModule() { AnonStructRecordExpr([ RecordFieldExpr(value, ConstantExpr(Int 1)) ]) } }
-        |> produces
+        |> producesValid
             $$"""
 
 struct {| {{expected}} = 1 |}
@@ -29,7 +29,7 @@ struct {| {{expected}} = 1 |}
     [<Fact>]
     let ``AnonStructRecordExpr expression``() =
         Oak() { AnonymousModule() { AnonStructRecordExpr([ RecordFieldExpr("A", ConstantExpr(Int 1)) ]) } }
-        |> produces
+        |> producesValid
             """
 struct {| A = 1 |}
 """
@@ -41,7 +41,7 @@ struct {| A = 1 |}
                 AnonStructRecordExpr(ConstantExpr(Constant "A"), [ RecordFieldExpr("B", ConstantExpr(Int 1)) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 struct {| A with B = 1 |}
 """

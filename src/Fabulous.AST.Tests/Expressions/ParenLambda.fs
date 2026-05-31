@@ -18,7 +18,7 @@ module ParenLambda =
                 ParenLambdaExpr([ Constant("a") ], "a")
             }
         }
-        |> produces
+        |> producesValid
             """
 (fun a -> a)
 (fun a -> a)
@@ -28,7 +28,7 @@ module ParenLambda =
     [<Fact>]
     let ``let value with a ParenLambda expression with a constant``() =
         Oak() { AnonymousModule() { ParenLambdaExpr([ Constant("a") ], Int(1)) } }
-        |> produces
+        |> producesValid
             """
 (fun a -> 1)
 """
@@ -36,7 +36,7 @@ module ParenLambda =
     [<Fact>]
     let ``let value with a ParenLambda expression with a constant list``() =
         Oak() { AnonymousModule() { ParenLambdaExpr([ Constant("a"); Constant("b") ], Int(1)) } }
-        |> produces
+        |> producesValid
             """
 (fun a b -> 1)
 """
@@ -44,7 +44,7 @@ module ParenLambda =
     [<Fact>]
     let ``let value with a ParenLambda expression with a constant list and a constant``() =
         Oak() { AnonymousModule() { ParenLambdaExpr([ Constant("a"); Constant("b") ], Constant("c")) } }
-        |> produces
+        |> producesValid
             """
 (fun a b -> c)
 """

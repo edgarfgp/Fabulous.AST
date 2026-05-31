@@ -17,7 +17,7 @@ module LongIdentSet =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 a <- b
 """
@@ -32,7 +32,7 @@ module Ident =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 a
 """
@@ -47,7 +47,7 @@ module ParenILEmbedded =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 a
 """

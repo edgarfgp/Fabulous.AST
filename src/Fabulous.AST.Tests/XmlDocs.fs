@@ -22,7 +22,7 @@ module XmlDocs =
                     .xmlDocs(Summary("Calculate the volume of a cylinder."))
             }
         }
-        |> produces
+        |> producesValid
             """
 /// <summary>
 /// Calculate the volume of a cylinder.
@@ -54,7 +54,7 @@ let cylinderVolume radius length =
                     .xmlDocs(xmlDocs)
             }
         }
-        |> produces
+        |> producesValid
             """
 /// <summary>
 /// Calculate the volume of a cylinder.
@@ -92,7 +92,7 @@ let cylinderVolume radius length =
                     .xmlDocs(xmlDocs)
             }
         }
-        |> produces
+        |> producesValid
             """
 /// <summary>
 /// Calculate the volume of a cylinder.
@@ -133,7 +133,7 @@ let cylinderVolume radius length =
                     .xmlDocs(xmlDocs)
             }
         }
-        |> produces
+        |> producesValid
             """
 /// <summary>
 /// Calculate the volume of a cylinder.
@@ -176,7 +176,7 @@ let cylinderVolume radius length =
                     .xmlDocs(xmlDocs)
             }
         }
-        |> produces
+        |> producesValid
             """
 /// <summary>
 /// Calculate the volume of a cylinder.
