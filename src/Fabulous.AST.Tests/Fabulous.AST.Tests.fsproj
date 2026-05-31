@@ -139,6 +139,7 @@
         <Compile Include="Specialized\FSharpFeatures.fs" />
         <Compile Include="Specialized\RealWorld.fs" />
         <Compile Include="Specialized\Properties.fs" />
+        <Compile Include="Core\GenParseTests.fs" />
     </ItemGroup>
 
     <ItemGroup>
