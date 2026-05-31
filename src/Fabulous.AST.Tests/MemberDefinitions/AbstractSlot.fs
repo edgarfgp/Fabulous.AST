@@ -43,7 +43,7 @@ module AbstractMembers =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Meh =
     abstract Area: float with get
@@ -78,7 +78,7 @@ type Meh =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Meh =
     [<Obsolete>]
@@ -123,7 +123,7 @@ type Meh =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Meh =
     abstract Area: float with get
@@ -181,7 +181,7 @@ type Meh =
                 |> _.typeParams(PostfixList([ "'other"; "'another" ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 type Meh<'other, 'another> =
     abstract Area: float with get
@@ -233,7 +233,7 @@ type Meh<'other, 'another> =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type IMeh =
     inherit IFoo
@@ -273,7 +273,7 @@ type IMeh =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type IMeh =
     abstract ClientInfo1:
@@ -313,7 +313,7 @@ type IMeh =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type IMeh =
     abstract ClientInfo1:
@@ -326,357 +326,31 @@ type IMeh =
 """
 
     [<Fact>]
-    let ``Abstract member with public get, private set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") { AbstractMember("Y", Int(), true, true, AccessControl.Public, AccessControl.Private) }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Y: int with public get, private set
-"""
-
-    [<Fact>]
-    let ``Abstract member with plain get, private set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") { AbstractMember("Y", Int(), true, true, setterAccessibility = AccessControl.Private) }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Y: int with get, private set
-"""
-
-    [<Fact>]
-    let ``Abstract member with internal get, plain set``() =
-        Oak() { AnonymousModule() { TypeDefn("X") { AbstractMember("Y", Int(), true, true, AccessControl.Internal) } } }
-        |> produces
-            """
-type X =
-    abstract Y: int with internal get, set
-"""
-
-    [<Fact>]
-    let ``Abstract member with public get, internal set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") { AbstractMember("Y", Int(), true, true, AccessControl.Public, AccessControl.Internal) }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Y: int with public get, internal set
-"""
-
-    [<Fact>]
-    let ``Abstract member with internal get, internal set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") { AbstractMember("Y", Int(), true, true, AccessControl.Internal, AccessControl.Internal) }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Y: int with internal get, internal set
-"""
-
-    [<Fact>]
-    let ``Abstract member with public get, public set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") { AbstractMember("Y", Int(), true, true, AccessControl.Public, AccessControl.Public) }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Y: int with public get, public set
-"""
-
-    [<Fact>]
-    let ``Abstract member with plain get, plain set``() =
+    let ``Abstract member with get, set``() =
         Oak() { AnonymousModule() { TypeDefn("X") { AbstractMember("Y", Int(), true, true) } } }
-        |> produces
+        |> producesValid
             """
 type X =
     abstract Y: int with get, set
 """
 
     [<Fact>]
-    let ``Abstract member with internal get, public set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") { AbstractMember("Y", Int(), true, true, AccessControl.Internal, AccessControl.Public) }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Y: int with internal get, public set
-"""
-
-    [<Fact>]
-    let ``Abstract member with public get, plain set``() =
-        Oak() { AnonymousModule() { TypeDefn("X") { AbstractMember("Y", Int(), true, true, AccessControl.Public) } } }
-        |> produces
-            """
-type X =
-    abstract Y: int with public get, set
-"""
-
-    [<Fact>]
-    let ``Abstract member parameters with internal get, private set``() =
+    let ``Abstract member parameters with get, set``() =
         Oak() {
             AnonymousModule() {
                 TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false,
-                        true,
-                        true,
-                        AccessControl.Internal,
-                        AccessControl.Private
-                    )
+                    AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), false, true, true)
 
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        true,
-                        true,
-                        true,
-                        AccessControl.Internal,
-                        AccessControl.Private
-                    )
+                    AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), true, true, true)
 
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X =
-    abstract Add: a: int -> b: int -> int with internal get, private set
-    abstract Add: a: int * b: int -> int with internal get, private set
-"""
-
-    [<Fact>]
-    let ``Abstract member parameters with public get, private set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false,
-                        true,
-                        true,
-                        AccessControl.Public,
-                        AccessControl.Private
-                    )
-
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        true,
-                        true,
-                        true,
-                        AccessControl.Public,
-                        AccessControl.Private
-                    )
-
-                }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Add: a: int -> b: int -> int with public get, private set
-    abstract Add: a: int * b: int -> int with public get, private set
-"""
-
-    [<Fact>]
-    let ``Abstract member parameters with public get, public set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false,
-                        true,
-                        true,
-                        AccessControl.Public,
-                        AccessControl.Public
-                    )
-
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        true,
-                        true,
-                        true,
-                        AccessControl.Public,
-                        AccessControl.Public
-                    )
-
-                }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Add: a: int -> b: int -> int with public get, public set
-    abstract Add: a: int * b: int -> int with public get, public set
-"""
-
-    [<Fact>]
-    let ``Abstract member parameters with internal get, internal set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false,
-                        true,
-                        true,
-                        AccessControl.Internal,
-                        AccessControl.Internal
-                    )
-
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        true,
-                        true,
-                        true,
-                        AccessControl.Internal,
-                        AccessControl.Internal
-                    )
-
-                }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Add: a: int -> b: int -> int with internal get, internal set
-    abstract Add: a: int * b: int -> int with internal get, internal set
-"""
-
-    [<Fact>]
-    let ``Abstract member parameters with public get, internal set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false,
-                        true,
-                        true,
-                        AccessControl.Public,
-                        AccessControl.Internal
-                    )
-
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        true,
-                        true,
-                        true,
-                        AccessControl.Public,
-                        AccessControl.Internal
-                    )
-
-                }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Add: a: int -> b: int -> int with public get, internal set
-    abstract Add: a: int * b: int -> int with public get, internal set
-"""
-
-    [<Fact>]
-    let ``Abstract member parameters with internal get, public set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false,
-                        true,
-                        true,
-                        AccessControl.Internal,
-                        AccessControl.Public
-                    )
-
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        true,
-                        true,
-                        true,
-                        AccessControl.Internal,
-                        AccessControl.Public
-                    )
-
-                }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Add: a: int -> b: int -> int with internal get, public set
-    abstract Add: a: int * b: int -> int with internal get, public set
-"""
-
-    [<Fact>]
-    let ``Abstract member parameters with public get, plain set``() =
-        Oak() {
-            AnonymousModule() {
-                TypeDefn("X") {
-                    AbstractMember(
-                        "Add",
-                        [ ("a", Int()); ("b", Int()) ],
-                        Int(),
-                        false,
-                        true,
-                        true,
-                        AccessControl.Public
-                    )
-
-                    AbstractMember("Add", [ ("a", Int()); ("b", Int()) ], Int(), true, true, true, AccessControl.Public)
-
-                }
-            }
-        }
-        |> produces
-            """
-type X =
-    abstract Add: a: int -> b: int -> int with public get, set
-    abstract Add: a: int * b: int -> int with public get, set
+    abstract Add: a: int -> b: int -> int with get, set
+    abstract Add: a: int * b: int -> int with get, set
 """
 
     [<Fact>]
@@ -691,7 +365,7 @@ type X =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X =
     static abstract Add: a: int -> b: int -> int
@@ -712,7 +386,7 @@ type X =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X =
     /// <summary>
@@ -735,7 +409,7 @@ type X =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X =
     static abstract Area: float with get
