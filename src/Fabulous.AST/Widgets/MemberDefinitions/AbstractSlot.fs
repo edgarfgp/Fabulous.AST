@@ -10,8 +10,7 @@ module AbstractSlot =
     let ReturnType = Attributes.defineWidget "ReturnType"
     let Parameters = Attributes.defineScalar<MethodParamsType> "Parameters"
 
-    let HasGetterSetter =
-        Attributes.defineScalar<(bool * AccessControl) * (bool * AccessControl)> "HasGetterSetter"
+    let HasGetterSetter = Attributes.defineScalar<bool * bool> "HasGetterSetter"
 
     let WidgetKey =
         Widgets.register "AbstractMember" (fun widget ->
@@ -66,7 +65,10 @@ module AbstractSlot =
                 | [] -> returnType
                 | parameters -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
 
-            let withGetSetText = MultipleTextsNode.CreateGetSet(hasGetter, hasSetter)
+            // Abstract slots always have the visibility of the enclosing type;
+            // F# forbids accessibility modifiers on their accessors, so drop them.
+            let withGetSetText =
+                MultipleTextsNode.CreateGetSet((hasGetter, AccessControl.Unknown), (hasSetter, AccessControl.Unknown))
 
             let isStatic =
                 Widgets.tryGetScalarValue widget BindingNode.IsStatic
@@ -106,8 +108,6 @@ module AbstractMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -118,28 +118,17 @@ module AbstractMemberBuilders =
         /// }
         /// </code>
         static member AbstractMember
-            (
-                identifier: string,
-                returnType: WidgetBuilder<Type>,
-                ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
-            ) =
+            (identifier: string, returnType: WidgetBuilder<Type>, ?hasGetter: bool, ?hasSetter: bool)
+            =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             WidgetBuilder<MemberDefn>(
                 AbstractSlot.WidgetKey,
                 AttributesBundle(
                     StackList.two(
                         AbstractSlot.Identifier.WithValue(identifier),
-                        AbstractSlot.HasGetterSetter.WithValue(
-                            (hasGetter, getterAccessibility),
-                            (hasSetter, setterAccessibility)
-                        )
+                        AbstractSlot.HasGetterSetter.WithValue(hasGetter, hasSetter)
                     ),
                     [| AbstractSlot.ReturnType.WithValue(returnType.Compile()) |],
                     Array.empty
@@ -151,8 +140,6 @@ module AbstractMemberBuilders =
         /// <param name="returnType">The return type of the member.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -162,28 +149,11 @@ module AbstractMemberBuilders =
         ///     }
         /// }
         /// </code>
-        static member AbstractMember
-            (
-                identifier: string,
-                returnType: string,
-                ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
-            ) =
+        static member AbstractMember(identifier: string, returnType: string, ?hasGetter: bool, ?hasSetter: bool) =
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
-            Ast.AbstractMember(
-                identifier,
-                Ast.LongIdent(returnType),
-                hasGetter,
-                hasSetter,
-                getterAccessibility,
-                setterAccessibility
-            )
+            Ast.AbstractMember(identifier, Ast.LongIdent(returnType), hasGetter, hasSetter)
 
         /// <summary>Creates an abstract member with parameters.</summary>
         /// <param name="identifier">The identifier of the member.</param>
@@ -192,8 +162,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -210,25 +178,18 @@ module AbstractMemberBuilders =
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             WidgetBuilder<MemberDefn>(
                 AbstractSlot.WidgetKey,
                 AttributesBundle(
                     StackList.three(
                         AbstractSlot.Identifier.WithValue(identifier),
-                        AbstractSlot.HasGetterSetter.WithValue(
-                            (hasGetter, getterAccessibility),
-                            (hasSetter, setterAccessibility)
-                        ),
+                        AbstractSlot.HasGetterSetter.WithValue(hasGetter, hasSetter),
                         AbstractSlot.Parameters.WithValue(UnNamed(parameters, isTupled))
                     ),
                     [| AbstractSlot.ReturnType.WithValue(returnType.Compile()) |],
@@ -243,8 +204,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -261,27 +220,14 @@ module AbstractMemberBuilders =
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             let parameters = parameters |> Seq.map Ast.LongIdent
 
-            Ast.AbstractMember(
-                identifier,
-                parameters,
-                returnType,
-                isTupled,
-                hasGetter,
-                hasSetter,
-                getterAccessibility,
-                setterAccessibility
-            )
+            Ast.AbstractMember(identifier, parameters, returnType, isTupled, hasGetter, hasSetter)
 
         /// <summary>Creates an abstract member with parameters.</summary>
         /// <param name="identifier">The identifier of the member.</param>
@@ -290,8 +236,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -308,27 +252,14 @@ module AbstractMemberBuilders =
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             let returnType = Ast.LongIdent(returnType)
 
-            Ast.AbstractMember(
-                identifier,
-                parameters,
-                returnType,
-                isTupled,
-                hasGetter,
-                hasSetter,
-                getterAccessibility,
-                setterAccessibility
-            )
+            Ast.AbstractMember(identifier, parameters, returnType, isTupled, hasGetter, hasSetter)
 
         /// <summary>Creates an abstract member with parameters.</summary>
         /// <param name="identifier">The identifier of the member.</param>
@@ -337,8 +268,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -355,28 +284,15 @@ module AbstractMemberBuilders =
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             let parameters = parameters |> Seq.map Ast.LongIdent
             let returnType = Ast.LongIdent(returnType)
 
-            Ast.AbstractMember(
-                identifier,
-                parameters,
-                returnType,
-                isTupled,
-                hasGetter,
-                hasSetter,
-                getterAccessibility,
-                setterAccessibility
-            )
+            Ast.AbstractMember(identifier, parameters, returnType, isTupled, hasGetter, hasSetter)
 
         /// <summary>Creates an abstract member with parameters.</summary>
         /// <param name="identifier">The identifier of the member.</param>
@@ -385,8 +301,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -403,15 +317,11 @@ module AbstractMemberBuilders =
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
 
             let parameters = List.ofSeq parameters
 
@@ -424,10 +334,7 @@ module AbstractMemberBuilders =
                 AttributesBundle(
                     StackList.three(
                         AbstractSlot.Identifier.WithValue(identifier),
-                        AbstractSlot.HasGetterSetter.WithValue(
-                            (hasGetter, getterAccessibility),
-                            (hasSetter, setterAccessibility)
-                        ),
+                        AbstractSlot.HasGetterSetter.WithValue(hasGetter, hasSetter),
                         AbstractSlot.Parameters.WithValue(Named(parameters, isTupled))
                     ),
                     [| AbstractSlot.ReturnType.WithValue(returnType.Compile()) |],
@@ -442,8 +349,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -460,27 +365,14 @@ module AbstractMemberBuilders =
                 returnType: WidgetBuilder<Type>,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             let parameters = parameters |> Seq.map(fun (name, tp) -> name, Ast.LongIdent(tp))
 
-            Ast.AbstractMember(
-                identifier,
-                parameters,
-                returnType,
-                isTupled,
-                hasGetter,
-                hasSetter,
-                getterAccessibility,
-                setterAccessibility
-            )
+            Ast.AbstractMember(identifier, parameters, returnType, isTupled, hasGetter, hasSetter)
 
         /// <summary>Creates an abstract member with parameters.</summary>
         /// <param name="identifier">The identifier of the member.</param>
@@ -489,8 +381,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -507,27 +397,14 @@ module AbstractMemberBuilders =
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             let returnType = Ast.LongIdent(returnType)
 
-            Ast.AbstractMember(
-                identifier,
-                parameters,
-                returnType,
-                isTupled,
-                hasGetter,
-                hasSetter,
-                getterAccessibility,
-                setterAccessibility
-            )
+            Ast.AbstractMember(identifier, parameters, returnType, isTupled, hasGetter, hasSetter)
 
         /// <summary>Creates an abstract member with parameters.</summary>
         /// <param name="identifier">The identifier of the member.</param>
@@ -536,8 +413,6 @@ module AbstractMemberBuilders =
         /// <param name="isTupled">Whether the parameters are tupled.</param>
         /// <param name="hasGetter">Whether the member has a getter.</param>
         /// <param name="hasSetter">Whether the member has a setter.</param>
-        /// <param name="getterAccessibility">The accessibility of the getter.</param>
-        /// <param name="setterAccessibility">The accessibility of the setter.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -554,25 +429,12 @@ module AbstractMemberBuilders =
                 returnType: string,
                 ?isTupled: bool,
                 ?hasGetter: bool,
-                ?hasSetter: bool,
-                ?getterAccessibility: AccessControl,
-                ?setterAccessibility: AccessControl
+                ?hasSetter: bool
             ) =
             let isTupled = defaultArg isTupled false
             let hasGetter = defaultArg hasGetter false
             let hasSetter = defaultArg hasSetter false
-            let getterAccessibility = defaultArg getterAccessibility AccessControl.Unknown
-            let setterAccessibility = defaultArg setterAccessibility AccessControl.Unknown
             let parameters = parameters |> Seq.map(fun (name, tp) -> name, Ast.LongIdent(tp))
             let returnType = Ast.LongIdent(returnType)
 
-            Ast.AbstractMember(
-                identifier,
-                parameters,
-                returnType,
-                isTupled,
-                hasGetter,
-                hasSetter,
-                getterAccessibility,
-                setterAccessibility
-            )
+            Ast.AbstractMember(identifier, parameters, returnType, isTupled, hasGetter, hasSetter)
