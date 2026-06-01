@@ -12,7 +12,7 @@ module BasicExprTests =
     [<Fact>]
     let ``Constant expression``() =
         Oak() { AnonymousModule() { Value("x", ConstantExpr(Int(42))) } }
-        |> produces
+        |> producesValid
             """
 let x = 42
 """
@@ -20,7 +20,7 @@ let x = 42
     [<Fact>]
     let ``Constant expression from string``() =
         Oak() { AnonymousModule() { Value("x", ConstantExpr("42")) } }
-        |> produces
+        |> producesValid
             """
 let x = 42
 """
@@ -28,7 +28,7 @@ let x = 42
     [<Fact>]
     let ``Null expression``() =
         Oak() { AnonymousModule() { Value("x", NullExpr()) } }
-        |> produces
+        |> producesValid
             """
 let x = null
 """
@@ -36,7 +36,7 @@ let x = null
     [<Fact>]
     let ``Unit expression``() =
         Oak() { AnonymousModule() { Value("x", UnitExpr()) } }
-        |> produces
+        |> producesValid
             """
 let x = ()
 """
@@ -44,7 +44,7 @@ let x = ()
     [<Fact>]
     let ``Expression yielded directly to module``() =
         Oak() { AnonymousModule() { ConstantExpr(String("Standalone expression")) } }
-        |> produces
+        |> producesValid
             """
 "Standalone expression"
 """
@@ -52,7 +52,7 @@ let x = ()
     [<Fact>]
     let ``Expression yielded to module declaration collection``() =
         Oak() { Namespace("MyNamespace") { Module("MyModule") { ConstantExpr(String("Module expression")) } } }
-        |> produces
+        |> producesValid
             """
 namespace MyNamespace
 

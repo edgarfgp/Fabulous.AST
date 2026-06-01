@@ -18,7 +18,7 @@ module Expr =
                     |> List.map ConstantExpr
             }
         }
-        |> produces
+        |> producesValid
             """
 "A"
 "B"

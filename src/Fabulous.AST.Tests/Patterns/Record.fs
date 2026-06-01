@@ -22,7 +22,7 @@ module RecordPat =
                 Value(RecordPat([ RecordFieldPat("B", "4", "x") ]), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 let { A = "3" } = 12
 let { A = "3" } = 12

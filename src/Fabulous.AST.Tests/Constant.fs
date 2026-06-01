@@ -130,7 +130,7 @@ A
     [<Fact>]
     let ``Basic string escaping``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Hello World")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Hello World"
 
@@ -139,7 +139,7 @@ printfn "Hello World"
     [<Fact>]
     let ``String with newline``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Hello\nWorld")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Hello\nWorld"
 
@@ -148,7 +148,7 @@ printfn "Hello\nWorld"
     [<Fact>]
     let ``String with quotes``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Hello \"World\"")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Hello \"World\""
 """
@@ -156,7 +156,7 @@ printfn "Hello \"World\""
     [<Fact>]
     let ``String with multiple special characters``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Tab\there\rNewline\nQuotes\"'")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Tab\there\rNewline\nQuotes\"\'"
 """
@@ -164,7 +164,7 @@ printfn "Tab\there\rNewline\nQuotes\"\'"
     [<Fact>]
     let ``String with backslashes``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Path\\to\\file")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Path\\to\\file"
 """
@@ -172,7 +172,7 @@ printfn "Path\\to\\file"
     [<Fact>]
     let ``String with Unicode line separators``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Line1\u2028Line2\u2029Line3")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Line1\nLine2 Line3"
 """
@@ -180,7 +180,7 @@ printfn "Line1\nLine2 Line3"
     [<Fact>]
     let ``String with null character``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Start\u0000End")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Start\0End"
 """
@@ -188,7 +188,7 @@ printfn "Start\0End"
     [<Fact>]
     let ``Empty string``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("")) } }
-        |> produces
+        |> producesValid
             """
 printfn ""
 """
@@ -196,7 +196,7 @@ printfn ""
     [<Fact>]
     let ``String with multiple consecutive newlines``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Line1\n\nLine3")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Line1\n\nLine3"
 """
@@ -204,7 +204,7 @@ printfn "Line1\n\nLine3"
     [<Fact>]
     let ``Complex string with mixed special characters and newlines``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Path\\to\n\"file\"\nwith\r\t special\n\\chars")) } }
-        |> produces
+        |> producesValid
             """
 printfn "Path\\to\n\"file\"\nwith\r\t special\n\\chars"
     """
@@ -212,7 +212,7 @@ printfn "Path\\to\n\"file\"\nwith\r\t special\n\\chars"
     [<Fact>]
     let ``Escaped string``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("Hello\n\"World\"")) } }
-        |> produces
+        |> producesValid
             """
     printfn "Hello\n\"World\""
     """
@@ -220,7 +220,7 @@ printfn "Path\\to\n\"file\"\nwith\r\t special\n\\chars"
     [<Fact>]
     let ``String with various edge cases``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("'Start'\u0001\u0002\t\r\n🌟\u001F{0}%s'End'")) } }
-        |> produces
+        |> producesValid
             """
 printfn "\'Start\'\t\r\n🌟{0}%s\'End\'"
     """
@@ -228,7 +228,7 @@ printfn "\'Start\'\t\r\n🌟{0}%s\'End\'"
     [<Fact>]
     let ``String with only special characters``() =
         Oak() { AnonymousModule() { AppExpr("printfn", String("\n\r\t\0")) } }
-        |> produces
+        |> producesValid
             """
 printfn "\n\r\t\\0"
     """

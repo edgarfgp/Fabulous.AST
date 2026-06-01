@@ -12,7 +12,7 @@ module ListCons =
     [<Fact>]
     let ``let value with a ListCons pattern``() =
         Oak() { AnonymousModule() { Value(ListConsPat(NamedPat("a"), NamedPat("b")), ConstantExpr(Int(12))) } }
-        |> produces
+        |> producesValid
             """
 let a :: b = 12
 """

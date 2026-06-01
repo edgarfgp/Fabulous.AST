@@ -13,7 +13,7 @@ module Function =
         Oak() {
             AnonymousModule() { Function("x", ParameterPat(ConstantPat(Constant "i")), ConstantExpr(ConstantUnit())) }
         }
-        |> produces
+        |> producesValid
             """
 
 let x i = ()
@@ -23,7 +23,7 @@ let x i = ()
     [<Fact>]
     let ``Produces function with summary xml docs``() =
         Oak() { AnonymousModule() { Function("add", [ "a"; "b" ], "a + b").xmlDocs(Summary("This is a comment")) } }
-        |> produces
+        |> producesValid
             """
 /// <summary>
 /// This is a comment
@@ -34,7 +34,7 @@ let add a b = a + b
     [<Fact>]
     let ``Produces a function with type params``() =
         Oak() { AnonymousModule() { Function("add", [ "a"; "b" ], "a + b").typeParams(PostfixList(TyparDecl("'a"))) } }
-        |> produces
+        |> producesValid
             """
 let add<'a> a b = a + b
 """
@@ -97,7 +97,7 @@ let x i =
                 Function("x", ParameterPat("i"), [ AppExpr("a", "i"); AppExpr("b", "i"); AppExpr("c", "i") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 let x i =
     a i
@@ -124,7 +124,7 @@ let x i =
                 Function("z", [ "i"; "j" ], ConstantExpr(ConstantUnit()))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x i = ()
@@ -146,7 +146,7 @@ let z i j = ()
                 Function("add", "a b", "a + b")
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x i = ()
@@ -159,7 +159,7 @@ let add a b = a + b
     [<Fact>]
     let ``Produces a function with single tupled parameter``() =
         Oak() { AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())) } }
-        |> produces
+        |> producesValid
             """
 let x i = ()
 
@@ -168,7 +168,7 @@ let x i = ()
     [<Fact>]
     let ``Produces a function with single parameter``() =
         Oak() { AnonymousModule() { Function("x", ParenPat(NamedPat("i")), ConstantExpr(ConstantUnit())) } }
-        |> produces
+        |> producesValid
             """
 let x (i) = ()
 
@@ -183,7 +183,7 @@ let x (i) = ()
                 Function("x", ParenPat(ParameterPat("i", "int")), ConstantExpr(ConstantUnit()))
             }
         }
-        |> produces
+        |> producesValid
             """
 let x (i: int) = ()
 let x (i: int) = ()
@@ -208,7 +208,7 @@ let x (i: int) = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x (i, j, k) = ()
 
@@ -225,7 +225,7 @@ let x (i, j, k) = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x (i, j, k) = ()
 """
@@ -247,7 +247,7 @@ let x (i, j, k) = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x (i: int, j: string, k) = ()
 """
@@ -267,7 +267,7 @@ let x (i: int, j: string, k) = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x i j k = ()
 
@@ -290,7 +290,7 @@ let x i j k = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let x (i: int, j: string, k: bool) = ()
 
@@ -304,7 +304,7 @@ let x (i: int, j: string, k: bool) = ()
                     .attribute(Attribute("Obsolete", ParenExpr(ConstantExpr(String "Use bar instead"))))
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Obsolete("Use bar instead")>]
 let x i = ()
@@ -318,7 +318,7 @@ let x i = ()
                 Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())).xmlDocs([ "Im a function" ])
             }
         }
-        |> produces
+        |> producesValid
             """
 /// Im a function
 let x i = ()
@@ -328,7 +328,7 @@ let x i = ()
     [<Fact>]
     let ``Produces a function with parameters and return type``() =
         Oak() { AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit()), Unit()) } }
-        |> produces
+        |> producesValid
             """
 let x i : unit = ()
 
@@ -351,7 +351,7 @@ let x i : unit = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let foo (x: 'T, i: 'U) : unit = ()
 
@@ -360,7 +360,7 @@ let foo (x: 'T, i: 'U) : unit = ()
     [<Fact>]
     let ``Produces an inlined function with parameters``() =
         Oak() { AnonymousModule() { Function("x", NamedPat("i"), ConstantExpr(ConstantUnit())).toInlined() } }
-        |> produces
+        |> producesValid
             """
 
 let inline x i = ()
@@ -370,7 +370,7 @@ let inline x i = ()
     [<Fact>]
     let ``Produces an function with parameters and constant expr ``() =
         Oak() { AnonymousModule() { Function("add", [ ParameterPat("a"); ParameterPat("b") ], Constant("a + b")) } }
-        |> produces
+        |> producesValid
             """
 let add a b = a + b
 """
@@ -386,7 +386,7 @@ let add a b = a + b
                 Function("z", NamedPat("i"), ConstantExpr(ConstantUnit())).toInternal()
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let public x i = ()
@@ -406,7 +406,7 @@ let internal z i = ()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let cylinderVolume radius length = length * pi * radius * radius
 """
@@ -425,7 +425,7 @@ let cylinderVolume radius length = length * pi * radius * radius
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let cylinderVolume radius =
     let pi = 3.14159
@@ -442,7 +442,7 @@ let cylinderVolume radius =
                       Function("multiply", [ "a"; "b" ], "a * b") ]
             }
         }
-        |> produces
+        |> producesValid
             """
 let add a b = a + b
 let subtract a b = a - b

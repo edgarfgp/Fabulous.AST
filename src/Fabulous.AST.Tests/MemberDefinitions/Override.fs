@@ -22,7 +22,7 @@ module Override =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Derived() =
     inherit Base()
@@ -40,7 +40,7 @@ type Derived() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Derived() =
     inherit Base()
@@ -58,7 +58,7 @@ type Derived() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Derived() =
     inherit Base()
@@ -76,7 +76,7 @@ type Derived() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Derived() =
     inherit Base()

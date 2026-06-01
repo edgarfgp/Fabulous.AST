@@ -39,7 +39,7 @@ module MemberDefn =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 type IMyInterface =
     abstract GetValue: unit -> string

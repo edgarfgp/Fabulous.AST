@@ -18,7 +18,7 @@ module StructTuplePat =
                 Value(StructTuplePat([ "a"; "b" ]), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let struct (a, b) = 12

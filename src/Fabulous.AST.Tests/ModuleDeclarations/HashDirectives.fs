@@ -23,7 +23,7 @@ module HashDirectives =
                     .attribute(Attribute "Obsolete")
             }
         }
-        |> produces
+        |> producesValid
             """
 #nowarn "0044"
 open System
@@ -40,7 +40,7 @@ type HEX = { R: int; G: int; B: int }
                 Help(String("List.map"))
             }
         }
-        |> produces
+        |> producesValid
             """
 #help List.map
 #help "List.map"
@@ -61,7 +61,7 @@ type HEX = { R: int; G: int; B: int }
                     .attribute(Attribute "Obsolete")
             }
         }
-        |> produces
+        |> producesValid
             """
 #nowarn "0044" "0045"
 open System
@@ -85,7 +85,7 @@ type HEX = { R: int; G: int; B: int }
                     .attribute(Attribute "Obsolete")
             }
         }
-        |> produces
+        |> producesValid
             """
 #nowarn 44 45
 open System
@@ -110,7 +110,7 @@ type HEX = { R: int; G: int; B: int }
                     .attribute(Attribute "Obsolete")
             }
         }
-        |> produces
+        |> producesValid
             """
 #nowarn "0044"
 #nowarn "0045"
@@ -136,7 +136,7 @@ type HEX = { R: int; G: int; B: int }
                     .attribute(Attribute "Obsolete")
             }
         }
-        |> produces
+        |> producesValid
             """
 #nowarn 44
 #nowarn 45
@@ -162,7 +162,7 @@ type HEX = { R: int; G: int; B: int }
             }
         }
 
-        |> produces
+        |> producesValid
             """
 namespace MyApp
 
@@ -187,7 +187,7 @@ type HEX = { R: int; G: int; B: int }
                 HashDirective("help")
             }
         }
-        |> produces
+        |> producesValid
             """
 #if !DEBUG
 let str = "Not debugging!"
@@ -207,7 +207,7 @@ let str = "Debugging!"
                 Open("System")
             }
         }
-        |> produces
+        |> producesValid
             """
 #nowarn "0044"
 #nowarn "0045"

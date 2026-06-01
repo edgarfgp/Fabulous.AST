@@ -12,7 +12,7 @@ module ExternalFunctions =
     [<Fact>]
     let ``Produces an ExternBindingNodeNoParams``() =
         Oak() { AnonymousModule() { ExternBinding(LongIdent("void"), "HelloWorld") } }
-        |> produces
+        |> producesValid
             """
 extern void HelloWorld()
 """
@@ -28,7 +28,7 @@ extern void HelloWorld()
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 extern void HelloWorld(string x)
 """
@@ -45,7 +45,7 @@ extern void HelloWorld(string x)
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 extern void HelloWorld(string x, int y)
 """

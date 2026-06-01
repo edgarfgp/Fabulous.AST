@@ -29,7 +29,7 @@ module LetBinding =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     let mutable _name = ""
@@ -60,7 +60,7 @@ type Person() =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     let mutable _name = ""

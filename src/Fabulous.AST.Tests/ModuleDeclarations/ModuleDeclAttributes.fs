@@ -17,7 +17,7 @@ module ModuleDeclAttributes =
                     .attribute(Attribute "MyCustomModuleAttribute")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<MyCustomModuleAttribute>]
 do printfn "Executing..."
@@ -31,7 +31,7 @@ do printfn "Executing..."
                     .attribute(Attribute "MyCustomModuleAttribute")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<MyCustomModuleAttribute>]
 do printfn "Executing..."
@@ -44,7 +44,7 @@ do printfn "Executing..."
                 ModuleDeclAttribute((" printfn \"Executing...\"")).attribute(Attribute "MyCustomModuleAttribute")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<MyCustomModuleAttribute>]
 do printfn "Executing..."
@@ -59,7 +59,7 @@ do printfn "Executing..."
 
             }
         }
-        |> produces
+        |> producesValid
             """
 [<MyCustomModuleAttribute; MyCustomModuleAttribute2>]
 do printfn "Executing..."

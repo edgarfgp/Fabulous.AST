@@ -22,7 +22,7 @@ module TryWithSingleClause =
                 TryWithSingleClauseExpr("12", MatchClauseExpr("_", FailWithExpr(String("Not implemented"))))
             }
         }
-        |> produces
+        |> producesValid
             """
 try
     12

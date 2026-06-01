@@ -13,7 +13,7 @@ module FSharpFeatures =
     [<Fact>]
     let ``Static abstract member on interface (IWSAM-style)``() =
         Oak() { AnonymousModule() { TypeDefn("IShow") { AbstractMember("Show", [ Unit() ], String()).toStatic() } } }
-        |> produces
+        |> producesValid
             """
 type IShow =
     static abstract Show: unit -> string
@@ -22,7 +22,7 @@ type IShow =
     [<Fact>]
     let ``Static abstract property on interface``() =
         Oak() { AnonymousModule() { TypeDefn("IDefault") { AbstractMember("Default", Int()).toStatic() } } }
-        |> produces
+        |> producesValid
             """
 type IDefault =
     static abstract Default: int
@@ -41,7 +41,7 @@ type IDefault =
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let p = struct {| Name = "Edgar"; Age = 42 |}
 """
@@ -55,7 +55,7 @@ let p = struct {| Name = "Edgar"; Age = 42 |}
                 Measure("kg")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Measure>]
 type m
@@ -80,7 +80,7 @@ type kg
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let addPair = fun (a, b) -> a + b
 """
@@ -98,7 +98,7 @@ let addPair = fun (a, b) -> a + b
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let result =
     try
@@ -124,7 +124,7 @@ let result =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type List with
     member this.Second = List.head this.Tail
@@ -148,7 +148,7 @@ type List with
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let go =
     for x in [| 1; 2; 3 |] do

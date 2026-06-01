@@ -18,7 +18,7 @@ module ArrayOrListPat =
                 Value(ListPat([ "a"; "b" ]), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let [ a; b ] = 12
@@ -35,7 +35,7 @@ let [ a; b ] = 12
                 Value(ArrayPat([ "a"; "b" ]), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 let [| a; b |] = 12
 let [| a; b |] = 12

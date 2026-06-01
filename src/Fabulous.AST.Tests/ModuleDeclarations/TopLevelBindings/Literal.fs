@@ -17,7 +17,7 @@ module Literal =
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).attribute(Attribute "Literal")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Literal>]
 let x = 12
@@ -38,7 +38,7 @@ let x = 12
                     Value(ConstantPat(Constant(name)), ConstantExpr(String(value))).attribute(Attribute "Literal")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<Literal>]
 let Daisy = "daisy.png"
@@ -63,7 +63,7 @@ let Sunflower = "sunflower.png"
                     .xmlDocs([ "This is a comment" ])
             }
         }
-        |> produces
+        |> producesValid
             """
 /// This is a comment
 [<Literal>]
@@ -78,7 +78,7 @@ let x = 12
                 Value(ConstantPat(Constant("x")), ConstantExpr(Int(12))).attribute(Attribute "Literal").toInternal()
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [<Literal>]
@@ -131,7 +131,7 @@ let internal x = 12
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [<Literal>]

@@ -12,7 +12,7 @@ module ExprBeginEnd =
     [<Fact>]
     let ``let value with a ExplicitConstructorThen expression``() =
         Oak() { AnonymousModule() { BeginEndExpr(ConstantExpr(Constant("x"))) } }
-        |> produces
+        |> producesValid
             """
 
 begin x end
@@ -26,7 +26,7 @@ begin x end
                 BeginEndExpr(Int(10))
             }
         }
-        |> produces
+        |> producesValid
             """
 begin x end
 begin 10 end
@@ -35,7 +35,7 @@ begin 10 end
     [<Fact>]
     let ``let value with a ExprBeginEnd string``() =
         Oak() { AnonymousModule() { BeginEndExpr("x") } }
-        |> produces
+        |> producesValid
             """
 begin x end
 """
@@ -43,7 +43,7 @@ begin x end
     [<Fact>]
     let ``let value with a ExprBeginEnd expression in parenthesis``() =
         Oak() { AnonymousModule() { BeginEndExpr(ParenExpr(ConstantExpr(Constant("x")))) } }
-        |> produces
+        |> producesValid
             """
 begin (x) end
 """

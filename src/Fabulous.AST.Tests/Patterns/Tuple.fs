@@ -18,7 +18,7 @@ module TuplePat =
                 Value(TuplePat([ "a"; "b" ]), ConstantExpr(Int(12)))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let a, b = 12

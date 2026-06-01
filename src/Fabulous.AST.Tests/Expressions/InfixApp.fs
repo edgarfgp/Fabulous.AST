@@ -29,7 +29,7 @@ module InfixApp =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 a |> b
 a |> b
@@ -53,7 +53,7 @@ a <| b
                 InfixAppExpr(ConstantExpr(Bool(false)), "||", ConstantExpr(Bool(true)))
             }
         }
-        |> produces
+        |> producesValid
             """
 1 + 2
 3 - 4
@@ -91,7 +91,7 @@ false || true
                 InfixAppExpr(Int(6), "^", "2")
             }
         }
-        |> produces
+        |> producesValid
             """
 1 + 2
 x + 2
@@ -130,7 +130,7 @@ a ++ b
                 PipeRightExpr("value", "toString")
             }
         }
-        |> produces
+        |> producesValid
             """
 1 |> 2
 3 |> 4
@@ -169,7 +169,7 @@ value |> toString
                 PipeLeftExpr("toString", "value")
             }
         }
-        |> produces
+        |> producesValid
             """
 1 <| 2
 3 <| 4
@@ -198,7 +198,7 @@ toString <| value
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 (1 + 2) * 3
 format <| x |> print

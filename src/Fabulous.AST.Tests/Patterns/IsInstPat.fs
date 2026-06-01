@@ -16,7 +16,7 @@ module IsInstPat =
                 MatchExpr(ConstantExpr(Int(12)), [ MatchClauseExpr(IsInstPat(String()), ConstantExpr(Int(12))) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 match 12 with
 | :? string -> 12

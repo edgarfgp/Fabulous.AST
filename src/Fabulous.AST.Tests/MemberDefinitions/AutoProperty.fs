@@ -43,7 +43,7 @@ module AutoProperty =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person(name: string, age: int) =
     /// <summary>
@@ -72,7 +72,7 @@ type Person(name: string, age: int) =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X() =
     member val Y: int = 7 with public get, private set
@@ -87,7 +87,7 @@ type X() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X() =
     member val Y: int = 7 with get, private set
@@ -100,7 +100,7 @@ type X() =
                 TypeDefn("X", UnitPat()) { MemberVal("Y", Int(7), Int(), true, true, AccessControl.Internal) }
             }
         }
-        |> produces
+        |> producesValid
             """
 type X() =
     member val Y: int = 7 with internal get, set

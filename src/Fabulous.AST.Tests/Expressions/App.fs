@@ -16,7 +16,7 @@ module App =
                 Value(ConstantPat(Constant("x")), AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String("a"))))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 let x = printfn "a"

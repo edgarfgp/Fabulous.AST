@@ -19,7 +19,7 @@ module RecordExpr =
     [<InlineData("2013", "``2013``")>]
     let ``Produces an AnonRecordExpr with fields with backticks`` (value: string) (expected: string) =
         Oak() { AnonymousModule() { AnonRecordExpr([ RecordFieldExpr(value, ConstantExpr(Int 1)) ]) } }
-        |> produces
+        |> producesValid
             $$"""
 
 {| {{expected}} = 1 |}
@@ -34,7 +34,7 @@ module RecordExpr =
     [<InlineData(" net6.0 ", "`` net6.0 ``")>]
     let ``Produces an RecordExpr with fields with backticks`` (value: string) (expected: string) =
         Oak() { AnonymousModule() { RecordExpr([ RecordFieldExpr(value, ConstantExpr(Int 1)) ]) } }
-        |> produces
+        |> producesValid
             $$"""
 
 { {{expected}} = 1 }
@@ -44,7 +44,7 @@ module RecordExpr =
     [<Fact>]
     let ``RecordExpr expression``() =
         Oak() { AnonymousModule() { RecordExpr([ RecordFieldExpr("A", ConstantExpr(Int 1)) ]) } }
-        |> produces
+        |> producesValid
             """
 { A = 1 }
 """
@@ -54,7 +54,7 @@ module RecordExpr =
         Oak() {
             AnonymousModule() { RecordExpr(ConstantExpr(Constant "A"), [ RecordFieldExpr("B", ConstantExpr(Int 1)) ]) }
         }
-        |> produces
+        |> producesValid
             """
 { A with B = 1 }
 """
@@ -62,7 +62,7 @@ module RecordExpr =
     [<Fact>]
     let ``AnonRecordExpr expression``() =
         Oak() { AnonymousModule() { AnonRecordExpr([ RecordFieldExpr("A", ConstantExpr(Int 1)) ]) } }
-        |> produces
+        |> producesValid
             """
 {| A = 1 |}
 """
@@ -74,7 +74,7 @@ module RecordExpr =
                 AnonRecordExpr(ConstantExpr(Constant "A"), [ RecordFieldExpr("B", ConstantExpr(Int 1)) ])
             }
         }
-        |> produces
+        |> producesValid
             """
 {| A with B = 1 |}
 """

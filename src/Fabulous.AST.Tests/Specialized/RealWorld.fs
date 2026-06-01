@@ -64,7 +64,7 @@ module RealWorld =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 module Result =
     let map f r =
@@ -122,7 +122,7 @@ module Result =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 namespace Shopping
 
@@ -164,7 +164,7 @@ module Order =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type FileHandle(path: string) =
     member this.Path = path

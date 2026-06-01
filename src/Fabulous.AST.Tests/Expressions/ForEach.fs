@@ -16,7 +16,7 @@ module ForEach =
                 ForEachDoExpr(ConstantPat(Constant("i")), ConstantExpr(Constant("0..9")), ConstantExpr(Constant("i")))
             }
         }
-        |> produces
+        |> producesValid
             """
 for i in 0..9 do
     i
@@ -33,7 +33,7 @@ for i in 0..9 do
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 for i in 0..9 do
     i
@@ -68,7 +68,7 @@ for i in 0..9 do
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 for i in 0..9 do
     i |> ignore
@@ -98,7 +98,7 @@ for i in 0..9 do
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 for i in 0..9 do
     printfn ""
@@ -121,7 +121,7 @@ for i in 0..9 do
                 ForEachArrowExpr("i", "0..9", "i")
             }
         }
-        |> produces
+        |> producesValid
             """
 for i in 0..9 -> i
 for i in 0..9 -> i

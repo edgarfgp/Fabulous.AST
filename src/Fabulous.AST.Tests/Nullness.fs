@@ -10,7 +10,7 @@ module NullnessTests =
     [<Fact>]
     let ``du case of string or null``() =
         Oak() { AnonymousModule() { Union("DU") { UnionCase("MyCase", Field(Paren(TypeOrNull(String())))) } } }
-        |> produces
+        |> producesValid
             """
 type DU = MyCase of (string | null)
 """
@@ -20,7 +20,7 @@ type DU = MyCase of (string | null)
         Oak() {
             AnonymousModule() { MatchExpr("x", [ MatchClauseExpr(OrPat(IsInstPat(String()), NullPat()), UnitExpr()) ]) }
         }
-        |> produces
+        |> producesValid
             """
 match x with
 | :? string
@@ -35,7 +35,7 @@ match x with
                 |> _.typeParams(PostfixList(TyparDecl("'T"), WhereNotSupportsNull("'T")))
             }
         }
-        |> produces
+        |> producesValid
             """
 type C<'T when 'T: not null> = class end
 """
@@ -51,7 +51,7 @@ type C<'T when 'T: not null> = class end
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let myFunc ("abc" | "": string | null | "123") = 15
 """
@@ -68,7 +68,7 @@ let myFunc ("abc" | "": string | null | "123") = 15
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 let myFunc () : 'T when 'T: not struct and 'T: null = null
 """
@@ -80,7 +80,7 @@ let myFunc () : 'T when 'T: not struct and 'T: null = null
                 Function("myFunc", ParenPat(ParameterPat("x", WithGlobal("'T", WhereNotSupportsNull("'T")))), Int(42))
             }
         }
-        |> produces
+        |> producesValid
             """
 let myFunc (x: 'T when 'T: not null) = 42
 """

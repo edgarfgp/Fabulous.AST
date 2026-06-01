@@ -12,7 +12,7 @@ module Open =
     [<Fact>]
     let ``Produces a simple open directive from a widget``() =
         Oak() { AnonymousModule() { Open("ABC") } }
-        |> produces
+        |> producesValid
             """
 open ABC
 """
@@ -27,7 +27,7 @@ open ABC
             }
 
         }
-        |> produces
+        |> producesValid
             """
 
 open ABC.DEF
@@ -46,7 +46,7 @@ open GHI
             }
 
         }
-        |> produces
+        |> producesValid
             """
 open global.A
 open global.B
@@ -62,7 +62,7 @@ open global.A.B
                 OpenType("GHI")
             }
         }
-        |> produces
+        |> producesValid
             """
 
 open type ABC.DFE
@@ -79,7 +79,7 @@ open type GHI
                 OpenType([ "ABC"; "DFE" ])
             }
         }
-        |> produces
+        |> producesValid
             """
 
 open Fabulous.AST
@@ -90,7 +90,7 @@ open type ABC.DFE
     [<Fact>]
     let ``yield! a list of opens``() =
         Oak() { AnonymousModule() { yield! [ Open("Fabulous.AST"); OpenType([ "ABC"; "DFE" ]) ] } }
-        |> produces
+        |> producesValid
             """
 open Fabulous.AST
 open type ABC.DFE

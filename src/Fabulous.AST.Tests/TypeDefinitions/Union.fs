@@ -20,7 +20,7 @@ module Union =
     [<InlineData("2013", "``2013``")>]
     let ``Produces an union with fields with backticks`` (value: string) (expected: string) =
         Oak() { AnonymousModule() { Union("Colors") { UnionCase(value) } } }
-        |> produces
+        |> producesValid
             $$"""
 
 type Colors = | {{expected}}
@@ -40,7 +40,7 @@ type Colors = | {{expected}}
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -63,7 +63,7 @@ type Colors =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 type Option<'a> =
     | Some of 'a
@@ -94,7 +94,7 @@ type Option<'a> =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type IMyInterface =
     abstract GetValue: unit -> string
@@ -126,7 +126,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Shape =
     | Rectangle of float * float
@@ -153,7 +153,7 @@ type Shape =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -190,7 +190,7 @@ type Colors =
                 |> _.toRecursive()
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -218,7 +218,7 @@ and Shapes =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -242,7 +242,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -257,7 +257,7 @@ type Colors =
     [<Fact>]
     let ``Produces an union with attribute``() =
         Oak() { AnonymousModule() { (Union("Colors") { UnionCase("Red") }).attribute(Attribute "Test") } }
-        |> produces
+        |> producesValid
             """
 
 [<Test>]
@@ -272,7 +272,7 @@ type Colors = | Red
                     .attribute(Attribute "Test")
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [<Test>]
@@ -294,7 +294,7 @@ type Colors = | [<Obsolete; Test>] Red
                       } ]
             }
         }
-        |> produces
+        |> producesValid
             """
 type Colors =
     | Red
@@ -310,7 +310,7 @@ type Shapes =
         Oak() {
             AnonymousModule() { Union("Colors") { yield! [ UnionCase("Red"); UnionCase("Green"); UnionCase("Blue") ] } }
         }
-        |> produces
+        |> producesValid
             """
 type Colors =
     | Red
@@ -334,7 +334,7 @@ module GenericUnion =
                 |> _.typeParams(PostfixList([ "'other" ]))
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors<'other> =
@@ -367,7 +367,7 @@ type Colors<'other> =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 type IMyInterface =
     abstract GetValue: unit -> string
@@ -400,7 +400,7 @@ type Colors<'other> =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 [<Struct>]
 type Colors<'other> =

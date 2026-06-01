@@ -18,7 +18,7 @@ module ObjExpr =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 { new System.Object() with
     member x.ToString() = "F#" }
@@ -67,7 +67,7 @@ module ObjExpr =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 { new System.IFormattable with
     member x.ToString(format: string, provider: System.IFormatProvider) =

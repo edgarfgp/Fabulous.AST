@@ -12,7 +12,7 @@ module AppWithLambda =
     [<Fact>]
     let ``AppWithLambda expression``() =
         Oak() { AnonymousModule() { AppWithLambdaExpr(ConstantExpr "c", [ ConstantPat("a") ], ConstantExpr("a")) } }
-        |> produces
+        |> producesValid
             """
 c (fun a -> a)
 """
@@ -20,7 +20,7 @@ c (fun a -> a)
     [<Fact>]
     let ``AppWithLambda expression with strings``() =
         Oak() { AnonymousModule() { AppWithLambdaExpr("c", [ "a" ], "a") } }
-        |> produces
+        |> producesValid
             """
 c (fun a -> a)
 """
@@ -32,7 +32,7 @@ c (fun a -> a)
                 AppWithMatchLambdaExpr(ConstantExpr("c"), [ ConstantExpr("a") ], [ MatchClauseExpr("a", "12") ])
             }
         }
-        |> produces
+        |> producesValid
             """
 c a (function
     | a -> 12)
@@ -41,7 +41,7 @@ c a (function
     [<Fact>]
     let ``AppWithMatchLambdaExpr expression with strings``() =
         Oak() { AnonymousModule() { AppWithMatchLambdaExpr("c", [ "a" ], [ MatchClauseExpr("a", "12") ]) } }
-        |> produces
+        |> producesValid
             """
 c a (function
     | a -> 12)
@@ -58,7 +58,7 @@ c a (function
                 )
             }
         }
-        |> produces
+        |> producesValid
             """
 process input (function
     | x -> 42)
@@ -71,7 +71,7 @@ process input (function
                 AppWithMatchLambdaExpr("process", [ ConstantExpr("input") ], MatchClauseExpr("x", Int(42)))
             }
         }
-        |> produces
+        |> producesValid
             """
 process input (function
     | x -> 42)
@@ -80,7 +80,7 @@ process input (function
     [<Fact>]
     let ``AppWithMatchLambdaExpr with single clause - string funcName and string args``() =
         Oak() { AnonymousModule() { AppWithMatchLambdaExpr("process", [ "input" ], MatchClauseExpr("x", Int(42))) } }
-        |> produces
+        |> producesValid
             """
 process input (function
     | x -> 42)

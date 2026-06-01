@@ -22,7 +22,7 @@ module Enum =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -42,7 +42,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -62,7 +62,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -82,7 +82,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -102,7 +102,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -135,7 +135,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -169,7 +169,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -193,7 +193,7 @@ type Colors =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -218,7 +218,7 @@ type Colors =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 
 [<FlagsAttribute>]
@@ -243,7 +243,7 @@ type Colors =
                     .attribute(Attribute "FlagsAttribute")
             }
         }
-        |> produces
+        |> producesValid
             """
 [<FlagsAttribute>]
 type Colors =
@@ -268,7 +268,7 @@ type Colors =
                       } ]
             }
         }
-        |> produces
+        |> producesValid
             """
 type Colors =
     | Red = 0
@@ -288,7 +288,7 @@ type Sizes =
                 Enum("Colors") { EnumCase("Red", Int(0)) } |> _.toRecursive()
             }
         }
-        |> produces
+        |> producesValid
             """
 type Sizes =
     | Small = 0
@@ -306,7 +306,7 @@ and Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Colors =
     | Red = 0

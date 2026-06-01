@@ -103,7 +103,7 @@ module MethodMembers =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -143,7 +143,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors<'other> =
@@ -172,7 +172,7 @@ type Colors<'other> =
             }
         }
 
-        |> produces
+        |> producesValid
             """
 
 type Colors<'other> =
@@ -197,7 +197,7 @@ type Colors<'other> =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -217,7 +217,7 @@ type Colors =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 
 type Colors =
@@ -232,7 +232,7 @@ type Colors =
         Oak() {
             AnonymousModule() { TypeDefn("Person", UnitPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)) } }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name() = 23
@@ -251,7 +251,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name(p: string) = 23
@@ -275,7 +275,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name(name: string, age: int) = 23
@@ -295,7 +295,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name (name: string) (age: int) = 23
@@ -308,7 +308,7 @@ type Person() =
                 TypeDefn("Person", UnitPat()) { Member("this.Name", [ "(name: string)"; "(age: int)" ], (Int 23)) }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name (name: string) (age: int) = 23
@@ -646,7 +646,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     static member private GetPrimitiveReader
@@ -716,7 +716,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     [<Obsolete>]
@@ -731,7 +731,7 @@ type Person() =
                 TypeDefn("Person", UnitPat()) { Member("this.Name", UnitPat(), ConstantExpr(Int 23)).toInlined() }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member inline this.Name() = 23
@@ -746,7 +746,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person() =
     member this.Name<'other>() = 23
@@ -761,7 +761,7 @@ type Person() =
                 }
             }
         }
-        |> produces
+        |> producesValid
             """
 type Person =
     | Name
@@ -788,7 +788,7 @@ type Person =
 
             }
         }
-        |> produces
+        |> producesValid
             """
 type Colors<'other> =
     | Red of a: string * b: 'other
