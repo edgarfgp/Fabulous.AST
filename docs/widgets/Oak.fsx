@@ -121,4 +121,26 @@ Oak() {
 (**
 Likewise, if you have other raw nodes (e.g., `TypeDefn.Abbrev`, `EnumCaseNode`, etc.), inject them via `EscapeHatch(...)`.
 The preferred approach remains to use the provided widgets (`Abbrev`, `EnumCase`, `Record`, `Value`, ...), which do not require `EscapeHatch`.
+
+## Verifying generated code
+
+`Gen.parse` round-trips the output through Fantomas's F# parser to confirm it is
+syntactically valid. It returns the rendered source when the code parses, or the
+parser diagnostics (one per line) otherwise — useful for catching widget
+combinations that produce broken output before a downstream consumer does. It is
+curried with the widget last, so it drops into the same pipeline as `Gen.run`:
+*)
+
+Oak() { AnonymousModule() { Value("greet", "x + 1") } }
+|> Gen.parse
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+`Gen.parse` does not type-check — run the real compiler against the written files
+for that. There is also an overload that takes a source `string` directly, and
+in test suites the `producesValid` helper builds on it to assert that every
+generated snippet parses.
 *)
