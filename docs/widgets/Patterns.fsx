@@ -8,6 +8,17 @@ index: 8
 
 (**
 # Patterns
+
+Patterns appear on the left of bindings, in `match` clauses, and in function
+parameters. Each F# pattern form has a widget — this page groups them by kind.
+
+## Contents
+- [Named, Or, As, and Ands Patterns](#named-or-as-and-ands-patterns)
+- [Tuple Patterns](#tuple-patterns)
+- [List Patterns](#list-patterns)
+- [Record Patterns](#record-patterns)
+- [Type-test Patterns](#type-test-patterns)
+- [Parameter Patterns with Attributes](#parameter-patterns-with-attributes)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -17,37 +28,19 @@ index: 8
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
+(**
+## Named, Or, As, and Ands Patterns
+`OrPat` matches either alternative, `AsPat` binds the whole match to a name, and
+`AndsPat` requires all to match:
+*)
+
 Oak() {
     AnonymousModule() {
-        Union("Union") {
-            UnionCase("A")
-            UnionCase("B")
-            UnionCase("C")
-        }
-
-        Record("Record") { Field("A", Int()) }
-
         Value(OrPat(NamedPat("A"), "B"), ConstantExpr(Constant("C")))
 
         Value(AsPat(NamedPat("A"), "B"), ConstantExpr(Constant("C")))
 
         Value(AndsPat([ "A"; "B" ]), ConstantExpr(Constant("C")))
-
-        Value(TuplePat([ "a"; "b" ]), TupleExpr([ Constant("1"); Constant("2") ]))
-
-        Value(
-            RecordPat([ RecordFieldPat("A", ConstantPat(Int(3))) ]),
-            RecordExpr([ RecordFieldExpr("A", ConstantExpr(Int 5)) ])
-        )
-
-        Value(ListPat([ NamedPat("c"); NamedPat("d") ]), ListExpr([ String("a"); String("b") ]))
-
-        Value(StructTuplePat([ NamedPat("e"); NamedPat("f") ]), StructTupleExpr([ Int(1); Int(2) ]))
-
-        MatchExpr(Constant("System.Object()"), [ MatchClauseExpr(IsInstPat(String()), ConstantExpr(Int(12))) ])
-
-        Value(ListConsPat(NamedPat("g"), NamedPat("h")), ListExpr([ Int(1) ]))
-
     }
 }
 |> Gen.mkOak
@@ -58,7 +51,83 @@ Oak() {
 (*** include-output ***)
 
 (**
-## ParameterPat with Attributes
+## Tuple Patterns
+`TuplePat` destructures a tuple; `StructTuplePat` destructures a struct tuple:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(TuplePat([ "a"; "b" ]), TupleExpr([ Constant("1"); Constant("2") ]))
+
+        Value(StructTuplePat([ NamedPat("e"); NamedPat("f") ]), StructTupleExpr([ Int(1); Int(2) ]))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## List Patterns
+`ListPat` matches a list of elements; `ListConsPat` matches head-and-tail:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(ListPat([ NamedPat("c"); NamedPat("d") ]), ListExpr([ String("a"); String("b") ]))
+
+        Value(ListConsPat(NamedPat("g"), NamedPat("h")), ListExpr([ Int(1) ]))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Record Patterns
+`RecordPat` destructures a record by field with `RecordFieldPat`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(
+            RecordPat([ RecordFieldPat("A", ConstantPat(Int(3))) ]),
+            RecordExpr([ RecordFieldExpr("A", ConstantExpr(Int 5)) ])
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Type-test Patterns
+`IsInstPat` matches when the value is an instance of a given type — typically in
+a `match` clause:
+*)
+
+Oak() {
+    AnonymousModule() {
+        MatchExpr(Constant("System.Object()"), [ MatchClauseExpr(IsInstPat(String()), ConstantExpr(Int(12))) ])
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Parameter Patterns with Attributes
 You can add attributes to parameter patterns using the `.attribute()` or `.attributes()` modifiers.
 This is useful for adding attributes to constructor parameters or method parameters.
 *)
