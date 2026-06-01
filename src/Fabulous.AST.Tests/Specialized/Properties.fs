@@ -105,7 +105,7 @@ module Properties =
         Check.QuickThrowOnFailure prop
 
     [<Fact>]
-    let ``Record with N fields producesValid N field lines``() =
+    let ``Record with N fields produces N field lines``() =
         let prop(fieldCount: PositiveInt) =
             let n = min fieldCount.Get 8
 

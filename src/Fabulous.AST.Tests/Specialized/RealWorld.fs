@@ -8,7 +8,7 @@ open type Ast
 
 /// Real-world fixture tests — generate complete, realistic F# modules to validate
 /// that the widget API composes well at file-scale, not just per-widget. Each test
-/// producesValid a substantial chunk of F# code modeled on idiomatic code consumers
+/// produces a substantial chunk of F# code modeled on idiomatic code consumers
 /// would actually write.
 module RealWorld =
 
