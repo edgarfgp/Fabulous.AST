@@ -30,7 +30,7 @@ module RewriteExprTests =
             Oak() { AnonymousModule() { Value("greet", "x + 1") } }
 
         let original = render widget
-        let rewritten = Rewrite.expr(id, widget) |> render
+        let rewritten = widget |> Rewrite.expr id |> render
         Assert.Equal(original, rewritten)
 
     [<Fact>]
@@ -40,7 +40,7 @@ module RewriteExprTests =
                 AnonymousModule() { Value("greet", AppExpr(ConstantExpr(Constant "println"), [ Constant "msg" ])) }
             }
 
-        let source = Rewrite.expr(renameIdent "println" "printfn", widget) |> render
+        let source = widget |> Rewrite.expr(renameIdent "println" "printfn") |> render
         Assert.Contains("printfn", source)
         Assert.DoesNotContain("println", source)
 
@@ -59,7 +59,7 @@ module RewriteExprTests =
                 }
             }
 
-        let source = Rewrite.expr(renameIdent "println" "printfn", widget) |> render
+        let source = widget |> Rewrite.expr(renameIdent "println" "printfn") |> render
         Assert.Contains("printfn", source)
         Assert.DoesNotContain("println", source)
 
@@ -69,7 +69,7 @@ module RewriteExprTests =
             Oak() { AnonymousModule() { Value("greet", "x + 1") } }
 
         let original = render widget
-        let rewritten = Rewrite.expr(renameIdent "println" "printfn", widget) |> render
+        let rewritten = widget |> Rewrite.expr(renameIdent "println" "printfn") |> render
         Assert.Equal(original, rewritten)
 
     [<Fact>]
@@ -83,35 +83,20 @@ module RewriteExprTests =
                 }
             }
 
-        let source = Rewrite.expr(renameIdent "println" "printfn", widget) |> render
+        let source = widget |> Rewrite.expr(renameIdent "println" "printfn") |> render
         Assert.Contains("printfn", source)
         Assert.DoesNotContain("println", source)
 
     [<Fact>]
-    let ``raw Oak overload returns Oak``() =
+    let ``exprInOak rewrites a raw Oak``() =
         let widget: WidgetBuilder<Oak> =
             Oak() {
                 AnonymousModule() { Value("greet", AppExpr(ConstantExpr(Constant "println"), [ Constant "msg" ])) }
             }
 
         let oak: Oak = Gen.mkOak widget
-        let rewritten: Oak = Rewrite.exprInOak(renameIdent "println" "printfn", oak)
+        let rewritten: Oak = oak |> Rewrite.exprInOak(renameIdent "println" "printfn")
         let source = Gen.run rewritten
 
         Assert.Contains("printfn", source)
         Assert.DoesNotContain("println", source)
-
-    [<Fact>]
-    let ``Expr-only overload returns Expr``() =
-        let exprWidget: WidgetBuilder<Expr> =
-            AppExpr(ConstantExpr(Constant "println"), [ Constant "msg" ])
-
-        let expr: Expr = Gen.mkOak exprWidget
-        let rewritten: Expr = Rewrite.expr(renameIdent "println" "printfn", expr)
-
-        match rewritten with
-        | Expr.App n ->
-            match n.FunctionExpr with
-            | Expr.Constant(Constant.FromText t) -> Assert.Equal("printfn", t.Text)
-            | _ -> Assert.Fail "expected function-expr to be Constant.FromText"
-        | _ -> Assert.Fail "expected App node"

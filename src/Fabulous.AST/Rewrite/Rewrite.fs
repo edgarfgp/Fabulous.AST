@@ -2214,11 +2214,17 @@ module private RewriteImpl =
 /// types and attributes) and applies the caller-supplied function after each
 /// node's children are rebuilt. Reference equality is preserved on unchanged
 /// subtrees, so a no-op rewrite returns the same Oak instance.
+///
+/// Curried with the target last, so it drops into a pipeline:
+/// <c>widget |> Rewrite.expr f |> Gen.run</c>.
 /// </summary>
-[<Class>]
-type Rewrite =
-    /// <summary>Rewrites every Expr in the Oak produced by <paramref name="widget"/>.</summary>
-    static member expr(f: Expr -> Expr, widget: WidgetBuilder<Oak>) : WidgetBuilder<Oak> =
+[<RequireQualifiedAccess>]
+module Rewrite =
+    /// <summary>
+    /// Rewrites every Expr in the Oak produced by <paramref name="widget"/>,
+    /// returning the same <c>WidgetBuilder</c> when nothing changed.
+    /// </summary>
+    let expr (f: Expr -> Expr) (widget: WidgetBuilder<Oak>) : WidgetBuilder<Oak> =
         let oak = Gen.mkOak widget
         let oak' = RewriteImpl.rewriteOak f oak
 
@@ -2227,13 +2233,5 @@ type Rewrite =
         else
             Ast.EscapeHatch oak'
 
-    /// <summary>Rewrites every Expr reachable from <paramref name="expr"/>.</summary>
-    static member expr(f: Expr -> Expr, expr: Expr) : Expr = RewriteImpl.rewriteExpr f expr
-
-    /// <summary>
-    /// Rewrites every Expr in a raw <see cref="T:Fantomas.Core.SyntaxOak.Oak"/>.
-    /// Distinct name (not overloaded) because F# overload resolution can't
-    /// reliably disambiguate <c>Oak</c> from <c>WidgetBuilder&lt;Oak&gt;</c>
-    /// when the function argument is polymorphic (e.g. <c>id</c>).
-    /// </summary>
-    static member exprInOak(f: Expr -> Expr, oak: Oak) : Oak = RewriteImpl.rewriteOak f oak
+    /// <summary>Rewrites every Expr in a raw <see cref="T:Fantomas.Core.SyntaxOak.Oak"/>.</summary>
+    let exprInOak (f: Expr -> Expr) (oak: Oak) : Oak = RewriteImpl.rewriteOak f oak
