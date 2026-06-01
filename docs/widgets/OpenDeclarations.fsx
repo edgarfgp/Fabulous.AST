@@ -7,21 +7,17 @@ index: 10
 *)
 
 (**
-# Open declarations
-An import declaration specifies a module or namespace whose elements you can reference without using a fully qualified name.
+# Open Declarations
 
-For details on how the AST node works, please refer to the [Fantomas Core documentation](https://fsprojects.github.io/fantomas/reference/fantomas-core-syntaxoak-openlistnode.html).
+An open declaration lets you reference the elements of a module or namespace
+without a fully qualified name. `Open` imports a namespace or module, `OpenType`
+imports a type's static members, and `OpenGlobal` opens from the root with the
+`global` specifier.
 
-*)
-(**
-### Constructors
-
-| Constructors                       | Description                                           |
-|------------------------------------| ----------------------------------------------------- |
-| Open(values: string list)                              | Creates an OpenListNode AST node |
-| Open(value: string)                                   | Creates an OpenListNode AST node  |
-| OpenType(values: string)                              | Creates an OpenListNode AST node  |
-| OpenType(value: string)                               | Creates an OpenListNode AST node  |
+## Contents
+- [Opening Namespaces and Modules](#opening-namespaces-and-modules)
+- [Opening a Type](#opening-a-type)
+- [Global Opens](#global-opens)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -31,24 +27,49 @@ For details on how the AST node works, please refer to the [Fantomas Core docume
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
+(**
+## Opening Namespaces and Modules
+Pass a single name or a list of path segments:
+*)
+
 Oak() {
     AnonymousModule() {
-        Open([ "System"; "IO" ]).triviaBefore(SingleLine("Open a .NET Framework namespace."))
+        Open("Fabulous.AST")
 
-        Open("Fabulous.AST").triviaAfter(Newline())
-
-        OpenType([ "System.Math" ])
-            .triviaBefore(SingleLine("This will expose all accessible static fields and members on the type."))
-            .triviaAfter(Newline())
-
-        OpenGlobal("A").triviaBefore(SingleLine("Open from root path only with global specifier"))
-
-        OpenGlobal("B")
-        OpenGlobal([ "A"; "B" ])
-
+        Open([ "System"; "IO" ])
     }
-    |> _.triviaBefore(SingleLine("Import declarations: The open keyword"))
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Opening a Type
+`OpenType` exposes the accessible static members and fields of a type:
+*)
+
+Oak() { AnonymousModule() { OpenType([ "System.Math" ]) } }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Global Opens
+`OpenGlobal` opens from the root path only, emitting the `global` specifier:
+*)
+
+Oak() {
+    AnonymousModule() {
+        OpenGlobal("A")
+
+        OpenGlobal([ "A"; "B" ])
+    }
 }
 |> Gen.mkOak
 |> Gen.run
