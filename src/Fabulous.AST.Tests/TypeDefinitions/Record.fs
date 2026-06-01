@@ -246,3 +246,18 @@ type Person = internal { Name: string; Age: int }
             """
 type Person = public { Name: string; Age: int }
 """
+
+    [<Fact>]
+    let ``Produces a record with mixed field accessibility (most restrictive wins)``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Person") {
+                    Field("Name", String()).toInternal()
+                    Field("Age", Int()).toPrivate()
+                }
+            }
+        }
+        |> producesValid
+            """
+type Person = private { Name: string; Age: int }
+"""
