@@ -159,6 +159,27 @@ Oak() {
 (*** include-output ***)
 
 (**
+Accessibility can also be set on an individual field with `Field(...).toPrivate()`
+/ `toInternal()` / `toPublic()`. Because F# does not allow per-field accessibility,
+it is lifted to the whole record representation (the most restrictive wins):
+*)
+
+Oak() {
+    AnonymousModule() {
+        Record("Person") {
+            Field("Name", String()).toPrivate()
+            Field("Age", Int())
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## XML Documentation
 Add XML documentation to records with the `xmlDocs` method:
 *)

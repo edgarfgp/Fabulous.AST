@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes_
+### Added
+- `Gen.parse` round-trips a widget (or a source string) through Fantomas's F# parser and returns the rendered source when it is syntactically valid, or the parser diagnostics (one per line) otherwise — for catching widget combinations that produce invalid F# (#191)
+- `Rewrite.expr` / `Rewrite.exprInOak` and `Rewrite.typeDefn` / `Rewrite.typeDefnInOak`: curried, pipeline-friendly bottom-up rewriters that apply a transform to every expression (or type definition) reachable from an Oak — e.g. rename a call site everywhere, or convert a single-case union to a record (#189)
+- `producesValid` test helper: like `produces`, but also re-parses the rendered output to assert it is syntactically valid F# (#191, #192)
+
+### Changed
+- **Breaking:** `Gen` is now a sealed static type instead of a module so that `run` can be overloaded; `Gen.runWith config oak` is replaced by the `Gen.run(oak, config)` overload. `Gen.mkOak` and `Gen.run oak` are unchanged (#191)
+- **Breaking:** record field accessibility (`Field(...).toPrivate()` / `toInternal()` / `toPublic()`) now lifts to the whole record representation (`type R = private { ... }`) instead of emitting an invalid per-field modifier; the most restrictive accessibility wins when fields disagree (#193)
+
+### Fixed
+- Abstract member accessors no longer emit accessibility modifiers, which F# forbids on abstract slots (`abstract Y: int with get, set` rather than the invalid `with public get, public set`) (#194)
+- JSON field names containing backticks now replace them with underscores instead of producing an invalid nested-backtick identifier (#195)
+
+### Removed
+- **Breaking:** `getterAccessibility` / `setterAccessibility` parameters on `AbstractMember` — they rendered invalid F#, since abstract slots always have the enclosing type's visibility (#194)
 
 ## [2.0.0-pre07] - 2026-05-30
 

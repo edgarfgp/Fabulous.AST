@@ -459,6 +459,77 @@ Ast.Oak() {
 (*** include-output ***)
 
 (**
+## 6. `Gen` is now a type; `run` is overloaded
+
+`Gen` changed from a module to a sealed static class so that `run` can be
+overloaded. `Gen.mkOak` and `Gen.run oak` are unchanged; the old
+`Gen.runWith config oak` is replaced by the `Gen.run(oak, config)` overload.
+*)
+
+// Before (v1.x):
+// oak |> Gen.runWith config
+
+(**
+**After (v2.0):**
+*)
+
+open Fantomas.Core
+
+let configuredOak =
+    Ast.Oak() { AnonymousModule() { Value("x", Int 42) } } |> Gen.mkOak
+
+Gen.run(configuredOak, FormatConfig.Default) |> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## 7. `AbstractMember` accessibility parameters removed
+
+F# forbids accessibility modifiers on abstract slot accessors — they always have
+the enclosing type's visibility — so `AbstractMember` no longer accepts the
+`getterAccessibility` / `setterAccessibility` parameters.
+*)
+
+// Before:
+// AbstractMember("Area", Float(), true, true, AccessControl.Public, AccessControl.Private)
+
+(**
+**After (v2.0):**
+*)
+
+Ast.Oak() { AnonymousModule() { TypeDefn("IShape") { AbstractMember("Area", Float(), true, true) } } }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## 8. Record field accessibility lifts to the representation
+
+Accessibility set on an individual record field (`Field(...).toPrivate()`) is no
+longer emitted per field — which is not valid F# — but applied to the whole
+record representation. When fields disagree, the most restrictive wins.
+*)
+
+Ast.Oak() {
+    AnonymousModule() {
+        Record("Person") {
+            Field("Name", String()).toPrivate()
+            Field("Age", Int())
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Summary
 
 When migrating to v2.0.0:
@@ -467,6 +538,9 @@ When migrating to v2.0.0:
 2. **Wrap raw SyntaxOak nodes** with `EscapeHatch()` when yielding into collections
 3. **Use unified modifiers** like `toPrivate()`, `xmlDocs()`, `attribute()` which work consistently across all widget types
 4. **Update type annotations** if you explicitly typed variables with specific node types like `WidgetBuilder<BindingNode>` - change them to `WidgetBuilder<MemberDefn>`
+5. **Replace `Gen.runWith config oak`** with the `Gen.run(oak, config)` overload (`Gen` is now a type)
+6. **Drop `getterAccessibility` / `setterAccessibility`** arguments from `AbstractMember` calls
+7. **Move record accessibility to the type** if you relied on per-field modifiers — field accessibility now applies to the whole representation
 
 The v2.0 changes provide a cleaner, more consistent API while maintaining full compatibility with the Fantomas Oak AST.
 *)
