@@ -2207,6 +2207,52 @@ module private RewriteImpl =
         else
             TypeDefnRegularNode(tn', members', n.Range)
 
+    // ===== TypeDefn-level walker =====
+    // Applies g to every TypeDefn in the Oak (top-level and inside nested
+    // modules). Unlike the Expr walkers, this visits the type-definition nodes
+    // themselves, so g can replace one TypeDefn shape with another.
+    let rec rewriteTypeDefnInModuleDecl (g: TypeDefn -> TypeDefn) (d: ModuleDecl) : ModuleDecl =
+        match d with
+        | ModuleDecl.TypeDefn td ->
+            let td' = g td
+            if refEq td td' then d else ModuleDecl.TypeDefn td'
+        | ModuleDecl.NestedModule n ->
+            let decls' = n.Declarations |> mapList(rewriteTypeDefnInModuleDecl g)
+
+            if refEq decls' n.Declarations then
+                d
+            else
+                ModuleDecl.NestedModule(
+                    NestedModuleNode(
+                        n.XmlDoc,
+                        n.Attributes,
+                        n.Module,
+                        n.Accessibility,
+                        n.IsRecursive,
+                        n.Identifier,
+                        n.Equals,
+                        decls',
+                        n.Range
+                    )
+                )
+        | _ -> d
+
+    let rewriteTypeDefnInOak (g: TypeDefn -> TypeDefn) (oak: Oak) : Oak =
+        let mods' =
+            oak.ModulesOrNamespaces
+            |> mapList(fun n ->
+                let decls' = n.Declarations |> mapList(rewriteTypeDefnInModuleDecl g)
+
+                if refEq decls' n.Declarations then
+                    n
+                else
+                    ModuleOrNamespaceNode(n.Header, decls', n.Range))
+
+        if refEq mods' oak.ModulesOrNamespaces then
+            oak
+        else
+            Oak(oak.ParsedHashDirectives, mods', oak.Range)
+
 /// <summary>
 /// Bottom-up rewriter for expressions inside an Oak tree. Visits every
 /// <see cref="T:Fantomas.Core.SyntaxOak.Expr"/> reachable from the input
@@ -2235,3 +2281,22 @@ module Rewrite =
 
     /// <summary>Rewrites every Expr in a raw <see cref="T:Fantomas.Core.SyntaxOak.Oak"/>.</summary>
     let exprInOak (f: Expr -> Expr) (oak: Oak) : Oak = RewriteImpl.rewriteOak f oak
+
+    /// <summary>
+    /// Rewrites every TypeDefn in the Oak produced by <paramref name="widget"/>,
+    /// returning the same <c>WidgetBuilder</c> when nothing changed. Unlike
+    /// <see cref="M:Fabulous.AST.Rewrite.expr"/> this visits type definitions
+    /// themselves, so a pass can replace one shape with another (e.g. a union
+    /// with a record).
+    /// </summary>
+    let typeDefn (g: TypeDefn -> TypeDefn) (widget: WidgetBuilder<Oak>) : WidgetBuilder<Oak> =
+        let oak = Gen.mkOak widget
+        let oak' = RewriteImpl.rewriteTypeDefnInOak g oak
+
+        if RewriteImpl.refEq oak oak' then
+            widget
+        else
+            Ast.EscapeHatch oak'
+
+    /// <summary>Rewrites every TypeDefn in a raw <see cref="T:Fantomas.Core.SyntaxOak.Oak"/>.</summary>
+    let typeDefnInOak (g: TypeDefn -> TypeDefn) (oak: Oak) : Oak = RewriteImpl.rewriteTypeDefnInOak g oak

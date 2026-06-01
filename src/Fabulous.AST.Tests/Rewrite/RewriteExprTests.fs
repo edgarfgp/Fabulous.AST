@@ -100,3 +100,36 @@ module RewriteExprTests =
 
         Assert.Contains("printfn", source)
         Assert.DoesNotContain("println", source)
+
+    /// Turns a single-case union (`type T = T of a: .. * b: ..`) into the
+    /// equivalent record (`type T = { a: ..; b: .. }`) by reusing the case's
+    /// fields as the record fields.
+    let private unionToRecord(td: TypeDefn) : TypeDefn =
+        match td with
+        | TypeDefn.Union n when n.UnionCases.Length = 1 ->
+            let itd = n :> ITypeDefn
+
+            TypeDefn.Record(
+                TypeDefnRecordNode(
+                    itd.TypeName,
+                    n.Accessibility,
+                    SingleTextNode("{", Range.Zero),
+                    n.UnionCases.Head.Fields,
+                    SingleTextNode("}", Range.Zero),
+                    itd.Members,
+                    Range.Zero
+                )
+            )
+        | _ -> td
+
+    [<Fact>]
+    let ``typeDefn rewrites a single-case union into a record``() =
+        let widget: WidgetBuilder<Oak> =
+            Oak() {
+                AnonymousModule() { Union("Point") { UnionCase("Point", [ Field("X", Int()); Field("Y", Int()) ]) } }
+            }
+
+        let source = widget |> Rewrite.typeDefn unionToRecord |> render
+
+        Assert.Contains("type Point = { X: int; Y: int }", source)
+        Assert.DoesNotContain("| Point", source)
