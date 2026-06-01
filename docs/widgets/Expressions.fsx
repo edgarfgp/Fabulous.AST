@@ -8,6 +8,19 @@ index: 7
 
 (**
 # Expressions
+
+Expressions are the building blocks of values, member bodies, and statements. The
+DSL exposes one widget per F# expression form — this page groups them by family.
+
+## Contents
+- [Identifiers and Literals](#identifiers-and-literals)
+- [Collections and Tuples](#collections-and-tuples)
+- [Application and Operators](#application-and-operators)
+- [Lambdas](#lambdas)
+- [Conditionals and Pattern Matching](#conditionals-and-pattern-matching)
+- [Loops](#loops)
+- [Exception Handling](#exception-handling)
+- [Other Expressions](#other-expressions)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -17,111 +30,203 @@ index: 7
 open Fabulous.AST
 open type Fabulous.AST.Ast
 
+(**
+## Identifiers and Literals
+`IdentExpr` references an identifier and `InterpolatedStringExpr` builds an
+interpolated string (optionally verbatim, or with extra `$` for nested braces):
+*)
+
 Oak() {
     AnonymousModule() {
-        IdentExpr("1")
+        IdentExpr("value")
 
         InterpolatedStringExpr(ConstantExpr("12"))
 
-        InterpolatedStringExpr(ConstantExpr("12"), isVerbatim = true)
+        InterpolatedStringExpr([ "a"; "b"; "c" ], isVerbatim = true)
 
-        LazyExpr(Int(12))
+        InterpolatedStringExpr([ ConstantExpr("12"); ConstantExpr("12") ], isVerbatim = true, dollars = 1)
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Collections and Tuples
+Lists, arrays, sequences, tuples (and their struct variants), and anonymous
+records:
+*)
+
+Oak() {
+    AnonymousModule() {
         ListExpr([ String("a"); String("b"); String("c") ])
 
         ArrayExpr([ String("a"); String("b"); String("c") ])
 
         SeqExpr([ String("a"); String("b") ])
 
-        InfixAppExpr(Int(1), "+", Int(2))
-
-        StructTupleExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2); ConstantExpr(Int 3) ])
-
         TupleExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2); ConstantExpr(Int 3) ])
 
-        Open("System")
+        StructTupleExpr([ ConstantExpr(Int 1); ConstantExpr(Int 2) ])
+
+        AnonRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
+
+        AnonStructRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Application and Operators
+`AppExpr` applies a function, `InfixAppExpr` applies a binary operator, and
+`ChainExpr` builds a dotted call chain:
+*)
+
+Oak() {
+    AnonymousModule() {
+        AppExpr("printfn", String("Hello, World!"))
+
+        InfixAppExpr(Int(1), "+", Int(2))
 
         ChainExpr(
             [ ChainLinkExpr(String("string"))
               ChainLinkDot()
               ChainLinkExpr(OptVarExpr("Length")) ]
         )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-        AppExpr("printfn", String("Hello, World!"))
+// produces the following code:
+(*** include-output ***)
 
+(**
+## Lambdas
+`LambdaExpr` for a bare lambda, `ParenLambdaExpr` for a parenthesized one, and
+`MatchLambdaExpr` for the `function` form:
+*)
+
+Oak() {
+    AnonymousModule() {
         LambdaExpr(UnitPat(), Int(1))
 
-        ParenLambdaExpr(ConstantPat("a"), ConstantExpr("a"))
-
         ParenLambdaExpr([ ConstantPat("a"); ConstantPat("b") ], ConstantExpr("a"))
+
+        MatchLambdaExpr([ MatchClauseExpr("a", Int(3)) ])
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Conditionals and Pattern Matching
+`IfThenElseExpr`, the multi-branch `IfThenElifExpr`, and `MatchExpr` with a list
+of `MatchClauseExpr`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        IfThenElseExpr(Bool(true), String("a"), String("b"))
+
+        IfThenElifExpr(
+            [ IfThenExpr(
+                  InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 1)),
+                  ConstantExpr(String("one"))
+              )
+              ElIfThenExpr(
+                  InfixAppExpr(ConstantExpr(Constant "x"), "=", ConstantExpr(Int 2)),
+                  ConstantExpr(String("two"))
+              ) ],
+            ConstantExpr(String("other"))
+        )
 
         MatchExpr(
             Int(1),
             [ MatchClauseExpr(Int(1), String("a"))
               MatchClauseExpr(WildPat(), String("b")) ]
         )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-        IfThenElseExpr(Bool(true), String("a"), String("b"))
+// produces the following code:
+(*** include-output ***)
 
-        IfThenElifExpr(
-            [ IfThenExpr(
-                  InfixAppExpr(ConstantExpr(Constant "1"), "=", ConstantExpr(Int 12)),
-                  ConstantExpr(ConstantUnit())
-              )
+(**
+## Loops
+`ForEachDoExpr`, the counted `ForToExpr` / `ForDownToExpr`, and `WhileExpr`:
+*)
 
-              ElIfThenExpr(
-                  InfixAppExpr(ConstantExpr(Constant("1")), "=", ConstantExpr(Int 11)),
-                  ConstantExpr(ConstantUnit())
-              ) ],
-            ConstantExpr(ConstantUnit())
-        )
-
+Oak() {
+    AnonymousModule() {
         ForEachDoExpr("i", ListExpr([ Int(1); Int(2); Int(3) ]), AppExpr("printf", String("%i")))
 
         ForToExpr("i", ConstantExpr("1"), ConstantExpr("10"), ConstantExpr(ConstantUnit()))
 
-        ForDownToExpr("i", ConstantExpr("1"), ConstantExpr("10"), ConstantExpr(ConstantUnit()))
+        ForDownToExpr("i", ConstantExpr("10"), ConstantExpr("1"), ConstantExpr(ConstantUnit()))
 
         WhileExpr(ConstantExpr(Bool(true)), ConstantExpr(Int(0)))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-        TryWithExpr(
-            CompExprBodyExpr(
-                [ LetOrUseExpr(Value("result", InfixAppExpr(Int(1), "/", Int(0))))
-                  OtherExpr(AppExpr("printfn", [ String("%i"); Constant("result") ])) ]
-            ),
-            [ MatchClauseExpr("e", AppExpr("printfn", [ String("%s"); String("e.Message") ])) ]
-        )
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Exception Handling
+`TryWithExpr` (and the single-clause `TryWithSingleClauseExpr`) and `TryFinallyExpr`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        TryWithSingleClauseExpr(Int(12), MatchClauseExpr(WildPat(), FailWithExpr(String("Not implemented"))))
 
         TryFinallyExpr(Int(12), Int(12))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
 
-        TryWithSingleClauseExpr(Int(12), MatchClauseExpr(WildPat(), FailWithExpr(String("Not implemented"))))
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Other Expressions
+`LazyExpr`, `QuotedExpr`, the object expression `ObjExpr`, and named computation
+expressions such as `task { ... }`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        LazyExpr(Int(12))
 
         QuotedExpr(InfixAppExpr(Int(1), "+", Int(2)))
 
-        MatchLambdaExpr([ MatchClauseExpr("a", Int(3)) ])
-
         NamedComputationExpr(ConstantExpr(Constant "task"), String("a"))
-
-        NamedComputationExpr(Constant("task"), SingleExpr(SingleNode("return", String("a")).addSpace(true)))
-
-        AnonRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
-
-        AnonStructRecordExpr([ RecordFieldExpr("A", Int(1)); RecordFieldExpr("B", Int(2)) ])
 
         ObjExpr(LongIdent("System.Object"), ConstantExpr(ConstantUnit())) {
             Member("x.ToString()", ConstantExpr(String("F#")))
         }
-
-        AppExpr(ConstantExpr(Constant("printfn")), ConstantExpr(String("a")))
-
-        InterpolatedStringExpr([ "12"; "12"; "12" ], isVerbatim = true)
-
-        InterpolatedStringExpr(
-            [ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ],
-            isVerbatim = true,
-            dollars = 1
-        )
-
     }
 }
 |> Gen.mkOak
