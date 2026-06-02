@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-pre08] - 2026-06-01
+
+### Fixed
+- JSON field names containing backticks now replace them with underscores instead of producing an invalid nested-backtick identifier (#195)
+
 ## [2.0.0-pre07] - 2026-05-30
 
 ### Changed
