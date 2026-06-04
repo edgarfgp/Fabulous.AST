@@ -13,8 +13,8 @@ index: 16
 `Rewrite` applies a transformation to every node of a given kind reachable from a
 Fantomas Oak — through type definitions, member bodies, patterns, types and
 attributes. It is handy for cross-cutting passes that aren't tied to where you
-wrote the builder: rename every occurrence of a function call, convert a union to
-a record, strip XML docs, and so on.
+wrote the builder: fold constants, migrate a deprecated API everywhere, wrap
+calls with instrumentation, convert a union to a record, and so on.
 
 The functions are curried with the target last, so they drop into the usual
 pipeline. The `WidgetBuilder<Oak>` forms return the same builder when nothing
@@ -39,21 +39,127 @@ open type Fabulous.AST.Ast
 
 (**
 ## Rewriting expressions
-`Rewrite.expr` visits every `Expr` and applies your function after each node's
-children are rebuilt (bottom-up). Here we rename a function call. The widget DSL
-emits constants for raw identifier text (`ConstantExpr(Constant "x")` →
-`Expr.Constant`), so a real rewrite covers both `Expr.Ident` and `Expr.Constant`:
+`Rewrite.expr` applies your function to **every** `Expr` in the tree (bottom-up,
+children first). That makes it the right tool for cross-cutting changes that
+aren't tied to any single builder call — the kind of thing other ecosystems
+reach for AST passes to do. A couple of small helpers for building raw `Expr`
+nodes, used by the examples below:
 *)
 
-let renameIdent (oldName: string) (newName: string) (e: Expr) : Expr =
+let ident(name: string) : Expr =
+    Expr.Constant(Constant.FromText(SingleTextNode(name, Range.Zero)))
+
+let intExpr(value: int) : Expr =
+    Expr.Constant(Constant.FromText(SingleTextNode(string value, Range.Zero)))
+
+let (|IntLit|_|)(e: Expr) : int option =
     match e with
-    | Expr.Ident n when n.Text = oldName -> Expr.Ident(SingleTextNode(newName, Range.Zero))
-    | Expr.Constant(Constant.FromText n) when n.Text = oldName ->
-        Expr.Constant(Constant.FromText(SingleTextNode(newName, Range.Zero)))
+    | Expr.Constant(Constant.FromText n) ->
+        match System.Int32.TryParse n.Text with
+        | true, v -> Some v
+        | _ -> None
+    | _ -> None
+
+(**
+### Optimize: constant folding
+Generators often emit naive, uniform expressions (`x * 1 + 0`) because that is
+the easiest thing to produce from data. A folding pass tidies them up afterwards
+— the same idea as an optimizing compiler's constant-folding pass (LLVM, GCC) or
+a JavaScript minifier. The generator stays simple; the cleanup is one reusable
+pass over the result. Because the walk is bottom-up, nested redundancy collapses
+in a single pass.
+*)
+
+let foldConstants(e: Expr) : Expr =
+    match e with
+    | Expr.InfixApp n ->
+        match n.Operator.Text, n.LeftHandSide, n.RightHandSide with
+        | "+", lhs, IntLit 0
+        | "+", IntLit 0, lhs
+        | "*", lhs, IntLit 1
+        | "*", IntLit 1, lhs -> lhs
+        | "+", IntLit a, IntLit b -> intExpr(a + b)
+        | "*", IntLit a, IntLit b -> intExpr(a * b)
+        | _ -> e
     | _ -> e
 
-Oak() { AnonymousModule() { Value("greet", AppExpr(ConstantExpr(Constant "println"), [ Constant "msg" ])) } }
-|> Rewrite.expr(renameIdent "println" "printfn")
+Oak() {
+    AnonymousModule() {
+        Value("area", InfixAppExpr(InfixAppExpr(ConstantExpr(Constant "width"), "*", Int(1)), "+", Int(0)))
+
+        Value("total", InfixAppExpr(Int(2), "+", Int(3)))
+    }
+}
+|> Rewrite.expr foldConstants
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+### Migrate an API (codemod)
+Rewrite a non-idiomatic call into its better form wherever it appears — the same
+job a [jscodeshift](https://github.com/facebook/jscodeshift) React codemod, a
+Scalafix rule, or `go fix` does. Here `List.length xs = 0` (which is O(n)) becomes
+`List.isEmpty xs` (O(1)) across the whole tree:
+*)
+
+let useIsEmpty(e: Expr) : Expr =
+    match e with
+    | Expr.InfixApp n when n.Operator.Text = "=" ->
+        match n.LeftHandSide, n.RightHandSide with
+        | Expr.App app, IntLit 0 ->
+            match app.FunctionExpr with
+            | Expr.Constant(Constant.FromText f) when f.Text = "List.length" ->
+                Expr.App(ExprAppNode(ident "List.isEmpty", List.ofSeq app.Arguments, Range.Zero))
+            | _ -> e
+        | _ -> e
+    | _ -> e
+
+Oak() {
+    AnonymousModule() {
+        Value(
+            "isEmpty",
+            InfixAppExpr(AppExpr(ConstantExpr(Constant "List.length"), [ ConstantExpr(Constant "xs") ]), "=", Int(0))
+        )
+    }
+}
+|> Rewrite.expr useIsEmpty
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+### Instrument calls
+Weave a cross-cutting concern into generated code without touching every call
+site — the way OpenTelemetry's auto-instrumentation or an AspectJ aspect does.
+Here every `compute` call is wrapped with a timing helper. (No infinite loop: the
+walk is a single pass, so the newly-created `withTiming` node is not revisited.)
+*)
+
+let instrument(e: Expr) : Expr =
+    match e with
+    | Expr.App app ->
+        match app.FunctionExpr with
+        | Expr.Constant(Constant.FromText f) when f.Text = "compute" ->
+            let wrapped =
+                Expr.Paren(
+                    ExprParenNode(SingleTextNode("(", Range.Zero), e, SingleTextNode(")", Range.Zero), Range.Zero)
+                )
+
+            Expr.App(ExprAppNode(ident "withTiming", [ wrapped ], Range.Zero))
+        | _ -> e
+    | _ -> e
+
+Oak() {
+    AnonymousModule() { Value("result", AppExpr(ConstantExpr(Constant "compute"), [ ConstantExpr(Constant "input") ])) }
+}
+|> Rewrite.expr instrument
 |> Gen.mkOak
 |> Gen.run
 |> printfn "%s"
@@ -102,7 +208,7 @@ When you already hold a raw `Oak` (rather than a `WidgetBuilder<Oak>`), use the
 
 ```fsharp
 let oak = Gen.mkOak widget
-let renamed = oak |> Rewrite.exprInOak (renameIdent "println" "printfn")
+let optimized = oak |> Rewrite.exprInOak foldConstants
 let asRecord = oak |> Rewrite.typeDefnInOak unionToRecord
 ```
 *)
