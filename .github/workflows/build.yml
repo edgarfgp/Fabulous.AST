@@ -8,7 +8,7 @@ permissions: write-all
 
 env:
   CONFIG: Release
-  SLN_FILE: Fabulous.AST.sln
+  SLN_FILE: Fabulous.AST.slnx
 
 jobs:
   build:

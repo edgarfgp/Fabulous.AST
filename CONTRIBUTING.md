@@ -72,9 +72,9 @@ and it will be automatically reflected in the PR.
 To build Fabulous.AST, you will need to install:
 - the [.NET 8.0 SDK]
 - an IDE of your preference
-- Open the Fabulous.AST.sln ith your preferred IDE and build the solution or execute one of the following commands:
+- Open the Fabulous.AST.slnx ith your preferred IDE and build the solution or execute one of the following commands:
 ```shell
-dotnet build Fabulous.AST.sln
+dotnet build Fabulous.AST.slnx
 ```
 
 or
