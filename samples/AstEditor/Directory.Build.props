@@ -1,0 +1,4 @@
+<!-- Isolate this exploratory UI sample from the repo's root Directory.Build.props
+     (library packaging/SourceLink settings) so it builds standalone. -->
+<Project>
+</Project>

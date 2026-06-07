@@ -1,0 +1,72 @@
+# AstEditor — a live Fabulous.AST playground
+
+A small desktop IDE for exploring [Fabulous.AST](../../). You write the Fabulous.AST DSL on
+the left and watch the generated F# source appear on the right, then **Run** it and see its
+output — all in a dockable, dark-themed editor with F# syntax highlighting and IntelliSense.
+
+Built with [Fabulous.Avalonia](https://github.com/fabulous-dev/Fabulous.Avalonia) (MVU),
+[AvaloniaEdit](https://github.com/AvaloniaUI/AvaloniaEdit) (code editor),
+[Dock](https://github.com/wieslawsoltes/Dock) (docking layout) and
+[FSharp.Compiler.Service](https://www.nuget.org/packages/FSharp.Compiler.Service) (evaluation
++ IntelliSense).
+
+## Run
+
+```bash
+dotnet run --project samples/AstEditor
+```
+
+> The first completion / generation triggers a cold F# Interactive + compiler-service warm-up
+> (~1–2s); everything is fast afterwards.
+
+## What it does
+
+- **Live generation** — type the DSL, and ~400ms after you pause it is evaluated in a hosted
+  FSI session and the generated F# is rendered on the right.
+- **Run** — executes the generated F# and shows its console output in the bottom console.
+- **IntelliSense** (DSL pane) — FSharp.Compiler.Service powered:
+  - type-aware completion, including member completion after `.`
+  - hover tooltips
+  - inline error/warning squiggles
+- **Code editing** — AvaloniaEdit with TextMate F# syntax highlighting, line numbers, undo.
+- **Docking** — the three panes are Dock documents you can drag, split and float.
+
+The DSL you write is a full F# script (opens, helpers, an active pattern, a `Rewrite` pass…)
+that ends in the generated source — typically `... |> Gen.mkOak |> Gen.run`. The default
+sample demonstrates a constant-folding `Rewrite` over a small module.
+
+## Architecture
+
+The app is Fabulous MVU. The interesting work is in the bindings that bridge non-Fabulous
+controls into the MVU world:
+
+| File | Responsibility |
+|------|----------------|
+| `Program.fs` | Avalonia entry point. |
+| `App.fs` | MVU `Model`/`Msg`/`update`/`view` — the IDE chrome (toolbar, status bar, dark theme) and the panes. |
+| `Evaluator.fs` | Hosts an FSI session; `generate` (DSL → F#) and `run` (execute generated F#), serialized and `Console.Out`-captured. |
+| `Intellisense.fs` | FSharp.Compiler.Service language service: `complete`, `tooltip`, `diagnostics`. |
+| `Completion.fs` | Wires FCS completion to AvaloniaEdit's `CompletionWindow`. |
+| `Hover.fs` | Wires FCS tooltips to AvaloniaEdit's `PointerHover`. |
+| `Squiggles.fs` | `IBackgroundRenderer` drawing FCS diagnostics as wavy underlines (debounced). |
+| `AvaloniaEditView.fs` | A hand-written Fabulous.Avalonia binding for AvaloniaEdit's `TextEditor` (two-way text, line numbers, TextMate, the IntelliSense hooks). |
+| `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` that hosts three **live** Fabulous panes as dockable documents. |
+
+### Notable bridges
+
+- **Fabulous ⇆ AvaloniaEdit** (`AvaloniaEditView.fs`): AvaloniaEdit's `Text` is a CLR property
+  (no `AvaloniaProperty`) and `TextChanged` is a parameterless event, so the two-way binding is
+  hand-wired. Disposing the change handler *before* a programmatic text set keeps the caret
+  stable.
+- **Fabulous ⇆ Dock** (`DockView.fs`): Dock owns a mutable, build-once view-model tree, which is
+  the opposite of MVU's re-render model. The binding uses Fabulous's `definePropertyWidget` to
+  materialize each pane into a reactive `Control`, then hands those controls to Dock as
+  `Document` content via a `DataTemplate` — so the panes stay live while Dock owns the layout.
+
+## Notes
+
+- This is a **sample**, not a product — it favours clarity over completeness. Member completion
+  needs a successful type-check, the dock layout isn't persisted, and the FCS warm-up is visible
+  on first use.
+- It pins Avalonia **11.3.12** (Dock requires it) and references the published **Fabulous.AST**
+  package so its FSharp.Core lines up with the compiler service.
