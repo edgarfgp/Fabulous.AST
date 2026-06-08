@@ -33,6 +33,7 @@ dotnet run --project samples/AstEditor
   - a `Rewrite`-powered code action (**Ctrl+.**) — "Apply constant-folding Rewrite" threads a
     `Rewrite.expr` pass into the DSL pipeline so `x*1`/`x+0` are simplified in the output
 - **Examples** — toolbar buttons load ready-made DSL scripts (Record / Rewrite / Hello).
+- **Status bar** — a live `Ln x, Col y` position pill that tracks the DSL editor's caret.
 - **Code editing** — AvaloniaEdit with TextMate F# syntax highlighting, line numbers, undo.
 - **Docking** — the three panes are Dock documents you can drag, split and float.
 

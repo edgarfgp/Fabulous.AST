@@ -101,7 +101,10 @@ Oak() {
           /// so we recompile once the user pauses — not on every keystroke.
           Version: int
           IsRunning: bool
-          IsExecuting: bool }
+          IsExecuting: bool
+          /// Caret position in the DSL editor (1-based), shown in the status bar.
+          CaretLine: int
+          CaretColumn: int }
 
     type Msg =
         | SetSource of string
@@ -110,6 +113,7 @@ Oak() {
         | RunDone of Result<string, string>
         | RunCode
         | RunCodeDone of Result<string, string>
+        | SetCaret of int * int
 
     /// How long to wait after the last keystroke before regenerating.
     let private debounceMs = 400
@@ -121,7 +125,9 @@ Oak() {
           RunOutput = "// Click Run ▶ to execute the generated F#."
           Version = 0
           IsRunning = false
-          IsExecuting = false },
+          IsExecuting = false
+          CaretLine = 1
+          CaretColumn = 1 },
         // Kick off an initial render so the right pane isn't empty on launch.
         Cmd.OfAsync.perform (fun () -> async { return 0 }) () Settle
 
@@ -189,6 +195,11 @@ Oak() {
                 RunOutput = "// " + diagnostics.Replace("\n", "\n// ")
                 IsExecuting = false },
             Cmd.none
+        | SetCaret(line, column) ->
+            { model with
+                CaretLine = line
+                CaretColumn = column },
+            Cmd.none
 
     let private monoFont =
         Avalonia.Media.FontFamily("Cascadia Code, Consolas, Menlo, monospace")
@@ -217,6 +228,7 @@ Oak() {
             .highlightFSharp()
             .intelliSense()
             .diagnostics()
+            .onCaretMoved(SetCaret)
 
     let private generatedPane(model: Model) =
         (TextEditor(model.Output) |> code)
@@ -262,10 +274,24 @@ Oak() {
         ))
             .background(toolbarBrush)
 
+    let private caretBubbleBrush = brush "#1E5C99"
+
+    /// The IDE "Ln x, Col y" position pill.
+    let private caretBubble(model: Model) =
+        (Border(
+            TextBlock($"Ln {model.CaretLine},  Col {model.CaretColumn}")
+                .foreground(white)
+                .fontSize(12.)
+        ))
+            .background(caretBubbleBrush)
+            .cornerRadius(9.)
+            .padding(10., 1.)
+            .centerVertical()
+
     /// Bottom status bar (the signature IDE blue strip).
     let private statusBar(model: Model) =
         (Border(
-            (Grid(coldefs = [ Auto; Star; Auto ], rowdefs = [ Auto ]) {
+            (Grid(coldefs = [ Auto; Star; Auto; Auto ], rowdefs = [ Auto ]) {
                 TextBlock(
                     if model.IsRunning then "Generating…"
                     elif model.IsExecuting then "Running generated code…"
@@ -275,10 +301,12 @@ Oak() {
                     .centerVertical()
                     .gridColumn(0)
 
+                (caretBubble model).margin(0., 0., 12., 0.).gridColumn(2)
+
                 TextBlock("F#  •  Fabulous.AST 2.0  •  TextMate")
                     .foreground(white)
                     .centerVertical()
-                    .gridColumn(2)
+                    .gridColumn(3)
             })
                 .margin(12., 4.)
         ))

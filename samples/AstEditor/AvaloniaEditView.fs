@@ -108,6 +108,35 @@ module TextEditor =
             | ValueSome true -> Squiggles.install(node.Target :?> AvEdit)
             | _ -> ())
 
+    /// Raises (line, column) — both 1-based — whenever the caret moves.
+    let CaretMoved: SimpleScalarAttributeDefinition<int * int -> MsgValue> =
+        let name = "TextEditor_CaretMoved"
+
+        let key =
+            SimpleScalarAttributeDefinition.CreateAttributeData(
+                ScalarAttributeComparers.noCompare,
+                (fun _ (newValueOpt: (int * int -> MsgValue) voption) (node: IViewNode) ->
+                    let editor = node.Target :?> AvEdit
+
+                    match node.TryGetHandler(name) with
+                    | ValueNone -> ()
+                    | ValueSome handler -> handler.Dispose()
+
+                    match newValueOpt with
+                    | ValueNone -> node.RemoveHandler(name)
+                    | ValueSome fn ->
+                        let handler =
+                            editor.TextArea.Caret.PositionChanged.Subscribe(fun _ ->
+                                let caret = editor.TextArea.Caret
+                                let (MsgValue r) = fn (caret.Line, caret.Column)
+                                Dispatcher.dispatch node r)
+
+                        node.SetHandler(name, handler))
+            )
+            |> AttributeDefinitionStore.registerScalar
+
+        { Key = key; Name = name }
+
     /// Turns on TextMate F# highlighting for this editor instance. Uses no-compare so a first
     /// install that fails (e.g. control not ready) is retried on the next render; once the
     /// ConditionalWeakTable records success, subsequent applies are no-ops.
@@ -217,3 +246,8 @@ type TextEditorModifiers =
     [<Extension>]
     static member inline diagnostics(this: WidgetBuilder<'msg, #IFabTextEditor>) =
         this.AddScalar(TextEditor.Diagnostics.WithValue(true))
+
+    /// Raises (line, column) — 1-based — whenever the caret moves.
+    [<Extension>]
+    static member inline onCaretMoved(this: WidgetBuilder<'msg, #IFabTextEditor>, fn: int * int -> 'msg) =
+        this.AddScalar(TextEditor.CaretMoved.WithValue(fn >> box >> MsgValue))
