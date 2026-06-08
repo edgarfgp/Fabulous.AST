@@ -33,7 +33,9 @@ dotnet run --project samples/AstEditor
     **Ctrl+.**); e.g. rewrite a typo'd `Fielddd` to `Field`
   - a `Rewrite`-powered code action (**Ctrl+.**) — "Apply constant-folding Rewrite" threads a
     `Rewrite.expr` pass into the DSL pipeline so `x*1`/`x+0` are simplified in the output
-- **Examples** — toolbar buttons load ready-made DSL scripts (Record / Rewrite / Hello).
+- **Sample tabs** — each example (Record / Rewrite / Hello) is its own DSL editor **tab** you
+  can drag out, float and re-dock; editing or clicking into a tab makes it drive the generated
+  and output panes.
 - **Status bar** — a live `Ln x, Col y` position pill that tracks the DSL editor's caret.
 - **Code editing** — AvaloniaEdit with TextMate F# syntax highlighting, line numbers, undo.
 - **Docking** — the three panes are Dock documents you can drag, split and float.
@@ -62,7 +64,7 @@ controls into the MVU world:
 | `RewriteAction.fs` | The `Rewrite`-powered code action — rewrites the DSL to add a constant-folding `Rewrite.expr` pass. |
 | `Lightbulb.fs` | A custom gutter `AbstractMargin` drawing the 💡 on actionable lines; click opens the picker. |
 | `AvaloniaEditView.fs` | A hand-written Fabulous.Avalonia binding for AvaloniaEdit's `TextEditor` (two-way text, line numbers, TextMate, the IntelliSense hooks). |
-| `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` that hosts three **live** Fabulous panes as dockable documents. |
+| `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` — hosts the DSL editor **tabs** (one Document per sample) plus the generated/output panes, all **live** Fabulous controls. |
 
 ### Notable bridges
 

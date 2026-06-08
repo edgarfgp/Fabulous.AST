@@ -14,14 +14,14 @@ open Fabulous.Avalonia
 // Dock's DockControl. Aliased to avoid clashing with the `DockControl` module below.
 type private DockCtl = Dock.Avalonia.Controls.DockControl
 
-/// A Fabulous.Avalonia binding for Dock's DockControl, hosting three live Fabulous panes
-/// (source / generated / output) as dockable Documents the user can drag, split and float.
+/// A Fabulous.Avalonia binding for Dock's DockControl. It hosts the IDE layout: a row of DSL
+/// editor *tabs* (one dockable Document per sample) beside the generated-F# pane, with the
+/// output console docked below — all live Fabulous-materialized controls.
 ///
 /// Dock is an MVVM layout framework: the control owns a mutable tree of `IDockable` view
-/// models that it rearranges at runtime. We build that tree once (in the Factory) and put
-/// each pane's *Fabulous-materialized Control* into a Document's Content. Because Fabulous
-/// reuses the child node across renders, those panes stay fully reactive even though the
-/// dock tree itself is opaque, build-once state.
+/// models it rearranges at runtime. We build that tree once and put each pane's
+/// Fabulous-materialized Control into a Document's content (via a DataTemplate). Because
+/// Fabulous reuses the child node across renders, the panes stay reactive.
 type IFabDockControl =
     inherit IFabControl
 
@@ -44,50 +44,61 @@ module private DockInterop =
                 with ex ->
                     eprintfn "AstEditor: failed to load Dock theme — %s" ex.Message
 
-    /// The three pane controls a DockControl hosts, plus whether the layout is built yet.
+    /// The controls a DockControl hosts: the three DSL editor tabs, the generated and output
+    /// panes, the tab titles, and whether the layout is built yet.
     type Panes() =
-        member val Source: Control = null with get, set
+        member val Tab1: Control = null with get, set
+        member val Tab2: Control = null with get, set
+        member val Tab3: Control = null with get, set
         member val Generated: Control = null with get, set
         member val Output: Control = null with get, set
+        member val Names: string[] = null with get, set
         member val Built = false with get, set
 
     let private panes = ConditionalWeakTable<DockCtl, Panes>()
     let getPanes (dc: DockCtl) = panes.GetValue(dc, fun _ -> Panes())
 
     /// A Document that carries the Fabulous-materialized Control directly (the MVVM Document
-    /// has no Content slot), rendered by the DataTemplate registered in `tryBuild`.
+    /// has no content slot), rendered by the DataTemplate registered in `tryBuild`.
     type HostDocument(host: Control) =
         inherit Document()
         member _.Host = host
 
-    /// Builds the dock layout: three side-by-side Documents (DSL | Generated | Output),
-    /// each hosting one of the Fabulous-materialized pane controls.
-    type private AstDockFactory(source: Control, generated: Control, output: Control) =
+    /// Builds the IDE layout: DSL tabs | generated on top, output console below.
+    type private AstDockFactory(tabs: (string * Control)[], generated: Control, output: Control) =
         inherit Factory()
 
-        member this.Pane (title: string) (control: Control) : IDockable =
-            // CanClose/CanPin off: these three panes are essential, so don't let them be
-            // closed away. Drag/float stay enabled. CanCreateDocument off hides the "+"
-            // button (we have no document factory to back it).
-            let doc = HostDocument(control, Title = title, CanClose = false, CanPin = false)
+        member _.HostDoc (title: string) (control: Control) : IDockable =
+            HostDocument(control, Title = title, CanClose = false, CanPin = false) :> IDockable
+
+        /// One pane in its own single-document DocumentDock.
+        member this.SoloPane (title: string) (control: Control) : IDockable =
             let dock = DocumentDock(CanCreateDocument = false)
-            dock.VisibleDockables <- this.CreateList<IDockable>(doc :> IDockable)
+            let doc = this.HostDoc title control
+            dock.VisibleDockables <- this.CreateList<IDockable>(doc)
             dock.ActiveDockable <- doc
             dock :> IDockable
 
         override this.CreateLayout() =
-            // IDE layout: the two code editors side-by-side on top, the output console
-            // docked across the bottom.
+            // The DSL editors as tabs in a single DocumentDock.
+            let dslDock = DocumentDock(CanCreateDocument = false)
+
+            let dslDocs =
+                tabs |> Array.map(fun (title, control) -> this.HostDoc title control)
+
+            dslDock.VisibleDockables <- this.CreateList<IDockable>(dslDocs)
+            dslDock.ActiveDockable <- dslDocs.[0]
+
             let editors = ProportionalDock(Orientation = Orientation.Horizontal, Proportion = 0.68)
 
             editors.VisibleDockables <-
                 this.CreateList<IDockable>(
-                    this.Pane "DSL" source,
+                    dslDock :> IDockable,
                     this.CreateProportionalDockSplitter(),
-                    this.Pane "Generated F#" generated
+                    this.SoloPane "Generated F#" generated
                 )
 
-            let outputPane = this.Pane "Output" output
+            let outputPane = this.SoloPane "Output" output
             outputPane.Proportion <- 0.32
 
             let main = ProportionalDock(Orientation = Orientation.Vertical)
@@ -100,18 +111,22 @@ module private DockInterop =
             root.DefaultDockable <- main
             root
 
-    /// Once all three panes are materialized, build the layout and hand it to the control.
-    /// Built once: this assumes each pane's root widget type is stable (so Fabulous reuses
-    /// the same control across renders and never re-invokes `set`). The current panes —
-    /// TextEditor, Grid, TextEditor — satisfy that.
+    /// Once every pane is materialized, build the layout and hand it to the control.
     let tryBuild (dc: DockCtl) =
         let p = getPanes dc
 
-        if not p.Built && not(isNull p.Source) && not(isNull p.Generated) && not(isNull p.Output) then
+        let ready =
+            [ p.Tab1; p.Tab2; p.Tab3; p.Generated; p.Output ] |> List.forall(isNull >> not)
+
+        if not p.Built && ready then
             p.Built <- true
-            // Render each HostDocument's body as the control it carries.
             dc.DataTemplates.Add(FuncDataTemplate<HostDocument>((fun d _ -> d.Host), false))
-            let factory = AstDockFactory(p.Source, p.Generated, p.Output)
+
+            let name i =
+                if not(isNull p.Names) && i < p.Names.Length then p.Names.[i] else $"Tab {i + 1}"
+
+            let tabs = [| name 0, p.Tab1; name 1, p.Tab2; name 2, p.Tab3 |]
+            let factory = AstDockFactory(tabs, p.Generated, p.Output)
             let layout = factory.CreateLayout()
             factory.InitLayout(layout)
             dc.Factory <- factory
@@ -119,6 +134,12 @@ module private DockInterop =
 
 module DockControl =
     let WidgetKey = Widgets.register<DockCtl>()
+
+    let TabNames =
+        Attributes.defineSimpleScalarWithEquality<string[]> "DockControl_TabNames" (fun _ newValueOpt node ->
+            match newValueOpt with
+            | ValueSome names -> (getPanes(node.Target :?> DockCtl)).Names <- names
+            | _ -> ())
 
     let private contentSlot name (store: Panes -> Control -> unit) (read: Panes -> Control) =
         Attributes.definePropertyWidget<Control>
@@ -130,8 +151,9 @@ module DockControl =
                 store (getPanes dc) control
                 tryBuild dc)
 
-    let SourceContent =
-        contentSlot "DockControl_Source" (fun p c -> p.Source <- c) (fun p -> p.Source)
+    let Tab1 = contentSlot "DockControl_Tab1" (fun p c -> p.Tab1 <- c) (fun p -> p.Tab1)
+    let Tab2 = contentSlot "DockControl_Tab2" (fun p c -> p.Tab2 <- c) (fun p -> p.Tab2)
+    let Tab3 = contentSlot "DockControl_Tab3" (fun p c -> p.Tab3 <- c) (fun p -> p.Tab3)
 
     let GeneratedContent =
         contentSlot "DockControl_Generated" (fun p c -> p.Generated <- c) (fun p -> p.Generated)
@@ -143,16 +165,23 @@ module DockControl =
 module DockControlBuilders =
     type Fabulous.Avalonia.View with
 
-        /// Creates a Dock layout hosting three live Fabulous panes as dockable documents.
+        /// Creates the IDE layout: three named DSL editor tabs, plus the generated and output
+        /// panes — all live Fabulous controls hosted as dockable documents.
         static member inline DockControl
             (
-                source: WidgetBuilder<'msg, #IFabControl>,
+                tab1: string * WidgetBuilder<'msg, #IFabControl>,
+                tab2: string * WidgetBuilder<'msg, #IFabControl>,
+                tab3: string * WidgetBuilder<'msg, #IFabControl>,
                 generated: WidgetBuilder<'msg, #IFabControl>,
                 output: WidgetBuilder<'msg, #IFabControl>
             ) =
-            WidgetBuilder<'msg, IFabDockControl>(
-                DockControl.WidgetKey,
-                DockControl.SourceContent.WithValue(source.Compile())
-            )
+            let struct (n1, w1) = struct (fst tab1, (snd tab1).Compile())
+            let struct (n2, w2) = struct (fst tab2, (snd tab2).Compile())
+            let struct (n3, w3) = struct (fst tab3, (snd tab3).Compile())
+
+            WidgetBuilder<'msg, IFabDockControl>(DockControl.WidgetKey, DockControl.TabNames.WithValue [| n1; n2; n3 |])
+                .AddWidget(DockControl.Tab1.WithValue(w1))
+                .AddWidget(DockControl.Tab2.WithValue(w2))
+                .AddWidget(DockControl.Tab3.WithValue(w3))
                 .AddWidget(DockControl.GeneratedContent.WithValue(generated.Compile()))
                 .AddWidget(DockControl.OutputContent.WithValue(output.Compile()))

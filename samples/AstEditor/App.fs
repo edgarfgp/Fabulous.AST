@@ -91,7 +91,10 @@ Oak() {
           "Hello", helloSample ]
 
     type Model =
-        { Source: string
+        { /// One DSL editor tab per example; the active one drives generation.
+          TabNames: string[]
+          TabSources: string[]
+          ActiveTab: int
           Output: string
           /// The last F# source that generated cleanly — what the Run button executes.
           LastValid: string option
@@ -107,19 +110,23 @@ Oak() {
           CaretColumn: int }
 
     type Msg =
-        | SetSource of string
+        /// (tab index, new source)
+        | SetSource of int * string
         /// Fires after the debounce delay, carrying the Version it was scheduled for.
         | Settle of int
         | RunDone of Result<string, string>
         | RunCode
         | RunCodeDone of Result<string, string>
-        | SetCaret of int * int
+        /// (tab index, line, column) — also makes that tab active.
+        | SetCaret of int * int * int
 
     /// How long to wait after the last keystroke before regenerating.
     let private debounceMs = 400
 
     let init() =
-        { Source = sample
+        { TabNames = examples |> List.map fst |> Array.ofList
+          TabSources = examples |> List.map snd |> Array.ofList
+          ActiveTab = 0
           Output = "// Generating…"
           LastValid = None
           RunOutput = "// Click Run ▶ to execute the generated F#."
@@ -158,16 +165,20 @@ Oak() {
 
     let update msg model =
         match msg with
-        | SetSource src ->
+        | SetSource(tab, src) ->
             let version = model.Version + 1
+            let sources = Array.copy model.TabSources
+            sources.[tab] <- src
+
             { model with
-                Source = src
+                TabSources = sources
+                ActiveTab = tab
                 Version = version },
             debounce version
         | Settle version ->
             // Stale tag? The user kept typing; let the latest debounce win.
             if version = model.Version then
-                { model with IsRunning = true }, Cmd.OfAsync.perform runEval model.Source RunDone
+                { model with IsRunning = true }, Cmd.OfAsync.perform runEval model.TabSources.[model.ActiveTab] RunDone
             else
                 model, Cmd.none
         | RunDone(Ok source) ->
@@ -195,11 +206,23 @@ Oak() {
                 RunOutput = "// " + diagnostics.Replace("\n", "\n// ")
                 IsExecuting = false },
             Cmd.none
-        | SetCaret(line, column) ->
-            { model with
-                CaretLine = line
-                CaretColumn = column },
-            Cmd.none
+        | SetCaret(tab, line, column) ->
+            // Interacting with a different tab makes it active and regenerates it, so the
+            // generated/output panes follow the tab you're working in.
+            if tab <> model.ActiveTab then
+                let version = model.Version + 1
+
+                { model with
+                    ActiveTab = tab
+                    CaretLine = line
+                    CaretColumn = column
+                    Version = version },
+                debounce version
+            else
+                { model with
+                    CaretLine = line
+                    CaretColumn = column },
+                Cmd.none
 
     let private monoFont =
         Avalonia.Media.FontFamily("Cascadia Code, Consolas, Menlo, monospace")
@@ -221,14 +244,15 @@ Oak() {
         elif model.IsExecuting then "● Running…"
         else "● Ready"
 
-    // The dockable code panes. Dock supplies the tab title, so the panes are bare editors.
-    let private sourcePane(model: Model) =
-        (TextEditor(model.Source, SetSource) |> code)
+    // One editable DSL tab per example. Dock supplies the tab title, so the pane is a bare
+    // editor; editing a tab makes it the active one that drives generation.
+    let private tabPane (model: Model) (i: int) =
+        (TextEditor(model.TabSources.[i], (fun s -> SetSource(i, s))) |> code)
             .showLineNumbers(true)
             .highlightFSharp()
             .intelliSense()
             .diagnostics()
-            .onCaretMoved(SetCaret)
+            .onCaretMoved(fun (line, column) -> SetCaret(i, line, column))
 
     let private generatedPane(model: Model) =
         (TextEditor(model.Output) |> code)
@@ -240,35 +264,33 @@ Oak() {
         (TextEditor(model.RunOutput) |> code).isReadOnly(true).wordWrap(true)
 
     let private docked model =
-        DockControl(sourcePane model, generatedPane model, outputPane model)
+        DockControl(
+            (model.TabNames.[0], tabPane model 0),
+            (model.TabNames.[1], tabPane model 1),
+            (model.TabNames.[2], tabPane model 2),
+            generatedPane model,
+            outputPane model
+        )
 
-    /// Top application bar: title + examples on the left, live status + Run on the right.
+    /// Top application bar: title on the left, live status + Run on the right.
     let private toolbar(model: Model) =
         (Border(
-            (Grid(coldefs = [ Auto; Auto; Star; Auto; Auto ], rowdefs = [ Auto ]) {
+            (Grid(coldefs = [ Auto; Star; Auto; Auto ], rowdefs = [ Auto ]) {
                 TextBlock("⚡  Fabulous.AST Studio")
                     .fontSize(14.)
                     .foreground(white)
                     .centerVertical()
                     .gridColumn(0)
 
-                (HStack(6.) {
-                    for (name, src) in examples do
-                        Button(name, SetSource src)
-                })
-                    .margin(20., 0., 0., 0.)
-                    .centerVertical()
-                    .gridColumn(1)
-
                 TextBlock(statusLabel model)
                     .foreground(dimText)
                     .centerVertical()
                     .margin(0., 0., 12., 0.)
-                    .gridColumn(3)
+                    .gridColumn(2)
 
                 Button((if model.IsExecuting then "Running…" else "▶  Run"), RunCode)
                     .isEnabled(model.LastValid.IsSome && not model.IsExecuting)
-                    .gridColumn(4)
+                    .gridColumn(3)
             })
                 .margin(12., 8.)
         ))
