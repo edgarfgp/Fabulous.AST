@@ -17,6 +17,7 @@
     <Compile Include="Hover.fs" />
     <Compile Include="Squiggles.fs" />
     <Compile Include="SignatureHelp.fs" />
+    <Compile Include="QuickFix.fs" />
     <Compile Include="AvaloniaEditView.fs" />
     <Compile Include="DockView.fs" />
     <Compile Include="App.fs" />

@@ -98,6 +98,7 @@ module TextEditor =
                 Completion.install editor
                 Hover.install editor
                 SignatureHelp.install editor
+                QuickFix.install editor
             | _ -> ())
 
     /// Enables inline FCS error/warning squiggles for this editor.

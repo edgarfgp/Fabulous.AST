@@ -29,7 +29,9 @@ module Intellisense =
           IsError: bool
           Message: string }
 
-    let private checker = lazy FSharpChecker.Create()
+    // suggestNamesForErrors: include "Maybe you want one of the following: …" hints in
+    // diagnostic messages — the quick-fix code action parses those for replacements.
+    let private checker = lazy FSharpChecker.Create(suggestNamesForErrors = true)
 
     // A stable script path; the content is supplied per-request.
     let private scriptPath = Path.Combine(Path.GetTempPath(), "fabulous_ast_playground.fsx")
