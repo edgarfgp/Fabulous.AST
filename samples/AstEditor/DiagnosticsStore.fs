@@ -12,7 +12,16 @@ module DiagnosticsStore =
     let private slot (editor: TextEditor) =
         table.GetValue(editor, fun _ -> ref [||])
 
-    let set (editor: TextEditor) (diags: Intellisense.Diagnostic[]) = (slot editor).Value <- diags
+    // Notified (on the UI thread) whenever an editor's diagnostics change — the lightbulb
+    // gutter uses this to redraw.
+    let private listeners = ResizeArray<TextEditor -> unit>()
+    let onChanged (f: TextEditor -> unit) = listeners.Add f
+
+    let set (editor: TextEditor) (diags: Intellisense.Diagnostic[]) =
+        (slot editor).Value <- diags
+
+        for f in listeners do
+            f editor
 
     let get (editor: TextEditor) = (slot editor).Value
 

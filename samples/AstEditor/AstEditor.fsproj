@@ -19,6 +19,7 @@
     <Compile Include="SignatureHelp.fs" />
     <Compile Include="RewriteAction.fs" />
     <Compile Include="QuickFix.fs" />
+    <Compile Include="Lightbulb.fs" />
     <Compile Include="AvaloniaEditView.fs" />
     <Compile Include="DockView.fs" />
     <Compile Include="App.fs" />

@@ -8,10 +8,9 @@ open AvaloniaEdit.CodeCompletion
 open AvaloniaEdit.Document
 open AvaloniaEdit.Editing
 
-/// Quick fixes (code actions) for the DSL editor. Press Ctrl+. on a diagnostic and pick a
-/// replacement — driven by FCS's "Maybe you want one of the following: …" suggestions, so a
-/// typo like `Fielddd` can be rewritten to `Field` in one keystroke. The picker reuses
-/// AvaloniaEdit's CompletionWindow; each entry rewrites the document instead of inserting text.
+/// Quick fixes (code actions) for the DSL editor. Triggered by Ctrl+. or by clicking the
+/// lightbulb in the gutter. Diagnostic fixes come from FCS's "Maybe you want one of the
+/// following: …" suggestions; a document-wide Rewrite action is offered alongside them.
 module QuickFix =
 
     type private FixData(description: string, apply: unit -> unit) =
@@ -36,7 +35,9 @@ module QuickFix =
             |> Array.filter(fun s -> s.Length > 0)
             |> Array.truncate 6
 
-    /// Replacement fixes for every diagnostic covering the caret.
+    let private hasFix (d: Intellisense.Diagnostic) = suggestions d.Message |> Array.isEmpty |> not
+
+    /// Replacement fixes for every diagnostic covering the (1-based line, 0-based col).
     let private fixesAt (editor: TextEditor) (line: int) (col: int) : ICompletionData[] =
         let doc = editor.Document
 
@@ -57,6 +58,65 @@ module QuickFix =
             with _ ->
                 [||])
 
+    /// Document-wide actions (offered regardless of the caret position).
+    let private globalActions (editor: TextEditor) : ICompletionData[] =
+        match RewriteAction.addConstantFolding editor.Text with
+        | Some rewritten ->
+            [| FixData(
+                   "✦ Apply constant-folding Rewrite",
+                   (fun () -> editor.Document.Replace(0, editor.Document.TextLength, rewritten))
+               )
+               :> ICompletionData |]
+        | None -> [||]
+
+    let private computeFixes (editor: TextEditor) (line: int) (col: int) =
+        Array.append (fixesAt editor line col) (globalActions editor)
+
+    let private showWindow (editor: TextEditor) (fixes: ICompletionData[]) =
+        if fixes.Length > 0 then
+            let w = CompletionWindow(editor.TextArea)
+            w.CompletionList.CompletionData.Clear()
+
+            for f in fixes do
+                w.CompletionList.CompletionData.Add(f)
+
+            w.Show()
+
+    /// The 1-based lines that currently carry a lightbulb: lines with a diagnostic fix, plus
+    /// the `|> Gen.mkOak` line when the Rewrite action applies.
+    let actionLines (editor: TextEditor) : Set<int> =
+        let diagLines =
+            DiagnosticsStore.get editor |> Array.filter hasFix |> Array.map(fun d -> d.StartLine)
+
+        let rewriteLines =
+            if RewriteAction.canApply editor.Text then
+                let idx = editor.Text.IndexOf("|> Gen.mkOak", StringComparison.Ordinal)
+
+                if idx >= 0 then
+                    [ editor.Document.GetLineByOffset(idx).LineNumber ]
+                else
+                    []
+            else
+                []
+
+        Set.union (Set.ofArray diagLines) (Set.ofList rewriteLines)
+
+    /// Show the fix picker for a clicked gutter line (moves the caret there first).
+    let popForLine (editor: TextEditor) (line: int) =
+        let doc = editor.Document
+
+        let col =
+            match DiagnosticsStore.get editor |> Array.tryFind(fun d -> d.StartLine = line && hasFix d) with
+            | Some d -> d.StartColumn
+            | None -> 0
+
+        try
+            editor.CaretOffset <- doc.GetOffset(line, col + 1)
+        with _ ->
+            ()
+
+        showWindow editor (computeFixes editor line col)
+
     let private installed = ConditionalWeakTable<TextEditor, obj>()
 
     /// Wire Ctrl+. quick fixes onto an editor (idempotent per instance).
@@ -66,28 +126,8 @@ module QuickFix =
         | _ ->
             installed.Add(editor, box())
 
-            // Document-wide actions offered on Ctrl+. regardless of the caret position.
-            let globalActions () : ICompletionData[] =
-                match RewriteAction.addConstantFolding editor.Text with
-                | Some rewritten ->
-                    [| FixData(
-                           "✦ Apply constant-folding Rewrite",
-                           (fun () -> editor.Document.Replace(0, editor.Document.TextLength, rewritten))
-                       )
-                       :> ICompletionData |]
-                | None -> [||]
-
             editor.TextArea.KeyDown.Add(fun e ->
                 if e.Key = Key.OemPeriod && e.KeyModifiers = KeyModifiers.Control then
                     let loc = editor.Document.GetLocation(editor.CaretOffset)
-                    let fixes = Array.append (fixesAt editor loc.Line (loc.Column - 1)) (globalActions())
-
-                    if fixes.Length > 0 then
-                        let w = CompletionWindow(editor.TextArea)
-                        w.CompletionList.CompletionData.Clear()
-
-                        for f in fixes do
-                            w.CompletionList.CompletionData.Add(f)
-
-                        w.Show()
-                        e.Handled <- true)
+                    showWindow editor (computeFixes editor loc.Line (loc.Column - 1))
+                    e.Handled <- true)
