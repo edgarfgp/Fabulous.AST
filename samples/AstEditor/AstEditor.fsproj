@@ -22,6 +22,7 @@
     <Compile Include="Lightbulb.fs" />
     <Compile Include="AvaloniaEditView.fs" />
     <Compile Include="DockView.fs" />
+    <Compile Include="Session.fs" />
     <Compile Include="App.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

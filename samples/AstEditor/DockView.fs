@@ -1,14 +1,16 @@
 namespace AstEditor
 
+open System
+open System.Collections.Generic
 open System.Runtime.CompilerServices
 open Avalonia
 open Avalonia.Controls
 open Avalonia.Controls.Templates
 open Dock.Model.Core
+open Dock.Model.Core.Events
 open Dock.Model.Mvvm
 open Dock.Model.Mvvm.Controls
 open Dock.Avalonia.Controls
-open Dock.Model.Core.Events
 open Fabulous
 open Fabulous.ScalarAttributeDefinitions
 open Fabulous.Avalonia
@@ -17,21 +19,30 @@ open Fabulous.Avalonia
 type private DockCtl = Dock.Avalonia.Controls.DockControl
 
 /// A Fabulous.Avalonia binding for Dock's DockControl. It hosts the IDE layout: a row of DSL
-/// editor *tabs* (one dockable Document per sample) beside the generated-F# pane, with the
-/// output console docked below — all live Fabulous-materialized controls.
+/// editor *tabs* (one Document per sample) beside the generated-F# pane, with the output
+/// console docked below — all live Fabulous-materialized controls.
 ///
-/// Dock is an MVVM layout framework: the control owns a mutable tree of `IDockable` view
-/// models it rearranges at runtime. We build that tree once and put each pane's
-/// Fabulous-materialized Control into a Document's content (via a DataTemplate). Because
-/// Fabulous reuses the child node across renders, the panes stay reactive.
+/// To make the arrangement persistable, each Document carries a stable Id and its content is
+/// resolved by Id (from a per-control registry) via a DataTemplate — so the *structure*
+/// serializes cleanly while the live controls re-bind on load.
 type IFabDockControl =
     inherit IFabControl
+
+module private Ids =
+    let dsl i = $"dsl-%d{i}"
+    let generated = "generated"
+    let output = "output"
+    let tryDslIndex (id: string) =
+        if not(isNull id) && id.StartsWith("dsl-", StringComparison.Ordinal) then
+            match Int32.TryParse(id.Substring 4) with
+            | true, i -> Some i
+            | _ -> None
+        else
+            None
 
 [<AutoOpen>]
 module private DockInterop =
 
-    // Dock ships its own control theme; without it the DockControl renders blank. Add it to
-    // the running app once, lazily, when the first DockControl materializes.
     let mutable private stylesAdded = false
 
     let ensureDockStyles () =
@@ -46,73 +57,50 @@ module private DockInterop =
                 with ex ->
                     eprintfn "AstEditor: failed to load Dock theme — %s" ex.Message
 
-    /// The controls a DockControl hosts: the three DSL editor tabs, the generated and output
-    /// panes, the tab titles, and whether the layout is built yet.
+    /// Per-DockControl state: the live pane controls (by document Id), the tab titles, the
+    /// active-tab dispatcher, and whether the layout is built.
     type Panes() =
-        member val Tab1: Control = null with get, set
-        member val Tab2: Control = null with get, set
-        member val Tab3: Control = null with get, set
-        member val Generated: Control = null with get, set
-        member val Output: Control = null with get, set
+        member val Controls = Dictionary<string, Control>() with get
         member val Names: string[] = null with get, set
         member val Built = false with get, set
-        /// Dispatches an MVU msg with the index of the DSL tab Dock just activated.
         member val ActivateFn: (int -> unit) option = None with get, set
 
     let private panes = ConditionalWeakTable<DockCtl, Panes>()
     let getPanes (dc: DockCtl) = panes.GetValue(dc, fun _ -> Panes())
 
-    /// A Document that carries the Fabulous-materialized Control directly (the MVVM Document
-    /// has no content slot), rendered by the DataTemplate registered in `tryBuild`.
-    type HostDocument(host: Control) =
-        inherit Document()
-        member _.Host = host
-
-    /// Builds the IDE layout: DSL tabs | generated on top, output console below.
-    type private AstDockFactory(tabs: (string * Control)[], generated: Control, output: Control) =
+    /// Builds the IDE layout structure (Documents carry Ids, not controls).
+    type AstDockFactory(names: string[]) =
         inherit Factory()
 
-        /// The DSL tab documents, in tab order (so an activated dockable maps to its index).
-        member val DslDocuments: HostDocument[] = [||] with get, set
+        member _.Doc (id: string) (title: string) : IDockable =
+            Document(Id = id, Title = title, CanClose = false, CanPin = false) :> IDockable
 
-        member _.HostDoc (title: string) (control: Control) : IDockable =
-            HostDocument(control, Title = title, CanClose = false, CanPin = false) :> IDockable
-
-        /// One pane in its own single-document DocumentDock.
-        member this.SoloPane (title: string) (control: Control) : IDockable =
-            let dock = DocumentDock(CanCreateDocument = false)
-            let doc = this.HostDoc title control
+        member this.Solo (id: string) (title: string) : IDockable =
+            let dock = DocumentDock(Id = id + "-dock", CanCreateDocument = false)
+            let doc = this.Doc id title
             dock.VisibleDockables <- this.CreateList<IDockable>(doc)
             dock.ActiveDockable <- doc
             dock :> IDockable
 
         override this.CreateLayout() =
-            // The DSL editors as tabs in a single DocumentDock.
-            let dslDock = DocumentDock(CanCreateDocument = false)
-
-            let dslHostDocs =
-                tabs
-                |> Array.map(fun (title, control) -> HostDocument(control, Title = title, CanClose = false, CanPin = false))
-
-            this.DslDocuments <- dslHostDocs
-            let dslDocs = dslHostDocs |> Array.map(fun d -> d :> IDockable)
-
+            let dslDock = DocumentDock(Id = "dsl-dock", CanCreateDocument = false)
+            let dslDocs = names |> Array.mapi(fun i title -> this.Doc (Ids.dsl i) title)
             dslDock.VisibleDockables <- this.CreateList<IDockable>(dslDocs)
             dslDock.ActiveDockable <- dslDocs.[0]
 
-            let editors = ProportionalDock(Orientation = Orientation.Horizontal, Proportion = 0.68)
+            let editors = ProportionalDock(Id = "editors", Orientation = Orientation.Horizontal, Proportion = 0.68)
 
             editors.VisibleDockables <-
                 this.CreateList<IDockable>(
                     dslDock :> IDockable,
                     this.CreateProportionalDockSplitter(),
-                    this.SoloPane "Generated F#" generated
+                    this.Solo Ids.generated "Generated F#"
                 )
 
-            let outputPane = this.SoloPane "Output" output
+            let outputPane = this.Solo Ids.output "Output"
             outputPane.Proportion <- 0.32
 
-            let main = ProportionalDock(Orientation = Orientation.Vertical)
+            let main = ProportionalDock(Id = "main", Orientation = Orientation.Vertical)
 
             main.VisibleDockables <-
                 this.CreateList<IDockable>(editors :> IDockable, this.CreateProportionalDockSplitter(), outputPane)
@@ -122,38 +110,41 @@ module private DockInterop =
             root.DefaultDockable <- main
             root
 
-    /// Once every pane is materialized, build the layout and hand it to the control.
+    /// Once every pane control is registered, build the layout.
     let tryBuild (dc: DockCtl) =
         let p = getPanes dc
+        let required = [ Ids.dsl 0; Ids.dsl 1; Ids.dsl 2; Ids.generated; Ids.output ]
 
-        let ready =
-            [ p.Tab1; p.Tab2; p.Tab3; p.Generated; p.Output ] |> List.forall(isNull >> not)
-
-        if not p.Built && ready then
+        if not p.Built && required |> List.forall p.Controls.ContainsKey then
             p.Built <- true
-            dc.DataTemplates.Add(FuncDataTemplate<HostDocument>((fun d _ -> d.Host), false))
 
-            let name i =
-                if not(isNull p.Names) && i < p.Names.Length then p.Names.[i] else $"Tab {i + 1}"
+            // Resolve each Document's content by its Id from the live registry.
+            dc.DataTemplates.Add(
+                FuncDataTemplate<Document>(
+                    (fun d _ ->
+                        match p.Controls.TryGetValue d.Id with
+                        | true, c -> c
+                        | _ -> null),
+                    false
+                )
+            )
 
-            let tabs = [| name 0, p.Tab1; name 1, p.Tab2; name 2, p.Tab3 |]
-            let factory = AstDockFactory(tabs, p.Generated, p.Output)
+            let names =
+                if not(isNull p.Names) && p.Names.Length >= 3 then p.Names else [| "Tab 1"; "Tab 2"; "Tab 3" |]
+
+            let factory = AstDockFactory(names)
             let layout = factory.CreateLayout()
             factory.InitLayout(layout)
             dc.Factory <- factory
             dc.Layout <- layout
 
-            // After init (so we skip the initial activation), report tab-header switches back
-            // to MVU: map the activated dockable to its DSL tab index.
+            // Report tab-header switches back to MVU (skip the initial activation).
             factory.ActiveDockableChanged.Add(fun (e: ActiveDockableChangedEventArgs) ->
                 match e.Dockable with
-                | :? HostDocument as activated ->
-                    match factory.DslDocuments |> Array.tryFindIndex(fun d -> obj.ReferenceEquals(d, activated)) with
-                    | Some index ->
-                        match (getPanes dc).ActivateFn with
-                        | Some dispatch -> dispatch index
-                        | None -> ()
-                    | None -> ()
+                | :? Document as doc ->
+                    match Ids.tryDslIndex doc.Id, p.ActivateFn with
+                    | Some index, Some dispatch -> dispatch index
+                    | _ -> ()
                 | _ -> ())
 
 module DockControl =
@@ -187,25 +178,24 @@ module DockControl =
 
         { Key = key; Name = name }
 
-    let private contentSlot name (store: Panes -> Control -> unit) (read: Panes -> Control) =
+    let private contentSlot id name =
         Attributes.definePropertyWidget<Control>
             name
-            (fun target -> read(getPanes(target :?> DockCtl)) |> box)
+            (fun target ->
+                match (getPanes(target :?> DockCtl)).Controls.TryGetValue id with
+                | true, c -> box c
+                | _ -> null)
             (fun target control ->
                 ensureDockStyles()
                 let dc = target :?> DockCtl
-                store (getPanes dc) control
+                (getPanes dc).Controls.[id] <- control
                 tryBuild dc)
 
-    let Tab1 = contentSlot "DockControl_Tab1" (fun p c -> p.Tab1 <- c) (fun p -> p.Tab1)
-    let Tab2 = contentSlot "DockControl_Tab2" (fun p c -> p.Tab2 <- c) (fun p -> p.Tab2)
-    let Tab3 = contentSlot "DockControl_Tab3" (fun p c -> p.Tab3 <- c) (fun p -> p.Tab3)
-
-    let GeneratedContent =
-        contentSlot "DockControl_Generated" (fun p c -> p.Generated <- c) (fun p -> p.Generated)
-
-    let OutputContent =
-        contentSlot "DockControl_Output" (fun p c -> p.Output <- c) (fun p -> p.Output)
+    let Tab1 = contentSlot (Ids.dsl 0) "DockControl_Tab1"
+    let Tab2 = contentSlot (Ids.dsl 1) "DockControl_Tab2"
+    let Tab3 = contentSlot (Ids.dsl 2) "DockControl_Tab3"
+    let GeneratedContent = contentSlot Ids.generated "DockControl_Generated"
+    let OutputContent = contentSlot Ids.output "DockControl_Output"
 
 [<AutoOpen>]
 module DockControlBuilders =
@@ -221,14 +211,13 @@ module DockControlBuilders =
                 generated: WidgetBuilder<'msg, #IFabControl>,
                 output: WidgetBuilder<'msg, #IFabControl>
             ) =
-            let struct (n1, w1) = struct (fst tab1, (snd tab1).Compile())
-            let struct (n2, w2) = struct (fst tab2, (snd tab2).Compile())
-            let struct (n3, w3) = struct (fst tab3, (snd tab3).Compile())
-
-            WidgetBuilder<'msg, IFabDockControl>(DockControl.WidgetKey, DockControl.TabNames.WithValue [| n1; n2; n3 |])
-                .AddWidget(DockControl.Tab1.WithValue(w1))
-                .AddWidget(DockControl.Tab2.WithValue(w2))
-                .AddWidget(DockControl.Tab3.WithValue(w3))
+            WidgetBuilder<'msg, IFabDockControl>(
+                DockControl.WidgetKey,
+                DockControl.TabNames.WithValue [| fst tab1; fst tab2; fst tab3 |]
+            )
+                .AddWidget(DockControl.Tab1.WithValue((snd tab1).Compile()))
+                .AddWidget(DockControl.Tab2.WithValue((snd tab2).Compile()))
+                .AddWidget(DockControl.Tab3.WithValue((snd tab3).Compile()))
                 .AddWidget(DockControl.GeneratedContent.WithValue(generated.Compile()))
                 .AddWidget(DockControl.OutputContent.WithValue(output.Compile()))
 

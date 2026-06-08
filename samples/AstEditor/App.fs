@@ -121,14 +121,26 @@ Oak() {
         | SetCaret of int * int * int
         /// Dock activated a different DSL tab (e.g. a tab-header click).
         | ActivateTab of int
+        /// Persist the dock arrangement + session on window close.
+        | SaveSession
 
     /// How long to wait after the last keystroke before regenerating.
     let private debounceMs = 400
 
     let init() =
-        { TabNames = examples |> List.map fst |> Array.ofList
-          TabSources = examples |> List.map snd |> Array.ofList
-          ActiveTab = 0
+        let names = examples |> List.map fst |> Array.ofList
+        let defaults = examples |> List.map snd |> Array.ofList
+
+        // Restore the last session's edits + active tab if they match the current tab count.
+        let sources, activeTab =
+            match Session.tryLoad() with
+            | Some(saved, active) when saved.Length = defaults.Length ->
+                saved, (if active >= 0 && active < saved.Length then active else 0)
+            | _ -> defaults, 0
+
+        { TabNames = names
+          TabSources = sources
+          ActiveTab = activeTab
           Output = "// Generating…"
           LastValid = None
           RunOutput = "// Click Run ▶ to execute the generated F#."
@@ -231,6 +243,9 @@ Oak() {
                 { model with ActiveTab = tab; Version = version }, debounce version
             else
                 model, Cmd.none
+        | SaveSession ->
+            Session.save model.TabSources model.ActiveTab
+            model, Cmd.none
 
     let private monoFont =
         Avalonia.Media.FontFamily("Cascadia Code, Consolas, Menlo, monospace")
@@ -352,7 +367,11 @@ Oak() {
 
     let view model =
         (DesktopApplication() {
-            Window(shell model).title("Fabulous.AST Studio").width(1400.).height(820.)
+            Window(shell model)
+                .title("Fabulous.AST Studio")
+                .width(1400.)
+                .height(820.)
+                .onWindowClosing(fun _ -> SaveSession)
         })
             .requestedThemeVariant(Avalonia.Styling.ThemeVariant.Dark)
 

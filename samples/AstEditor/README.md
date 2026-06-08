@@ -37,6 +37,8 @@ dotnet run --project samples/AstEditor
   can drag out, float and re-dock; selecting a tab (header click, click-in, or edit) makes it
   the active tab driving the generated and output panes.
 - **Status bar** — a live `Ln x, Col y` position pill that tracks the DSL editor's caret.
+- **Session restore** — your per-tab edits and the active tab are saved on close and restored
+  on the next launch.
 - **Code editing** — AvaloniaEdit with TextMate F# syntax highlighting, line numbers, undo.
 - **Docking** — the three panes are Dock documents you can drag, split and float.
 
@@ -64,7 +66,8 @@ controls into the MVU world:
 | `RewriteAction.fs` | The `Rewrite`-powered code action — rewrites the DSL to add a constant-folding `Rewrite.expr` pass. |
 | `Lightbulb.fs` | A custom gutter `AbstractMargin` drawing the 💡 on actionable lines; click opens the picker. |
 | `AvaloniaEditView.fs` | A hand-written Fabulous.Avalonia binding for AvaloniaEdit's `TextEditor` (two-way text, line numbers, TextMate, the IntelliSense hooks). |
-| `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` — hosts the DSL editor **tabs** (one Document per sample) plus the generated/output panes, all **live** Fabulous controls. |
+| `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` — hosts the DSL editor **tabs** (one Id-keyed Document per sample, content resolved by Id) plus the generated/output panes, all **live** Fabulous controls. |
+| `Session.fs` | Persists per-tab edits + the active tab across restarts (a small JSON in app-data). |
 
 ### Notable bridges
 
@@ -80,7 +83,10 @@ controls into the MVU world:
 ## Notes
 
 - This is a **sample**, not a product — it favours clarity over completeness. Member completion
-  needs a successful type-check, the dock layout isn't persisted, and the FCS warm-up is visible
-  on first use.
+  needs a successful type-check, and the FCS warm-up is visible on first use.
+- **Session** (edits + active tab) is restored, but the dock **arrangement** (floating/resizing)
+  is not: Dock's `SystemTextJson` serializer (11.3.12.1) doesn't round-trip a layout that holds
+  live controls — it'd need the fixes that currently live only in Dock's `master`. The documents
+  are already Id-keyed (the prerequisite), so this is a drop-in once a fixed serializer ships.
 - It pins Avalonia **11.3.12** (Dock requires it) and references the published **Fabulous.AST**
   package so its FSharp.Core lines up with the compiler service.
