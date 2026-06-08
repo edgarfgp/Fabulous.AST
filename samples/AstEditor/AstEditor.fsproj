@@ -12,9 +12,11 @@
   <ItemGroup>
     <Compile Include="Evaluator.fs" />
     <Compile Include="Intellisense.fs" />
+    <Compile Include="DiagnosticsStore.fs" />
     <Compile Include="Completion.fs" />
     <Compile Include="Hover.fs" />
     <Compile Include="Squiggles.fs" />
+    <Compile Include="SignatureHelp.fs" />
     <Compile Include="AvaloniaEditView.fs" />
     <Compile Include="DockView.fs" />
     <Compile Include="App.fs" />

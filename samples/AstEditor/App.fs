@@ -56,6 +56,40 @@ Oak() {
 |> Gen.mkOak
 |> Gen.run"""
 
+    let private recordSample =
+        """open Fabulous.AST
+open type Fabulous.AST.Ast
+
+Oak() {
+    AnonymousModule() {
+        Record("Person") {
+            Field("Name", "string")
+            Field("Age", "int")
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run"""
+
+    let private helloSample =
+        """open Fabulous.AST
+open type Fabulous.AST.Ast
+
+Oak() {
+    AnonymousModule() {
+        Value("greeting", String("Hello from Fabulous.AST"))
+        AppExpr("printfn", [ String("%s"); Constant("greeting") ])
+    }
+}
+|> Gen.mkOak
+|> Gen.run"""
+
+    /// Example DSL scripts offered in the toolbar.
+    let private examples =
+        [ "Record", recordSample
+          "Rewrite", sample
+          "Hello", helloSample ]
+
     type Model =
         { Source: string
           Output: string
@@ -196,25 +230,33 @@ Oak() {
     let private docked model =
         DockControl(sourcePane model, generatedPane model, outputPane model)
 
-    /// Top application bar: title on the left, live status + Run on the right.
+    /// Top application bar: title + examples on the left, live status + Run on the right.
     let private toolbar(model: Model) =
         (Border(
-            (Grid(coldefs = [ Auto; Star; Auto; Auto ], rowdefs = [ Auto ]) {
+            (Grid(coldefs = [ Auto; Auto; Star; Auto; Auto ], rowdefs = [ Auto ]) {
                 TextBlock("⚡  Fabulous.AST Studio")
                     .fontSize(14.)
                     .foreground(white)
                     .centerVertical()
                     .gridColumn(0)
 
+                (HStack(6.) {
+                    for (name, src) in examples do
+                        Button(name, SetSource src)
+                })
+                    .margin(20., 0., 0., 0.)
+                    .centerVertical()
+                    .gridColumn(1)
+
                 TextBlock(statusLabel model)
                     .foreground(dimText)
                     .centerVertical()
                     .margin(0., 0., 12., 0.)
-                    .gridColumn(2)
+                    .gridColumn(3)
 
                 Button((if model.IsExecuting then "Running…" else "▶  Run"), RunCode)
                     .isEnabled(model.LastValid.IsSome && not model.IsExecuting)
-                    .gridColumn(3)
+                    .gridColumn(4)
             })
                 .margin(12., 8.)
         ))

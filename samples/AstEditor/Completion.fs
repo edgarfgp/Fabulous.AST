@@ -15,12 +15,13 @@ open AvaloniaEdit.Editing
 module Completion =
 
     /// One completion entry. `describe` is deferred — AvaloniaEdit only reads `Description`
-    /// for the highlighted item, so we don't render every tooltip up front.
-    type private CompletionData(text: string, describe: unit -> string) =
+    /// for the highlighted item, so we don't render every tooltip up front. `glyph` is a
+    /// one-letter category hint shown before the name (the inserted `Text` stays bare).
+    type private CompletionData(text: string, glyph: string, describe: unit -> string) =
         interface ICompletionData with
             member _.Image = null
             member _.Text = text
-            member _.Content = box text
+            member _.Content = box $"{glyph}  {text}"
             member _.Description = box(describe())
             member _.Priority = 0.0
 
@@ -50,7 +51,7 @@ module Completion =
         Seq.append dsl inBuffer
         |> Seq.distinct
         |> Seq.sort
-        |> Seq.map(fun name -> name, (fun () -> "Fabulous.AST"))
+        |> Seq.map(fun name -> name, "v", (fun () -> "Fabulous.AST"))
         |> Seq.toArray
 
     /// Offset where the identifier under the caret begins (so the window filters on it).
@@ -74,7 +75,7 @@ module Completion =
             let mutable pending = false
 
             // Build and show the window from the freshest caret position (UI thread).
-            let showCompletions (items: (string * (unit -> string))[]) =
+            let showCompletions (items: (string * string * (unit -> string))[]) =
                 if items.Length > 0 && isNull window then
                     let doc = editor.Document
                     let caret = editor.CaretOffset
@@ -84,8 +85,8 @@ module Completion =
                     let w = CompletionWindow(editor.TextArea)
                     w.StartOffset <- start
 
-                    for (name, describe) in items do
-                        w.CompletionList.CompletionData.Add(CompletionData(name, describe))
+                    for (name, glyph, describe) in items do
+                        w.CompletionList.CompletionData.Add(CompletionData(name, glyph, describe))
 
                     if prefix.Length > 0 then
                         w.CompletionList.SelectItem(prefix)
@@ -114,7 +115,7 @@ module Completion =
 
                             let mapped =
                                 if items.Length > 0 then
-                                    items |> Array.map(fun it -> it.Name, it.Describe)
+                                    items |> Array.map(fun it -> it.Name, it.Glyph, it.Describe)
                                 else
                                     fallback source
 

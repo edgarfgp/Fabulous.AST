@@ -14,9 +14,11 @@ open FSharp.Compiler.Tokenization
 module Intellisense =
 
     /// A completion candidate. `Describe` is deferred so we only render the (expensive)
-    /// tooltip text for the item the user actually highlights, not all of them.
+    /// tooltip text for the item the user actually highlights, not all of them. `Glyph` is a
+    /// one-letter category hint (C=class, M=method, F=field, …).
     type CompletionItem =
         { Name: string
+          Glyph: string
           Describe: unit -> string }
 
     type Diagnostic =
@@ -86,6 +88,29 @@ module Intellisense =
             | _ -> None)
         |> String.concat "\n"
 
+    /// A one-letter category hint for a completion glyph.
+    let private glyphSymbol (glyph: FSharpGlyph) =
+        match glyph with
+        | FSharpGlyph.Class
+        | FSharpGlyph.Struct -> "C"
+        | FSharpGlyph.Method
+        | FSharpGlyph.OverridenMethod
+        | FSharpGlyph.ExtensionMethod -> "M"
+        | FSharpGlyph.Field -> "F"
+        | FSharpGlyph.Property -> "P"
+        | FSharpGlyph.Module
+        | FSharpGlyph.NameSpace -> "N"
+        | FSharpGlyph.Type
+        | FSharpGlyph.Typedef -> "T"
+        | FSharpGlyph.Union
+        | FSharpGlyph.Enum -> "U"
+        | FSharpGlyph.EnumMember -> "e"
+        | FSharpGlyph.Interface -> "I"
+        | FSharpGlyph.Delegate -> "D"
+        | FSharpGlyph.Event -> "E"
+        | FSharpGlyph.Variable -> "x"
+        | _ -> "v"
+
     /// Completions at a caret. `line`/`col` are 1-based (AvaloniaEdit's convention).
     let complete (source: string) (line: int) (col: int) (lineText: string) =
         async {
@@ -99,6 +124,7 @@ module Intellisense =
                     info.Items
                     |> Array.map(fun item ->
                         { Name = item.NameInList
+                          Glyph = glyphSymbol item.Glyph
                           Describe = fun () -> renderTip item.Description })
         }
 
@@ -116,6 +142,30 @@ module Intellisense =
                     let text = renderTip tip
                     return (if String.IsNullOrWhiteSpace text then None else Some text)
                 | None -> return None
+        }
+
+    /// One overload's rendered signature (e.g. `Field(name, fieldType)`).
+    type SignatureOverload =
+        { Header: string
+          Parameters: string[] }
+
+    /// Overloads for the method whose `names` ends at `line`/`col` (e.g. when typing `(`).
+    let signatures (source: string) (line: int) (col: int) (lineText: string) (names: string list) =
+        async {
+            match! check source with
+            | None -> return [||]
+            | Some(_, checkResults) ->
+                let group = checkResults.GetMethods(line, col, lineText, Some names)
+
+                return
+                    group.Methods
+                    |> Array.map(fun m ->
+                        let ps =
+                            m.Parameters
+                            |> Array.map(fun p -> p.Display |> Array.map(fun t -> t.Text) |> String.concat "")
+
+                        { Header = group.MethodName + "(" + String.concat ", " ps + ")"
+                          Parameters = ps })
         }
 
     /// Type-check the whole script and return its diagnostics.

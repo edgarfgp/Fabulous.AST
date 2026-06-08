@@ -97,6 +97,7 @@ module TextEditor =
                 let editor = node.Target :?> AvEdit
                 Completion.install editor
                 Hover.install editor
+                SignatureHelp.install editor
             | _ -> ())
 
     /// Enables inline FCS error/warning squiggles for this editor.

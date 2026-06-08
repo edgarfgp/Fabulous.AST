@@ -88,6 +88,8 @@ module Squiggles =
 
                 renderer.SetMarkers markers
                 textView.InvalidateLayer(KnownLayer.Selection)
+                // Publish for hover, so pointing at a squiggle can show its message.
+                DiagnosticsStore.set editor diags
 
             let runCheck () =
                 let source = editor.Text

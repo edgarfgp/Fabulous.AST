@@ -28,19 +28,28 @@ module Hover =
                     let line = tvp.Line
                     let lineText = doc.GetText(doc.GetLineByNumber(line))
                     let col = tvp.Column - 1 // 0-based index of the hovered character
-                    let source = editor.Text
 
-                    async {
-                        try
-                            match! Intellisense.tooltip source line col lineText with
-                            | Some text ->
-                                Dispatcher.UIThread.Post(fun () ->
-                                    ToolTip.SetTip(editor, text)
-                                    ToolTip.SetIsOpen(editor, true))
-                            | None -> ()
-                        with _ ->
-                            ()
-                    }
-                    |> Async.Start)
+                    // A diagnostic under the pointer wins — show its message immediately, no
+                    // type-check needed.
+                    match DiagnosticsStore.get editor |> Array.tryFind(DiagnosticsStore.covers line col) with
+                    | Some d ->
+                        let prefix = if d.IsError then "● error  " else "● warning  "
+                        ToolTip.SetTip(editor, prefix + d.Message)
+                        ToolTip.SetIsOpen(editor, true)
+                    | None ->
+                        let source = editor.Text
+
+                        async {
+                            try
+                                match! Intellisense.tooltip source line col lineText with
+                                | Some text ->
+                                    Dispatcher.UIThread.Post(fun () ->
+                                        ToolTip.SetTip(editor, text)
+                                        ToolTip.SetIsOpen(editor, true))
+                                | None -> ()
+                            with _ ->
+                                ()
+                        }
+                        |> Async.Start)
 
             textView.PointerHoverStopped.Add(fun _ -> ToolTip.SetIsOpen(editor, false))

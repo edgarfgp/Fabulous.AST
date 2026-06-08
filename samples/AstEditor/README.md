@@ -25,9 +25,11 @@ dotnet run --project samples/AstEditor
   FSI session and the generated F# is rendered on the right.
 - **Run** — executes the generated F# and shows its console output in the bottom console.
 - **IntelliSense** (DSL pane) — FSharp.Compiler.Service powered:
-  - type-aware completion, including member completion after `.`
-  - hover tooltips
+  - type-aware completion, including member completion after `.`, with category glyphs
+  - hover tooltips (and the diagnostic message when you hover a squiggle)
+  - signature help (overloads) when you type `(`
   - inline error/warning squiggles
+- **Examples** — toolbar buttons load ready-made DSL scripts (Record / Rewrite / Hello).
 - **Code editing** — AvaloniaEdit with TextMate F# syntax highlighting, line numbers, undo.
 - **Docking** — the three panes are Dock documents you can drag, split and float.
 
@@ -45,10 +47,12 @@ controls into the MVU world:
 | `Program.fs` | Avalonia entry point. |
 | `App.fs` | MVU `Model`/`Msg`/`update`/`view` — the IDE chrome (toolbar, status bar, dark theme) and the panes. |
 | `Evaluator.fs` | Hosts an FSI session; `generate` (DSL → F#) and `run` (execute generated F#), serialized and `Console.Out`-captured. |
-| `Intellisense.fs` | FSharp.Compiler.Service language service: `complete`, `tooltip`, `diagnostics`. |
-| `Completion.fs` | Wires FCS completion to AvaloniaEdit's `CompletionWindow`. |
-| `Hover.fs` | Wires FCS tooltips to AvaloniaEdit's `PointerHover`. |
+| `Intellisense.fs` | FSharp.Compiler.Service language service: `complete`, `tooltip`, `diagnostics`, `signatures`. |
+| `DiagnosticsStore.fs` | Shares the latest diagnostics between the squiggle renderer and hover. |
+| `Completion.fs` | Wires FCS completion (with glyphs) to AvaloniaEdit's `CompletionWindow`. |
+| `Hover.fs` | Wires FCS tooltips — and squiggle messages — to AvaloniaEdit's `PointerHover`. |
 | `Squiggles.fs` | `IBackgroundRenderer` drawing FCS diagnostics as wavy underlines (debounced). |
+| `SignatureHelp.fs` | Wires FCS overloads to AvaloniaEdit's `OverloadInsightWindow` on `(`. |
 | `AvaloniaEditView.fs` | A hand-written Fabulous.Avalonia binding for AvaloniaEdit's `TextEditor` (two-way text, line numbers, TextMate, the IntelliSense hooks). |
 | `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` that hosts three **live** Fabulous panes as dockable documents. |
 
