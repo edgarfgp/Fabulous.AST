@@ -66,10 +66,21 @@ module QuickFix =
         | _ ->
             installed.Add(editor, box())
 
+            // Document-wide actions offered on Ctrl+. regardless of the caret position.
+            let globalActions () : ICompletionData[] =
+                match RewriteAction.addConstantFolding editor.Text with
+                | Some rewritten ->
+                    [| FixData(
+                           "✦ Apply constant-folding Rewrite",
+                           (fun () -> editor.Document.Replace(0, editor.Document.TextLength, rewritten))
+                       )
+                       :> ICompletionData |]
+                | None -> [||]
+
             editor.TextArea.KeyDown.Add(fun e ->
                 if e.Key = Key.OemPeriod && e.KeyModifiers = KeyModifiers.Control then
                     let loc = editor.Document.GetLocation(editor.CaretOffset)
-                    let fixes = fixesAt editor loc.Line (loc.Column - 1)
+                    let fixes = Array.append (fixesAt editor loc.Line (loc.Column - 1)) (globalActions())
 
                     if fixes.Length > 0 then
                         let w = CompletionWindow(editor.TextArea)

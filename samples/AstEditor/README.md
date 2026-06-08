@@ -30,6 +30,8 @@ dotnet run --project samples/AstEditor
   - signature help (overloads) when you type `(`
   - inline error/warning squiggles
   - quick fixes (**Ctrl+.**) on a diagnostic — e.g. rewrite a typo'd `Fielddd` to `Field`
+  - a `Rewrite`-powered code action (**Ctrl+.**) — "Apply constant-folding Rewrite" threads a
+    `Rewrite.expr` pass into the DSL pipeline so `x*1`/`x+0` are simplified in the output
 - **Examples** — toolbar buttons load ready-made DSL scripts (Record / Rewrite / Hello).
 - **Code editing** — AvaloniaEdit with TextMate F# syntax highlighting, line numbers, undo.
 - **Docking** — the three panes are Dock documents you can drag, split and float.
@@ -54,7 +56,8 @@ controls into the MVU world:
 | `Hover.fs` | Wires FCS tooltips — and squiggle messages — to AvaloniaEdit's `PointerHover`. |
 | `Squiggles.fs` | `IBackgroundRenderer` drawing FCS diagnostics as wavy underlines (debounced). |
 | `SignatureHelp.fs` | Wires FCS overloads to AvaloniaEdit's `OverloadInsightWindow` on `(`. |
-| `QuickFix.fs` | Ctrl+. code actions that rewrite the code from FCS's "did you mean" suggestions. |
+| `QuickFix.fs` | Ctrl+. code actions: FCS "did you mean" replacements + the Rewrite action. |
+| `RewriteAction.fs` | The `Rewrite`-powered code action — rewrites the DSL to add a constant-folding `Rewrite.expr` pass. |
 | `AvaloniaEditView.fs` | A hand-written Fabulous.Avalonia binding for AvaloniaEdit's `TextEditor` (two-way text, line numbers, TextMate, the IntelliSense hooks). |
 | `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` that hosts three **live** Fabulous panes as dockable documents. |
 
