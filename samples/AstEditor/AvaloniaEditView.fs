@@ -23,6 +23,27 @@ type private AvEdit = AvaloniaEdit.TextEditor
 type IFabTextEditor =
     inherit IFabTemplatedControl
 
+/// Switches the TextMate syntax theme on every editor at once, so they follow the app's
+/// light/dark variant. (DarkPlus / LightPlus — the VS Code Dark+/Light+ palettes.)
+module EditorTheme =
+    let mutable private dark = true
+    let private installs = ResizeArray<TextMate.Installation * RegistryOptions>()
+
+    let themeName () =
+        if dark then ThemeName.DarkPlus else ThemeName.LightPlus
+
+    let register (installation: TextMate.Installation) (options: RegistryOptions) = installs.Add(installation, options)
+
+    /// Re-theme all editors for the given variant.
+    let apply (isDark: bool) =
+        dark <- isDark
+
+        for installation, options in installs do
+            try
+                installation.SetTheme(options.LoadTheme(themeName()))
+            with _ ->
+                ()
+
 [<AutoOpen>]
 module private AvaloniaEditInterop =
 
@@ -55,13 +76,14 @@ module private AvaloniaEditInterop =
         | true, _ -> ()
         | _ ->
             try
-                let registryOptions = RegistryOptions(ThemeName.DarkPlus)
+                let registryOptions = RegistryOptions(EditorTheme.themeName())
                 let installation = editor.InstallTextMate(registryOptions)
                 let language = registryOptions.GetLanguageByExtension(".fs")
 
                 if not(isNull(box language)) then
                     installation.SetGrammar(registryOptions.GetScopeByLanguageId(language.Id))
 
+                EditorTheme.register installation registryOptions
                 installs.Add(editor, box installation)
             with _ ->
                 ()

@@ -36,6 +36,8 @@ dotnet run --project samples/AstEditor
 - **Sample tabs** — each example (Record / Rewrite / Hello) is its own DSL editor **tab** you
   can drag out, float and re-dock; selecting a tab (header click, click-in, or edit) makes it
   the active tab driving the generated and output panes.
+- **Theme switcher** — a toolbar group (System / Light / Dark) that flips the app variant
+  *and* re-themes the editors' TextMate syntax colours to match, live.
 - **Status bar** — a live `Ln x, Col y` position pill that tracks the DSL editor's caret.
 - **Session restore** — your per-tab edits and the active tab are saved on close and restored
   on the next launch.

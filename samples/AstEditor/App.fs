@@ -107,7 +107,9 @@ Oak() {
           IsExecuting: bool
           /// Caret position in the DSL editor (1-based), shown in the status bar.
           CaretLine: int
-          CaretColumn: int }
+          CaretColumn: int
+          /// The application theme variant (also drives the editors' syntax theme).
+          Theme: Avalonia.Styling.ThemeVariant }
 
     type Msg =
         /// (tab index, new source)
@@ -123,6 +125,8 @@ Oak() {
         | ActivateTab of int
         /// Persist the dock arrangement + session on window close.
         | SaveSession
+        /// Switch the app theme variant (and the editors' syntax theme).
+        | SetTheme of Avalonia.Styling.ThemeVariant
 
     /// How long to wait after the last keystroke before regenerating.
     let private debounceMs = 400
@@ -148,7 +152,8 @@ Oak() {
           IsRunning = false
           IsExecuting = false
           CaretLine = 1
-          CaretColumn = 1 },
+          CaretColumn = 1
+          Theme = Avalonia.Styling.ThemeVariant.Dark },
         // Kick off an initial render so the right pane isn't empty on launch.
         Cmd.OfAsync.perform (fun () -> async { return 0 }) () Settle
 
@@ -246,6 +251,10 @@ Oak() {
         | SaveSession ->
             Session.save model.TabSources model.ActiveTab
             model, Cmd.none
+        | SetTheme variant ->
+            // Editors follow: dark syntax theme for Dark/Default, light for Light.
+            EditorTheme.apply(variant <> Avalonia.Styling.ThemeVariant.Light)
+            { model with Theme = variant }, Cmd.none
 
     let private monoFont =
         Avalonia.Media.FontFamily("Cascadia Code, Consolas, Menlo, monospace")
@@ -296,25 +305,39 @@ Oak() {
         )
             .onActiveTabChanged(ActivateTab)
 
-    /// Top application bar: title on the left, live status + Run on the right.
+    /// A small grouped theme switcher (System / Light / Dark).
+    let private themePicker(model: Model) =
+        let pick (label: string) (variant: Avalonia.Styling.ThemeVariant) =
+            Button(label, SetTheme variant).isEnabled(model.Theme <> variant)
+
+        (HStack(4.) {
+            pick "🖥 System" Avalonia.Styling.ThemeVariant.Default
+            pick "☀ Light" Avalonia.Styling.ThemeVariant.Light
+            pick "🌙 Dark" Avalonia.Styling.ThemeVariant.Dark
+        })
+            .centerVertical()
+
+    /// Top application bar: title on the left, theme + live status + Run on the right.
     let private toolbar(model: Model) =
         (Border(
-            (Grid(coldefs = [ Auto; Star; Auto; Auto ], rowdefs = [ Auto ]) {
+            (Grid(coldefs = [ Auto; Star; Auto; Auto; Auto ], rowdefs = [ Auto ]) {
                 TextBlock("⚡  Fabulous.AST Studio")
                     .fontSize(14.)
                     .foreground(white)
                     .centerVertical()
                     .gridColumn(0)
 
+                (themePicker model).margin(0., 0., 16., 0.).gridColumn(2)
+
                 TextBlock(statusLabel model)
                     .foreground(dimText)
                     .centerVertical()
                     .margin(0., 0., 12., 0.)
-                    .gridColumn(2)
+                    .gridColumn(3)
 
                 Button((if model.IsExecuting then "Running…" else "▶  Run"), RunCode)
                     .isEnabled(model.LastValid.IsSome && not model.IsExecuting)
-                    .gridColumn(3)
+                    .gridColumn(4)
             })
                 .margin(12., 8.)
         ))
@@ -373,7 +396,7 @@ Oak() {
                 .height(820.)
                 .onWindowClosing(fun _ -> SaveSession)
         })
-            .requestedThemeVariant(Avalonia.Styling.ThemeVariant.Dark)
+            .requestedThemeVariant(model.Theme)
 
     let create() =
         let program = Program.statefulWithCmd init update |> Program.withView view
