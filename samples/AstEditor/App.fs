@@ -119,6 +119,8 @@ Oak() {
         | RunCodeDone of Result<string, string>
         /// (tab index, line, column) — also makes that tab active.
         | SetCaret of int * int * int
+        /// Dock activated a different DSL tab (e.g. a tab-header click).
+        | ActivateTab of int
 
     /// How long to wait after the last keystroke before regenerating.
     let private debounceMs = 400
@@ -223,6 +225,12 @@ Oak() {
                     CaretLine = line
                     CaretColumn = column },
                 Cmd.none
+        | ActivateTab tab ->
+            if tab <> model.ActiveTab && tab >= 0 && tab < model.TabSources.Length then
+                let version = model.Version + 1
+                { model with ActiveTab = tab; Version = version }, debounce version
+            else
+                model, Cmd.none
 
     let private monoFont =
         Avalonia.Media.FontFamily("Cascadia Code, Consolas, Menlo, monospace")
@@ -271,6 +279,7 @@ Oak() {
             generatedPane model,
             outputPane model
         )
+            .onActiveTabChanged(ActivateTab)
 
     /// Top application bar: title on the left, live status + Run on the right.
     let private toolbar(model: Model) =

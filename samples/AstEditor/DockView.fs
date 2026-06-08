@@ -8,7 +8,9 @@ open Dock.Model.Core
 open Dock.Model.Mvvm
 open Dock.Model.Mvvm.Controls
 open Dock.Avalonia.Controls
+open Dock.Model.Core.Events
 open Fabulous
+open Fabulous.ScalarAttributeDefinitions
 open Fabulous.Avalonia
 
 // Dock's DockControl. Aliased to avoid clashing with the `DockControl` module below.
@@ -54,6 +56,8 @@ module private DockInterop =
         member val Output: Control = null with get, set
         member val Names: string[] = null with get, set
         member val Built = false with get, set
+        /// Dispatches an MVU msg with the index of the DSL tab Dock just activated.
+        member val ActivateFn: (int -> unit) option = None with get, set
 
     let private panes = ConditionalWeakTable<DockCtl, Panes>()
     let getPanes (dc: DockCtl) = panes.GetValue(dc, fun _ -> Panes())
@@ -67,6 +71,9 @@ module private DockInterop =
     /// Builds the IDE layout: DSL tabs | generated on top, output console below.
     type private AstDockFactory(tabs: (string * Control)[], generated: Control, output: Control) =
         inherit Factory()
+
+        /// The DSL tab documents, in tab order (so an activated dockable maps to its index).
+        member val DslDocuments: HostDocument[] = [||] with get, set
 
         member _.HostDoc (title: string) (control: Control) : IDockable =
             HostDocument(control, Title = title, CanClose = false, CanPin = false) :> IDockable
@@ -83,8 +90,12 @@ module private DockInterop =
             // The DSL editors as tabs in a single DocumentDock.
             let dslDock = DocumentDock(CanCreateDocument = false)
 
-            let dslDocs =
-                tabs |> Array.map(fun (title, control) -> this.HostDoc title control)
+            let dslHostDocs =
+                tabs
+                |> Array.map(fun (title, control) -> HostDocument(control, Title = title, CanClose = false, CanPin = false))
+
+            this.DslDocuments <- dslHostDocs
+            let dslDocs = dslHostDocs |> Array.map(fun d -> d :> IDockable)
 
             dslDock.VisibleDockables <- this.CreateList<IDockable>(dslDocs)
             dslDock.ActiveDockable <- dslDocs.[0]
@@ -132,6 +143,19 @@ module private DockInterop =
             dc.Factory <- factory
             dc.Layout <- layout
 
+            // After init (so we skip the initial activation), report tab-header switches back
+            // to MVU: map the activated dockable to its DSL tab index.
+            factory.ActiveDockableChanged.Add(fun (e: ActiveDockableChangedEventArgs) ->
+                match e.Dockable with
+                | :? HostDocument as activated ->
+                    match factory.DslDocuments |> Array.tryFindIndex(fun d -> obj.ReferenceEquals(d, activated)) with
+                    | Some index ->
+                        match (getPanes dc).ActivateFn with
+                        | Some dispatch -> dispatch index
+                        | None -> ()
+                    | None -> ()
+                | _ -> ())
+
 module DockControl =
     let WidgetKey = Widgets.register<DockCtl>()
 
@@ -140,6 +164,28 @@ module DockControl =
             match newValueOpt with
             | ValueSome names -> (getPanes(node.Target :?> DockCtl)).Names <- names
             | _ -> ())
+
+    /// Raises the DSL tab index whenever Dock activates a different tab (e.g. a header click).
+    let OnActiveTab: SimpleScalarAttributeDefinition<int -> MsgValue> =
+        let name = "DockControl_OnActiveTab"
+
+        let key =
+            SimpleScalarAttributeDefinition.CreateAttributeData(
+                ScalarAttributeComparers.noCompare,
+                (fun _ (newValueOpt: (int -> MsgValue) voption) (node: IViewNode) ->
+                    let panes = getPanes(node.Target :?> DockCtl)
+
+                    match newValueOpt with
+                    | ValueNone -> panes.ActivateFn <- None
+                    | ValueSome fn ->
+                        panes.ActivateFn <-
+                            Some(fun index ->
+                                let (MsgValue r) = fn index
+                                Dispatcher.dispatch node r))
+            )
+            |> AttributeDefinitionStore.registerScalar
+
+        { Key = key; Name = name }
 
     let private contentSlot name (store: Panes -> Control -> unit) (read: Panes -> Control) =
         Attributes.definePropertyWidget<Control>
@@ -185,3 +231,9 @@ module DockControlBuilders =
                 .AddWidget(DockControl.Tab3.WithValue(w3))
                 .AddWidget(DockControl.GeneratedContent.WithValue(generated.Compile()))
                 .AddWidget(DockControl.OutputContent.WithValue(output.Compile()))
+
+type DockControlModifiers =
+    /// Raised with the DSL tab index when Dock activates a different tab (header click, etc.).
+    [<Extension>]
+    static member inline onActiveTabChanged(this: WidgetBuilder<'msg, #IFabDockControl>, fn: int -> 'msg) =
+        this.AddScalar(DockControl.OnActiveTab.WithValue(fn >> box >> MsgValue))
