@@ -29,7 +29,7 @@ module SignatureHelp =
             member _.SelectedIndex
                 with get () = index
                 and set v =
-                    index <- v
+                    index <- max 0 (min v (items.Length - 1)) // clamp; never index out of range
 
                     for p in [ "SelectedIndex"; "CurrentIndexText"; "CurrentHeader"; "CurrentContent" ] do
                         notify p
@@ -48,6 +48,7 @@ module SignatureHelp =
         | true, _ -> ()
         | _ ->
             installed.Add(editor, box())
+            let mutable current: OverloadInsightWindow = null
 
             editor.TextArea.TextEntered.Add(fun e ->
                 if e.Text = "(" then
@@ -69,9 +70,15 @@ module SignatureHelp =
 
                                     if overloads.Length > 0 then
                                         Dispatcher.UIThread.Post(fun () ->
+                                            // Close any previous hint so nested calls don't stack windows.
+                                            if not(isNull current) then
+                                                current.Close()
+
                                             let w = OverloadInsightWindow(editor.TextArea)
+                                            w.Closed.Add(fun _ -> current <- null)
                                             w.Provider <- OverloadProvider(overloads)
-                                            w.Show())
+                                            w.Show()
+                                            current <- w)
                                 with _ ->
                                     ()
                             }
