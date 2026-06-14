@@ -29,13 +29,17 @@ dotnet run --project samples/AstEditor
   - hover tooltips (and the diagnostic message when you hover a squiggle)
   - signature help (overloads) when you type `(`
   - inline error/warning squiggles
-  - quick fixes — a 💡 **lightbulb** appears in the gutter on lines with an action (or via
-    **Ctrl+.**); e.g. rewrite a typo'd `Fielddd` to `Field`
-  - a `Rewrite`-powered code action (**Ctrl+.**) — "Apply constant-folding Rewrite" threads a
-    `Rewrite.expr` pass into the DSL pipeline so `x*1`/`x+0` are simplified in the output
-- **Sample tabs** — each example (Record / Rewrite / Hello) is its own DSL editor **tab** you
-  can drag out, float and re-dock; selecting a tab (header click, click-in, or edit) makes it
-  the active tab driving the generated and output panes.
+  - quick-fix *repairs* — offered while the script has errors: a 💡 **lightbulb** appears in
+    the gutter (or press **Ctrl+.**); e.g. rewrite a typo'd `Fielddd` to `Field`
+  - *refactorings* in the same menu, available on valid code too — "Apply constant-folding
+    Rewrite" threads a `Rewrite.expr` pass into the DSL pipeline, and "Convert Record to
+    Union (DU)" rewrites a `Record(…) { Field… }` block into a `Union(…) { UnionCase… }`
+- **Sample tabs** — each example (Record / Rewrite / Hello / Quick Fix / Convert) is its own
+  DSL editor **tab** you can drag out, float, re-dock and **close** (reopen it from the
+  toolbar's ⊕ button); selecting a tab (header click, click-in, or edit) makes it the active
+  tab driving the generated and output panes. The *Quick Fix* tab ships with a deliberate
+  typo so the lightbulb flow is one squiggle away; the *Convert* tab walks through the
+  Record→DU action.
 - **Theme switcher** — a toolbar group (System / Light / Dark) that flips the app variant
   *and* re-themes the editors' TextMate syntax colours to match, live.
 - **Status bar** — a live `Ln x, Col y` position pill that tracks the DSL editor's caret.
@@ -64,8 +68,9 @@ controls into the MVU world:
 | `Hover.fs` | Wires FCS tooltips — and squiggle messages — to AvaloniaEdit's `PointerHover`. |
 | `Squiggles.fs` | `IBackgroundRenderer` drawing FCS diagnostics as wavy underlines (debounced). |
 | `SignatureHelp.fs` | Wires FCS overloads to AvaloniaEdit's `OverloadInsightWindow` on `(`. |
-| `QuickFix.fs` | Ctrl+. code actions: FCS "did you mean" replacements + the Rewrite action. |
+| `QuickFix.fs` | Ctrl+. code actions: FCS "did you mean" repairs (error-driven) + the always-available refactorings. |
 | `RewriteAction.fs` | The `Rewrite`-powered code action — rewrites the DSL to add a constant-folding `Rewrite.expr` pass. |
+| `ConvertAction.fs` | The Record→DU code action — rewrites a `Record { Field… }` block into a `Union { UnionCase… }`. |
 | `Lightbulb.fs` | A custom gutter `AbstractMargin` drawing the 💡 on actionable lines; click opens the picker. |
 | `AvaloniaEditView.fs` | A hand-written Fabulous.Avalonia binding for AvaloniaEdit's `TextEditor` (two-way text, line numbers, TextMate, the IntelliSense hooks). |
 | `DockView.fs` | A Fabulous.Avalonia binding for Dock's `DockControl` — hosts the DSL editor **tabs** (one Id-keyed Document per sample, content resolved by Id) plus the generated/output panes, all **live** Fabulous controls. |

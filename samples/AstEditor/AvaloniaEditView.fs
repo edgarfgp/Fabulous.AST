@@ -25,17 +25,17 @@ type IFabTextEditor =
 
 /// Switches the TextMate syntax theme on every editor at once, so they follow the app's
 /// light/dark variant. (DarkPlus / LightPlus — the VS Code Dark+/Light+ palettes.)
+///
+/// The source of truth is the application's *resolved* variant (ActualThemeVariant): picking
+/// "System" follows the real OS setting, and an OS theme change at runtime re-themes too.
 module EditorTheme =
     let mutable private dark = true
     let private installs = ResizeArray<TextMate.Installation * RegistryOptions>()
 
-    let themeName () =
+    let themeName() =
         if dark then ThemeName.DarkPlus else ThemeName.LightPlus
 
-    let register (installation: TextMate.Installation) (options: RegistryOptions) = installs.Add(installation, options)
-
-    /// Re-theme all editors for the given variant.
-    let apply (isDark: bool) =
+    let private apply(isDark: bool) =
         dark <- isDark
 
         for installation, options in installs do
@@ -43,6 +43,26 @@ module EditorTheme =
                 installation.SetTheme(options.LoadTheme(themeName()))
             with _ ->
                 ()
+
+    let mutable private hooked = false
+
+    /// Follow the app's resolved variant from now on (idempotent; called once an editor
+    /// materializes, so Application.Current is live).
+    let private hookApp() =
+        if not hooked then
+            match Application.Current with
+            | null -> () // app not up yet; a later editor will retry
+            | app ->
+                hooked <- true
+
+                app.ActualThemeVariantChanged.Add(fun _ ->
+                    apply(app.ActualThemeVariant = Avalonia.Styling.ThemeVariant.Dark))
+
+                apply(app.ActualThemeVariant = Avalonia.Styling.ThemeVariant.Dark)
+
+    let register (installation: TextMate.Installation) (options: RegistryOptions) =
+        installs.Add(installation, options)
+        hookApp()
 
 [<AutoOpen>]
 module private AvaloniaEditInterop =
@@ -52,7 +72,7 @@ module private AvaloniaEditInterop =
     // is live by then). Tolerant of a bad path so a theme miss never crashes the sample.
     let mutable private stylesAdded = false
 
-    let ensureStyles () =
+    let ensureStyles() =
         if not stylesAdded then
             match Application.Current with
             | null -> () // app not up yet; a later editor will retry
@@ -71,7 +91,7 @@ module private AvaloniaEditInterop =
     // double-install on re-render.
     let private installs = ConditionalWeakTable<AvEdit, obj>()
 
-    let installTextMate (editor: AvEdit) =
+    let installTextMate(editor: AvEdit) =
         match installs.TryGetValue editor with
         | true, _ -> ()
         | _ ->
@@ -94,8 +114,7 @@ module TextEditor =
     let ShowLineNumbers =
         Attributes.defineAvaloniaPropertyWithEquality AvEdit.ShowLineNumbersProperty
 
-    let WordWrap =
-        Attributes.defineAvaloniaPropertyWithEquality AvEdit.WordWrapProperty
+    let WordWrap = Attributes.defineAvaloniaPropertyWithEquality AvEdit.WordWrapProperty
 
     let IsReadOnly =
         Attributes.defineAvaloniaPropertyWithEquality AvEdit.IsReadOnlyProperty
@@ -151,14 +170,15 @@ module TextEditor =
                         let handler =
                             editor.TextArea.Caret.PositionChanged.Subscribe(fun _ ->
                                 let caret = editor.TextArea.Caret
-                                let (MsgValue r) = fn (caret.Line, caret.Column)
+                                let (MsgValue r) = fn(caret.Line, caret.Column)
                                 Dispatcher.dispatch node r)
 
                         node.SetHandler(name, handler))
             )
             |> AttributeDefinitionStore.registerScalar
 
-        { Key = key; Name = name }
+        { Key = key
+          Name = name }
 
     /// Turns on TextMate F# highlighting for this editor instance. Uses no-compare so a first
     /// install that fails (e.g. control not ready) is retried on the next render; once the
@@ -176,7 +196,8 @@ module TextEditor =
             )
             |> AttributeDefinitionStore.registerScalar
 
-        { Key = key; Name = name }
+        { Key = key
+          Name = name }
 
     /// Two-way text. AvaloniaEdit's `Text` is a plain CLR property (no AvaloniaProperty) and
     /// `TextChanged` is a parameterless EventHandler, so neither `defineAvaloniaProperty*` nor
@@ -223,7 +244,8 @@ module TextEditor =
             )
             |> AttributeDefinitionStore.registerScalar
 
-        { Key = key; Name = name }
+        { Key = key
+          Name = name }
 
 [<AutoOpen>]
 module TextEditorBuilders =

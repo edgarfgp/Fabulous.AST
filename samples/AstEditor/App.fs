@@ -84,45 +84,95 @@ Oak() {
 |> Gen.mkOak
 |> Gen.run"""
 
+    // Ships with a deliberate typo so the quick-fix flow is one squiggle away.
+    let private quickFixSample =
+        """open Fabulous.AST
+open type Fabulous.AST.Ast
+
+// ⚡ Quick-fix demo: `Vlaue` below is a typo, so this script doesn't generate.
+// Wait for the red squiggle, then click the gutter lightbulb (or press Ctrl+.)
+// and choose "Replace with 'Value'". Fixes only appear while the script is broken.
+Oak() {
+    AnonymousModule() {
+        Vlaue("greeting", String("Hello from quick fixes"))
+        AppExpr("printfn", [ String("%s"); Constant("greeting") ])
+    }
+}
+|> Gen.mkOak
+|> Gen.run"""
+
+    let private convertSample =
+        """open Fabulous.AST
+open type Fabulous.AST.Ast
+
+// ✦ Convert demo: code actions can restructure the DSL, not just repair typos.
+// Click the 💡 lightbulb on the `Record` line below (or press Ctrl+.) and pick
+// "Convert Record to Union (DU)" — each Field becomes a UnionCase and the
+// generated F# on the right switches from a record to a discriminated union.
+Oak() {
+    AnonymousModule() {
+        Record("Shape") {
+            Field("Width", "float")
+            Field("Height", "float")
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run"""
+
     /// Example DSL scripts offered in the toolbar.
     let private examples =
         [ "Record", recordSample
           "Rewrite", sample
-          "Hello", helloSample ]
+          "Hello", helloSample
+          "Quick Fix", quickFixSample
+          "Convert", convertSample ]
 
     type Model =
-        { /// One DSL editor tab per example; the active one drives generation.
-          TabNames: string[]
-          TabSources: string[]
-          ActiveTab: int
-          Output: string
-          /// The last F# source that generated cleanly — what the Run button executes.
-          LastValid: string option
-          /// Captured console output from the most recent Run.
-          RunOutput: string
-          /// Bumped on every edit. A debounced eval only runs if its tag still matches,
-          /// so we recompile once the user pauses — not on every keystroke.
-          Version: int
-          IsRunning: bool
-          IsExecuting: bool
-          /// Caret position in the DSL editor (1-based), shown in the status bar.
-          CaretLine: int
-          CaretColumn: int
-          /// The application theme variant (also drives the editors' syntax theme).
-          Theme: Avalonia.Styling.ThemeVariant }
+        {
+            /// One DSL editor tab per example; the active one drives generation.
+            TabNames: string[]
+            TabSources: string[]
+            ActiveTab: int
+            /// Tabs the user closed (by index). Their sources are kept — and still saved in
+            /// the session — so reopening (or restarting) brings the edits back.
+            ClosedTabs: Set<int>
+            Output: string
+            /// The last F# source that generated cleanly — what the Run button executes.
+            LastValid: string option
+            /// Captured console output from the most recent Run.
+            RunOutput: string
+            /// Bumped on every edit. A debounced eval only runs if its tag still matches,
+            /// so we recompile once the user pauses — not on every keystroke.
+            Version: int
+            IsRunning: bool
+            IsExecuting: bool
+            /// Caret position in the DSL editor (1-based), shown in the status bar.
+            CaretLine: int
+            CaretColumn: int
+            /// The application theme variant (also drives the editors' syntax theme).
+            Theme: Avalonia.Styling.ThemeVariant
+        }
 
     type Msg =
         /// (tab index, new source)
         | SetSource of int * string
         /// Fires after the debounce delay, carrying the Version it was scheduled for.
         | Settle of int
-        | RunDone of Result<string, string>
+        /// Eval finished. Tagged with the Version the eval was started for, so a stale
+        /// result (the user edited or switched tabs meanwhile) is dropped instead of
+        /// overwriting the current tab's panes.
+        | RunDone of int * Result<string, string>
         | RunCode
         | RunCodeDone of Result<string, string>
         /// (tab index, line, column) — also makes that tab active.
         | SetCaret of int * int * int
         /// Dock activated a different DSL tab (e.g. a tab-header click).
         | ActivateTab of int
+        /// The user closed a DSL tab (the X on its header).
+        | TabClosed of int
+        /// Reopen a closed DSL tab (toolbar button) and make it active.
+        | ReopenTab of int
         /// Persist the dock arrangement + session on window close.
         | SaveSession
         /// Switch the app theme variant (and the editors' syntax theme).
@@ -145,6 +195,7 @@ Oak() {
         { TabNames = names
           TabSources = sources
           ActiveTab = activeTab
+          ClosedTabs = Set.empty
           Output = "// Generating…"
           LastValid = None
           RunOutput = "// Click Run ▶ to execute the generated F#."
@@ -157,7 +208,7 @@ Oak() {
         // Kick off an initial render so the right pane isn't empty on launch.
         Cmd.OfAsync.perform (fun () -> async { return 0 }) () Settle
 
-    let private runEval (source: string) =
+    let private runEval(source: string) =
         async {
             // FSI evaluation is synchronous and can be slow on the first call; hop off
             // the UI thread so the window stays responsive while it compiles.
@@ -165,14 +216,14 @@ Oak() {
             return Evaluator.generate source
         }
 
-    let private execCode (code: string) =
+    let private execCode(code: string) =
         async {
             do! Async.SwitchToThreadPool()
             return Evaluator.run code
         }
 
     /// Schedule a Settle for `version` after the debounce window elapses.
-    let private debounce (version: int) =
+    let private debounce(version: int) =
         Cmd.OfAsync.perform
             (fun () ->
                 async {
@@ -197,20 +248,27 @@ Oak() {
         | Settle version ->
             // Stale tag? The user kept typing; let the latest debounce win.
             if version = model.Version then
-                { model with IsRunning = true }, Cmd.OfAsync.perform runEval model.TabSources.[model.ActiveTab] RunDone
+                { model with IsRunning = true },
+                Cmd.OfAsync.perform runEval model.TabSources.[model.ActiveTab] (fun r -> RunDone(version, r))
             else
                 model, Cmd.none
-        | RunDone(Ok source) ->
-            { model with
-                Output = source
-                LastValid = Some source
-                IsRunning = false },
-            Cmd.none
-        | RunDone(Error diagnostics) ->
-            { model with
-                Output = "// " + diagnostics.Replace("\n", "\n// ")
-                IsRunning = false },
-            Cmd.none
+        | RunDone(version, result) ->
+            if version <> model.Version then
+                // Stale eval (edit or tab switch since it started); a newer one is in flight.
+                model, Cmd.none
+            else
+                match result with
+                | Ok source ->
+                    { model with
+                        Output = source
+                        LastValid = Some source
+                        IsRunning = false },
+                    Cmd.none
+                | Error diagnostics ->
+                    { model with
+                        Output = "// " + diagnostics.Replace("\n", "\n// ")
+                        IsRunning = false },
+                    Cmd.none
         | RunCode ->
             match model.LastValid with
             | Some code -> { model with IsExecuting = true }, Cmd.OfAsync.perform execCode code RunCodeDone
@@ -231,10 +289,13 @@ Oak() {
             if tab <> model.ActiveTab then
                 let version = model.Version + 1
 
+                // LastValid belonged to the previous tab; clear it so Run can't execute the
+                // wrong tab's code. The debounced regenerate repopulates it.
                 { model with
                     ActiveTab = tab
                     CaretLine = line
                     CaretColumn = column
+                    LastValid = None
                     Version = version },
                 debounce version
             else
@@ -245,25 +306,49 @@ Oak() {
         | ActivateTab tab ->
             if tab <> model.ActiveTab && tab >= 0 && tab < model.TabSources.Length then
                 let version = model.Version + 1
-                { model with ActiveTab = tab; Version = version }, debounce version
+
+                { model with
+                    ActiveTab = tab
+                    LastValid = None
+                    Version = version },
+                debounce version
+            else
+                model, Cmd.none
+        | TabClosed tab ->
+            // The dock keeps at least one tab open (closing the last is cancelled), and
+            // closing the *active* tab activates a neighbor, reported via ActivateTab —
+            // which re-points generation. Nothing more to do here.
+            { model with ClosedTabs = model.ClosedTabs.Add tab }, Cmd.none
+        | ReopenTab tab ->
+            if model.ClosedTabs.Contains tab then
+                // Same transition as activating the tab: the dock re-inserts the document
+                // (via closedTabs reconciliation) and the debounced eval regenerates it.
+                let version = model.Version + 1
+
+                { model with
+                    ClosedTabs = model.ClosedTabs.Remove tab
+                    ActiveTab = tab
+                    LastValid = None
+                    Version = version },
+                debounce version
             else
                 model, Cmd.none
         | SaveSession ->
             Session.save model.TabSources model.ActiveTab
             model, Cmd.none
         | SetTheme variant ->
-            // Editors follow: dark syntax theme for Dark/Default, light for Light.
-            EditorTheme.apply(variant <> Avalonia.Styling.ThemeVariant.Light)
+            // The view's requestedThemeVariant drives Avalonia; the editors' syntax theme
+            // follows the *resolved* variant via EditorTheme's ActualThemeVariantChanged
+            // subscription (so "System" tracks the real OS setting).
             { model with Theme = variant }, Cmd.none
 
     let private monoFont =
         Avalonia.Media.FontFamily("Cascadia Code, Consolas, Menlo, monospace")
 
-    let private code (w: WidgetBuilder<'msg, IFabTextEditor>) =
-        w.fontFamily(monoFont).fontSize(14.)
+    let private code(w: WidgetBuilder<'msg, IFabTextEditor>) = w.fontFamily(monoFont).fontSize(14.)
 
     // IDE palette (VS Code-ish): dark title bar, signature blue status bar.
-    let private brush (hex: string) : Avalonia.Media.IBrush =
+    let private brush(hex: string) : Avalonia.Media.IBrush =
         Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse hex)
 
     let private toolbarBrush = brush "#252526"
@@ -287,23 +372,22 @@ Oak() {
             .onCaretMoved(fun (line, column) -> SetCaret(i, line, column))
 
     let private generatedPane(model: Model) =
-        (TextEditor(model.Output) |> code)
-            .isReadOnly(true)
-            .showLineNumbers(true)
-            .highlightFSharp()
+        (TextEditor(model.Output) |> code).isReadOnly(true).showLineNumbers(true).highlightFSharp()
 
     let private outputPane(model: Model) =
         (TextEditor(model.RunOutput) |> code).isReadOnly(true).wordWrap(true)
 
     let private docked model =
         DockControl(
-            (model.TabNames.[0], tabPane model 0),
-            (model.TabNames.[1], tabPane model 1),
-            (model.TabNames.[2], tabPane model 2),
+            model.TabNames |> Array.mapi(fun i name -> name, tabPane model i),
             generatedPane model,
             outputPane model
         )
             .onActiveTabChanged(ActivateTab)
+            // Restore the session's active tab when the layout is first built.
+            .initialActiveTab(model.ActiveTab)
+            .onTabClosed(TabClosed)
+            .closedTabs(model.ClosedTabs)
 
     /// A small grouped theme switcher (System / Light / Dark).
     let private themePicker(model: Model) =
@@ -317,23 +401,26 @@ Oak() {
         })
             .centerVertical()
 
-    /// Top application bar: title on the left, theme + live status + Run on the right.
+    /// One reopen button per closed tab, so a closed tab is never more than a click away.
+    let private reopenStrip(model: Model) =
+        (HStack(4.) {
+            for i in Set.toList model.ClosedTabs do
+                Button($"⊕ {model.TabNames.[i]}", ReopenTab i)
+        })
+            .centerVertical()
+            .margin(16., 0., 0., 0.)
+
+    /// Top application bar: title, reopen buttons for closed tabs, theme + status + Run.
     let private toolbar(model: Model) =
         (Border(
             (Grid(coldefs = [ Auto; Star; Auto; Auto; Auto ], rowdefs = [ Auto ]) {
-                TextBlock("⚡  Fabulous.AST Studio")
-                    .fontSize(14.)
-                    .foreground(white)
-                    .centerVertical()
-                    .gridColumn(0)
+                TextBlock("⚡  Fabulous.AST Studio").fontSize(14.).foreground(white).centerVertical().gridColumn(0)
+
+                (reopenStrip model).gridColumn(1)
 
                 (themePicker model).margin(0., 0., 16., 0.).gridColumn(2)
 
-                TextBlock(statusLabel model)
-                    .foreground(dimText)
-                    .centerVertical()
-                    .margin(0., 0., 12., 0.)
-                    .gridColumn(3)
+                TextBlock(statusLabel model).foreground(dimText).centerVertical().margin(0., 0., 12., 0.).gridColumn(3)
 
                 Button((if model.IsExecuting then "Running…" else "▶  Run"), RunCode)
                     .isEnabled(model.LastValid.IsSome && not model.IsExecuting)
@@ -347,11 +434,7 @@ Oak() {
 
     /// The IDE "Ln x, Col y" position pill.
     let private caretBubble(model: Model) =
-        (Border(
-            TextBlock($"Ln {model.CaretLine},  Col {model.CaretColumn}")
-                .foreground(white)
-                .fontSize(12.)
-        ))
+        (Border(TextBlock($"Ln {model.CaretLine},  Col {model.CaretColumn}").foreground(white).fontSize(12.)))
             .background(caretBubbleBrush)
             .cornerRadius(9.)
             .padding(10., 1.)
@@ -372,10 +455,7 @@ Oak() {
 
                 (caretBubble model).margin(0., 0., 12., 0.).gridColumn(2)
 
-                TextBlock("F#  •  Fabulous.AST 2.0  •  TextMate")
-                    .foreground(white)
-                    .centerVertical()
-                    .gridColumn(3)
+                TextBlock("F#  •  Fabulous.AST 2.0  •  TextMate").foreground(white).centerVertical().gridColumn(3)
             })
                 .margin(12., 4.)
         ))

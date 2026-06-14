@@ -18,6 +18,7 @@
     <Compile Include="Squiggles.fs" />
     <Compile Include="SignatureHelp.fs" />
     <Compile Include="RewriteAction.fs" />
+    <Compile Include="ConvertAction.fs" />
     <Compile Include="QuickFix.fs" />
     <Compile Include="Lightbulb.fs" />
     <Compile Include="AvaloniaEditView.fs" />
