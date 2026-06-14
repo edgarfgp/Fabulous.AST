@@ -37,12 +37,21 @@ module RewriteAction =
               "    | _ -> e"
               "" ]
 
+    /// 1-based line of the first `|> Gen.mkOak` outside a line comment, if any — where the
+    /// lightbulb anchors and proof there's a real pipeline to thread into.
+    let anchorLine(source: string) : int option =
+        source.Replace("\r\n", "\n").Split('\n')
+        |> Array.tryFindIndex(fun l ->
+            not(l.TrimStart().StartsWith("//", StringComparison.Ordinal))
+            && l.Contains "|> Gen.mkOak")
+        |> Option.map(fun i -> i + 1)
+
     /// Applicable when there's a pipeline to thread into and no Rewrite pass already.
-    let canApply (source: string) =
-        source.Contains "|> Gen.mkOak" && not(source.Contains "Rewrite.expr")
+    let canApply(source: string) =
+        (anchorLine source).IsSome && not(source.Contains "Rewrite.expr")
 
     /// The rewritten source, or None if the action doesn't apply.
-    let addConstantFolding (source: string) : string option =
+    let addConstantFolding(source: string) : string option =
         if not(canApply source) then
             None
         else
@@ -50,7 +59,8 @@ module RewriteAction =
 
             // foldConstants needs the Fantomas Oak/Text types; make sure they're opened.
             let ensureOpen (op: string) (text: string) =
-                if text.Contains op then text
+                if text.Contains op then
+                    text
                 elif text.Contains "open Fabulous.AST\n" then
                     text.Replace("open Fabulous.AST\n", "open Fabulous.AST\n" + op + "\n")
                 else
@@ -71,4 +81,17 @@ module RewriteAction =
             if idx >= 0 then
                 Some(withRewrite.Insert(idx + 1, helper + "\n"))
             else
-                Some(helper + "\n" + withRewrite)
+                // No `\nOak(` anchor (e.g. the user wrote `Oak () {`). Insert after the last
+                // `open …` line instead — never above it, or the helper's Expr/SingleTextNode
+                // references would precede the opens they need.
+                let lines = withRewrite.Split('\n')
+
+                match
+                    lines
+                    |> Array.tryFindIndexBack(fun l -> l.TrimStart().StartsWith("open ", StringComparison.Ordinal))
+                with
+                | Some i ->
+                    let before = lines.[..i] |> String.concat "\n"
+                    let after = lines.[i + 1 ..] |> String.concat "\n"
+                    Some(before + "\n" + helper + "\n" + after)
+                | None -> Some(helper + "\n" + withRewrite)

@@ -22,19 +22,24 @@ module Intellisense =
           Describe: unit -> string }
 
     type Diagnostic =
-        { StartLine: int
-          StartColumn: int
-          EndLine: int
-          EndColumn: int
-          IsError: bool
-          Message: string }
+        {
+            StartLine: int
+            StartColumn: int
+            EndLine: int
+            EndColumn: int
+            IsError: bool
+            /// FCS error code (e.g. 39 = "The value or constructor … is not defined").
+            ErrorNumber: int
+            Message: string
+        }
 
     // suggestNamesForErrors: include "Maybe you want one of the following: …" hints in
     // diagnostic messages — the quick-fix code action parses those for replacements.
     let private checker = lazy FSharpChecker.Create(suggestNamesForErrors = true)
 
     // A stable script path; the content is supplied per-request.
-    let private scriptPath = Path.Combine(Path.GetTempPath(), "fabulous_ast_playground.fsx")
+    let private scriptPath =
+        Path.Combine(Path.GetTempPath(), "fabulous_ast_playground.fsx")
 
     /// `-r:` flags for the same assemblies the evaluator loads, so completion resolves the DSL.
     let private referenceArgs =
@@ -51,7 +56,7 @@ module Intellisense =
     // part). A duplicate compute under a race is harmless (idempotent).
     let mutable private cachedOptions: FSharpProjectOptions option = None
 
-    let private getOptions (source: ISourceText) =
+    let private getOptions(source: ISourceText) =
         async {
             match cachedOptions with
             | Some options -> return options
@@ -60,14 +65,13 @@ module Intellisense =
                     checker.Value.GetProjectOptionsFromScript(scriptPath, source, assumeDotNetFramework = false)
 
                 let options =
-                    { options with
-                        OtherOptions = Array.append options.OtherOptions referenceArgs }
+                    { options with OtherOptions = Array.append options.OtherOptions referenceArgs }
 
                 cachedOptions <- Some options
                 return options
         }
 
-    let private check (source: string) =
+    let private check(source: string) =
         async {
             let text = SourceText.ofString source
             let! options = getOptions text
@@ -79,19 +83,20 @@ module Intellisense =
         }
 
     /// Flatten a ToolTipText to a short single description (first group's main text).
-    let private renderTip (tip: ToolTipText) =
+    let private renderTip(tip: ToolTipText) =
         let (ToolTipText elements) = tip
 
         elements
         |> List.choose(fun element ->
             match element with
-            | ToolTipElement.Group(data :: _) -> data.MainDescription |> Array.map(fun t -> t.Text) |> String.concat "" |> Some
+            | ToolTipElement.Group(data :: _) ->
+                data.MainDescription |> Array.map(fun t -> t.Text) |> String.concat "" |> Some
             | ToolTipElement.CompositionError err -> Some err
             | _ -> None)
         |> String.concat "\n"
 
     /// A one-letter category hint for a completion glyph.
-    let private glyphSymbol (glyph: FSharpGlyph) =
+    let private glyphSymbol(glyph: FSharpGlyph) =
         match glyph with
         | FSharpGlyph.Class
         | FSharpGlyph.Struct -> "C"
@@ -119,8 +124,12 @@ module Intellisense =
             match! check source with
             | None -> return [||]
             | Some(parseResults, checkResults) ->
-                let partialName = QuickParse.GetPartialLongNameEx(lineText, col - 1)
-                let info = checkResults.GetDeclarationListInfo(Some parseResults, line, lineText, partialName)
+                // GetPartialLongNameEx wants the 0-based index of the last character *before*
+                // the caret (caret index - 1), so the 1-based caret column maps to col - 2.
+                let partialName = QuickParse.GetPartialLongNameEx(lineText, col - 2)
+
+                let info =
+                    checkResults.GetDeclarationListInfo(Some parseResults, line, lineText, partialName)
 
                 return
                     info.Items
@@ -140,7 +149,10 @@ module Intellisense =
                 match QuickParse.GetCompleteIdentifierIsland false lineText col with
                 | Some(island, colAtEndOfNames, _) ->
                     let names = island.Split('.') |> List.ofArray
-                    let tip = checkResults.GetToolTip(line, colAtEndOfNames, lineText, names, FSharpTokenTag.Identifier)
+
+                    let tip =
+                        checkResults.GetToolTip(line, colAtEndOfNames, lineText, names, FSharpTokenTag.Identifier)
+
                     let text = renderTip tip
                     return (if String.IsNullOrWhiteSpace text then None else Some text)
                 | None -> return None
@@ -171,7 +183,7 @@ module Intellisense =
         }
 
     /// Type-check the whole script and return its diagnostics.
-    let diagnostics (source: string) =
+    let diagnostics(source: string) =
         async {
             match! check source with
             | None -> return [||]
@@ -184,5 +196,6 @@ module Intellisense =
                           EndLine = d.EndLine
                           EndColumn = d.EndColumn
                           IsError = (d.Severity = FSharpDiagnosticSeverity.Error)
+                          ErrorNumber = d.ErrorNumber
                           Message = d.Message })
         }

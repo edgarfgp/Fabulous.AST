@@ -12,14 +12,20 @@ module Hover =
 
     let private installed = ConditionalWeakTable<TextEditor, obj>()
 
-    let install (editor: TextEditor) =
+    let install(editor: TextEditor) =
         match installed.TryGetValue editor with
         | true, _ -> ()
         | _ ->
             installed.Add(editor, box())
             let textView = editor.TextArea.TextView
 
+            // Bumped on every hover event and on hover-stop, so an async FCS lookup that
+            // resolves late (the pointer already moved on) can't reopen a stale tooltip.
+            let mutable hoverGen = 0
+
             textView.PointerHover.Add(fun e ->
+                hoverGen <- hoverGen + 1
+                let gen = hoverGen
                 let position = editor.GetPositionFromPoint(e.GetPosition(editor))
 
                 if position.HasValue then
@@ -44,12 +50,15 @@ module Hover =
                                 match! Intellisense.tooltip source line col lineText with
                                 | Some text ->
                                     Dispatcher.UIThread.Post(fun () ->
-                                        ToolTip.SetTip(editor, text)
-                                        ToolTip.SetIsOpen(editor, true))
+                                        if gen = hoverGen then
+                                            ToolTip.SetTip(editor, text)
+                                            ToolTip.SetIsOpen(editor, true))
                                 | None -> ()
                             with _ ->
                                 ()
                         }
                         |> Async.Start)
 
-            textView.PointerHoverStopped.Add(fun _ -> ToolTip.SetIsOpen(editor, false))
+            textView.PointerHoverStopped.Add(fun _ ->
+                hoverGen <- hoverGen + 1
+                ToolTip.SetIsOpen(editor, false))
