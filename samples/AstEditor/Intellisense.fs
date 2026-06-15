@@ -82,6 +82,22 @@ module Intellisense =
             | FSharpCheckFileAnswer.Aborted -> return None
         }
 
+    /// Parse only (no type-check) and return the untyped syntax tree — used by the AST
+    /// inspector to render the structure of the generated F#. None if parsing failed.
+    let parse(source: string) =
+        async {
+            let text = SourceText.ofString source
+            let! options = getOptions text
+            let parsingOptions, _ = checker.Value.GetParsingOptionsFromProjectOptions options
+            let! result = checker.Value.ParseFile(scriptPath, text, parsingOptions)
+
+            return
+                if result.ParseHadErrors then
+                    None
+                else
+                    Some result.ParseTree
+        }
+
     /// Flatten a ToolTipText to a short single description (first group's main text).
     let private renderTip(tip: ToolTipText) =
         let (ToolTipText elements) = tip

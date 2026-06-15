@@ -33,6 +33,8 @@ type IFabDockControl =
 module private Ids =
     let dsl i = $"dsl-%d{i}"
     let generated = "generated"
+    let syntaxTree = "syntaxtree"
+    let rewrite = "rewrite"
     let output = "output"
 
     let tryDslIndex(id: string) =
@@ -67,15 +69,16 @@ module private DockInterop =
         member val Names: string[] = null with get, set
         member val Built = false with get, set
         member val ActivateFn: (int -> unit) option = None with get, set
-        /// The DSL tab to activate when the layout is built (e.g. restored from the session).
-        member val InitialTab = 0 with get, set
         /// Set after the build, so closed tabs can be re-inserted into the live layout.
         member val Factory: Factory option = None with get, set
         member val DslDock: DocumentDock = null with get, set
         member val DslDocs: Document[] = [||] with get, set
         member val CloseFn: (int -> unit) option = None with get, set
-        /// The model's view of which DSL tabs are closed; the dock is reconciled to match.
+        /// The model's desired tab state — which tabs are closed and which is active. The
+        /// dock is reconciled to match this in one pass (see reconcileTabs); at build time
+        /// DesiredActive also seeds the initially-active tab.
         member val ClosedTabs: Set<int> = Set.empty with get, set
+        member val DesiredActive = 0 with get, set
 
     let private panes = ConditionalWeakTable<DockCtl, Panes>()
     let getPanes(dc: DockCtl) = panes.GetValue(dc, fun _ -> Panes())
@@ -94,6 +97,15 @@ module private DockInterop =
             dock.ActiveDockable <- doc
             dock :> IDockable
 
+        /// Several documents as tabs sharing one dock (the first is active).
+        member this.Tabs(panes: (string * string) list) : IDockable =
+            let id1 = fst panes.Head
+            let dock = DocumentDock(Id = id1 + "-dock", CanCreateDocument = false)
+            let docs = panes |> List.map(fun (id, title) -> this.Doc id title)
+            dock.VisibleDockables <- this.CreateList<IDockable>(docs |> List.toArray)
+            dock.ActiveDockable <- docs.Head
+            dock :> IDockable
+
         /// The DSL tab dock and its documents, kept so closed tabs can be re-inserted later.
         member val DslDock: DocumentDock = null with get, set
         member val DslDocs: Document[] = [||] with get, set
@@ -108,7 +120,7 @@ module private DockInterop =
                 |> Array.mapi(fun i title -> Document(Id = Ids.dsl i, Title = title, CanClose = true, CanPin = false))
 
             dslDock.VisibleDockables <- this.CreateList<IDockable>(dslDocs |> Array.map(fun d -> d :> IDockable))
-            dslDock.ActiveDockable <- dslDocs.[max 0 (min initialTab (dslDocs.Length - 1))]
+            dslDock.ActiveDockable <- dslDocs[max 0 (min initialTab (dslDocs.Length - 1))]
             this.DslDock <- dslDock
             this.DslDocs <- dslDocs
 
@@ -119,7 +131,10 @@ module private DockInterop =
                 this.CreateList<IDockable>(
                     dslDock :> IDockable,
                     this.CreateProportionalDockSplitter(),
-                    this.Solo Ids.generated "Generated F#"
+                    this.Tabs
+                        [ Ids.generated, "Generated F#"
+                          Ids.syntaxTree, "Syntax Tree"
+                          Ids.rewrite, "Rewrite" ]
                 )
 
             let outputPane = this.Solo Ids.output "Output"
@@ -158,7 +173,7 @@ module private DockInterop =
                 []
             else
                 [ for i in 0 .. p.Names.Length - 1 -> Ids.dsl i ]
-                @ [ Ids.generated; Ids.output ]
+                @ [ Ids.generated; Ids.syntaxTree; Ids.rewrite; Ids.output ]
 
         if
             not p.Built
@@ -180,7 +195,7 @@ module private DockInterop =
                 )
             )
 
-            let factory = AstDockFactory(p.Names, p.InitialTab)
+            let factory = AstDockFactory(p.Names, p.DesiredActive)
             let layout = factory.CreateLayout()
             factory.InitLayout(layout)
             dc.Factory <- factory
@@ -217,19 +232,23 @@ module private DockInterop =
                     | _ -> ()
                 | _ -> ())
 
-    /// Make the dock's visible DSL tabs match the model's closed set: close what the model
-    /// closed, re-insert (at its original position) and activate what it reopened.
-    let reconcileClosedTabs(dc: DockCtl) =
+    let private isOpen (p: Panes) (doc: Document) =
+        p.DslDock.VisibleDockables |> Seq.exists(fun d -> obj.ReferenceEquals(d, doc))
+
+    /// Reconcile the live dock to the model's desired tab state in one pass: first close /
+    /// re-insert documents so the visible set matches ClosedTabs, then activate DesiredActive.
+    /// Doing both here (rather than in two racing channels) means there's a single owner of
+    /// the dock's arrangement, and activation always runs after the set is correct — so the
+    /// active tab can't be clobbered by the last-reopened one.
+    let reconcileTabs(dc: DockCtl) =
         let p = getPanes dc
 
         match p.Factory with
         | Some factory when not(isNull p.DslDock) ->
+            // 1. Match the visible set to ClosedTabs (no activation here).
             p.DslDocs
             |> Array.iteri(fun i doc ->
-                let isOpen =
-                    p.DslDock.VisibleDockables |> Seq.exists(fun d -> obj.ReferenceEquals(d, doc))
-
-                match p.ClosedTabs.Contains i, isOpen with
+                match p.ClosedTabs.Contains i, isOpen p doc with
                 | true, true -> factory.CloseDockable doc
                 | false, false ->
                     let position =
@@ -241,8 +260,14 @@ module private DockInterop =
                         |> Seq.length
 
                     factory.InsertDockable(p.DslDock, doc, position)
-                    factory.SetActiveDockable doc
                 | _ -> ())
+
+            // 2. Activate the desired tab, now that the visible set is correct.
+            if p.DesiredActive >= 0 && p.DesiredActive < p.DslDocs.Length then
+                let doc = p.DslDocs[p.DesiredActive]
+
+                if isOpen p doc then
+                    factory.SetActiveDockable doc
         | _ -> ()
 
 module DockControl =
@@ -256,35 +281,33 @@ module DockControl =
                 (getPanes dc).Names <- names
                 // Widget attributes (the content slots) apply before scalars, so by now the
                 // controls are registered but the build still needs the other scalars (e.g.
-                // InitialActiveTab) — defer one dispatcher tick so the whole render pass has
-                // applied, then build. tryBuild is idempotent.
+                // TabsState's DesiredActive) — defer one dispatcher tick so the whole render
+                // pass has applied, then build. tryBuild is idempotent.
                 Avalonia.Threading.Dispatcher.UIThread.Post(fun () -> tryBuild dc)
             | _ -> ())
 
-    /// The DSL tab activated when the layout is first built. Later changes have no effect —
-    /// after the build, Dock itself owns tab switching (reported back via OnActiveTab).
-    let InitialActiveTab =
-        Attributes.defineSimpleScalarWithEquality<int> "DockControl_InitialActiveTab" (fun _ newValueOpt node ->
-            match newValueOpt with
-            | ValueSome tab -> (getPanes(node.Target :?> DockCtl)).InitialTab <- tab
-            | _ -> ())
-
-    /// The DSL tabs the model considers closed. The dock follows: a user close (the X on a
-    /// tab header) is reported via OnTabClosed, a reopen re-inserts the document live.
-    let ClosedTabs =
-        Attributes.defineSimpleScalarWithEquality<Set<int>> "DockControl_ClosedTabs" (fun _ newValueOpt node ->
+    /// The model's complete tab state: the closed set and the active index. The dock is
+    /// reconciled to match in a single pass (reconcileTabs), so one channel owns the dock's
+    /// arrangement — no racing closed/active updates. Before the build, the value is just
+    /// stashed (DesiredActive seeds the build-time active tab); after, it reconciles live.
+    /// Structural equality dedupes, so this only fires when the closed set or active changes.
+    /// SetActiveDockable on the already-active tab raises no event, so this can't loop with
+    /// the OnActiveTab report.
+    let TabsState =
+        Attributes.defineSimpleScalarWithEquality<Set<int> * int> "DockControl_TabsState" (fun _ newValueOpt node ->
             let dc = node.Target :?> DockCtl
             let p = getPanes dc
 
-            p.ClosedTabs <-
-                match newValueOpt with
-                | ValueSome closed -> closed
-                | ValueNone -> Set.empty
+            match newValueOpt with
+            | ValueSome(closed, active) ->
+                p.ClosedTabs <- closed
+                p.DesiredActive <- active
 
-            if p.Built then
-                // Reconcile outside the render pass — inserting/closing raises Dock events
-                // that dispatch back into MVU.
-                Avalonia.Threading.Dispatcher.UIThread.Post(fun () -> reconcileClosedTabs dc))
+                if p.Built then
+                    // Reconcile outside the render pass — inserting/closing/activating raises
+                    // Dock events that dispatch back into MVU.
+                    Avalonia.Threading.Dispatcher.UIThread.Post(fun () -> reconcileTabs dc)
+            | ValueNone -> ())
 
     /// Raises the DSL tab index whenever Dock activates a different tab (e.g. a header click).
     let OnActiveTab: SimpleScalarAttributeDefinition<int -> MsgValue> =
@@ -336,13 +359,13 @@ module DockControl =
         Attributes.definePropertyWidget<Control>
             name
             (fun target ->
-                match (getPanes(target :?> DockCtl)).Controls.TryGetValue id with
+                match getPanes(target :?> DockCtl).Controls.TryGetValue id with
                 | true, c -> box c
                 | _ -> null)
             (fun target control ->
                 ensureDockStyles()
                 let dc = target :?> DockCtl
-                (getPanes dc).Controls.[id] <- control
+                (getPanes dc).Controls[ id ] <- control
                 tryBuild dc)
 
     /// Content slots for up to 8 DSL tabs. Attribute definitions must be registered
@@ -351,18 +374,23 @@ module DockControl =
         [| for i in 0..7 -> contentSlot (Ids.dsl i) $"DockControl_Tab%d{i}" |]
 
     let GeneratedContent = contentSlot Ids.generated "DockControl_Generated"
+    let SyntaxTreeContent = contentSlot Ids.syntaxTree "DockControl_SyntaxTree"
+    let RewriteContent = contentSlot Ids.rewrite "DockControl_Rewrite"
     let OutputContent = contentSlot Ids.output "DockControl_Output"
 
 [<AutoOpen>]
 module DockControlBuilders =
     type Fabulous.Avalonia.View with
 
-        /// Creates the IDE layout: one named DSL editor tab per entry, plus the generated and
-        /// output panes — all live Fabulous controls hosted as dockable documents.
+        /// Creates the IDE layout: one named DSL editor tab per entry, plus the generated-F#,
+        /// syntax-tree and rewrite panes (tabs in the right column) and the output console
+        /// below — all live Fabulous controls hosted as dockable documents.
         static member DockControl
             (
                 tabs: (string * WidgetBuilder<'msg, IFabTextEditor>)[],
                 generated: WidgetBuilder<'msg, #IFabControl>,
+                syntaxTree: WidgetBuilder<'msg, #IFabControl>,
+                rewrite: WidgetBuilder<'msg, #IFabControl>,
                 output: WidgetBuilder<'msg, #IFabControl>
             ) =
             if tabs.Length > DockControl.TabSlots.Length then
@@ -373,7 +401,7 @@ module DockControlBuilders =
                 |> Array.indexed
                 |> Array.fold
                     (fun (wb: WidgetBuilder<'msg, IFabDockControl>) (i, (_, pane)) ->
-                        wb.AddWidget(DockControl.TabSlots.[i].WithValue(pane.Compile())))
+                        wb.AddWidget(DockControl.TabSlots[i].WithValue(pane.Compile())))
                     (WidgetBuilder<'msg, IFabDockControl>(
                         DockControl.WidgetKey,
                         DockControl.TabNames.WithValue(tabs |> Array.map fst)
@@ -381,6 +409,8 @@ module DockControlBuilders =
 
             withTabs
                 .AddWidget(DockControl.GeneratedContent.WithValue(generated.Compile()))
+                .AddWidget(DockControl.SyntaxTreeContent.WithValue(syntaxTree.Compile()))
+                .AddWidget(DockControl.RewriteContent.WithValue(rewrite.Compile()))
                 .AddWidget(DockControl.OutputContent.WithValue(output.Compile()))
 
 type DockControlModifiers =
@@ -389,17 +419,14 @@ type DockControlModifiers =
     static member inline onActiveTabChanged(this: WidgetBuilder<'msg, #IFabDockControl>, fn: int -> 'msg) =
         this.AddScalar(DockControl.OnActiveTab.WithValue(fn >> box >> MsgValue))
 
-    /// The DSL tab to activate when the layout is first built (e.g. the session's last tab).
-    [<Extension>]
-    static member inline initialActiveTab(this: WidgetBuilder<'msg, #IFabDockControl>, tab: int) =
-        this.AddScalar(DockControl.InitialActiveTab.WithValue(tab))
-
     /// Raised with the DSL tab index when the user closes that tab (the X on its header).
     [<Extension>]
     static member inline onTabClosed(this: WidgetBuilder<'msg, #IFabDockControl>, fn: int -> 'msg) =
         this.AddScalar(DockControl.OnTabClosed.WithValue(fn >> box >> MsgValue))
 
-    /// The DSL tabs currently closed; removing an index from the set reopens that tab.
+    /// The model's desired tab state — (closed set, active index). The dock reconciles to it
+    /// in one pass: build-time it seeds the active tab; post-build it closes/reopens and
+    /// activates to match (covers session restore, the explorer, and the reopen buttons).
     [<Extension>]
-    static member inline closedTabs(this: WidgetBuilder<'msg, #IFabDockControl>, closed: Set<int>) =
-        this.AddScalar(DockControl.ClosedTabs.WithValue(closed))
+    static member inline tabsState(this: WidgetBuilder<'msg, #IFabDockControl>, closed: Set<int>, active: int) =
+        this.AddScalar(DockControl.TabsState.WithValue((closed, active)))

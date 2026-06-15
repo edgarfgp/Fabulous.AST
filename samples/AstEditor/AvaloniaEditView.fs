@@ -91,6 +91,14 @@ module private AvaloniaEditInterop =
     // double-install on re-render.
     let private installs = ConditionalWeakTable<AvEdit, obj>()
 
+    // Set while applying a *programmatic* selection (a tree-click highlight), so the editor's
+    // SelectionChanged handler can tell it apart from a user selection and not feed it back
+    // into the syntax-tree inspector (which would re-root the tree on the highlight).
+    let private suppressSelection = ConditionalWeakTable<AvEdit, bool ref>()
+
+    let suppressSelectionRef(editor: AvEdit) =
+        suppressSelection.GetValue(editor, fun _ -> ref false)
+
     let installTextMate(editor: AvEdit) =
         match installs.TryGetValue editor with
         | true, _ -> ()
@@ -179,6 +187,63 @@ module TextEditor =
 
         { Key = key
           Name = name }
+
+    /// Raises the editor's currently-selected text whenever the selection changes (empty
+    /// string when the selection is cleared). Drives the live syntax-tree inspector.
+    let SelectionChanged: SimpleScalarAttributeDefinition<string -> MsgValue> =
+        let name = "TextEditor_SelectionChanged"
+
+        let key =
+            SimpleScalarAttributeDefinition.CreateAttributeData(
+                ScalarAttributeComparers.noCompare,
+                (fun _ (newValueOpt: (string -> MsgValue) voption) (node: IViewNode) ->
+                    let editor = node.Target :?> AvEdit
+
+                    match node.TryGetHandler(name) with
+                    | ValueNone -> ()
+                    | ValueSome handler -> handler.Dispose()
+
+                    match newValueOpt with
+                    | ValueNone -> node.RemoveHandler(name)
+                    | ValueSome fn ->
+                        let handler =
+                            editor.TextArea.SelectionChanged.Subscribe(fun _ ->
+                                // Ignore selections we set ourselves (tree-click highlights).
+                                if not (suppressSelectionRef editor).Value then
+                                    let (MsgValue r) = fn editor.SelectedText
+                                    Dispatcher.dispatch node r)
+
+                        node.SetHandler(name, handler))
+            )
+            |> AttributeDefinitionStore.registerScalar
+
+        { Key = key
+          Name = name }
+
+    /// Programmatically selects a range (start offset, length) in the editor and scrolls it
+    /// into view — used to highlight the DSL that produced a clicked syntax-tree node. Carries
+    /// a token so each distinct request applies once (equality skips unchanged renders); a
+    /// ValueNone range leaves the current selection alone.
+    let SelectRange =
+        Attributes.defineSimpleScalarWithEquality<int * (int * int) option>
+            "TextEditor_SelectRange"
+            (fun _ newValueOpt node ->
+                match newValueOpt with
+                | ValueSome(_, Some(start, length)) when length > 0 ->
+                    let editor = node.Target :?> AvEdit
+                    let len = editor.Document.TextLength
+                    let s = max 0 (min start len)
+                    let l = max 0 (min length (len - s))
+
+                    if l > 0 then
+                        // Suppress the resulting SelectionChanged so this highlight stays a
+                        // highlight — it must not switch the inspector to the selected fragment.
+                        let flag = suppressSelectionRef editor
+                        flag.Value <- true
+                        editor.Select(s, l)
+                        editor.TextArea.Caret.BringCaretToView()
+                        Avalonia.Threading.Dispatcher.UIThread.Post(fun () -> flag.Value <- false)
+                | _ -> ())
 
     /// Turns on TextMate F# highlighting for this editor instance. Uses no-compare so a first
     /// install that fails (e.g. control not ready) is retried on the next render; once the
@@ -296,3 +361,16 @@ type TextEditorModifiers =
     [<Extension>]
     static member inline onCaretMoved(this: WidgetBuilder<'msg, #IFabTextEditor>, fn: int * int -> 'msg) =
         this.AddScalar(TextEditor.CaretMoved.WithValue(fn >> box >> MsgValue))
+
+    /// Raises the selected text whenever the editor's selection changes (empty when cleared).
+    [<Extension>]
+    static member inline onSelectionChanged(this: WidgetBuilder<'msg, #IFabTextEditor>, fn: string -> 'msg) =
+        this.AddScalar(TextEditor.SelectionChanged.WithValue(fn >> box >> MsgValue))
+
+    /// Selects a (start offset, length) range, scrolling it into view. `token` makes each
+    /// distinct request apply once; pass None to leave the selection untouched.
+    [<Extension>]
+    static member inline selectRange
+        (this: WidgetBuilder<'msg, #IFabTextEditor>, token: int, range: (int * int) option)
+        =
+        this.AddScalar(TextEditor.SelectRange.WithValue((token, range)))

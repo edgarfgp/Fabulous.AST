@@ -91,7 +91,7 @@ module RewriteAction =
                     |> Array.tryFindIndexBack(fun l -> l.TrimStart().StartsWith("open ", StringComparison.Ordinal))
                 with
                 | Some i ->
-                    let before = lines.[..i] |> String.concat "\n"
-                    let after = lines.[i + 1 ..] |> String.concat "\n"
+                    let before = lines[..i] |> String.concat "\n"
+                    let after = lines[i + 1 ..] |> String.concat "\n"
                     Some(before + "\n" + helper + "\n" + after)
                 | None -> Some(helper + "\n" + withRewrite)

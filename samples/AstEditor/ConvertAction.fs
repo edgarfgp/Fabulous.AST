@@ -33,7 +33,7 @@ module ConvertAction =
             let out = Array.copy lines
             let start = startLine - 1
 
-            out.[start] <- header.Replace(lines.[start], "Union(\"$1\") {", 1)
+            out[start] <- header.Replace(lines[start], "Union(\"$1\") {", 1)
 
             // Walk the block by brace depth, turning each Field into a UnionCase.
             let mutable depth = 0
@@ -41,14 +41,14 @@ module ConvertAction =
             let mutable insideBlock = true
 
             while insideBlock && i < lines.Length do
-                let line = lines.[i]
+                let line = lines[i]
 
                 depth <-
                     depth + Seq.length(Seq.filter ((=) '{') line)
                     - Seq.length(Seq.filter ((=) '}') line)
 
                 if i > start then
-                    out.[i] <- field.Replace(line, "UnionCase($1)")
+                    out[i] <- field.Replace(line, "UnionCase($1)")
 
                 if depth <= 0 then
                     insideBlock <- false

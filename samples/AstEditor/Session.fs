@@ -17,7 +17,7 @@ module Session =
 
     // Encoded as a plain string[] — element 0 is the active tab index, the rest are the
     // sources. System.Text.Json round-trips string[] cleanly with no F#/converter fuss.
-    let tryLoad () : (string[] * int) option =
+    let tryLoad() : (string[] * int) option =
         try
             if File.Exists path then
                 let arr = JsonSerializer.Deserialize<string[]>(File.ReadAllText path)
@@ -25,8 +25,8 @@ module Session =
                 match arr with
                 | null -> None
                 | _ when arr.Length >= 1 ->
-                    match Int32.TryParse arr.[0] with
-                    | true, active -> Some(arr.[1..], active)
+                    match Int32.TryParse arr[0] with
+                    | true, active -> Some(arr[1..], active)
                     | _ -> None
                 | _ -> None
             else

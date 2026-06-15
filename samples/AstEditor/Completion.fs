@@ -30,17 +30,51 @@ module Completion =
 
     /// Curated Fabulous.AST surface, shown only if the checker hasn't produced results yet.
     let private dsl =
-        [ "Oak"; "AnonymousModule"; "Namespace"; "Module"; "Record"; "Field"; "Class"; "Struct"
-          "Union"; "UnionCase"; "Enum"; "Interface"; "Member"; "Property"; "Method"; "Value"
-          "Function"; "Literal"; "Attribute"; "ConstantExpr"; "AppExpr"; "InfixAppExpr"; "ParenExpr"
-          "TupleExpr"; "ListExpr"; "IfThenElseExpr"; "MatchExpr"; "LambdaExpr"; "Constant"; "Int"
-          "String"; "Bool"; "Gen"; "mkOak"; "run"; "parse"; "Rewrite"; "expr"; "typeDefn" ]
+        [ "Oak"
+          "AnonymousModule"
+          "Namespace"
+          "Module"
+          "Record"
+          "Field"
+          "Class"
+          "Struct"
+          "Union"
+          "UnionCase"
+          "Enum"
+          "Interface"
+          "Member"
+          "Property"
+          "Method"
+          "Value"
+          "Function"
+          "Literal"
+          "Attribute"
+          "ConstantExpr"
+          "AppExpr"
+          "InfixAppExpr"
+          "ParenExpr"
+          "TupleExpr"
+          "ListExpr"
+          "IfThenElseExpr"
+          "MatchExpr"
+          "LambdaExpr"
+          "Constant"
+          "Int"
+          "String"
+          "Bool"
+          "Gen"
+          "mkOak"
+          "run"
+          "parse"
+          "Rewrite"
+          "expr"
+          "typeDefn" ]
 
     let private dslSet = Set.ofList dsl
     let private wordRegex = Regex(@"[A-Za-z_][A-Za-z0-9_]{2,}", RegexOptions.Compiled)
 
     /// Curated names + distinct identifiers in the buffer, as (name, describe) pairs.
-    let private fallback (source: string) =
+    let private fallback(source: string) =
         let inBuffer =
             wordRegex.Matches(source)
             |> Seq.cast<Match>
@@ -58,7 +92,8 @@ module Completion =
     let private wordStart (doc: TextDocument) (caret: int) =
         let mutable start = caret
 
-        while start > 0 && (let c = doc.GetCharAt(start - 1) in Char.IsLetterOrDigit c || c = '_') do
+        while start > 0
+              && (let c = doc.GetCharAt(start - 1) in Char.IsLetterOrDigit c || c = '_') do
             start <- start - 1
 
         start
@@ -66,7 +101,7 @@ module Completion =
     let private installed = ConditionalWeakTable<TextEditor, obj>()
 
     /// Wire FCS-backed completion onto an editor (idempotent per instance).
-    let install (editor: TextEditor) =
+    let install(editor: TextEditor) =
         match installed.TryGetValue editor with
         | true, _ -> ()
         | _ ->
@@ -75,7 +110,7 @@ module Completion =
             let mutable pending = false
 
             // Build and show the window from the freshest caret position (UI thread).
-            let showCompletions (items: (string * string * (unit -> string))[]) =
+            let showCompletions(items: (string * string * (unit -> string))[]) =
                 if items.Length > 0 && isNull window then
                     let doc = editor.Document
                     let caret = editor.CaretOffset
@@ -85,7 +120,7 @@ module Completion =
                     let w = CompletionWindow(editor.TextArea)
                     w.StartOffset <- start
 
-                    for (name, glyph, describe) in items do
+                    for name, glyph, describe in items do
                         w.CompletionList.CompletionData.Add(CompletionData(name, glyph, describe))
 
                     if prefix.Length > 0 then
@@ -99,7 +134,7 @@ module Completion =
                 let triggers =
                     not(isNull e.Text)
                     && e.Text.Length = 1
-                    && (Char.IsLetter e.Text.[0] || e.Text.[0] = '.')
+                    && (Char.IsLetter e.Text[0] || e.Text[0] = '.')
 
                 if triggers && isNull window && not pending then
                     pending <- true

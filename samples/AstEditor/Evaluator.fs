@@ -16,9 +16,7 @@ module Evaluator =
     /// app already loaded (so versions match exactly) and let FSI resolve the rest
     /// from the same output directory.
     let private referenceAssemblies =
-        [ "Fabulous.AST"
-          "Fantomas.Core"
-          "Fantomas.FCS" ]
+        [ "Fabulous.AST"; "Fantomas.Core"; "Fantomas.FCS" ]
 
     let private buildSession() =
         // FSI writes banners/prompts to these; we don't surface them, but it needs real streams.
@@ -62,11 +60,14 @@ module Evaluator =
             |> Array.map(fun d -> $"({d.StartLine},{d.StartColumn}) {d.Severity} {d.Message}")
             |> String.concat Environment.NewLine
 
-        if String.IsNullOrWhiteSpace diags then ex.Message else diags
+        if String.IsNullOrWhiteSpace diags then
+            ex.Message
+        else
+            diags
 
     /// We already `#r` the core assemblies, so drop any `#r`/`#load` the user pasted —
     /// otherwise stale relative paths (like the docs' `../../src/...`) break evaluation.
-    let private stripDirectives (script: string) =
+    let private stripDirectives(script: string) =
         script.Replace("\r\n", "\n").Split('\n')
         |> Array.filter(fun l ->
             let t = l.TrimStart()
@@ -80,7 +81,7 @@ module Evaluator =
     /// expression (typically `... |> Gen.run`); that trailing value is what we show. If
     /// the script instead prints the source (e.g. `|> Gen.run |> printfn "%s"`) we fall
     /// back to its console output.
-    let generate (script: string) : Result<string, string> =
+    let generate(script: string) : Result<string, string> =
         lock gate (fun () ->
             let fsi = session.Value
             let script = stripDirectives script
@@ -120,7 +121,7 @@ module Evaluator =
     /// FSI evaluates an *interaction*, which can't begin with a file-level `namespace` or
     /// header-style `module Foo` (no `=`). Generated code often does, so drop that opening
     /// line — the declarations underneath aren't indented, so they run fine on their own.
-    let private stripFileHeader (source: string) =
+    let private stripFileHeader(source: string) =
         let lines = source.Replace("\r\n", "\n").Split('\n')
         let firstCode = lines |> Array.tryFindIndex(fun l -> l.Trim() <> "")
 
@@ -141,7 +142,7 @@ module Evaluator =
     /// Compile and execute generated F# source in the hosted session, capturing whatever
     /// it writes to the console. Returns the captured output (or a note if it printed
     /// nothing), or the compiler/runtime diagnostics if it failed.
-    let run (fsharpSource: string) : Result<string, string> =
+    let run(fsharpSource: string) : Result<string, string> =
         lock gate (fun () ->
             let fsi = session.Value
             let fsharpSource = stripFileHeader fsharpSource

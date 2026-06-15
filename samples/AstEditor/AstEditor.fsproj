@@ -12,6 +12,7 @@
   <ItemGroup>
     <Compile Include="Evaluator.fs" />
     <Compile Include="Intellisense.fs" />
+    <Compile Include="SyntaxTree.fs" />
     <Compile Include="DiagnosticsStore.fs" />
     <Compile Include="Completion.fs" />
     <Compile Include="Hover.fs" />

@@ -17,7 +17,8 @@ module SignatureHelp =
         let ev = Event<PropertyChangedEventHandler, PropertyChangedEventArgs>()
         let mutable index = 0
         // Sender is ignored by the window's bindings; only the property name matters.
-        let notify name = ev.Trigger(null, PropertyChangedEventArgs(name))
+        let notify name =
+            ev.Trigger(null, PropertyChangedEventArgs(name))
 
         interface INotifyPropertyChanged with
             [<CLIEvent>]
@@ -35,15 +36,21 @@ module SignatureHelp =
                         notify p
 
             member _.CurrentIndexText = $"{index + 1} of {items.Length}"
-            member _.CurrentHeader = box items.[index].Header
+            member _.CurrentHeader = box items[index].Header
 
             member _.CurrentContent =
-                let ps = items.[index].Parameters
-                box (if ps.Length > 0 then String.concat "\n" ps else "(no parameters)")
+                let ps = items[index].Parameters
+
+                box(
+                    if ps.Length > 0 then
+                        String.concat "\n" ps
+                    else
+                        "(no parameters)"
+                )
 
     let private installed = ConditionalWeakTable<TextEditor, obj>()
 
-    let install (editor: TextEditor) =
+    let install(editor: TextEditor) =
         match installed.TryGetValue editor with
         | true, _ -> ()
         | _ ->

@@ -33,7 +33,7 @@ module Lightbulb =
                     for visualLine in textView.VisualLines do
                         if lines.Contains visualLine.FirstDocumentLine.LineNumber then
                             let top =
-                                visualLine.GetTextLineVisualYPosition(visualLine.TextLines.[0], VisualYPosition.TextTop)
+                                visualLine.GetTextLineVisualYPosition(visualLine.TextLines[0], VisualYPosition.TextTop)
                                 - textView.VerticalOffset
 
                             let cy = top + visualLine.Height / 2.0
@@ -59,7 +59,7 @@ module Lightbulb =
     let private installed = ConditionalWeakTable<TextEditor, obj>()
 
     /// Add the lightbulb gutter to an editor (idempotent per instance).
-    let install (editor: TextEditor) =
+    let install(editor: TextEditor) =
         match installed.TryGetValue editor with
         | true, _ -> ()
         | _ ->
