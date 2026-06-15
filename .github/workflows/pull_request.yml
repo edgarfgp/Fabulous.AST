@@ -2,7 +2,7 @@ name: Pull Request
 on: pull_request
 
 env:
-  SLN_FILE: Fabulous.AST.sln
+  SLN_FILE: Fabulous.AST.slnx
   CONFIG: Release
 
 jobs:
@@ -19,6 +19,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: |
+          8.0.x
+          9.0.x
+          10.0.x
     - name: CI
       run: dotnet fsi build.fsx

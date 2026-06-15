@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <!-- NU1605: FSharp.Compiler.Service pins FSharp.Core [10.1.204] while Fabulous.AST
+         asks for 10.1.300; both ship assembly version 10.1.0.0, so 10.1.204 binds fine. -->
+    <NoWarn>MT7091;NETSDK1206;NU1605</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Evaluator.fs" />
+    <Compile Include="Intellisense.fs" />
+    <Compile Include="SyntaxTree.fs" />
+    <Compile Include="DiagnosticsStore.fs" />
+    <Compile Include="Completion.fs" />
+    <Compile Include="Hover.fs" />
+    <Compile Include="Squiggles.fs" />
+    <Compile Include="SignatureHelp.fs" />
+    <Compile Include="RewriteAction.fs" />
+    <Compile Include="ConvertAction.fs" />
+    <Compile Include="QuickFix.fs" />
+    <Compile Include="Lightbulb.fs" />
+    <Compile Include="AvaloniaEditView.fs" />
+    <Compile Include="DockView.fs" />
+    <Compile Include="Session.fs" />
+    <Compile Include="App.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Aligned to 11.3.12: Dock requires it, so Avalonia.Base resolves to 11.3.12 and
+         Avalonia.Skia/Desktop must match or the font-manager interface won't line up. -->
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+    <PackageReference Include="FSharp.Core" Version="10.1.204" />
+    <PackageReference Include="FSharp.Compiler.Service" Version="43.12.204" />
+    <PackageReference Include="Fabulous" Version="3.0.0-pre22" />
+    <PackageReference Include="Fabulous.Avalonia" Version="3.0.0-pre13" />
+    <!-- AvaloniaEdit code editor + TextMate F# syntax highlighting (Avalonia 11.3 line). -->
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+    <PackageReference Include="AvaloniaEdit.TextMate" Version="11.3.0" />
+    <PackageReference Include="TextMateSharp.Grammars" Version="1.0.66" />
+    <!-- Dock docking-layout framework (version scheme encodes Avalonia 11.3). -->
+    <PackageReference Include="Dock.Avalonia" Version="11.3.12.1" />
+    <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="11.3.12.1" />
+    <PackageReference Include="Dock.Model.Mvvm" Version="11.3.12.1" />
+  </ItemGroup>
+
+  <!-- The published Fabulous.AST package is the code generator the REPL hosts in FSI.
+       We reference the package (not the project) so it brings a flexible FSharp.Core
+       (>=8.0.100) that aligns with FSharp.Compiler.Service's pinned 10.1.204. -->
+  <ItemGroup>
+    <PackageReference Include="Fabulous.AST" Version="2.0.0-pre08" />
+  </ItemGroup>
+</Project>

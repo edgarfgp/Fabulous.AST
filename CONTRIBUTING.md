@@ -70,11 +70,11 @@ and it will be automatically reflected in the PR.
 ### Environment Setup
 
 To build Fabulous.AST, you will need to install:
-- the [.NET 8.0 SDK]
+- the [.NET 10.0 SDK] (the `.slnx` solution format and `global.json` require it)
 - an IDE of your preference
-- Open the Fabulous.AST.sln ith your preferred IDE and build the solution or execute one of the following commands:
+- Open the Fabulous.AST.slnx with your preferred IDE and build the solution or execute one of the following commands:
 ```shell
-dotnet build Fabulous.AST.sln
+dotnet build Fabulous.AST.slnx
 ```
 
 or
@@ -105,7 +105,7 @@ The title of the pull request should be descriptive of the work you did.
 [GitHub releases page]: https://github.com/edgarfgp/Fabulous.AST/releases
 [PRs]: https://github.com/edgarfgp/Fabulous.AST/pulls
 [fork guide]: https://docs.github.com/en/get-started/quickstart/contributing-to-projects
-[.NET 8.0 SDK]: https://dotnet.microsoft.com/en-us/download
+[.NET 10.0 SDK]: https://dotnet.microsoft.com/en-us/download
 [build workflow]: .github/workflows/build.yml
 [CHANGELOG.md]: CHANGELOG.md
 [JetBrains Rider]: https://www.jetbrains.com/rider/
