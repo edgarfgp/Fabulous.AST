@@ -32,9 +32,6 @@ type IFabDockControl =
 
 module private Ids =
     let dsl i = $"dsl-%d{i}"
-    let generated = "generated"
-    let syntaxTree = "syntaxtree"
-    let rewrite = "rewrite"
     let output = "output"
 
     let tryDslIndex(id: string) =
@@ -97,15 +94,6 @@ module private DockInterop =
             dock.ActiveDockable <- doc
             dock :> IDockable
 
-        /// Several documents as tabs sharing one dock (the first is active).
-        member this.Tabs(panes: (string * string) list) : IDockable =
-            let id1 = fst panes.Head
-            let dock = DocumentDock(Id = id1 + "-dock", CanCreateDocument = false)
-            let docs = panes |> List.map(fun (id, title) -> this.Doc id title)
-            dock.VisibleDockables <- this.CreateList<IDockable>(docs |> List.toArray)
-            dock.ActiveDockable <- docs.Head
-            dock :> IDockable
-
         /// The DSL tab dock and its documents, kept so closed tabs can be re-inserted later.
         member val DslDock: DocumentDock = null with get, set
         member val DslDocs: Document[] = [||] with get, set
@@ -124,26 +112,15 @@ module private DockInterop =
             this.DslDock <- dslDock
             this.DslDocs <- dslDocs
 
-            let editors =
-                ProportionalDock(Id = "editors", Orientation = Orientation.Horizontal, Proportion = 0.68)
-
-            editors.VisibleDockables <-
-                this.CreateList<IDockable>(
-                    dslDock :> IDockable,
-                    this.CreateProportionalDockSplitter(),
-                    this.Tabs
-                        [ Ids.generated, "Generated F#"
-                          Ids.syntaxTree, "Syntax Tree"
-                          Ids.rewrite, "Rewrite" ]
-                )
-
+            // The DSL editor tabs fill the dock, with the output console docked below. The
+            // generated-F# view now lives in a chrome side panel, not here.
             let outputPane = this.Solo Ids.output "Output"
-            outputPane.Proportion <- 0.32
+            outputPane.Proportion <- 0.28
 
             let main = ProportionalDock(Id = "main", Orientation = Orientation.Vertical)
 
             main.VisibleDockables <-
-                this.CreateList<IDockable>(editors :> IDockable, this.CreateProportionalDockSplitter(), outputPane)
+                this.CreateList<IDockable>(dslDock :> IDockable, this.CreateProportionalDockSplitter(), outputPane)
 
             let root = this.CreateRootDock()
             root.VisibleDockables <- this.CreateList<IDockable>(main :> IDockable)
@@ -172,8 +149,7 @@ module private DockInterop =
             if isNull p.Names then
                 []
             else
-                [ for i in 0 .. p.Names.Length - 1 -> Ids.dsl i ]
-                @ [ Ids.generated; Ids.syntaxTree; Ids.rewrite; Ids.output ]
+                [ for i in 0 .. p.Names.Length - 1 -> Ids.dsl i ] @ [ Ids.output ]
 
         if
             not p.Built
@@ -245,6 +221,19 @@ module private DockInterop =
 
         match p.Factory with
         | Some factory when not(isNull p.DslDock) ->
+            // 0. Grow: create + append a Document for any new tab (a scratch pad added at
+            //    runtime). Its content resolves by Id through the same DataTemplate as the
+            //    built-in tabs, since the new editor was registered into the content registry.
+            if not(isNull p.Names) && p.Names.Length > p.DslDocs.Length then
+                let added =
+                    [| for i in p.DslDocs.Length .. p.Names.Length - 1 ->
+                           Document(Id = Ids.dsl i, Title = p.Names[i], CanClose = true, CanPin = false) |]
+
+                p.DslDocs <- Array.append p.DslDocs added
+
+                for doc in added do
+                    factory.InsertDockable(p.DslDock, doc, p.DslDock.VisibleDockables.Count)
+
             // 1. Match the visible set to ClosedTabs (no activation here).
             p.DslDocs
             |> Array.iteri(fun i doc ->
@@ -278,12 +267,18 @@ module DockControl =
             match newValueOpt with
             | ValueSome names ->
                 let dc = node.Target :?> DockCtl
-                (getPanes dc).Names <- names
+                let p = getPanes dc
+                p.Names <- names
                 // Widget attributes (the content slots) apply before scalars, so by now the
                 // controls are registered but the build still needs the other scalars (e.g.
                 // TabsState's DesiredActive) — defer one dispatcher tick so the whole render
-                // pass has applied, then build. tryBuild is idempotent.
-                Avalonia.Threading.Dispatcher.UIThread.Post(fun () -> tryBuild dc)
+                // pass has applied, then build. Once built, a longer names array means a new
+                // scratch pad was added, so reconcile to insert it. Both are idempotent.
+                Avalonia.Threading.Dispatcher.UIThread.Post(fun () ->
+                    tryBuild dc
+
+                    if (getPanes dc).Built then
+                        reconcileTabs dc)
             | _ -> ())
 
     /// The model's complete tab state: the closed set and the active index. The dock is
@@ -368,31 +363,25 @@ module DockControl =
                 (getPanes dc).Controls[ id ] <- control
                 tryBuild dc)
 
-    /// Content slots for up to 8 DSL tabs. Attribute definitions must be registered
-    /// statically, so the ceiling is fixed; the layout itself sizes to TabNames.
-    let TabSlots =
-        [| for i in 0..7 -> contentSlot (Ids.dsl i) $"DockControl_Tab%d{i}" |]
+    /// Content slots for up to 16 DSL tabs (samples + scratch pads). Attribute definitions must
+    /// be registered statically, so the ceiling is fixed; the layout itself sizes to TabNames.
+    let MaxTabs = 16
 
-    let GeneratedContent = contentSlot Ids.generated "DockControl_Generated"
-    let SyntaxTreeContent = contentSlot Ids.syntaxTree "DockControl_SyntaxTree"
-    let RewriteContent = contentSlot Ids.rewrite "DockControl_Rewrite"
+    let TabSlots =
+        [| for i in 0 .. MaxTabs - 1 -> contentSlot (Ids.dsl i) $"DockControl_Tab%d{i}" |]
+
     let OutputContent = contentSlot Ids.output "DockControl_Output"
 
 [<AutoOpen>]
 module DockControlBuilders =
     type Fabulous.Avalonia.View with
 
-        /// Creates the IDE layout: one named DSL editor tab per entry, plus the generated-F#,
-        /// syntax-tree and rewrite panes (tabs in the right column) and the output console
-        /// below — all live Fabulous controls hosted as dockable documents.
+        /// Creates the IDE layout: one named DSL editor tab per entry, with the output console
+        /// docked below — all live Fabulous controls hosted as dockable documents. (The
+        /// generated-F#, syntax-tree and rewrite views are chrome side panels, not dock tabs.)
         static member DockControl
-            (
-                tabs: (string * WidgetBuilder<'msg, IFabTextEditor>)[],
-                generated: WidgetBuilder<'msg, #IFabControl>,
-                syntaxTree: WidgetBuilder<'msg, #IFabControl>,
-                rewrite: WidgetBuilder<'msg, #IFabControl>,
-                output: WidgetBuilder<'msg, #IFabControl>
-            ) =
+            (tabs: (string * WidgetBuilder<'msg, IFabTextEditor>)[], output: WidgetBuilder<'msg, #IFabControl>)
+            =
             if tabs.Length > DockControl.TabSlots.Length then
                 failwith $"DockControl supports at most %d{DockControl.TabSlots.Length} tabs (got %d{tabs.Length})"
 
@@ -407,11 +396,7 @@ module DockControlBuilders =
                         DockControl.TabNames.WithValue(tabs |> Array.map fst)
                     ))
 
-            withTabs
-                .AddWidget(DockControl.GeneratedContent.WithValue(generated.Compile()))
-                .AddWidget(DockControl.SyntaxTreeContent.WithValue(syntaxTree.Compile()))
-                .AddWidget(DockControl.RewriteContent.WithValue(rewrite.Compile()))
-                .AddWidget(DockControl.OutputContent.WithValue(output.Compile()))
+            withTabs.AddWidget(DockControl.OutputContent.WithValue(output.Compile()))
 
 type DockControlModifiers =
     /// Raised with the DSL tab index when Dock activates a different tab (header click, etc.).

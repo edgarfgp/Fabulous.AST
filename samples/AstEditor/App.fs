@@ -129,6 +129,39 @@ Oak() {
           "Quick Fix", quickFixSample
           "Convert", convertSample ]
 
+    /// Starter content for a new scratch pad.
+    let private scratchTemplate =
+        """open Fabulous.AST
+open type Fabulous.AST.Ast
+
+Oak() {
+    AnonymousModule() {
+        Value("x", Int(42))
+    }
+}
+|> Gen.mkOak
+|> Gen.run"""
+
+    /// The next free "Scratch N" name given the tab names already in use.
+    let private nextScratchName(names: string[]) =
+        let used =
+            names
+            |> Array.choose(fun n ->
+                if n.StartsWith("Scratch ", System.StringComparison.Ordinal) then
+                    match System.Int32.TryParse(n.Substring 8) with
+                    | true, k -> Some k
+                    | _ -> None
+                else
+                    None)
+            |> Set.ofArray
+
+        let mutable k = 1
+
+        while used.Contains k do
+            k <- k + 1
+
+        $"Scratch {k}"
+
     type Model =
         {
             /// One DSL editor tab per example; the active one drives generation.
@@ -174,8 +207,12 @@ Oak() {
             CaretColumn: int
             /// The application theme variant (also drives the editors' syntax theme).
             Theme: Avalonia.Styling.ThemeVariant
-            /// Whether the left file-explorer panel is shown (toggled from the activity bar).
+            /// Which chrome panels are shown (toggled from the activity bar): the left file
+            /// explorer, and the right generated-F# / syntax-tree / rewrite side panels.
             ShowExplorer: bool
+            ShowGenerated: bool
+            ShowSyntaxTree: bool
+            ShowRewrite: bool
         }
 
     type Msg =
@@ -212,8 +249,13 @@ Oak() {
         /// The file explorer selected a sample: open it if closed, then make it active
         /// (this is also how a closed sample is reopened — click its dimmed row).
         | SelectSample of int
-        /// Show/hide the left file-explorer panel.
+        /// Show/hide the file-explorer / generated / syntax-tree / rewrite chrome panels.
         | ToggleExplorer
+        | ToggleGenerated
+        | ToggleSyntaxTree
+        | ToggleRewrite
+        /// Add a new blank scratch-pad tab (from the explorer) and make it active.
+        | NewScratchPad
         /// Persist the dock arrangement + session on window close.
         | SaveSession
         /// Switch the app theme variant (and the editors' syntax theme).
@@ -223,15 +265,36 @@ Oak() {
     let private debounceMs = 400
 
     let init() =
-        let names = examples |> List.map fst |> Array.ofList
-        let defaults = examples |> List.map snd |> Array.ofList
+        // Merge the saved session with the built-in samples by name: each sample keeps its
+        // saved edits (or its default if unsaved), then any saved scratch pads (names that
+        // aren't samples) are appended. Tolerant of the samples list changing in code.
+        let exampleNames = examples |> List.map fst |> Set.ofList
 
-        // Restore the last session's edits + active tab if they match the current tab count.
-        let sources, activeTab =
+        let tabs, activeTab =
             match Session.tryLoad() with
-            | Some(saved, active) when saved.Length = defaults.Length ->
-                saved, (if active >= 0 && active < saved.Length then active else 0)
-            | _ -> defaults, 0
+            | Some(saved, active) ->
+                let savedByName = saved |> Array.map(fun (n, s) -> n, s) |> Map.ofArray
+
+                let sampleTabs =
+                    examples
+                    |> List.map(fun (name, def) -> name, (Map.tryFind name savedByName |> Option.defaultValue def))
+
+                let scratchTabs =
+                    saved
+                    |> Array.filter(fun (n, _) -> not(exampleNames.Contains n))
+                    |> Array.toList
+
+                let all = sampleTabs @ scratchTabs
+
+                all,
+                (if active >= 0 && active < List.length all then
+                     active
+                 else
+                     0)
+            | None -> examples, 0
+
+        let names = tabs |> List.map fst |> Array.ofList
+        let sources = tabs |> List.map snd |> Array.ofList
 
         { TabNames = names
           TabSources = sources
@@ -255,7 +318,10 @@ Oak() {
           CaretLine = 1
           CaretColumn = 1
           Theme = Avalonia.Styling.ThemeVariant.Dark
-          ShowExplorer = true },
+          ShowExplorer = true
+          ShowGenerated = true
+          ShowSyntaxTree = false
+          ShowRewrite = false },
         // Kick off the initial generation (right pane) and the initial syntax-tree parse.
         Cmd.batch
             [ Cmd.OfAsync.perform (fun () -> async { return 0 }) () Settle
@@ -552,8 +618,34 @@ Oak() {
             // which re-points generation. Nothing more to do here.
             { model with ClosedTabs = model.ClosedTabs.Add tab }, Cmd.none
         | ToggleExplorer -> { model with ShowExplorer = not model.ShowExplorer }, Cmd.none
+        | ToggleGenerated -> { model with ShowGenerated = not model.ShowGenerated }, Cmd.none
+        | ToggleSyntaxTree -> { model with ShowSyntaxTree = not model.ShowSyntaxTree }, Cmd.none
+        | ToggleRewrite -> { model with ShowRewrite = not model.ShowRewrite }, Cmd.none
+        | NewScratchPad ->
+            if model.TabNames.Length >= DockControl.MaxTabs then
+                model, Cmd.none // hit the fixed content-slot ceiling
+            else
+                let name = nextScratchName model.TabNames
+                let names = Array.append model.TabNames [| name |]
+                let sources = Array.append model.TabSources [| scratchTemplate |]
+                let tab = names.Length - 1
+                let version = model.Version + 1
+                let treeVersion = model.TreeVersion + 1
+
+                { model with
+                    TabNames = names
+                    TabSources = sources
+                    ActiveTab = tab
+                    SelectedText = ""
+                    LastValid = None
+                    Version = version
+                    TreeVersion = treeVersion
+                    HighlightRange = None
+                    RewriteSteps = [||]
+                    RewriteStep = 0 },
+                Cmd.batch [ debounce version; debounceTree treeVersion ]
         | SaveSession ->
-            Session.save model.TabSources model.ActiveTab
+            Session.save (Array.zip model.TabNames model.TabSources) model.ActiveTab
             model, Cmd.none
         | SetTheme variant ->
             // The view's requestedThemeVariant drives Avalonia; the editors' syntax theme
@@ -631,6 +723,7 @@ Oak() {
     // Fixed pane widths.
     let private activityBarWidth = 48.
     let private explorerWidth = 240.
+    let private rightPanelWidth = 420.
 
     let private statusLabel(model: Model) =
         if model.IsRunning then "● Generating F#…"
@@ -717,17 +810,11 @@ Oak() {
                     .margin(8., 6.)
                     .gridRow(0)
 
-                ((TextEditor(body) |> code).isReadOnly(true).showLineNumbers(true).highlightFSharp()).gridRow(1)
+                (TextEditor(body) |> code).isReadOnly(true).showLineNumbers(true).highlightFSharp().gridRow(1)
             })
 
     let private docked model =
-        DockControl(
-            model.TabNames |> Array.mapi(fun i name -> name, tabPane model i),
-            generatedPane model,
-            syntaxTreePane model,
-            rewritePane model,
-            outputPane model
-        )
+        DockControl(model.TabNames |> Array.mapi(fun i name -> name, tabPane model i), outputPane model)
             .onActiveTabChanged(ActivateTab)
             .onTabClosed(TabClosed)
             // The model owns the tab arrangement; the dock reconciles to it in one pass
@@ -815,11 +902,11 @@ Oak() {
         )
             .background(statusBrush)
 
-    /// Far-left activity bar (VS Code / Rider style): a tight column of icon buttons at the
-    /// top. Every icon is wired — the folder toggles the explorer, the triangle runs the
-    /// generated F#. Fixed-height square cells keep the two glyphs evenly spaced regardless of
-    /// emoji line-height differences.
-    let private activityBar(model: Model) =
+    /// An activity bar (VS Code / Rider style): a tight column of panel-toggle icons. An active
+    /// toggle is brighter. Fixed-height square cells keep the glyphs evenly spaced regardless
+    /// of emoji line-heights. The explorer's toggle sits on the left bar; the right panels'
+    /// toggles sit on the right bar, next to the panels they control.
+    let private activityBar (model: Model) (icons: (string * Msg * bool) list) =
         let p = palette model
 
         let icon (glyph: string) (msg: Msg) (active: bool) =
@@ -840,11 +927,21 @@ Oak() {
                 .horizontalContentAlignment(HorizontalAlignment.Center)
 
         (VStack(0.) {
-            icon "🗂" ToggleExplorer model.ShowExplorer
-            icon "▶" RunCode model.LastValid.IsSome
+            for glyph, msg, active in icons do
+                icon glyph msg active
         })
             .background(p.Activity)
             .width(activityBarWidth)
+
+    let private leftActivityBar(model: Model) =
+        activityBar model [ "🗂", ToggleExplorer, model.ShowExplorer ]
+
+    let private rightActivityBar(model: Model) =
+        activityBar
+            model
+            [ "📄", ToggleGenerated, model.ShowGenerated
+              "🌳", ToggleSyntaxTree, model.ShowSyntaxTree
+              "✦", ToggleRewrite, model.ShowRewrite ]
 
     /// One file-explorer row per sample: an F# glyph + the sample name. The active sample is
     /// highlighted, closed ones are dimmed; clicking opens/activates it.
@@ -876,10 +973,10 @@ Oak() {
             .horizontalAlignment(HorizontalAlignment.Stretch)
             .horizontalContentAlignment(HorizontalAlignment.Left)
 
-    /// The left file-explorer panel: a "Solution"-style tree of the DSL samples. Indent rhythm:
-    /// the "Solution" header and the "AstEditor" root sit at 12px; sample leaves are nested
-    /// under the root (8px button padding + 22px content inset) so their glyphs line up just
-    /// past the disclosure triangle.
+    /// The left file-explorer panel: a "Solution"-style tree of the DSL samples (and any
+    /// scratch pads you've added). Right-click anywhere for "New scratch pad". Indent rhythm:
+    /// the "Solution" header and the "AstEditor" root sit at 12px; leaves are nested under the
+    /// root (8px button padding + 22px content inset) so their glyphs line up past the triangle.
     let private explorer(model: Model) =
         let p = palette model
 
@@ -899,16 +996,73 @@ Oak() {
         )
             .background(p.Explorer)
             .width(explorerWidth)
+            .contextMenu(ContextMenu() { MenuItem("＋  New scratch pad").onClick(fun _ -> NewScratchPad) })
 
-    /// One stable grid: activity bar, the explorer (collapsed via isVisible when hidden, so
-    /// its Auto column shrinks to zero), and the dock. Keeping the dock at a fixed child
-    /// position means toggling the explorer never rebuilds it (which would lose live editor
-    /// state); Fabulous diffs the subtree in place.
+    /// A side-panel header bar (uppercase, dim), matching the explorer's "Solution" header.
+    let private panelHeader (p: Palette) (title: string) =
+        Border(TextBlock(title).fontSize(11.).foreground(p.HeaderText).centerVertical())
+            .padding(12., 8.)
+            .background(p.Activity)
+
+    /// The right-side chrome panels (the secondary side bar): generated F#, syntax tree, and
+    /// the rewrite stepper. Each is a titled panel toggled from the right activity bar; when
+    /// several are on they stack vertically.
+    let private rightPanels(model: Model) =
+        let p = palette model
+
+        let titled (title: string) (content: WidgetBuilder<Msg, #IFabControl>) =
+            Border(
+                Grid(coldefs = [ Star ], rowdefs = [ Auto; Star ]) {
+                    (panelHeader p title).gridRow(0)
+                    content.gridRow(1)
+                }
+            )
+                .background(p.Explorer)
+
+        // Row of each shown panel = how many shown panels precede it.
+        let genRow = 0
+
+        let treeRow = (if model.ShowGenerated then 1 else 0)
+
+        let rewriteRow =
+            (if model.ShowGenerated then 1 else 0) + (if model.ShowSyntaxTree then 1 else 0)
+
+        (Grid(
+            coldefs = [ Star ],
+            rowdefs =
+                [ if model.ShowGenerated then
+                      Star
+                  if model.ShowSyntaxTree then
+                      Star
+                  if model.ShowRewrite then
+                      Star ]
+        ) {
+            if model.ShowGenerated then
+                (titled "GENERATED F#" (generatedPane model)).gridRow(genRow)
+
+            if model.ShowSyntaxTree then
+                (titled "SYNTAX TREE" (syntaxTreePane model)).gridRow(treeRow)
+
+            if model.ShowRewrite then
+                (titled "REWRITE" (rewritePane model)).gridRow(rewriteRow)
+        })
+            .width(rightPanelWidth)
+
+    /// One stable grid: activity bar, the explorer (left), the dock (center), and the right
+    /// side panels. Panels collapse via isVisible when hidden, so their Auto columns shrink to
+    /// zero — and keeping the dock at a fixed child position means toggling a panel never
+    /// rebuilds it (which would lose live editor state); Fabulous diffs the subtree in place.
     let private mainRow(model: Model) =
-        (Grid(coldefs = [ Auto; Auto; Star ], rowdefs = [ Star ]) {
-            (activityBar model).gridColumn(0)
+        (Grid(coldefs = [ Auto; Auto; Star; Auto; Auto ], rowdefs = [ Star ]) {
+            (leftActivityBar model).gridColumn(0)
             (explorer model).isVisible(model.ShowExplorer).gridColumn(1)
             (docked model).gridColumn(2)
+
+            (rightPanels model)
+                .isVisible(model.ShowGenerated || model.ShowSyntaxTree || model.ShowRewrite)
+                .gridColumn(3)
+
+            (rightActivityBar model).gridColumn(4)
         })
 
     let private shell(model: Model) =
