@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes_
+
+## [2.0.0-pre09] - 2026-11-18
+
 ### Changed
 - **Breaking:** Fabulous.AST targets `net10.0` and `netstandard2.1`; `net8.0` is dropped (.NET 8 left support on 2026-11-10), and `netstandard2.1` still serves apps on it. Fabulous.AST.Json and Fabulous.AST.Build target `net10.0`, so the Fabulous.AST.Build MSBuild task needs the .NET 10 SDK or later
 - Built with the .NET 11 SDK (F# 11); tests run on `net10.0` and `net11.0`
@@ -429,7 +433,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre07...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre09...HEAD
+[2.0.0-pre09]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre09
+[2.0.0-pre08]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre08
 [2.0.0-pre07]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre07
 [2.0.0-pre06]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre06
 [2.0.0-pre05]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre05
