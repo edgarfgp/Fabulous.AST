@@ -40,8 +40,8 @@ pipeline "ci" {
 
     stage "docs" {
         run $"dotnet publish src/Fabulous.AST -f netstandard2.1 -c {config}"
-        run $"dotnet publish extensions/Fabulous.AST.Json -f net8.0 -c {config}"
-        run $"dotnet publish extensions/Fabulous.AST.Build -f net8.0 -c {config}"
+        run $"dotnet publish extensions/Fabulous.AST.Json -f net10.0 -c {config}"
+        run $"dotnet publish extensions/Fabulous.AST.Build -f net10.0 -c {config}"
         run $"dotnet fsdocs build --properties Configuration={config} --eval --strict"
     }
 
@@ -55,8 +55,8 @@ pipeline "docs" {
 
     stage "build" {
         run "dotnet publish src/Fabulous.AST -f netstandard2.1 -c Release"
-        run "dotnet publish extensions/Fabulous.AST.Json -f net8.0 -c Release"
-        run "dotnet publish extensions/Fabulous.AST.Build -f net8.0 -c Release"
+        run "dotnet publish extensions/Fabulous.AST.Json -f net10.0 -c Release"
+        run "dotnet publish extensions/Fabulous.AST.Build -f net10.0 -c Release"
     }
 
     stage "watch" { run "dotnet fsdocs watch --eval --clean" }

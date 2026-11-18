@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Breaking:** Fabulous.AST targets `net10.0` and `netstandard2.1`; `net8.0` is dropped (.NET 8 left support on 2026-11-10), and `netstandard2.1` still serves apps on it. Fabulous.AST.Json and Fabulous.AST.Build target `net10.0`, so the Fabulous.AST.Build MSBuild task needs the .NET 10 SDK or later
+- Built with the .NET 11 SDK (F# 11); tests run on `net10.0` and `net11.0`
 - **Breaking:** built on **Fantomas.Core 8.1.1** (was 7.0.1). The widget DSL is unchanged, but code that builds or matches Fantomas Oak nodes directly (`EscapeHatch`, `Rewrite.expr` / `Rewrite.typeDefn` functions, `Gen.mkOak` results) must follow the Fantomas 8 Oak — see the [Fantomas upgrade guide](https://fsprojects.github.io/fantomas/docs/end-users/UpgradeGuide.html). The changes most likely to matter:
   - Chains are `ExprChain(head, segments, terminal)`. `Expr.DotLambda`, `Expr.DotIndexedGet`, `Expr.AppLongIdentAndSingleParenArg` and `Expr.NestedIndexWithoutDot` are gone; the widgets of the same name now produce a chain, `Expr.AppSingleParenArg` and an `Expr.App` of `Expr.IndexWithoutDot` respectively
   - `let`, `use`, `let!`, `use!` and `and!` inside computation expressions are all `ComputationExpressionStatement.BindingStatement` (a `BindingNode` whose leading keyword says which)
