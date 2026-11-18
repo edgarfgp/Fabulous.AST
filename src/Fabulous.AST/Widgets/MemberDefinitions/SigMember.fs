@@ -17,7 +17,7 @@ module SigMember =
             let hasSetter = Widgets.getScalarValue widget HasSetter
             let withGetSetText = MultipleTextsNode.CreateGetSet(hasGetter, hasSetter)
 
-            let node = MemberDefnSigMemberNode(identifier, withGetSetText, Range.Zero)
+            let node = MemberDefnSigMemberNode(identifier, withGetSetText, Range.range0)
             MemberDefn.SigMember(node))
 
 [<AutoOpen>]

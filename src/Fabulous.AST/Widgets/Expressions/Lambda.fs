@@ -14,7 +14,7 @@ module Lambda =
         Widgets.register "Lambda" (fun widget ->
             let expr = Widgets.getNodeFromWidget<Expr> widget Value
             let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
-            Expr.Lambda(ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.Zero)))
+            Expr.Lambda(ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.range0)))
 
 [<AutoOpen>]
 module LambdaBuilders =

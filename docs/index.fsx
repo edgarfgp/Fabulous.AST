@@ -81,12 +81,11 @@ ParsedInput.ImplFile(
     ParsedImplFileInput.ParsedImplFileInput(
         fileName = "tmp.fsx",
         isScript = true,
-        qualifiedNameOfFile = QualifiedNameOfFile.QualifiedNameOfFile(Ident("Tmp$fsx", Range.Zero)),
-        scopedPragmas = [],
+        qualifiedNameOfFile = QualifiedNameOfFile.QualifiedNameOfFile(Ident("Tmp$fsx", Range.range0)),
         hashDirectives = [],
         contents =
             [ SynModuleOrNamespace.SynModuleOrNamespace(
-                  longId = [ Ident("Tmp", Range.Zero) ],
+                  longId = [ Ident("Tmp", Range.range0) ],
                   isRecursive = false,
                   kind = SynModuleOrNamespaceKind.AnonModule,
                   decls =
@@ -117,31 +116,33 @@ ParsedInput.ImplFile(
                                           ),
                                       headPat =
                                           SynPat.Named(
-                                              ident = SynIdent.SynIdent(ident = Ident("x", Range.Zero), trivia = None),
+                                              ident = SynIdent.SynIdent(ident = Ident("x", Range.range0), trivia = None),
                                               isThisVal = false,
                                               accessibility = None,
-                                              range = Range.Zero
+                                              range = Range.range0
                                           ),
                                       returnInfo = None,
-                                      expr = SynExpr.Const(constant = SynConst.Int32(12), range = Range.Zero),
-                                      range = Range.Zero,
-                                      debugPoint = DebugPointAtBinding.Yes(Range.Zero),
+                                      expr = SynExpr.Const(constant = SynConst.Int32(12), range = Range.range0),
+                                      range = Range.range0,
+                                      debugPoint = DebugPointAtBinding.Yes(Range.range0),
                                       trivia =
-                                          { LeadingKeyword = SynLeadingKeyword.Let(Range.Zero)
+                                          { LeadingKeyword = SynLeadingKeyword.Let(Range.range0)
                                             InlineKeyword = None
-                                            EqualsRange = Some(Range.Zero) }
+                                            EqualsRange = Some(Range.range0) }
                                   ) ],
-                            range = Range.Zero
+                            range = Range.range0,
+                            trivia = { InKeyword = None }
                         ) ],
                   xmlDoc = PreXmlDoc.Empty,
                   attribs = [],
                   accessibility = None,
-                  range = Range.Zero,
+                  range = Range.range0,
                   trivia = { LeadingKeyword = SynModuleOrNamespaceLeadingKeyword.None }
               ) ],
         flags = (false, false),
         trivia =
             { ConditionalDirectives = []
+              WarnDirectives = []
               CodeComments = [] },
         identifiers = set []
     )
@@ -177,22 +178,23 @@ Oak(
           [ BindingNode(
                 None,
                 None,
-                MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+                MultipleTextsNode([ SingleTextNode("let", Range.range0) ], Range.range0),
                 false,
                 None,
                 None,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)),
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.range0)) ], Range.range0)),
                 None,
                 [],
                 None,
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                Range.Zero
+                SingleTextNode("=", Range.range0),
+                Expr.Constant(Constant.FromText(SingleTextNode("12", Range.range0))),
+                None,
+                Range.range0
             )
             |> ModuleDecl.TopLevelBinding ],
-          Range.Zero
+          Range.range0
       ) ],
-    Range.Zero
+    Range.range0
 )
 |> CodeFormatter.FormatOakAsync
 |> Async.RunSynchronously

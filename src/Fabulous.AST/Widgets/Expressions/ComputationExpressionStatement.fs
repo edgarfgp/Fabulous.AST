@@ -11,16 +11,54 @@ module ComputationExpressionStatement =
     let ExprValue = Attributes.defineWidget "OtherExpr"
     let PatternValue = Attributes.defineWidget "Pattern"
 
+    // Fantomas 8 models every binding inside a computation expression (`let`, `use`, `let!`,
+    // `use!`, `and!`) as a plain BindingNode whose leading keyword says which one it is.
+    let private withInKeyword (inKeyword: SingleTextNode option) (b: BindingNode) =
+        BindingNode(
+            b.XmlDoc,
+            b.Attributes,
+            b.LeadingKeyword,
+            b.IsMutable,
+            b.Inline,
+            b.Accessibility,
+            b.FunctionName,
+            b.GenericTypeParameters,
+            b.Parameters,
+            b.ReturnType,
+            b.Equals,
+            b.Expr,
+            inKeyword,
+            b.Range
+        )
+
+    let private bangBinding (keyword: SingleTextNode) (pat: Pattern) (expr: Expr) =
+        BindingNode(
+            None,
+            None,
+            MultipleTextsNode([ keyword ], Range.range0),
+            false,
+            None,
+            None,
+            Choice2Of2 pat,
+            None,
+            [],
+            None,
+            SingleTextNode.equals,
+            expr,
+            None,
+            Range.range0
+        )
+
     let WidgetLetOrUseStatementKey =
         Widgets.register "LetOrUseStatement" (fun widget ->
             let binding = Widgets.getNodeFromWidget<BindingNode> widget Binding
 
-            let inKeyword =
+            let binding =
                 match Widgets.tryGetScalarValue widget InKeyword with
-                | ValueSome true -> Some(SingleTextNode.``in``)
-                | _ -> None
+                | ValueSome true -> withInKeyword (Some SingleTextNode.``in``) binding
+                | _ -> binding
 
-            ComputationExpressionStatement.LetOrUseStatement(ExprLetOrUseNode(binding, inKeyword, Range.Zero)))
+            ComputationExpressionStatement.BindingStatement(binding))
 
     let WidgetOtherStatementKey =
         Widgets.register "OtherStatement" (fun widget ->
@@ -31,19 +69,13 @@ module ComputationExpressionStatement =
         Widgets.register "LetOrUseBangStatement" (fun widget ->
             let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
             let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
-
-            ComputationExpressionStatement.LetOrUseBangStatement(
-                ExprLetOrUseBangNode(SingleTextNode.letBang, pat, SingleTextNode.equals, expr, Range.Zero)
-            ))
+            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.letBang pat expr))
 
     let WidgetAndBangStatementKey =
         Widgets.register "AndBangStatement" (fun widget ->
             let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
             let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
-
-            ComputationExpressionStatement.AndBangStatement(
-                ExprAndBang(SingleTextNode.andBang, pat, SingleTextNode.equals, expr, Range.Zero)
-            ))
+            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.andBang pat expr))
 
 [<AutoOpen>]
 module ComputationExpressionStatementBuilders =

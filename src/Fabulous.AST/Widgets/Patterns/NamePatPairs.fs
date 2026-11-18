@@ -6,7 +6,7 @@ open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module NamePatPairs =
-    let Pairs = Attributes.defineScalar<NamePatPair seq> "Items"
+    let Pairs = Attributes.defineScalar<NamePatPairNode seq> "Items"
 
     let Identifiers = Attributes.defineScalar<string> "Identifiers"
 
@@ -21,10 +21,10 @@ module NamePatPairs =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.range0) ],
                         [],
                         SingleTextNode.greaterThan,
-                        Range.Zero
+                        Range.range0
                     )
                     |> TyparDecls.PostfixList
                     |> Some
@@ -36,12 +36,12 @@ module NamePatPairs =
 
             Pattern.NamePatPairs(
                 PatNamePatPairsNode(
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.range0),
                     typeParams,
                     SingleTextNode.leftParenthesis,
                     items,
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 
@@ -49,7 +49,7 @@ module NamePatPairs =
 module NamePatPairsBuilders =
     type Ast with
 
-        static member NamePatPairsPat(ident: string, pairs: WidgetBuilder<NamePatPair> seq) =
+        static member NamePatPairsPat(ident: string, pairs: WidgetBuilder<NamePatPairNode> seq) =
             WidgetBuilder<Pattern>(
                 NamePatPairs.WidgetKey,
                 NamePatPairs.Pairs.WithValue(pairs |> Seq.map Gen.mkOak |> Seq.toArray),

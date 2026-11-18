@@ -64,16 +64,18 @@ module TypeDefnRegular =
                         attributes,
                         leadingKeyword,
                         accessControl,
-                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                        Type.LongIdent(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
+                        ),
                         typeParams,
                         [],
                         constructor,
                         Some(SingleTextNode.equals),
-                        None,
-                        Range.Zero
+                        Range.range0
                     ),
+                    None,
                     members,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

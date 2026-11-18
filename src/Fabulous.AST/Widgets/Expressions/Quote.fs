@@ -10,7 +10,7 @@ module Quoted =
     let WidgetKey =
         Widgets.register "Quoted" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
-            Expr.Quote(ExprQuoteNode(SingleTextNode.leftQuotation, expr, SingleTextNode.rightQuotation, Range.Zero)))
+            Expr.Quote(ExprQuoteNode(SingleTextNode.leftQuotation, expr, SingleTextNode.rightQuotation, Range.range0)))
 
 [<AutoOpen>]
 module QuotedBuilders =

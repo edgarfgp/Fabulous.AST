@@ -64,7 +64,16 @@ module Field =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            FieldNode(xmlDocs, attributes, leadingKeyword, mutableKeyword, accessControl, name, fieldType, Range.Zero))
+            FieldNode(
+                xmlDocs,
+                attributes,
+                leadingKeyword,
+                mutableKeyword,
+                accessControl,
+                name,
+                fieldType,
+                Range.range0
+            ))
 
     let ValFieldWidgetKey =
         Widgets.register "ValField" (fun widget ->
@@ -118,7 +127,7 @@ module Field =
                     accessControl,
                     name,
                     fieldType,
-                    Range.Zero
+                    Range.range0
                 )
 
             MemberDefn.ValField(node))

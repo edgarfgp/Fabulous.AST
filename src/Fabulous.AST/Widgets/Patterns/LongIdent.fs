@@ -22,10 +22,10 @@ module LongIdentPattern =
                     TyparDeclsPostfixListNode(
                         SingleTextNode.lessThan,
                         [ for v in values do
-                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.Zero) ],
+                              TyparDeclNode(None, SingleTextNode.Create v, [], Range.range0) ],
                         [],
                         SingleTextNode.greaterThan,
-                        Range.Zero
+                        Range.range0
                     )
                     |> TyparDecls.PostfixList
                     |> Some
@@ -50,10 +50,10 @@ module LongIdentPattern =
             Pattern.LongIdent(
                 PatLongIdentNode(
                     accessControl,
-                    IdentListNode(identifier, Range.Zero),
+                    IdentListNode(identifier, Range.range0),
                     typeParams,
                     List.ofSeq items,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

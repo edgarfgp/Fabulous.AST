@@ -23,7 +23,7 @@ module RationalConstNode =
     let WidgetNegateKey =
         Widgets.register "RationalConstNodeNegate" (fun widget ->
             let rationalConst = Widgets.getNodeFromWidget<RationalConstNode> widget Node
-            RationalConstNode.Negate(NegateRationalNode(SingleTextNode.minus, rationalConst, Range.Zero)))
+            RationalConstNode.Negate(NegateRationalNode(SingleTextNode.minus, rationalConst, Range.range0)))
 
     let WidgetRationalKey =
         Widgets.register "RationalConstNodeRational" (fun widget ->
@@ -39,7 +39,7 @@ module RationalConstNode =
                     SingleTextNode.Create(divOp),
                     SingleTextNode.Create(denominator),
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 
@@ -107,7 +107,7 @@ module Measure =
             let operator = Widgets.getScalarValue widget Value
             let lhs = Widgets.getNodeFromWidget<Measure> widget LHS
             let rhs = Widgets.getNodeFromWidget<Measure> widget RHS
-            Measure.Operator(MeasureOperatorNode(lhs, SingleTextNode.Create(operator), rhs, Range.Zero)))
+            Measure.Operator(MeasureOperatorNode(lhs, SingleTextNode.Create(operator), rhs, Range.range0)))
 
     let WidgetMeasureDivideKey =
         Widgets.register "MeasureDivide" (fun widget ->
@@ -119,13 +119,13 @@ module Measure =
                 | ValueSome x -> Some x
                 | ValueNone -> None
 
-            Measure.Divide(MeasureDivideNode(lhs, SingleTextNode.forwardSlash, rhs, Range.Zero)))
+            Measure.Divide(MeasureDivideNode(lhs, SingleTextNode.forwardSlash, rhs, Range.range0)))
 
     let WidgetMeasurePowerKey =
         Widgets.register "MeasurePower" (fun widget ->
             let measure = Widgets.getNodeFromWidget<Measure> widget LHS
             let node = Widgets.getNodeFromWidget<RationalConstNode> widget RHS
-            Measure.Power(MeasurePowerNode(measure, SingleTextNode.power, node, Range.Zero)))
+            Measure.Power(MeasurePowerNode(measure, SingleTextNode.power, node, Range.range0)))
 
     let WidgetMeasureMultiplyKey =
         Widgets.register "MeasureMultiply" (fun widget ->
@@ -135,7 +135,7 @@ module Measure =
                 IdentListNode(
                     [ for ident in content do
                           IdentifierOrDot.Ident(SingleTextNode.Create(ident)) ],
-                    Range.Zero
+                    Range.range0
 
                 )
             ))
@@ -143,14 +143,19 @@ module Measure =
     let WidgetSequenceKey =
         Widgets.register "Sequence" (fun widget ->
             let measures = Widgets.getScalarValue widget Measures
-            Measure.Seq(MeasureSequenceNode(List.ofSeq measures, Range.Zero)))
+            Measure.Seq(MeasureSequenceNode(List.ofSeq measures, Range.range0)))
 
     let WidgetParenthesisKey =
         Widgets.register "Parenthesis" (fun widget ->
             let measure = Widgets.getNodeFromWidget<Measure> widget Node
 
             Measure.Paren(
-                MeasureParenNode(SingleTextNode.leftParenthesis, measure, SingleTextNode.rightParenthesis, Range.Zero)
+                MeasureParenNode(
+                    SingleTextNode.leftParenthesis,
+                    measure,
+                    SingleTextNode.rightParenthesis,
+                    Range.range0
+                )
             ))
 
 [<AutoOpen>]

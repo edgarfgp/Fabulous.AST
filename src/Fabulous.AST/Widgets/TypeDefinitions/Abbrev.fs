@@ -43,17 +43,19 @@ module TypeDefnAbbrevNode =
                         attributes,
                         leadingKeyword,
                         None,
-                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                        Type.LongIdent(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
+                        ),
                         typeParams,
                         [],
                         None,
                         Some(SingleTextNode.equals),
-                        None,
-                        Range.Zero
+                        Range.range0
                     ),
                     aliasType,
+                    None,
                     [],
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

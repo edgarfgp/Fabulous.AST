@@ -4,11 +4,10 @@ open System.Runtime.CompilerServices
 open Fantomas.Core.SyntaxOak
 
 // Some Fantomas Oak DU names collide with widget modules in Fabulous.AST
-// (TypeConstraint, ChainLink). Pattern matches still resolve correctly because
-// the matched value carries its type, but construction sites need the
-// fully-qualified case constructor — these aliases keep that readable.
+// (TypeConstraint). Pattern matches still resolve correctly because the matched
+// value carries its type, but construction sites need the fully-qualified case
+// constructor — this alias keeps that readable.
 type private FTypeConstraint = Fantomas.Core.SyntaxOak.TypeConstraint
-type private FChainLink = Fantomas.Core.SyntaxOak.ChainLink
 
 // Bottom-up rewriter over Fantomas Oak. Visits every Expr reachable from
 // an Oak (including those inside type definitions, member bodies, attributes,
@@ -140,22 +139,12 @@ module private RewriteImpl =
             | Expr.IndexWithoutDot n ->
                 let n' = rewriteExprIndexWithoutDotNode f n
                 if refEq n n' then e else Expr.IndexWithoutDot n'
-            | Expr.AppLongIdentAndSingleParenArg n ->
-                let n' = rewriteExprAppLongIdentAndSingleParenArgNode f n
-
-                if refEq n n' then
-                    e
-                else
-                    Expr.AppLongIdentAndSingleParenArg n'
             | Expr.AppSingleParenArg n ->
                 let n' = rewriteExprAppSingleParenArgNode f n
                 if refEq n n' then e else Expr.AppSingleParenArg n'
             | Expr.AppWithLambda n ->
                 let n' = rewriteExprAppWithLambdaNode f n
                 if refEq n n' then e else Expr.AppWithLambda n'
-            | Expr.NestedIndexWithoutDot n ->
-                let n' = rewriteExprNestedIndexWithoutDotNode f n
-                if refEq n n' then e else Expr.NestedIndexWithoutDot n'
             | Expr.App n ->
                 let n' = rewriteExprAppNode f n
                 if refEq n n' then e else Expr.App n'
@@ -185,9 +174,6 @@ module private RewriteImpl =
             | Expr.LongIdentSet n ->
                 let n' = rewriteExprLongIdentSetNode f n
                 if refEq n n' then e else Expr.LongIdentSet n'
-            | Expr.DotIndexedGet n ->
-                let n' = rewriteExprDotIndexedGetNode f n
-                if refEq n n' then e else Expr.DotIndexedGet n'
             | Expr.DotIndexedSet n ->
                 let n' = rewriteExprDotIndexedSetNode f n
                 if refEq n n' then e else Expr.DotIndexedSet n'
@@ -222,9 +208,9 @@ module private RewriteImpl =
             | Expr.Chain n ->
                 let n' = rewriteExprChain f n
                 if refEq n n' then e else Expr.Chain n'
-            | Expr.DotLambda n ->
-                let n' = rewriteExprDotLambda f n
-                if refEq n n' then e else Expr.DotLambda n'
+            | Expr.DynamicChain n ->
+                let n' = rewriteExprDynamicChainNode f n
+                if refEq n n' then e else Expr.DynamicChain n'
             | Expr.BeginEnd n ->
                 let n' = rewriteExprBeginEndNode f n
                 if refEq n n' then e else Expr.BeginEnd n'
@@ -504,51 +490,70 @@ module private RewriteImpl =
             let n' = rewriteInheritConstructorOtherNode f n
             if refEq n n' then ic else InheritConstructor.Other n'
 
-    and rewriteChainLink (f: Expr -> Expr) (link: ChainLink) : ChainLink =
-        match link with
-        | ChainLink.Identifier e ->
+    // Fantomas 8 chains: a head, dot-paired segments, and an optional terminal call.
+    and rewriteChainCall (f: Expr -> Expr) (call: ChainCall) : ChainCall =
+        match call with
+        | ChainCall.Paren n ->
+            let n' = rewriteExprParenNode f n
+            if refEq n n' then call else ChainCall.Paren n'
+        | ChainCall.Unit _ -> call
+
+    and rewriteChainSegment (f: Expr -> Expr) (segment: ChainSegment) : ChainSegment =
+        match segment with
+        | ChainSegment.DotMember(dot, e) ->
             let e' = rewriteExpr f e
-            if refEq e e' then link else FChainLink.Identifier e'
-        | ChainLink.Dot _ -> link
-        | ChainLink.Expr e ->
+
+            if refEq e e' then
+                segment
+            else
+                ChainSegment.DotMember(dot, e')
+        | ChainSegment.DotApplication(dot, e, call) ->
             let e' = rewriteExpr f e
-            if refEq e e' then link else FChainLink.Expr e'
-        | ChainLink.AppParen n ->
-            let n' = rewriteLinkSingleAppParen f n
-            if refEq n n' then link else FChainLink.AppParen n'
-        | ChainLink.AppUnit n ->
-            let n' = rewriteLinkSingleAppUnit f n
-            if refEq n n' then link else FChainLink.AppUnit n'
-        | ChainLink.IndexExpr e ->
+            let call' = rewriteChainCall f call
+
+            if refEq e e' && refEq call call' then
+                segment
+            else
+                ChainSegment.DotApplication(dot, e', call')
+        | ChainSegment.DotIndex(dot, e) ->
             let e' = rewriteExpr f e
-            if refEq e e' then link else FChainLink.IndexExpr e'
+
+            if refEq e e' then
+                segment
+            else
+                ChainSegment.DotIndex(dot, e')
+
+    and rewriteChainTerminal (f: Expr -> Expr) (terminal: ChainTerminal) : ChainTerminal =
+        match terminal with
+        | ChainTerminal.SpaceAllowed call ->
+            let call' = rewriteChainCall f call
+
+            if refEq call call' then
+                terminal
+            else
+                ChainTerminal.SpaceAllowed call'
+        | ChainTerminal.NoSpaceAllowed call ->
+            let call' = rewriteChainCall f call
+
+            if refEq call call' then
+                terminal
+            else
+                ChainTerminal.NoSpaceAllowed call'
+        | ChainTerminal.NoTerminal -> terminal
 
     and rewriteComputationExpressionStatement
         (f: Expr -> Expr)
         (s: ComputationExpressionStatement)
         : ComputationExpressionStatement =
         match s with
-        | ComputationExpressionStatement.LetOrUseStatement n ->
-            let n' = rewriteExprLetOrUseNode f n
+        // Fantomas 8: `let`, `use`, `let!`, `use!` and `and!` are all BindingStatements.
+        | ComputationExpressionStatement.BindingStatement n ->
+            let n' = rewriteBindingNode f n
 
             if refEq n n' then
                 s
             else
-                ComputationExpressionStatement.LetOrUseStatement n'
-        | ComputationExpressionStatement.LetOrUseBangStatement n ->
-            let n' = rewriteExprLetOrUseBangNode f n
-
-            if refEq n n' then
-                s
-            else
-                ComputationExpressionStatement.LetOrUseBangStatement n'
-        | ComputationExpressionStatement.AndBangStatement n ->
-            let n' = rewriteExprAndBang f n
-
-            if refEq n n' then
-                s
-            else
-                ComputationExpressionStatement.AndBangStatement n'
+                ComputationExpressionStatement.BindingStatement n'
         | ComputationExpressionStatement.OtherStatement e ->
             let e' = rewriteExpr f e
 
@@ -611,7 +616,17 @@ module private RewriteImpl =
         if refEq attrs' n.Attributes && refEq uc' n.UnionCase && refEq members' n.Members then
             n
         else
-            ExceptionDefnNode(n.XmlDoc, attrs', n.Accessibility, uc', n.WithKeyword, members', n.Range)
+            ExceptionDefnNode(
+                n.XmlDoc,
+                attrs',
+                n.ExceptionKeyword,
+                n.Accessibility,
+                uc',
+                n.Abbreviation,
+                n.WithKeyword,
+                members',
+                n.Range
+            )
 
     and rewriteBindingNode (f: Expr -> Expr) (n: BindingNode) : BindingNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -651,6 +666,7 @@ module private RewriteImpl =
                 returnType',
                 n.Equals,
                 expr',
+                n.In,
                 n.Range
             )
 
@@ -719,6 +735,7 @@ module private RewriteImpl =
             ExternBindingNode(
                 n.XmlDoc,
                 attrs',
+                n.Static,
                 n.Extern,
                 attrsOfType',
                 t',
@@ -756,7 +773,7 @@ module private RewriteImpl =
         if refEq attrs' n.Attributes && refEq fields' n.Fields then
             n
         else
-            UnionCaseNode(n.XmlDoc, attrs', n.Bar, n.Identifier, fields', n.Range)
+            UnionCaseNode(n.XmlDoc, attrs', n.Bar, n.Identifier, n.OfKeyword, fields', n.Range)
 
     and rewriteEnumCaseNode (f: Expr -> Expr) (n: EnumCaseNode) : EnumCaseNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -805,9 +822,12 @@ module private RewriteImpl =
         let typars' = n.TypeParameters |> mapOption(rewriteTyparDecls f)
         let constraints' = n.Constraints |> mapList(rewriteTypeConstraint f)
         let ic' = n.ImplicitConstructor |> mapOption(rewriteImplicitConstructorNode f)
+        // Fantomas 8: a type definition's name is any Type (e.g. `type (int * int) with`).
+        let identifier' = rewriteType f n.Identifier
 
         if
             refEq attrs' n.Attributes
+            && refEq identifier' n.Identifier
             && refEq typars' n.TypeParameters
             && refEq constraints' n.Constraints
             && refEq ic' n.ImplicitConstructor
@@ -819,12 +839,11 @@ module private RewriteImpl =
                 attrs',
                 n.LeadingKeyword,
                 n.Accessibility,
-                n.Identifier,
+                identifier',
                 typars',
                 constraints',
                 ic',
                 n.EqualsToken,
-                n.WithKeyword,
                 n.Range
             )
 
@@ -1171,20 +1190,21 @@ module private RewriteImpl =
 
     and rewritePatNamePatPairsNode (f: Expr -> Expr) (n: PatNamePatPairsNode) : PatNamePatPairsNode =
         let typars' = n.TyparDecls |> mapOption(rewriteTyparDecls f)
-        let pairs' = n.Pairs |> mapList(rewriteNamePatPair f)
+        let pairs' = n.Pairs |> mapList(rewriteNamePatPairNode f)
 
         if refEq typars' n.TyparDecls && refEq pairs' n.Pairs then
             n
         else
             PatNamePatPairsNode(n.Identifier, typars', n.OpeningParen, pairs', n.ClosingParen, n.Range)
 
-    and rewriteNamePatPair (f: Expr -> Expr) (n: NamePatPair) : NamePatPair =
+    // Fantomas 8 uses one NamePatPairNode for both `Case(field = pat)` and `{ field = pat }`.
+    and rewriteNamePatPairNode (f: Expr -> Expr) (n: NamePatPairNode) : NamePatPairNode =
         let pat' = rewritePattern f n.Pattern
 
         if refEq pat' n.Pattern then
             n
         else
-            NamePatPair(n.Ident, n.Equals, pat', n.Range)
+            NamePatPairNode(n.FieldName, n.Equals, pat', n.Range)
 
     and rewritePatLongIdentNode (f: Expr -> Expr) (n: PatLongIdentNode) : PatLongIdentNode =
         let typars' = n.TyparDecls |> mapOption(rewriteTyparDecls f)
@@ -1238,20 +1258,12 @@ module private RewriteImpl =
             PatArrayOrListNode(n.OpenToken, pats', n.CloseToken, n.Range)
 
     and rewritePatRecordNode (f: Expr -> Expr) (n: PatRecordNode) : PatRecordNode =
-        let fields' = n.Fields |> mapList(rewritePatRecordField f)
+        let fields' = n.Fields |> mapList(rewriteNamePatPairNode f)
 
         if refEq fields' n.Fields then
             n
         else
             PatRecordNode(n.OpeningNode, fields', n.ClosingNode, n.Range)
-
-    and rewritePatRecordField (f: Expr -> Expr) (n: PatRecordField) : PatRecordField =
-        let pat' = rewritePattern f n.Pattern
-
-        if refEq pat' n.Pattern then
-            n
-        else
-            PatRecordField(n.Prefix, n.FieldName, n.Equals, pat', n.Range)
 
     and rewritePatIsInstNode (f: Expr -> Expr) (n: PatIsInstNode) : PatIsInstNode =
         let t' = rewriteType f n.Type
@@ -1341,12 +1353,30 @@ module private RewriteImpl =
 
     and rewriteExprRecordNode (f: Expr -> Expr) (n: ExprRecordNode) : ExprRecordNode =
         let copyInfo' = n.CopyInfo |> mapOption(rewriteExpr f)
-        let fields' = n.Fields |> mapList(rewriteRecordFieldNode f)
+        let fields' = n.Fields |> mapList(rewriteExprRecordFieldOrSpread f)
 
         if refEq copyInfo' n.CopyInfo && refEq fields' n.Fields then
             n
         else
             ExprRecordNode(n.OpeningBrace, copyInfo', fields', n.ClosingBrace, n.Range)
+
+    // Fantomas 8 (F# 11 record spreads): a record expression's items are fields or `...expr`.
+    and rewriteExprRecordFieldOrSpread (f: Expr -> Expr) (item: ExprRecordFieldOrSpread) : ExprRecordFieldOrSpread =
+        match item with
+        | ExprRecordFieldOrSpread.Field n ->
+            let n' = rewriteRecordFieldNode f n
+
+            if refEq n n' then
+                item
+            else
+                ExprRecordFieldOrSpread.Field n'
+        | ExprRecordFieldOrSpread.Spread n ->
+            let e' = rewriteExpr f n.Expr
+
+            if refEq e' n.Expr then
+                item
+            else
+                ExprRecordFieldOrSpread.Spread(ExprSpreadNode(n.Dots, e', n.Range))
 
     and rewriteRecordFieldNode (f: Expr -> Expr) (n: RecordFieldNode) : RecordFieldNode =
         let e' = rewriteExpr f n.Expr
@@ -1358,7 +1388,7 @@ module private RewriteImpl =
 
     and rewriteExprInheritRecordNode (f: Expr -> Expr) (n: ExprInheritRecordNode) : ExprInheritRecordNode =
         let ic' = rewriteInheritConstructor f n.InheritConstructor
-        let fields' = n.Fields |> mapList(rewriteRecordFieldNode f)
+        let fields' = n.Fields |> mapList(rewriteExprRecordFieldOrSpread f)
 
         if refEq ic' n.InheritConstructor && refEq fields' n.Fields then
             n
@@ -1367,7 +1397,7 @@ module private RewriteImpl =
 
     and rewriteExprAnonStructRecordNode (f: Expr -> Expr) (n: ExprAnonStructRecordNode) : ExprAnonStructRecordNode =
         let copyInfo' = n.CopyInfo |> mapOption(rewriteExpr f)
-        let fields' = n.Fields |> mapList(rewriteRecordFieldNode f)
+        let fields' = n.Fields |> mapList(rewriteExprRecordFieldOrSpread f)
 
         if refEq copyInfo' n.CopyInfo && refEq fields' n.Fields then
             n
@@ -1502,7 +1532,14 @@ module private RewriteImpl =
 
     and rewriteMatchClauseNode (f: Expr -> Expr) (n: MatchClauseNode) : MatchClauseNode =
         let p' = rewritePattern f n.Pattern
-        let we' = n.WhenExpr |> mapOption(rewriteExpr f)
+
+        let we' =
+            match n.WhenExpr with
+            | None -> n.WhenExpr
+            | Some(whenNode, e) ->
+                let e' = rewriteExpr f e
+                if refEq e e' then n.WhenExpr else Some(whenNode, e')
+
         let be' = rewriteExpr f n.BodyExpr
 
         if refEq p' n.Pattern && refEq we' n.WhenExpr && refEq be' n.BodyExpr then
@@ -1582,17 +1619,6 @@ module private RewriteImpl =
         else
             ExprIndexWithoutDotNode(id', idx', n.Range)
 
-    and rewriteExprAppLongIdentAndSingleParenArgNode
-        (f: Expr -> Expr)
-        (n: ExprAppLongIdentAndSingleParenArgNode)
-        : ExprAppLongIdentAndSingleParenArgNode =
-        let arg' = rewriteExpr f n.ArgExpr
-
-        if refEq arg' n.ArgExpr then
-            n
-        else
-            ExprAppLongIdentAndSingleParenArgNode(n.FunctionName, arg', n.Range)
-
     and rewriteExprAppSingleParenArgNode (f: Expr -> Expr) (n: ExprAppSingleParenArgNode) : ExprAppSingleParenArgNode =
         let func' = rewriteExpr f n.FunctionExpr
         let arg' = rewriteExpr f n.ArgExpr
@@ -1619,19 +1645,6 @@ module private RewriteImpl =
             n
         else
             ExprAppWithLambdaNode(func', args', n.OpeningParen, lambda', n.ClosingParen, n.Range)
-
-    and rewriteExprNestedIndexWithoutDotNode
-        (f: Expr -> Expr)
-        (n: ExprNestedIndexWithoutDotNode)
-        : ExprNestedIndexWithoutDotNode =
-        let id' = rewriteExpr f n.Identifier
-        let idx' = rewriteExpr f n.Index
-        let arg' = rewriteExpr f n.Argument
-
-        if refEq id' n.Identifier && refEq idx' n.Index && refEq arg' n.Argument then
-            n
-        else
-            ExprNestedIndexWithoutDotNode(id', idx', arg', n.Range)
 
     and rewriteExprAppNode (f: Expr -> Expr) (n: ExprAppNode) : ExprAppNode =
         let func' = rewriteExpr f n.FunctionExpr
@@ -1722,15 +1735,6 @@ module private RewriteImpl =
             n
         else
             ExprLongIdentSetNode(n.Identifier, rhs', n.Range)
-
-    and rewriteExprDotIndexedGetNode (f: Expr -> Expr) (n: ExprDotIndexedGetNode) : ExprDotIndexedGetNode =
-        let obj' = rewriteExpr f n.ObjectExpr
-        let idx' = rewriteExpr f n.IndexExpr
-
-        if refEq obj' n.ObjectExpr && refEq idx' n.IndexExpr then
-            n
-        else
-            ExprDotIndexedGetNode(obj', idx', n.Range)
 
     and rewriteExprDotIndexedSetNode (f: Expr -> Expr) (n: ExprDotIndexedSetNode) : ExprDotIndexedSetNode =
         let obj' = rewriteExpr f n.ObjectExpr
@@ -1838,37 +1842,32 @@ module private RewriteImpl =
             ExprIndexFromEndNode(e', n.Range)
 
     and rewriteExprChain (f: Expr -> Expr) (n: ExprChain) : ExprChain =
-        let links' = n.Links |> mapList(rewriteChainLink f)
+        let head' = rewriteExpr f n.Head
+        let segments' = n.Segments |> mapList(rewriteChainSegment f)
+        let terminal' = rewriteChainTerminal f n.Terminal
 
-        if refEq links' n.Links then
+        if refEq head' n.Head && refEq segments' n.Segments && refEq terminal' n.Terminal then
             n
         else
-            ExprChain(links', n.Range)
+            ExprChain(head', segments', terminal', n.Range)
 
-    and rewriteLinkSingleAppParen (f: Expr -> Expr) (n: LinkSingleAppParen) : LinkSingleAppParen =
-        let func' = rewriteExpr f n.FunctionName
-        let paren' = rewriteExprParenNode f n.Paren
+    and rewriteExprDynamicChainNode (f: Expr -> Expr) (n: ExprDynamicChainNode) : ExprDynamicChainNode =
+        let leading' = rewriteExpr f n.LeadingExpr
+        let items' = n.Items |> mapList(rewriteExprDynamicChainItemNode f)
 
-        if refEq func' n.FunctionName && refEq paren' n.Paren then
+        if refEq leading' n.LeadingExpr && refEq items' n.Items then
             n
         else
-            LinkSingleAppParen(func', paren', n.Range)
+            ExprDynamicChainNode(leading', items', n.Range)
 
-    and rewriteLinkSingleAppUnit (f: Expr -> Expr) (n: LinkSingleAppUnit) : LinkSingleAppUnit =
-        let func' = rewriteExpr f n.FunctionName
+    and rewriteExprDynamicChainItemNode (f: Expr -> Expr) (n: ExprDynamicChainItemNode) : ExprDynamicChainItemNode =
+        let member' = rewriteExpr f n.MemberExpr
+        let arg' = n.ParenArg |> mapOption(rewriteExpr f)
 
-        if refEq func' n.FunctionName then
+        if refEq member' n.MemberExpr && refEq arg' n.ParenArg then
             n
         else
-            LinkSingleAppUnit(func', n.Unit, n.Range)
-
-    and rewriteExprDotLambda (f: Expr -> Expr) (n: ExprDotLambda) : ExprDotLambda =
-        let e' = rewriteExpr f n.Expr
-
-        if refEq e' n.Expr then
-            n
-        else
-            ExprDotLambda(n.Underscore, n.Dot, e', n.Range)
+            ExprDynamicChainItemNode(member', arg', n.Range)
 
     and rewriteExprBeginEndNode (f: Expr -> Expr) (n: ExprBeginEndNode) : ExprBeginEndNode =
         let e' = rewriteExpr f n.Expr
@@ -1888,32 +1887,6 @@ module private RewriteImpl =
             n
         else
             ExprExplicitConstructorThenExpr(n.Then, e', n.Range)
-
-    and rewriteExprLetOrUseNode (f: Expr -> Expr) (n: ExprLetOrUseNode) : ExprLetOrUseNode =
-        let b' = rewriteBindingNode f n.Binding
-
-        if refEq b' n.Binding then
-            n
-        else
-            ExprLetOrUseNode(b', n.In, n.Range)
-
-    and rewriteExprLetOrUseBangNode (f: Expr -> Expr) (n: ExprLetOrUseBangNode) : ExprLetOrUseBangNode =
-        let p' = rewritePattern f n.Pattern
-        let e' = rewriteExpr f n.Expression
-
-        if refEq p' n.Pattern && refEq e' n.Expression then
-            n
-        else
-            ExprLetOrUseBangNode(n.LeadingKeyword, p', n.Equals, e', n.Range)
-
-    and rewriteExprAndBang (f: Expr -> Expr) (n: ExprAndBang) : ExprAndBang =
-        let p' = rewritePattern f n.Pattern
-        let e' = rewriteExpr f n.Expression
-
-        if refEq p' n.Pattern && refEq e' n.Expression then
-            n
-        else
-            ExprAndBang(n.LeadingKeyword, p', n.Equals, e', n.Range)
 
     // ===== InheritConstructor nodes =====
 
@@ -2105,11 +2078,10 @@ module private RewriteImpl =
             MemberDefnSigMemberNode(v', n.WithGetSet, n.Range)
 
     // ===== TypeDefn nodes =====
-    // TypeName and Members live on the ITypeDefn interface, not the concrete class.
 
     and rewriteTypeDefnEnumNode (f: Expr -> Expr) (n: TypeDefnEnumNode) : TypeDefnEnumNode =
-        let tn = (n :> ITypeDefn).TypeName
-        let ms = (n :> ITypeDefn).Members
+        let tn = n.TypeName
+        let ms = n.Members
         let tn' = rewriteTypeNameNode f tn
         let cases' = n.EnumCases |> mapList(rewriteEnumCaseNode f)
         let members' = ms |> mapList(rewriteMemberDefn f)
@@ -2117,11 +2089,11 @@ module private RewriteImpl =
         if refEq tn' tn && refEq cases' n.EnumCases && refEq members' ms then
             n
         else
-            TypeDefnEnumNode(tn', cases', members', n.Range)
+            TypeDefnEnumNode(tn', cases', n.WithKeyword, members', n.Range)
 
     and rewriteTypeDefnUnionNode (f: Expr -> Expr) (n: TypeDefnUnionNode) : TypeDefnUnionNode =
-        let tn = (n :> ITypeDefn).TypeName
-        let ms = (n :> ITypeDefn).Members
+        let tn = n.TypeName
+        let ms = n.Members
         let tn' = rewriteTypeNameNode f tn
         let cases' = n.UnionCases |> mapList(rewriteUnionCaseNode f)
         let members' = ms |> mapList(rewriteMemberDefn f)
@@ -2129,23 +2101,53 @@ module private RewriteImpl =
         if refEq tn' tn && refEq cases' n.UnionCases && refEq members' ms then
             n
         else
-            TypeDefnUnionNode(tn', n.Accessibility, cases', members', n.Range)
+            TypeDefnUnionNode(tn', n.Accessibility, cases', n.WithKeyword, members', n.Range)
 
     and rewriteTypeDefnRecordNode (f: Expr -> Expr) (n: TypeDefnRecordNode) : TypeDefnRecordNode =
-        let tn = (n :> ITypeDefn).TypeName
-        let ms = (n :> ITypeDefn).Members
+        let tn = n.TypeName
+        let ms = n.Members
         let tn' = rewriteTypeNameNode f tn
-        let fields' = n.Fields |> mapList(rewriteFieldNode f)
+        let fields' = n.Fields |> mapList(rewriteTypeDefnRecordFieldOrSpread f)
         let members' = ms |> mapList(rewriteMemberDefn f)
 
         if refEq tn' tn && refEq fields' n.Fields && refEq members' ms then
             n
         else
-            TypeDefnRecordNode(tn', n.Accessibility, n.OpeningBrace, fields', n.ClosingBrace, members', n.Range)
+            TypeDefnRecordNode(
+                tn',
+                n.Accessibility,
+                n.OpeningBrace,
+                fields',
+                n.ClosingBrace,
+                n.WithKeyword,
+                members',
+                n.Range
+            )
+
+    // Fantomas 8 (F# 11 record spreads): a record type's items are fields or `...Type`.
+    and rewriteTypeDefnRecordFieldOrSpread
+        (f: Expr -> Expr)
+        (item: TypeDefnRecordFieldOrSpread)
+        : TypeDefnRecordFieldOrSpread =
+        match item with
+        | TypeDefnRecordFieldOrSpread.Field n ->
+            let n' = rewriteFieldNode f n
+
+            if refEq n n' then
+                item
+            else
+                TypeDefnRecordFieldOrSpread.Field n'
+        | TypeDefnRecordFieldOrSpread.Spread n ->
+            let t' = rewriteType f n.Type
+
+            if refEq t' n.Type then
+                item
+            else
+                TypeDefnRecordFieldOrSpread.Spread(TypeSpreadNode(n.Dots, t', n.Range))
 
     and rewriteTypeDefnAbbrevNode (f: Expr -> Expr) (n: TypeDefnAbbrevNode) : TypeDefnAbbrevNode =
-        let tn = (n :> ITypeDefn).TypeName
-        let ms = (n :> ITypeDefn).Members
+        let tn = n.TypeName
+        let ms = n.Members
         let tn' = rewriteTypeNameNode f tn
         let t' = rewriteType f n.Type
         let members' = ms |> mapList(rewriteMemberDefn f)
@@ -2153,11 +2155,11 @@ module private RewriteImpl =
         if refEq tn' tn && refEq t' n.Type && refEq members' ms then
             n
         else
-            TypeDefnAbbrevNode(tn', t', members', n.Range)
+            TypeDefnAbbrevNode(tn', t', n.WithKeyword, members', n.Range)
 
     and rewriteTypeDefnExplicitNode (f: Expr -> Expr) (n: TypeDefnExplicitNode) : TypeDefnExplicitNode =
-        let tn = (n :> ITypeDefn).TypeName
-        let ms = (n :> ITypeDefn).Members
+        let tn = n.TypeName
+        let ms = n.Members
         let tn' = rewriteTypeNameNode f tn
         let body' = rewriteTypeDefnExplicitBodyNode f n.Body
         let members' = ms |> mapList(rewriteMemberDefn f)
@@ -2165,7 +2167,7 @@ module private RewriteImpl =
         if refEq tn' tn && refEq body' n.Body && refEq members' ms then
             n
         else
-            TypeDefnExplicitNode(tn', body', members', n.Range)
+            TypeDefnExplicitNode(tn', body', n.WithKeyword, members', n.Range)
 
     and rewriteTypeDefnExplicitBodyNode (f: Expr -> Expr) (n: TypeDefnExplicitBodyNode) : TypeDefnExplicitBodyNode =
         let members' = n.Members |> mapList(rewriteMemberDefn f)
@@ -2176,18 +2178,18 @@ module private RewriteImpl =
             TypeDefnExplicitBodyNode(n.Kind, members', n.End, n.Range)
 
     and rewriteTypeDefnAugmentationNode (f: Expr -> Expr) (n: TypeDefnAugmentationNode) : TypeDefnAugmentationNode =
-        let tn = (n :> ITypeDefn).TypeName
-        let ms = (n :> ITypeDefn).Members
+        let tn = n.TypeName
+        let ms = n.Members
         let tn' = rewriteTypeNameNode f tn
         let members' = ms |> mapList(rewriteMemberDefn f)
 
         if refEq tn' tn && refEq members' ms then
             n
         else
-            TypeDefnAugmentationNode(tn', members', n.Range)
+            TypeDefnAugmentationNode(tn', n.WithKeyword, members', n.Range)
 
     and rewriteTypeDefnDelegateNode (f: Expr -> Expr) (n: TypeDefnDelegateNode) : TypeDefnDelegateNode =
-        let tn = (n :> ITypeDefn).TypeName
+        let tn = n.TypeName
         let tn' = rewriteTypeNameNode f tn
         let tl' = rewriteTypeFunsNode f n.TypeList
 
@@ -2197,15 +2199,15 @@ module private RewriteImpl =
             TypeDefnDelegateNode(tn', n.DelegateNode, tl', n.Range)
 
     and rewriteTypeDefnRegularNode (f: Expr -> Expr) (n: TypeDefnRegularNode) : TypeDefnRegularNode =
-        let tn = (n :> ITypeDefn).TypeName
-        let ms = (n :> ITypeDefn).Members
+        let tn = n.TypeName
+        let ms = n.Members
         let tn' = rewriteTypeNameNode f tn
         let members' = ms |> mapList(rewriteMemberDefn f)
 
         if refEq tn' tn && refEq members' ms then
             n
         else
-            TypeDefnRegularNode(tn', members', n.Range)
+            TypeDefnRegularNode(tn', n.WithKeyword, members', n.Range)
 
     // ===== TypeDefn-level walker =====
     // Applies g to every TypeDefn in the Oak (top-level and inside nested

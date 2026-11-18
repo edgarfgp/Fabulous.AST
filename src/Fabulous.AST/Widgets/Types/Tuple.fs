@@ -21,7 +21,7 @@ module TypeTuple =
                 |> Seq.map Choice1Of2
                 |> Seq.intersperse(Choice2Of2(exponent))
 
-            Type.Tuple(TypeTupleNode(items, Range.Zero)))
+            Type.Tuple(TypeTupleNode(items, Range.range0)))
 
 [<AutoOpen>]
 module TypeTupleBuilders =

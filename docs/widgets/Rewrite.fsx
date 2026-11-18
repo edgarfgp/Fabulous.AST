@@ -47,10 +47,10 @@ nodes, used by the examples below:
 *)
 
 let ident(name: string) : Expr =
-    Expr.Constant(Constant.FromText(SingleTextNode(name, Range.Zero)))
+    Expr.Constant(Constant.FromText(SingleTextNode(name, Range.range0)))
 
 let intExpr(value: int) : Expr =
-    Expr.Constant(Constant.FromText(SingleTextNode(string value, Range.Zero)))
+    Expr.Constant(Constant.FromText(SingleTextNode(string value, Range.range0)))
 
 let (|IntLit|_|)(e: Expr) : int option =
     match e with
@@ -113,7 +113,7 @@ let useIsEmpty(e: Expr) : Expr =
         | Expr.App app, IntLit 0 ->
             match app.FunctionExpr with
             | Expr.Constant(Constant.FromText f) when f.Text = "List.length" ->
-                Expr.App(ExprAppNode(ident "List.isEmpty", List.ofSeq app.Arguments, Range.Zero))
+                Expr.App(ExprAppNode(ident "List.isEmpty", List.ofSeq app.Arguments, Range.range0))
             | _ -> e
         | _ -> e
     | _ -> e
@@ -149,10 +149,10 @@ let instrument(e: Expr) : Expr =
         | Expr.Constant(Constant.FromText f) when f.Text = "compute" ->
             let wrapped =
                 Expr.Paren(
-                    ExprParenNode(SingleTextNode("(", Range.Zero), e, SingleTextNode(")", Range.Zero), Range.Zero)
+                    ExprParenNode(SingleTextNode("(", Range.range0), e, SingleTextNode(")", Range.range0), Range.range0)
                 )
 
-            Expr.App(ExprAppNode(ident "withTiming", [ wrapped ], Range.Zero))
+            Expr.App(ExprAppNode(ident "withTiming", [ wrapped ], Range.range0))
         | _ -> e
     | _ -> e
 
@@ -177,17 +177,16 @@ the case's fields (a `UnionCaseNode`'s `Fields` are already `FieldNode`s):
 let unionToRecord(td: TypeDefn) : TypeDefn =
     match td with
     | TypeDefn.Union n when n.UnionCases.Length = 1 ->
-        let itd = n :> ITypeDefn
-
         TypeDefn.Record(
             TypeDefnRecordNode(
-                itd.TypeName,
+                n.TypeName,
                 n.Accessibility,
-                SingleTextNode("{", Range.Zero),
-                n.UnionCases.Head.Fields,
-                SingleTextNode("}", Range.Zero),
-                itd.Members,
-                Range.Zero
+                SingleTextNode("{", Range.range0),
+                (n.UnionCases.Head.Fields |> List.map TypeDefnRecordFieldOrSpread.Field),
+                SingleTextNode("}", Range.range0),
+                None,
+                n.Members,
+                Range.range0
             )
         )
     | _ -> td

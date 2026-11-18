@@ -40,6 +40,6 @@ a = b
 2 = b
 1 = 2
 1 = b
-a when foo = b
-a when foo a: int = b
+a when foo struct = b
+a when foo struct and a: int = b
 """

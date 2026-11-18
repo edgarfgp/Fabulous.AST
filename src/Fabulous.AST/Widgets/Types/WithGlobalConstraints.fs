@@ -11,7 +11,7 @@ module WithGlobalConstraints =
     let WidgetKey =
         Widgets.register "WithGlobalConstraints" (fun widget ->
             let struct (tp, constraints) = Widgets.getScalarValue widget GlobalConstraints
-            Type.WithGlobalConstraints(TypeWithGlobalConstraintsNode(tp, List.ofSeq constraints, Range.Zero)))
+            Type.WithGlobalConstraints(TypeWithGlobalConstraintsNode(tp, List.ofSeq constraints, Range.range0)))
 
 [<AutoOpen>]
 module WithGlobalConstraintsBuilders =

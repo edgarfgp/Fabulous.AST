@@ -15,7 +15,7 @@ module App =
         Widgets.register "Call" (fun widget ->
             let expr = Widgets.getNodeFromWidget<Expr> widget Name
             let items = Widgets.getScalarValue widget Items |> List.ofSeq
-            Expr.App(ExprAppNode(expr, items, Range.Zero)))
+            Expr.App(ExprAppNode(expr, items, Range.range0)))
 
 [<AutoOpen>]
 module AppBuilders =

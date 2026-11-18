@@ -15,9 +15,9 @@ module ParsedHashDirectives =
             let arguments =
                 Widgets.getScalarValue widget Arguments
                 |> Seq.map(fun arg ->
-                    Choice2Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create arg) ], Range.Zero)))
+                    Choice2Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create arg) ], Range.range0)))
 
-            let node = ParsedHashDirectiveNode(ident, List.ofSeq arguments, Range.Zero)
+            let node = ParsedHashDirectiveNode(ident, List.ofSeq arguments, Range.range0)
             ModuleDecl.HashDirectiveList(HashDirectiveListNode([ node ])))
 
 [<AutoOpen>]

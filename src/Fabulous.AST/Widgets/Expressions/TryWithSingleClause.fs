@@ -16,7 +16,13 @@ module TryWithSingleClause =
             let clause = Widgets.getNodeFromWidget widget Clause
 
             Expr.TryWithSingleClause(
-                ExprTryWithSingleClauseNode(SingleTextNode.``try``, expr, SingleTextNode.``with``, clause, Range.Zero)
+                ExprTryWithSingleClauseNode(
+                    SingleTextNode.``try``,
+                    expr,
+                    SingleTextNode.``with``,
+                    clause,
+                    Range.range0
+                )
             ))
 
 [<AutoOpen>]

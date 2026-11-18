@@ -10,7 +10,7 @@ module BindingList =
     let WidgetKey =
         Widgets.register "LetBindingMember" (fun widget ->
             let bindings = Widgets.getScalarValue widget Bindings |> List.ofSeq
-            let node = BindingListNode(bindings, Range.Zero)
+            let node = BindingListNode(bindings, Range.range0)
             MemberDefn.LetBinding(node))
 
 [<AutoOpen>]

@@ -35,7 +35,7 @@ module TriviaNode =
     let WidgetKey =
         Widgets.register "TriviaNode" (fun widget ->
             let content = Widgets.getNodeFromWidget<TriviaContent> widget Content
-            TriviaNode(content, Range.Zero))
+            TriviaNode(content, Range.range0))
 
 [<AutoOpen>]
 module TriviaNodeNodeBuilder =

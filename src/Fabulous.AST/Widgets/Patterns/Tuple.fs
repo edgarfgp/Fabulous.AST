@@ -16,7 +16,7 @@ module TuplePat =
                 |> Seq.map Choice1Of2
                 |> Seq.intersperse(Choice2Of2(SingleTextNode.comma))
 
-            Pattern.Tuple(PatTupleNode(values, Range.Zero)))
+            Pattern.Tuple(PatTupleNode(values, Range.range0)))
 
 [<AutoOpen>]
 module TuplePatBuilders =

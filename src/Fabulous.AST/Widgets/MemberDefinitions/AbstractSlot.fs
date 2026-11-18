@@ -54,7 +54,7 @@ module AbstractSlot =
                                     None,
                                     Some(SingleTextNode.Create(name)),
                                     Gen.mkOak(value),
-                                    Range.Zero
+                                    Range.range0
                                 )
                             )
 
@@ -63,7 +63,7 @@ module AbstractSlot =
             let returnType =
                 match parameterList with
                 | [] -> returnType
-                | parameters -> Type.Funs(TypeFunsNode(parameters, returnType, Range.Zero))
+                | parameters -> Type.Funs(TypeFunsNode(parameters, returnType, Range.range0))
 
             // Abstract slots always have the visibility of the enclosing type;
             // F# forbids accessibility modifiers on their accessors, so drop them.
@@ -95,7 +95,7 @@ module AbstractSlot =
                     typeParams,
                     returnType,
                     withGetSetText,
-                    Range.Zero
+                    Range.range0
                 )
 
             MemberDefn.AbstractSlot(node))

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Description>MSBuild integration for Fabulous.AST.Json type generation</Description>
 
     <!-- This makes it a build-time only package -->

@@ -15,7 +15,7 @@ module InfixApp =
             let lhs = Widgets.getNodeFromWidget widget LeftHandSide
             let operator = Widgets.getScalarValue widget Operator
             let rhs = Widgets.getNodeFromWidget widget RightHandSide
-            Expr.InfixApp(ExprInfixAppNode(lhs, SingleTextNode.Create(operator), rhs, Range.Zero)))
+            Expr.InfixApp(ExprInfixAppNode(lhs, SingleTextNode.Create(operator), rhs, Range.range0)))
 
 [<AutoOpen>]
 module InfixAppBuilders =

@@ -14,8 +14,8 @@ module LongIdentApp =
             Type.LongIdentApp(
                 TypeLongIdentAppNode(
                     appType,
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(ident)) ], Range.Zero),
-                    Range.Zero
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(ident)) ], Range.range0),
+                    Range.range0
                 )
             ))
 

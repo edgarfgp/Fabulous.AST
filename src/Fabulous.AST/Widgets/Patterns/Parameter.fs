@@ -20,7 +20,7 @@ module Parameter =
                 |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
-            Pattern.Parameter(PatParameterNode(attributes, value, typeValue, Range.Zero)))
+            Pattern.Parameter(PatParameterNode(attributes, value, typeValue, Range.range0)))
 
 [<AutoOpen>]
 module ParameterBuilders =

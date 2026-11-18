@@ -51,7 +51,7 @@ module BindingFunction =
             let returnType =
                 match returnType with
                 | ValueNone -> None
-                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
+                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.range0))
 
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget BindingNode.TypeParams
@@ -60,17 +60,18 @@ module BindingFunction =
             BindingNode(
                 xmlDocs,
                 attributes,
-                MultipleTextsNode([ leading ], Range.Zero),
+                MultipleTextsNode([ leading ], Range.range0),
                 false,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
-                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
+                Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)),
                 typeParams,
                 parameters,
                 returnType,
                 SingleTextNode.equals,
                 bodyExpr,
-                Range.Zero
+                None,
+                Range.range0
             ))
 
 [<AutoOpen>]

@@ -39,7 +39,13 @@ module TypeAnonRecord =
                     None
 
             Type.AnonRecord(
-                TypeAnonRecordNode(structNode, openingToken, fields, SingleTextNode.rightCurlyBraceWithBar, Range.Zero)
+                TypeAnonRecordNode(
+                    structNode,
+                    openingToken,
+                    fields,
+                    SingleTextNode.rightCurlyBraceWithBar,
+                    Range.range0
+                )
             ))
 
 [<AutoOpen>]

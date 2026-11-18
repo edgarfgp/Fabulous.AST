@@ -16,7 +16,7 @@ module ParenFunctionNameWithStar =
                     SingleTextNode.leftParenthesis,
                     SingleTextNode.Create(functionName),
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

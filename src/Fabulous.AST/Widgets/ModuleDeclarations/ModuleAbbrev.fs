@@ -19,8 +19,8 @@ module ModuleAbbrev =
                 ModuleAbbrevNode(
                     SingleTextNode.``module``,
                     SingleTextNode.Create(name),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(alias)) ], Range.Zero),
-                    Range.Zero
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(alias)) ], Range.range0),
+                    Range.range0
                 )
 
             ModuleDecl.ModuleAbbrev(node))

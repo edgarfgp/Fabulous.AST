@@ -18,7 +18,7 @@ module ArrayOrListPat =
             let values = Widgets.getScalarValue widget Parameters |> List.ofSeq
             let closeTextNode = Widgets.getScalarValue widget CloseTextNode
 
-            Pattern.ArrayOrList(PatArrayOrListNode(openTextNode, values, closeTextNode, Range.Zero)))
+            Pattern.ArrayOrList(PatArrayOrListNode(openTextNode, values, closeTextNode, Range.range0)))
 
 [<AutoOpen>]
 module ArrayOrListPatBuilders =

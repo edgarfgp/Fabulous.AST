@@ -11,7 +11,7 @@ module StructTuplePat =
         Widgets.register "StructTuple" (fun widget ->
             let values = Widgets.getScalarValue widget Parameters |> List.ofSeq
 
-            Pattern.StructTuple(PatStructTupleNode(values, Range.Zero)))
+            Pattern.StructTuple(PatStructTupleNode(values, Range.range0)))
 
 [<AutoOpen>]
 module StructTuplePatBuilders =

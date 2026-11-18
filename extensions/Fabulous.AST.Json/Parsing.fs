@@ -148,18 +148,18 @@ module Parsing =
     // AST Helpers
     // ─────────────────────────────────────────────────────────────────────────
 
-    let ident(name: string) = SingleTextNode(name, Range.Zero)
+    let ident(name: string) = SingleTextNode(name, Range.range0)
 
     let identList(name: string) =
-        IdentListNode([ IdentifierOrDot.Ident(ident name) ], Range.Zero)
+        IdentListNode([ IdentifierOrDot.Ident(ident name) ], Range.range0)
 
     let longIdent(name: string) = Type.LongIdent(identList name)
 
     let listType(t: Type) : Type =
-        Type.AppPostfix(TypeAppPostFixNode(t, longIdent "list", Range.Zero))
+        Type.AppPostfix(TypeAppPostFixNode(t, longIdent "list", Range.range0))
 
     let optionType(t: Type) : Type =
-        Type.AppPostfix(TypeAppPostFixNode(t, longIdent "option", Range.Zero))
+        Type.AppPostfix(TypeAppPostFixNode(t, longIdent "option", Range.range0))
 
     // ─────────────────────────────────────────────────────────────────────────
     // Type Inference Helpers
@@ -231,13 +231,12 @@ module Parsing =
             None,
             SingleTextNode.``type``,
             None,
-            identList typeName,
+            Type.LongIdent(identList typeName),
             None,
             [],
             None,
             Some(SingleTextNode.equals),
-            None,
-            Range.Zero
+            Range.range0
         )
 
     let mkRecordDecl (typeName: string) (fields: FieldNode list) : ModuleDecl =
@@ -246,16 +245,17 @@ module Parsing =
                 mkTypeNameNode typeName,
                 None,
                 SingleTextNode.leftCurlyBrace,
-                fields,
+                fields |> List.map TypeDefnRecordFieldOrSpread.Field,
                 SingleTextNode.rightCurlyBrace,
+                None,
                 [],
-                Range.Zero
+                Range.range0
             )
 
         ModuleDecl.TypeDefn(TypeDefn.Record(recordNode))
 
     let mkAliasDecl (name: string) (t: Type) : ModuleDecl =
-        TypeDefnAbbrevNode(mkTypeNameNode name, t, [], Range.Zero)
+        TypeDefnAbbrevNode(mkTypeNameNode name, t, None, [], Range.range0)
         |> TypeDefn.Abbrev
         |> ModuleDecl.TypeDefn
 
@@ -272,7 +272,7 @@ module Parsing =
     /// Extract all JsonObjects from a JsonArray
     let extractObjects(arr: JsonArray) : JsonObject array =
         arr
-        |> Seq.choose (function
+        |> Seq.choose(function
             | :? JsonObject as o -> Some o
             | _ -> None)
         |> Seq.toArray
@@ -448,7 +448,16 @@ module Parsing =
                         let sanitizedFieldName = sanitizeFieldName fname
 
                         let fieldNode =
-                            FieldNode(None, None, None, None, None, Some(ident sanitizedFieldName), ftype, Range.Zero)
+                            FieldNode(
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                Some(ident sanitizedFieldName),
+                                ftype,
+                                Range.range0
+                            )
 
                         fieldNode :: accFields, stAcc')
 
@@ -489,7 +498,7 @@ module Parsing =
                     st' |> addDecl(mkAliasDecl resolvedRootName (listType elemType))
 
         if isNull root then
-            ModuleOrNamespaceNode(None, [], Range.Zero)
+            ModuleOrNamespaceNode(None, [], Range.range0)
         else
             let finalState =
                 match root with
@@ -501,4 +510,4 @@ module Parsing =
 
                 | _ -> emptyState
 
-            ModuleOrNamespaceNode(None, List.rev finalState.DeclsRev, Range.Zero)
+            ModuleOrNamespaceNode(None, List.rev finalState.DeclsRev, Range.range0)

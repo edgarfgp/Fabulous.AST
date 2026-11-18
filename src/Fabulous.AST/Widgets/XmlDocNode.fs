@@ -87,7 +87,7 @@ module XmlDocNode =
                 |> Seq.concat
                 |> Array.ofSeq
 
-            XmlDocNode(lines, Range.Zero))
+            XmlDocNode(lines, Range.range0))
 
 [<AutoOpen>]
 module XmlDocsBuilders =

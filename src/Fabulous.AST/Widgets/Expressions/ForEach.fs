@@ -24,7 +24,7 @@ module ForEach =
 
             let bodyExpr = Widgets.getNodeFromWidget widget BodyExpr
 
-            Expr.ForEach(ExprForEachNode(SingleTextNode.``for``, pat, enumExpr, isArrow, bodyExpr, Range.Zero)))
+            Expr.ForEach(ExprForEachNode(SingleTextNode.``for``, pat, enumExpr, isArrow, bodyExpr, Range.range0)))
 
 [<AutoOpen>]
 module ForEachBuilders =

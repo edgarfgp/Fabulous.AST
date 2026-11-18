@@ -52,7 +52,7 @@ module ObjExpr =
                     members,
                     interfaces,
                     SingleTextNode.rightCurlyBrace,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

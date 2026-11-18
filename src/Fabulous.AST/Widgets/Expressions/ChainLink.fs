@@ -3,7 +3,26 @@ namespace Fabulous.AST
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
-open Fantomas.FCS.Text
+
+/// One link of a member-access / call chain, in source order: a receiver, then
+/// `ChainLinkDot()` followed by one link per step, e.g. `A.B(c).D()`.
+///
+/// Fantomas 8 models a chain as a head plus dotted segments (<c>ExprChain</c>); a
+/// <c>ChainExpr</c> converts these links into that shape when it is built.
+[<RequireQualifiedAccess>]
+type ChainLink =
+    /// A name: `A` in `A.B`.
+    | Identifier of Expr
+    /// The `.` between two links.
+    | Dot
+    /// Any other expression used as a link.
+    | Expr of Expr
+    /// A call with a parenthesised argument: `C(d)`.
+    | AppParen of functionName: Expr * argument: Expr
+    /// A call with unit: `E()`.
+    | AppUnit of functionName: Expr
+    /// An index after a dot: `.[h]`.
+    | IndexExpr of Expr
 
 module ChainLink =
     let FuncName = Attributes.defineWidget "Value"
@@ -13,51 +32,27 @@ module ChainLink =
 
     let WidgetIdentifierKey =
         Widgets.register "ChainLink_Identifier" (fun widget ->
-            let identifier = Widgets.getNodeFromWidget<Expr> widget Identifier
-            ChainLink.Identifier(identifier))
+            ChainLink.Identifier(Widgets.getNodeFromWidget<Expr> widget Identifier))
 
-    let WidgetDotKey =
-        Widgets.register "ChainLink_Dot" (fun _ -> ChainLink.Dot(SingleTextNode.dot))
+    let WidgetDotKey = Widgets.register "ChainLink_Dot" (fun _ -> ChainLink.Dot)
 
     let WidgetExprKey =
         Widgets.register "ChainLink_Expr" (fun widget ->
-            let identifier = Widgets.getNodeFromWidget<Expr> widget Identifier
-            ChainLink.Expr(identifier))
+            ChainLink.Expr(Widgets.getNodeFromWidget<Expr> widget Identifier))
 
     let WidgetAppParenKey =
         Widgets.register "ChainLink_AppParen" (fun widget ->
             let funcName = Widgets.getNodeFromWidget<Expr> widget FuncName
             let parenName = Widgets.getNodeFromWidget<Expr> widget ParenName
-
-            ChainLink.AppParen(
-                LinkSingleAppParen(
-                    funcName,
-                    ExprParenNode(
-                        SingleTextNode.leftParenthesis,
-                        parenName,
-                        SingleTextNode.rightParenthesis,
-                        Range.Zero
-                    ),
-                    Range.Zero
-                )
-            ))
+            ChainLink.AppParen(funcName, parenName))
 
     let WidgetAppUnitKey =
         Widgets.register "ChainLink_AppUnit" (fun widget ->
-            let funcName = Widgets.getNodeFromWidget<Expr> widget FuncName
-
-            ChainLink.AppUnit(
-                LinkSingleAppUnit(
-                    funcName,
-                    UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero),
-                    Range.Zero
-                )
-            ))
+            ChainLink.AppUnit(Widgets.getNodeFromWidget<Expr> widget FuncName))
 
     let WidgetIndexKey =
         Widgets.register "ChainLink_Index" (fun widget ->
-            let funcName = Widgets.getNodeFromWidget<Expr> widget FuncName
-            ChainLink.IndexExpr(funcName))
+            ChainLink.IndexExpr(Widgets.getNodeFromWidget<Expr> widget FuncName))
 
 [<AutoOpen>]
 module ChainLinkBuilders =

@@ -212,7 +212,7 @@ module ConstantBuilders =
 module ConstantUnit =
     let WidgetKey =
         Widgets.register "ConstantUnit" (fun _ ->
-            Constant.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)))
+            Constant.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.range0)))
 
 [<AutoOpen>]
 module ConstantUnitBuilders =
@@ -233,8 +233,8 @@ module ConstantMeasure =
             Constant.Measure(
                 ConstantMeasureNode(
                     value,
-                    UnitOfMeasureNode(SingleTextNode.lessThan, measure, SingleTextNode.greaterThan, Range.Zero),
-                    Range.Zero
+                    UnitOfMeasureNode(SingleTextNode.lessThan, measure, SingleTextNode.greaterThan, Range.range0),
+                    Range.range0
                 )
             ))
 

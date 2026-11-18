@@ -30,7 +30,7 @@ module NamedParenStarIdent =
                     SingleTextNode.leftParenthesis,
                     SingleTextNode.Create(value),
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

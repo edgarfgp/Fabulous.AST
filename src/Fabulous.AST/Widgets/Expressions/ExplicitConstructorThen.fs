@@ -12,7 +12,7 @@ module ExplicitConstructorThen =
             let expr = Widgets.getNodeFromWidget widget Value
 
             Expr.ExplicitConstructorThenExpr(
-                ExprExplicitConstructorThenExpr(SingleTextNode.``then``, expr, Range.Zero)
+                ExprExplicitConstructorThenExpr(SingleTextNode.``then``, expr, Range.range0)
             ))
 
 [<AutoOpen>]

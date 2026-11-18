@@ -23,7 +23,7 @@ module TripleNumberIndexRange =
                     SingleTextNode.Create(center),
                     SingleTextNode.``..``,
                     SingleTextNode.Create(``end``),
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

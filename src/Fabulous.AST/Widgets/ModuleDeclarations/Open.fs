@@ -31,7 +31,7 @@ module OpenBuilders =
                 |> Seq.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
 
             let value =
-                Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
+                Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.range0), Range.range0))
 
             WidgetBuilder<ModuleDecl>(Open.WidgetKey, Open.OpenList.WithValue(value))
 
@@ -63,7 +63,7 @@ module OpenBuilders =
                 |> Seq.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
 
             let value =
-                Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.Zero), Range.Zero))
+                Open.ModuleOrNamespace(OpenModuleOrNamespaceNode(IdentListNode(values, Range.range0), Range.range0))
 
             WidgetBuilder<ModuleDecl>(Open.WidgetKey, Open.OpenList.WithValue(value))
 
@@ -91,7 +91,7 @@ module OpenBuilders =
             WidgetBuilder<ModuleDecl>(
                 Open.WidgetKey,
                 Open.OpenList.WithValue(
-                    Open.Target(OpenTargetNode(Gen.mkOak(Ast.LongIdent(List.ofSeq values)), Range.Zero))
+                    Open.Target(OpenTargetNode(Gen.mkOak(Ast.LongIdent(List.ofSeq values)), Range.range0))
                 )
 
             )

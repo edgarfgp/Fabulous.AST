@@ -23,7 +23,7 @@ module TypeAppPrefix =
                     IdentListNode(
                         [ for identifier in postIdentifier do
                               IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ],
-                        Range.Zero
+                        Range.range0
                     )
                     |> Some
                 | ValueNone -> None
@@ -37,7 +37,7 @@ module TypeAppPrefix =
                     SingleTextNode.lessThan,
                     arguments,
                     SingleTextNode.greaterThan,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

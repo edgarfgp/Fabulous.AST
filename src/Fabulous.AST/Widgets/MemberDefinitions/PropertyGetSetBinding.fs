@@ -49,10 +49,10 @@ module PropertyGetSetBinding =
             let returnType =
                 match returnType with
                 | ValueNone -> None
-                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
+                | ValueSome value -> Some(BindingReturnInfoNode(SingleTextNode.colon, value, Range.range0))
 
             let pattern =
-                Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero))
+                Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.range0))
 
             let parameters =
                 Widgets.tryGetScalarValue widget Parameters
@@ -73,7 +73,7 @@ module PropertyGetSetBinding =
                 returnType,
                 SingleTextNode.equals,
                 bodyExpr,
-                Range.Zero
+                Range.range0
             ))
 
 [<AutoOpen>]

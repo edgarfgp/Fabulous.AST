@@ -14,7 +14,7 @@ module New =
         Widgets.register "New" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
             let typ = Widgets.getNodeFromWidget widget TypeVal
-            Expr.New(ExprNewNode(SingleTextNode.``new``, typ, expr, Range.Zero)))
+            Expr.New(ExprNewNode(SingleTextNode.``new``, typ, expr, Range.range0)))
 
 [<AutoOpen>]
 module NewBuilders =

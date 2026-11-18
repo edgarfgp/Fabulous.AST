@@ -19,9 +19,9 @@ module StructTuple =
             Expr.StructTuple(
                 ExprStructTupleNode(
                     SingleTextNode.``struct``,
-                    ExprTupleNode(values, Range.Zero),
+                    ExprTupleNode(values, Range.range0),
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

@@ -17,7 +17,7 @@ module TypeStaticConstantExpr =
             let constant =
                 Widgets.getScalarValue widget Const |> PrettyNaming.NormalizeIdentifierBackticks
 
-            Type.StaticConstantExpr(TypeStaticConstantExprNode(SingleTextNode.Create(constant), expr, Range.Zero)))
+            Type.StaticConstantExpr(TypeStaticConstantExprNode(SingleTextNode.Create(constant), expr, Range.range0)))
 
 [<AutoOpen>]
 module TypeStaticConstantExprBuilders =

@@ -18,9 +18,9 @@ module ParenLambda =
             Expr.ParenLambda(
                 ExprParenLambdaNode(
                     SingleTextNode.leftParenthesis,
-                    ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.Zero),
+                    ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.range0),
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

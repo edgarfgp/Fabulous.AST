@@ -14,7 +14,7 @@ module PrefixApp =
         Widgets.register "PrefixApp" (fun widget ->
             let op = Widgets.getScalarValue widget Operator
             let expr = Widgets.getNodeFromWidget widget Value
-            Expr.PrefixApp(ExprPrefixAppNode(SingleTextNode.Create(op), expr, Range.Zero)))
+            Expr.PrefixApp(ExprPrefixAppNode(SingleTextNode.Create(op), expr, Range.range0)))
 
 [<AutoOpen>]
 module PrefixAppBuilders =

@@ -19,7 +19,7 @@ module FillExprNode =
                 |> ValueOption.map SingleTextNode.Create
                 |> ValueOption.toOption
 
-            FillExprNode(expr, identifier, Range.Zero))
+            FillExprNode(expr, identifier, Range.range0))
 
 [<AutoOpen>]
 module FillExprNodeBuilders =

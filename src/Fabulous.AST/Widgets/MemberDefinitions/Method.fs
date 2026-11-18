@@ -27,7 +27,7 @@ module BindingMethodNode =
 
             let returnType =
                 Widgets.tryGetNodeFromWidget widget BindingNode.Return
-                |> ValueOption.map(fun value -> BindingReturnInfoNode(SingleTextNode.colon, value, Range.Zero))
+                |> ValueOption.map(fun value -> BindingReturnInfoNode(SingleTextNode.colon, value, Range.range0))
                 |> ValueOption.toOption
 
             let accessControl =
@@ -71,17 +71,18 @@ module BindingMethodNode =
                 BindingNode(
                     xmlDocs,
                     attributes,
-                    MultipleTextsNode(multipleTextsNode, Range.Zero),
+                    MultipleTextsNode(multipleTextsNode, Range.range0),
                     false,
                     inlineNode,
                     accessControl,
-                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero)),
+                    Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)),
                     typeParams,
                     parameters,
                     returnType,
                     SingleTextNode.equals,
                     bodyExpr,
-                    Range.Zero
+                    None,
+                    Range.range0
                 )
 
             MemberDefn.Member(node))

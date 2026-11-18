@@ -25,13 +25,13 @@ module AppWithLambda =
             let lambda =
                 if isMatchLambda then
                     let clauses = Widgets.getScalarValue widget Clauses |> List.ofSeq
-                    Choice2Of2(ExprMatchLambdaNode(SingleTextNode.``function``, clauses, Range.Zero))
+                    Choice2Of2(ExprMatchLambdaNode(SingleTextNode.``function``, clauses, Range.range0))
                 else
                     let parameters, expr = Widgets.getScalarValue widget Parameters
                     let parameters = parameters |> List.ofSeq
 
                     Choice1Of2(
-                        ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.Zero)
+                        ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.range0)
                     )
 
             Expr.AppWithLambda(
@@ -41,7 +41,7 @@ module AppWithLambda =
                     SingleTextNode.leftParenthesis,
                     lambda,
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

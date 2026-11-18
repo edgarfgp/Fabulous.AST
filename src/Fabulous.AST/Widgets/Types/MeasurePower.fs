@@ -14,7 +14,7 @@ module TypeMeasurePower =
         Widgets.register "TypeMeasurePower" (fun widget ->
             let typeWidget = Widgets.getNodeFromWidget widget TypeWidget
             let rational = Widgets.getNodeFromWidget widget Rational
-            Type.MeasurePower(TypeMeasurePowerNode(typeWidget, rational, Range.Zero)))
+            Type.MeasurePower(TypeMeasurePowerNode(typeWidget, rational, Range.range0)))
 
 [<AutoOpen>]
 module TypeMeasurePowerBuilders =

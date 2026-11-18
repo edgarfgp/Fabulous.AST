@@ -11,7 +11,7 @@ open type Ast
 module Class =
     [<Fact>]
     let ``Produces a class implicit constructor``() =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.range0)))
 
         Oak() {
             AnonymousModule() {
@@ -220,7 +220,7 @@ type Person(name: string) =
 
     [<Fact>]
     let ``Produces a TypeDefn marked with multiple attributes``() =
-        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.Zero)))
+        let expr = Expr.Constant(Constant.FromText(SingleTextNode("\"\"", Range.range0)))
 
         Oak() {
             AnonymousModule() {

@@ -44,13 +44,12 @@ module TypeNameNode =
                     Some(MultipleAttributeListNode.Create(attributes)),
                     leadingKeyword,
                     Some(SingleTextNode.Create(name)),
-                    IdentListNode([], Range.Zero),
+                    Type.LongIdent(IdentListNode([], Range.range0)),
                     None,
                     [],
                     None,
                     None,
-                    None,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

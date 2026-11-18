@@ -21,7 +21,7 @@ module Oak =
                 |> ValueOption.map id
                 |> ValueOption.defaultValue []
 
-            Oak(List.ofSeq hashDirectives, decls, Range.Zero))
+            Oak(List.ofSeq hashDirectives, decls, Range.range0))
 
 [<AutoOpen>]
 module SyntaxOakBuilders =

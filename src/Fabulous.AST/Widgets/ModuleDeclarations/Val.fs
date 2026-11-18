@@ -68,7 +68,7 @@ module Val =
                 Widgets.tryGetScalarValue widget LeadingKeyword
                 |> ValueOption.map(List.ofSeq)
                 |> ValueOption.filter(_.IsEmpty >> not)
-                |> ValueOption.map(fun nodes -> MultipleTextsNode(nodes, Range.Zero))
+                |> ValueOption.map(fun nodes -> MultipleTextsNode(nodes, Range.range0))
                 |> ValueOption.toOption
 
             ValNode(
@@ -83,7 +83,7 @@ module Val =
                 returnType,
                 None,
                 None,
-                Range.Zero
+                Range.range0
             ))
 
 [<AutoOpen>]

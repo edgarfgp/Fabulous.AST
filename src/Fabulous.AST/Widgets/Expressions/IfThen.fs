@@ -15,7 +15,7 @@ module IfThen =
             let ifNode = Widgets.getScalarValue widget IfNode
             let ifExpr = Widgets.getNodeFromWidget widget IfExpr
             let thenExpr = Widgets.getNodeFromWidget widget ThenExpr
-            Expr.IfThen(ExprIfThenNode(ifNode, ifExpr, SingleTextNode.``then``, thenExpr, Range.Zero)))
+            Expr.IfThen(ExprIfThenNode(ifNode, ifExpr, SingleTextNode.``then``, thenExpr, Range.range0)))
 
 [<AutoOpen>]
 module IfThenBuilders =
@@ -72,7 +72,7 @@ module IfThenBuilders =
 
         static member ElseIfThenExpr(elseIfExpr: WidgetBuilder<Expr>, thenExpr: WidgetBuilder<Expr>) =
             Ast.IfThenBaseExpr(
-                IfKeywordNode.ElseIf(ElseIfNode(Range.Zero, Range.Zero, Unchecked.defaultof<Node>, Range.Zero)),
+                IfKeywordNode.ElseIf(SingleTextNode.``else``, SingleTextNode.``if``),
                 elseIfExpr,
                 thenExpr
             )

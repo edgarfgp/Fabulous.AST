@@ -30,7 +30,7 @@ module TyparDeclNode =
                 |> Seq.map(Choice1Of2)
                 |> Seq.intersperse(Choice2Of2 SingleTextNode.comma)
 
-            TyparDeclNode(attributes, SingleTextNode.Create(tyPar), intersectionConstrains, Range.Zero))
+            TyparDeclNode(attributes, SingleTextNode.Create(tyPar), intersectionConstrains, Range.range0))
 
 type TyparDeclNodeModifiers =
     [<Extension>]
@@ -90,7 +90,7 @@ module TyparDecls =
             let decls = Widgets.getScalarValue widget Decls |> List.ofSeq
 
             TyparDecls.PrefixList(
-                TyparDeclsPrefixListNode(SingleTextNode.lessThan, decls, SingleTextNode.greaterThan, Range.Zero)
+                TyparDeclsPrefixListNode(SingleTextNode.lessThan, decls, SingleTextNode.greaterThan, Range.range0)
             ))
 
     let Constraints = Attributes.defineScalar<TypeConstraint seq> "ConstraintValue"
@@ -106,7 +106,7 @@ module TyparDecls =
                     decls,
                     constraints,
                     SingleTextNode.greaterThan,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

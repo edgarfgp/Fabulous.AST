@@ -16,7 +16,7 @@ module Tuple =
                 |> Seq.map Choice1Of2
                 |> Seq.intersperse(Choice2Of2(SingleTextNode.comma))
 
-            Expr.Tuple(ExprTupleNode(value, Range.Zero)))
+            Expr.Tuple(ExprTupleNode(value, Range.range0)))
 
 [<AutoOpen>]
 module TupleBuilders =

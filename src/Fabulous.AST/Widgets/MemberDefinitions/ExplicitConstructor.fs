@@ -57,7 +57,7 @@ module ExplicitConstructorMember =
                     alias,
                     SingleTextNode.equals,
                     expr,
-                    Range.Zero
+                    Range.range0
                 )
 
             MemberDefn.ExplicitCtor(node))

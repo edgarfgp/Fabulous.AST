@@ -16,7 +16,7 @@ module TryFinally =
             let ``finally`` = Widgets.getNodeFromWidget widget Finally
 
             Expr.TryFinally(
-                ExprTryFinallyNode(SingleTextNode.``try``, expr, SingleTextNode.``finally``, ``finally``, Range.Zero)
+                ExprTryFinallyNode(SingleTextNode.``try``, expr, SingleTextNode.``finally``, ``finally``, Range.range0)
             ))
 
 [<AutoOpen>]

@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes_
+### Changed
+- **Breaking:** Fabulous.AST targets `net10.0` and `netstandard2.1`; `net8.0` is dropped (.NET 8 left support on 2026-11-10), and `netstandard2.1` still serves apps on it. Fabulous.AST.Json and Fabulous.AST.Build target `net10.0`, so the Fabulous.AST.Build MSBuild task needs the .NET 10 SDK or later
+- Built with the .NET 11 SDK (F# 11); tests run on `net10.0` and `net11.0`
+- **Breaking:** built on **Fantomas.Core 8.1.1** (was 7.0.1). The widget DSL is unchanged, but code that builds or matches Fantomas Oak nodes directly (`EscapeHatch`, `Rewrite.expr` / `Rewrite.typeDefn` functions, `Gen.mkOak` results) must follow the Fantomas 8 Oak — see the [Fantomas upgrade guide](https://fsprojects.github.io/fantomas/docs/end-users/UpgradeGuide.html). The changes most likely to matter:
+  - Chains are `ExprChain(head, segments, terminal)`. `Expr.DotLambda`, `Expr.DotIndexedGet`, `Expr.AppLongIdentAndSingleParenArg` and `Expr.NestedIndexWithoutDot` are gone; the widgets of the same name now produce a chain, `Expr.AppSingleParenArg` and an `Expr.App` of `Expr.IndexWithoutDot` respectively
+  - `let`, `use`, `let!`, `use!` and `and!` inside computation expressions are all `ComputationExpressionStatement.BindingStatement` (a `BindingNode` whose leading keyword says which)
+  - `TypeNameNode`'s identifier is a `Type`, and the `with` keyword moved from `TypeNameNode` to each `TypeDefn*Node`; the `ITypeDefn` interface is gone (use the node's `TypeName` / `Members`)
+  - Record fields are wrapped in `ExprRecordFieldOrSpread` / `TypeDefnRecordFieldOrSpread` (F# 11 record spreads)
+  - `PatRecordField` and `NamePatPair` are both `NamePatPairNode`; `ElseIfNode` is `IfKeywordNode.ElseIf(else, if)`; a match clause's `when` guard is `(whenKeyword, expr)`
+  - `BindingNode`, `UnionCaseNode`, `ExceptionDefnNode` and `ExternBindingNode` take the new keyword tokens (`in`, `of`, `exception`, `static`); a union case prints `of` only when its node carries it
+  - `Range.Zero` is deprecated in favour of `Range.range0`
+- **Breaking:** `ChainLink` (the item type of `ChainExpr`) is now a Fabulous.AST type rather than a Fantomas one; the `ChainLink*` builders are unchanged. `ChainExpr` now throws `ArgumentException` for links that don't start with a receiver or don't alternate `ChainLinkDot()` and a step, instead of emitting code such as a lone `.`
+- `Gen.run(oak)` formats with the new `Gen.DefaultConfig`: Fantomas's defaults, except that multiline lists, arrays and records keep the `Cramped` bracket style Fabulous.AST has always produced (Fantomas 8's own default is `Aligned`). `Gen.run(oak, config)` uses exactly the config you pass
+- Generated whitespace follows Fantomas 8: an explicit `Newline()` trivia yields one blank line (Fantomas 7 doubled it), a comment before a type annotation is indented one level, and `NestedIndexWithoutDotExpr` renders `a[i] b`
+
+### Added
+- `Rewrite.expr` / `Rewrite.typeDefn` walk the nodes Fantomas 8 added: record spreads (`{ ...x; y = 1 }`, `{ ...T; Y: int }`) and dynamic `?` chains
+
+### Fixed
+- `WhenTyparIsStruct` renders its `struct` constraint, and several static-optimization constraints are joined with `and` (both were dropped by Fantomas 7)
+- The `when` guard of a `MatchClauseExpr` is built with its keyword token, as Fantomas 8 requires
 
 ## [2.0.0-pre08] - 2026-06-01
 

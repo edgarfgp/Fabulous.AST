@@ -39,7 +39,10 @@ module UnionCase =
 
             let xmlDocs = Widgets.tryGetNodeFromWidget widget XmlDocs |> ValueOption.toOption
 
-            UnionCaseNode(xmlDocs, attributes, None, name, fields, Range.Zero))
+            // Fantomas 8 prints `of` only when the node carries it.
+            let ofKeyword = if fields.IsEmpty then None else Some SingleTextNode.``of``
+
+            UnionCaseNode(xmlDocs, attributes, None, name, ofKeyword, fields, Range.range0))
 
 [<AutoOpen>]
 module UnionCaseBuilders =

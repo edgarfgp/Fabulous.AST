@@ -12,7 +12,7 @@ module QuoteExpr =
             let value = Widgets.getNodeFromWidget widget Value
 
             Pattern.QuoteExpr(
-                ExprQuoteNode(SingleTextNode.leftQuotation, value, SingleTextNode.rightQuotation, Range.Zero)
+                ExprQuoteNode(SingleTextNode.leftQuotation, value, SingleTextNode.rightQuotation, Range.range0)
             ))
 
 [<AutoOpen>]

@@ -14,7 +14,7 @@ module Set =
         Widgets.register "Lazy" (fun widget ->
             let identifierExpr = Widgets.getNodeFromWidget widget IdentifierExpr
             let setExpr = Widgets.getNodeFromWidget widget SetExpr
-            Expr.Set(ExprSetNode(identifierExpr, setExpr, Range.Zero)))
+            Expr.Set(ExprSetNode(identifierExpr, setExpr, Range.range0)))
 
 [<AutoOpen>]
 module SetBuilders =

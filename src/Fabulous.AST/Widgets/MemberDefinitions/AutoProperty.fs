@@ -65,7 +65,7 @@ module AutoPropertyMember =
                       else
                           SingleTextNode.``member``
                       SingleTextNode.``val`` ],
-                    Range.Zero
+                    Range.range0
                 )
 
             let withGetSetText = MultipleTextsNode.CreateGetSet(hasGetter, hasSetter)
@@ -81,7 +81,7 @@ module AutoPropertyMember =
                     SingleTextNode.equals,
                     bodyExpr,
                     withGetSetText,
-                    Range.Zero
+                    Range.range0
                 )
 
             MemberDefn.AutoProperty(node))

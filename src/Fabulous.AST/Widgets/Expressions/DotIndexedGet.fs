@@ -14,7 +14,15 @@ module DotIndexedGet =
         Widgets.register "DotIndexedGet" (fun widget ->
             let objExpr = Widgets.getNodeFromWidget widget ObjExpr
             let indexExpr = Widgets.getNodeFromWidget widget IndexExpr
-            Expr.DotIndexedGet(ExprDotIndexedGetNode(objExpr, indexExpr, Range.Zero)))
+            // Fantomas 8: `obj.[index]` is a chain with a single `.[index]` segment.
+            Expr.Chain(
+                ExprChain(
+                    objExpr,
+                    [ ChainSegment.DotIndex(SingleTextNode.dot, indexExpr) ],
+                    ChainTerminal.NoTerminal,
+                    Range.range0
+                )
+            ))
 
 [<AutoOpen>]
 module DotIndexedGetBuilders =

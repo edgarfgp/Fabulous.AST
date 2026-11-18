@@ -18,7 +18,7 @@ module ListCons =
             let middle = Widgets.getScalarValue widget MiddlePattern
             let rhs = Widgets.getNodeFromWidget widget RHSPattern
 
-            Pattern.ListCons(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.Zero)))
+            Pattern.ListCons(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.range0)))
 
 [<AutoOpen>]
 module ListConsBuilders =

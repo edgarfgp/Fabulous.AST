@@ -10,7 +10,16 @@ module DotLambda =
     let WidgetKey =
         Widgets.register "DotLambda" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
-            Expr.DotLambda(ExprDotLambda(SingleTextNode.underscore, SingleTextNode.dot, expr, Range.Zero)))
+            // Fantomas 8: `_.Body` is a chain with `_` as its head. The F# compiler requires a
+            // dot-lambda body to be atomic, hence no space before a terminal call.
+            Expr.Chain(
+                ExprChain(
+                    Expr.Ident(SingleTextNode.underscore),
+                    [ ChainSegment.DotMember(SingleTextNode.dot, expr) ],
+                    ChainTerminal.NoTerminal,
+                    Range.range0
+                )
+            ))
 
 [<AutoOpen>]
 module DotLambdaBuilders =

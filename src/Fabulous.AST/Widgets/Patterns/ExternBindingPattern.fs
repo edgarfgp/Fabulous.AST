@@ -25,7 +25,7 @@ module ExternBindingPattern =
 
             let tp = Widgets.tryGetNodeFromWidget widget TypeValue |> ValueOption.toOption
 
-            ExternBindingPatternNode(attributes, tp, pat, Range.Zero))
+            ExternBindingPatternNode(attributes, tp, pat, Range.range0))
 
 [<AutoOpen>]
 module ExternBindingPatternNodeBuilders =

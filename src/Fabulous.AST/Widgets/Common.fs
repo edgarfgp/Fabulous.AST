@@ -23,7 +23,7 @@ type AccessControl =
 module CommonExtensions =
     type MultipleTextsNode with
         static member Create(texts: SingleTextNode seq) =
-            MultipleTextsNode(List.ofSeq texts, Range.Zero)
+            MultipleTextsNode(List.ofSeq texts, Range.range0)
 
         /// Builds the optional `with [acc?] get [, [acc?] set]` clause for
         /// property-like members. Returns `None` when neither accessor is present.
@@ -54,7 +54,7 @@ module CommonExtensions =
 
     type Type with
         static member Create(name: string) =
-            Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero))
+            Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0))
 
     type MultipleAttributeListNode with
         static member Create(values: AttributeNode seq) =
@@ -63,9 +63,9 @@ module CommonExtensions =
                       SingleTextNode.leftAttribute,
                       List.ofSeq values,
                       SingleTextNode.rightAttribute,
-                      Range.Zero
+                      Range.range0
                   ) ],
-                Range.Zero
+                Range.range0
             )
 
 [<RequireQualifiedAccess>]
@@ -122,10 +122,15 @@ type Gen =
         let definition = WidgetDefinitionStore.get widget.Key
         definition.CreateView widget |> unbox
 
-    /// Formats <paramref name="oak"/> to F# source using the default config.
+    /// The config <c>run</c> uses when none is given: Fantomas's defaults, except that
+    /// multiline lists, arrays and records keep the <c>Cramped</c> bracket style that
+    /// Fabulous.AST has always produced (Fantomas 8 changed its own default to <c>Aligned</c>).
+    static member DefaultConfig: FormatConfig =
+        { FormatConfig.Default with MultilineBracketStyle = Cramped }
+
+    /// Formats <paramref name="oak"/> to F# source using <see cref="P:Fabulous.AST.Gen.DefaultConfig"/>.
     static member run(oak: Oak) : string =
-        CodeFormatter.FormatOakAsync(oak, FormatConfig.Default)
-        |> Async.RunSynchronously
+        CodeFormatter.FormatOakAsync(oak, Gen.DefaultConfig) |> Async.RunSynchronously
 
     /// Formats <paramref name="oak"/> to F# source using <paramref name="config"/>.
     static member run(oak: Oak, config: FormatConfig) : string =

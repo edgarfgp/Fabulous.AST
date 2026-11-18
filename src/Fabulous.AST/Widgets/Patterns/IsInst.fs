@@ -16,7 +16,7 @@ module IsInst =
             let token = Widgets.getScalarValue widget Token
             let instType = Widgets.getNodeFromWidget widget InstType
 
-            Pattern.IsInst(PatIsInstNode(token, instType, Range.Zero)))
+            Pattern.IsInst(PatIsInstNode(token, instType, Range.range0)))
 
 [<AutoOpen>]
 module IsInstPatBuilders =

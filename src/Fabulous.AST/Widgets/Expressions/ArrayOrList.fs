@@ -17,7 +17,7 @@ module ArrayOrList =
             let values = Widgets.getScalarValue widget Items |> List.ofSeq
             let openNode = Widgets.getScalarValue widget OpeningNode
             let closeNode = Widgets.getScalarValue widget ClosingNode
-            Expr.ArrayOrList(ExprArrayOrListNode(openNode, values, closeNode, Range.Zero)))
+            Expr.ArrayOrList(ExprArrayOrListNode(openNode, values, closeNode, Range.range0)))
 
 [<AutoOpen>]
 module ArrayOrListBuilders =

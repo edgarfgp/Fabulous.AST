@@ -35,14 +35,14 @@ module InterpolatedString =
     // Check if an interpolated string contains only text segments
     let private isTextOnly(parts: TextSegment seq) =
         parts
-        |> Seq.forall (function
+        |> Seq.forall(function
             | Text _ -> true
             | _ -> false)
 
     // Combine text-only segments for optimization
     let private combineTextOnly(parts: TextSegment seq) =
         parts
-        |> Seq.map (function
+        |> Seq.map(function
             | Text t -> t
             | _ -> "")
         |> String.concat ""
@@ -63,7 +63,7 @@ module InterpolatedString =
                       yield Choice1Of2(SingleTextNode.Create(combinedText))
                       yield closeQuote ]
 
-                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.Zero))
+                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.range0))
             else
                 let processedParts =
                     [ yield Choice1Of2(SingleTextNode.Create dollars)
@@ -71,7 +71,7 @@ module InterpolatedString =
                       yield! parts |> Seq.collect processPart
                       yield closeQuote ]
 
-                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.Zero)))
+                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.range0)))
 
 [<AutoOpen>]
 module InterpolatedStringBuilders =

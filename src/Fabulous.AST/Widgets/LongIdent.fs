@@ -15,7 +15,7 @@ module TypeLongIdent =
                 |> Seq.intersperse "."
                 |> Seq.map(fun value -> IdentifierOrDot.Ident(SingleTextNode.Create(value)))
 
-            Type.LongIdent(IdentListNode(List.ofSeq values, Range.Zero)))
+            Type.LongIdent(IdentListNode(List.ofSeq values, Range.range0)))
 
 [<AutoOpen>]
 module LongIdentTypeBuilders =

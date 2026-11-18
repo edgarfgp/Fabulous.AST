@@ -81,7 +81,6 @@ let x: int = 42
             """
 let x: int = 42
 
-
 let y: int = 43
 """
 
@@ -289,7 +288,6 @@ let x =
     42
 
 
-
 let y = 43
 """
 
@@ -324,8 +322,8 @@ module TypeTriviaTests =
             """
 let x
     :
-      // Type comment
-      int =
+    // Type comment
+    int =
     42
 """
 
@@ -374,9 +372,9 @@ let x: int // After type
             """
 let x
     :
-      // Type info
-      // More info
-      int =
+    // Type info
+    // More info
+    int =
     42
 """
 
@@ -395,8 +393,8 @@ let x
             """
 let x
     :
-      // TriviaNode type comment
-      int =
+    // TriviaNode type comment
+    int =
     42
 """
 
@@ -865,8 +863,8 @@ let
             """
 let x
     :
-      // Type annotation
-      int // end of type
+    // Type annotation
+    int // end of type
     =
     42
 """
@@ -1086,7 +1084,7 @@ let x: int // After type
 let x
     : int // Type comment
 
-      =
+    =
     42
 """
 

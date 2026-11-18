@@ -12,7 +12,7 @@ module TypeConstraint =
             let struct (typar, kind) = Widgets.getScalarValue widget Single
 
             TypeConstraint.Single(
-                TypeConstraintSingleNode(SingleTextNode.Create(typar), SingleTextNode.Create(kind), Range.Zero)
+                TypeConstraintSingleNode(SingleTextNode.Create(typar), SingleTextNode.Create(kind), Range.range0)
             ))
 
     let DefaultsToType =
@@ -27,7 +27,7 @@ module TypeConstraint =
                     SingleTextNode.Create(def),
                     SingleTextNode.Create(typar),
                     tp,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 
@@ -37,7 +37,9 @@ module TypeConstraint =
         Widgets.register "SubtypeOfType" (fun widget ->
             let struct (typar, tp) = Widgets.getScalarValue widget SubtypeOfType
 
-            TypeConstraint.SubtypeOfType(TypeConstraintSubtypeOfTypeNode(SingleTextNode.Create(typar), tp, Range.Zero)))
+            TypeConstraint.SubtypeOfType(
+                TypeConstraintSubtypeOfTypeNode(SingleTextNode.Create(typar), tp, Range.range0)
+            ))
 
     let SupportsMember =
         Attributes.defineScalar<struct (Type * MemberDefn)> "SupportsMember"
@@ -45,7 +47,7 @@ module TypeConstraint =
     let WidgetSupportsMemberKey =
         Widgets.register "SupportsMember" (fun widget ->
             let struct (tp, memberDefn) = Widgets.getScalarValue widget SupportsMember
-            TypeConstraint.SupportsMember(TypeConstraintSupportsMemberNode(tp, memberDefn, Range.Zero)))
+            TypeConstraint.SupportsMember(TypeConstraintSupportsMemberNode(tp, memberDefn, Range.range0)))
 
     let EnumOrDelegate =
         Attributes.defineScalar<struct (string * string * Type seq)> "EnumOrDelegate"
@@ -55,7 +57,7 @@ module TypeConstraint =
             let struct (tp, verb, ts) = Widgets.getScalarValue widget EnumOrDelegate
 
             TypeConstraint.EnumOrDelegate(
-                TypeConstraintEnumOrDelegateNode(SingleTextNode.Create(tp), verb, List.ofSeq ts, Range.Zero)
+                TypeConstraintEnumOrDelegateNode(SingleTextNode.Create(tp), verb, List.ofSeq ts, Range.range0)
             ))
 
     let WhereSelfConstrained = Attributes.defineWidget "WhereSelfConstrained"
@@ -78,7 +80,7 @@ module TypeConstraint =
                     SingleTextNode.colon,
                     SingleTextNode.not,
                     SingleTextNode.``null``,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

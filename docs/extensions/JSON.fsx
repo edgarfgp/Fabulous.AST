@@ -25,7 +25,7 @@ dotnet add package Fabulous.AST.Json
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.FCS.dll"
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fabulous.AST.dll"
-#r "../../extensions/Fabulous.AST.Json/bin/Release/net8.0//Fabulous.AST.Json.dll"
+#r "../../extensions/Fabulous.AST.Json/bin/Release/net10.0//Fabulous.AST.Json.dll"
 
 open Fabulous.AST
 open Fabulous.AST.Json

@@ -18,7 +18,7 @@ module Intersection =
                     |> List.map(Choice1Of2)
                     |> List.intersperse(Choice2Of2(SingleTextNode.ampersand))
 
-            Type.Intersection(TypeIntersectionNode(types, Range.Zero)))
+            Type.Intersection(TypeIntersectionNode(types, Range.range0)))
 
 [<AutoOpen>]
 module IntersectionBuilders =

@@ -18,8 +18,8 @@ module OptVar =
             Expr.OptVar(
                 ExprOptVarNode(
                     isOptional,
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero),
-                    Range.Zero
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.range0),
+                    Range.range0
                 )
             ))
 

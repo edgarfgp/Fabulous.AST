@@ -15,7 +15,7 @@ module InheritConstructor =
             let typeValue = Widgets.getNodeFromWidget widget TypeValue
 
             InheritConstructor.TypeOnly(
-                InheritConstructorTypeOnlyNode(SingleTextNode.``inherit``, typeValue, Range.Zero)
+                InheritConstructorTypeOnlyNode(SingleTextNode.``inherit``, typeValue, Range.range0)
             ))
 
     let WidgetUnitKey =
@@ -28,7 +28,7 @@ module InheritConstructor =
                     typeValue,
                     SingleTextNode.leftParenthesis,
                     SingleTextNode.rightParenthesis,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 
@@ -38,7 +38,7 @@ module InheritConstructor =
             let expr = Widgets.getNodeFromWidget widget ExprValue
 
             InheritConstructor.Paren(
-                InheritConstructorParenNode(SingleTextNode.``inherit``, typeValue, expr, Range.Zero)
+                InheritConstructorParenNode(SingleTextNode.``inherit``, typeValue, expr, Range.range0)
             ))
 
     let WidgetOtherKey =
@@ -47,7 +47,7 @@ module InheritConstructor =
             let expr = Widgets.getNodeFromWidget widget ExprValue
 
             InheritConstructor.Other(
-                InheritConstructorOtherNode(SingleTextNode.``inherit``, typeValue, expr, Range.Zero)
+                InheritConstructorOtherNode(SingleTextNode.``inherit``, typeValue, expr, Range.range0)
             ))
 
 [<AutoOpen>]

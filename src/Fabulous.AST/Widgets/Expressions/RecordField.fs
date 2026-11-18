@@ -21,10 +21,10 @@ module RecordField =
                 |> SingleTextNode.Create
 
             RecordFieldNode(
-                IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                IdentListNode([ IdentifierOrDot.Ident(name) ], Range.range0),
                 SingleTextNode.equals,
                 expr,
-                Range.Zero
+                Range.range0
             ))
 
 [<AutoOpen>]

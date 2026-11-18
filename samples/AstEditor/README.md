@@ -15,7 +15,7 @@ IntelliSense and evaluation).
 dotnet run --project samples/AstEditor
 ```
 
-It targets `net8.0` and rolls forward, so a machine with only a newer runtime (e.g. .NET 10)
+It targets `net10.0` and rolls forward, so a machine with only a newer runtime (e.g. .NET 11)
 runs it too. The first check after launch warms up the F# compiler (a few seconds); edits are
 fast afterwards.
 

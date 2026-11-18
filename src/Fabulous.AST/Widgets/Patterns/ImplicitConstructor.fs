@@ -46,9 +46,9 @@ module ImplicitConstructor =
                 | ValueNone -> None
                 | ValueSome value ->
                     let value = PrettyNaming.NormalizeIdentifierBackticks value
-                    Some(AsSelfIdentifierNode(SingleTextNode.``as``, SingleTextNode.Create(value), Range.Zero))
+                    Some(AsSelfIdentifierNode(SingleTextNode.``as``, SingleTextNode.Create(value), Range.range0))
 
-            ImplicitConstructorNode(xmlDocs, attributes, accessControl, pattern, alias, Range.Zero))
+            ImplicitConstructorNode(xmlDocs, attributes, accessControl, pattern, alias, Range.range0))
 
 [<AutoOpen>]
 module ImplicitConstructorBuilders =
