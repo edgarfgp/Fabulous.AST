@@ -5,7 +5,7 @@ open System.IO
 open Fun.Build
 
 let (</>) a b = Path.Combine(a, b)
-let sln = __SOURCE_DIRECTORY__ </> "Fabulous.AST.sln"
+let sln = __SOURCE_DIRECTORY__ </> "Fabulous.AST.slnx"
 let config = "Release"
 let nupkgs = __SOURCE_DIRECTORY__ </> "nupkgs"
 

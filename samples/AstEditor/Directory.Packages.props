@@ -1,0 +1,7 @@
+<!-- Opt out of the repo's central package management; this sample pins its own
+     Fabulous.Avalonia versions so it stays self-contained. -->
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
