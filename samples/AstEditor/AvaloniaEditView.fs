@@ -30,7 +30,10 @@ type IFabTextEditor =
 /// "System" follows the real OS setting, and an OS theme change at runtime re-themes too.
 module EditorTheme =
     let mutable private dark = true
-    let private installs = ResizeArray<TextMate.Installation * RegistryOptions>()
+
+    // Weakly keyed by editor, so a discarded editor (and its document) can be collected.
+    let private installs =
+        ConditionalWeakTable<AvaloniaEdit.TextEditor, TextMate.Installation * RegistryOptions>()
 
     let themeName() =
         if dark then ThemeName.DarkPlus else ThemeName.LightPlus
@@ -38,7 +41,7 @@ module EditorTheme =
     let private apply(isDark: bool) =
         dark <- isDark
 
-        for installation, options in installs do
+        for KeyValue(_, (installation, options)) in installs do
             try
                 installation.SetTheme(options.LoadTheme(themeName()))
             with _ ->
@@ -60,8 +63,8 @@ module EditorTheme =
 
                 apply(app.ActualThemeVariant = Avalonia.Styling.ThemeVariant.Dark)
 
-    let register (installation: TextMate.Installation) (options: RegistryOptions) =
-        installs.Add(installation, options)
+    let register (editor: AvaloniaEdit.TextEditor) (installation: TextMate.Installation) (options: RegistryOptions) =
+        installs.AddOrUpdate(editor, (installation, options))
         hookApp()
 
 [<AutoOpen>]
@@ -91,13 +94,24 @@ module private AvaloniaEditInterop =
     // double-install on re-render.
     let private installs = ConditionalWeakTable<AvEdit, obj>()
 
-    // Set while applying a *programmatic* selection (a tree-click highlight), so the editor's
-    // SelectionChanged handler can tell it apart from a user selection and not feed it back
-    // into the syntax-tree inspector (which would re-root the tree on the highlight).
-    let private suppressSelection = ConditionalWeakTable<AvEdit, bool ref>()
+    // Set while the *model* changes an editor (replacing its text, selecting a range), so the
+    // caret handler doesn't report those moves back as if the user made them. Without
+    // this, refreshing the syntax-tree text moves its caret, which reads as a click on a node.
+    let private suppressEvents = ConditionalWeakTable<AvEdit, bool ref>()
 
-    let suppressSelectionRef(editor: AvEdit) =
-        suppressSelection.GetValue(editor, fun _ -> ref false)
+    let suppressRef(editor: AvEdit) =
+        suppressEvents.GetValue(editor, fun _ -> ref false)
+
+    /// Run a programmatic change with the editor's caret/selection events muted. The flag is
+    /// cleared on a later dispatcher turn, since AvaloniaEdit raises some caret moves late.
+    let programmatic (editor: AvEdit) (change: unit -> unit) =
+        let flag = suppressRef editor
+        flag.Value <- true
+
+        try
+            change()
+        finally
+            Avalonia.Threading.Dispatcher.UIThread.Post(fun () -> flag.Value <- false)
 
     let installTextMate(editor: AvEdit) =
         match installs.TryGetValue editor with
@@ -111,7 +125,7 @@ module private AvaloniaEditInterop =
                 if not(isNull(box language)) then
                     installation.SetGrammar(registryOptions.GetScopeByLanguageId(language.Id))
 
-                EditorTheme.register installation registryOptions
+                EditorTheme.register editor installation registryOptions
                 installs.Add(editor, box installation)
             with _ ->
                 ()
@@ -134,7 +148,7 @@ module TextEditor =
             ensureStyles()
 
             match newValueOpt with
-            | ValueSome v when editor.Text <> v -> editor.Text <- v
+            | ValueSome v when editor.Text <> v -> programmatic editor (fun () -> editor.Text <- v)
             | _ -> ())
 
     /// Enables FCS-backed DSL IntelliSense — autocomplete (incl. member completion) and
@@ -147,16 +161,20 @@ module TextEditor =
                 Completion.install editor
                 Hover.install editor
                 SignatureHelp.install editor
-                QuickFix.install editor
-                Lightbulb.install editor
             | _ -> ())
 
-    /// Enables inline FCS error/warning squiggles for this editor.
+    /// Draws these diagnostics as squiggles. Carries a token so the same diagnostics are
+    /// re-applied after an edit cleared them (equality alone would skip the update).
     let Diagnostics =
-        Attributes.defineSimpleScalarWithEquality<bool> "TextEditor_Diagnostics" (fun _ newValueOpt node ->
-            match newValueOpt with
-            | ValueSome true -> Squiggles.install(node.Target :?> AvEdit)
-            | _ -> ())
+        Attributes.defineSimpleScalarWithEquality<int * Intellisense.Diagnostic[]>
+            "TextEditor_Diagnostics"
+            (fun _ newValueOpt node ->
+                let diags =
+                    match newValueOpt with
+                    | ValueSome(_, d) -> d
+                    | ValueNone -> [||]
+
+                Squiggles.set (node.Target :?> AvEdit) diags)
 
     /// Raises (line, column) — both 1-based — whenever the caret moves.
     let CaretMoved: SimpleScalarAttributeDefinition<int * int -> MsgValue> =
@@ -177,40 +195,9 @@ module TextEditor =
                     | ValueSome fn ->
                         let handler =
                             editor.TextArea.Caret.PositionChanged.Subscribe(fun _ ->
-                                let caret = editor.TextArea.Caret
-                                let (MsgValue r) = fn(caret.Line, caret.Column)
-                                Dispatcher.dispatch node r)
-
-                        node.SetHandler(name, handler))
-            )
-            |> AttributeDefinitionStore.registerScalar
-
-        { Key = key
-          Name = name }
-
-    /// Raises the editor's currently-selected text whenever the selection changes (empty
-    /// string when the selection is cleared). Drives the live syntax-tree inspector.
-    let SelectionChanged: SimpleScalarAttributeDefinition<string -> MsgValue> =
-        let name = "TextEditor_SelectionChanged"
-
-        let key =
-            SimpleScalarAttributeDefinition.CreateAttributeData(
-                ScalarAttributeComparers.noCompare,
-                (fun _ (newValueOpt: (string -> MsgValue) voption) (node: IViewNode) ->
-                    let editor = node.Target :?> AvEdit
-
-                    match node.TryGetHandler(name) with
-                    | ValueNone -> ()
-                    | ValueSome handler -> handler.Dispose()
-
-                    match newValueOpt with
-                    | ValueNone -> node.RemoveHandler(name)
-                    | ValueSome fn ->
-                        let handler =
-                            editor.TextArea.SelectionChanged.Subscribe(fun _ ->
-                                // Ignore selections we set ourselves (tree-click highlights).
-                                if not (suppressSelectionRef editor).Value then
-                                    let (MsgValue r) = fn editor.SelectedText
+                                if not (suppressRef editor).Value then
+                                    let caret = editor.TextArea.Caret
+                                    let (MsgValue r) = fn(caret.Line, caret.Column)
                                     Dispatcher.dispatch node r)
 
                         node.SetHandler(name, handler))
@@ -236,13 +223,10 @@ module TextEditor =
                     let l = max 0 (min length (len - s))
 
                     if l > 0 then
-                        // Suppress the resulting SelectionChanged so this highlight stays a
-                        // highlight — it must not switch the inspector to the selected fragment.
-                        let flag = suppressSelectionRef editor
-                        flag.Value <- true
-                        editor.Select(s, l)
-                        editor.TextArea.Caret.BringCaretToView()
-                        Avalonia.Threading.Dispatcher.UIThread.Post(fun () -> flag.Value <- false)
+                        programmatic editor (fun () ->
+                            editor.Select(s, l)
+                            editor.TextArea.Caret.BringCaretToView()
+                            editor.TextArea.Focus() |> ignore)
                 | _ -> ())
 
     /// Turns on TextMate F# highlighting for this editor instance. Uses no-compare so a first
@@ -287,7 +271,7 @@ module TextEditor =
                     | ValueNone -> node.RemoveHandler(name)
                     | ValueSome data ->
                         match data.Value with
-                        | ValueSome v when editor.Text <> v -> editor.Text <- v
+                        | ValueSome v when editor.Text <> v -> programmatic editor (fun () -> editor.Text <- v)
                         | _ -> ()
 
                         let handler =
@@ -352,20 +336,17 @@ type TextEditorModifiers =
     static member inline intelliSense(this: WidgetBuilder<'msg, #IFabTextEditor>) =
         this.AddScalar(TextEditor.IntelliSense.WithValue(true))
 
-    /// Enables inline FCS error/warning squiggles.
+    /// Shows diagnostics as squiggles. Bump `token` whenever a fresh check result arrives.
     [<Extension>]
-    static member inline diagnostics(this: WidgetBuilder<'msg, #IFabTextEditor>) =
-        this.AddScalar(TextEditor.Diagnostics.WithValue(true))
+    static member inline diagnostics
+        (this: WidgetBuilder<'msg, #IFabTextEditor>, token: int, diags: Intellisense.Diagnostic[])
+        =
+        this.AddScalar(TextEditor.Diagnostics.WithValue((token, diags)))
 
     /// Raises (line, column) — 1-based — whenever the caret moves.
     [<Extension>]
     static member inline onCaretMoved(this: WidgetBuilder<'msg, #IFabTextEditor>, fn: int * int -> 'msg) =
         this.AddScalar(TextEditor.CaretMoved.WithValue(fn >> box >> MsgValue))
-
-    /// Raises the selected text whenever the editor's selection changes (empty when cleared).
-    [<Extension>]
-    static member inline onSelectionChanged(this: WidgetBuilder<'msg, #IFabTextEditor>, fn: string -> 'msg) =
-        this.AddScalar(TextEditor.SelectionChanged.WithValue(fn >> box >> MsgValue))
 
     /// Selects a (start offset, length) range, scrolling it into view. `token` makes each
     /// distinct request apply once; pass None to leave the selection untouched.

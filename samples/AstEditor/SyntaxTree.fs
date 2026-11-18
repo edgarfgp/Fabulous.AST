@@ -2,43 +2,46 @@ namespace AstEditor
 
 open System.Text
 open FSharp.Compiler.Syntax
+open FSharp.Compiler.Text
 
-/// Renders the untyped F# syntax tree (from FCS) as a compact, human-readable tree — the AST
-/// inspector's "debug view" of what the DSL builds. It summarises the high-level structure
+/// Renders the untyped F# syntax tree (from FCS) of the generated code as a compact,
+/// human-readable tree — the AST inspector's view of what the DSL built. It summarises the high-level structure
 /// (modules, type definitions, fields/cases, bindings, top-level expressions) rather than
 /// dumping every node, and is a hand-written walk (no reflection) so the labels stay meaningful.
 module SyntaxTree =
 
-    /// The rendered tree plus, for each line, an optional "locate hint" — a salient name to
-    /// find in the DSL so clicking a tree line can highlight the code that produced it.
+    /// A source span: 1-based start/end line, 0-based start/end column (FCS conventions).
+    type Span =
+        { StartLine: int
+          StartColumn: int
+          EndLine: int
+          EndColumn: int }
+
+    /// The rendered tree plus, for each line, the span of source that node covers — so
+    /// clicking a tree line can select the code it came from.
     type Tree =
         { Text: string
-          Hints: string option[] }
+          Spans: Span option[] }
 
-    /// A node in the tree: a label, an optional locate hint, and children.
+    /// A node in the tree: a label, the source range it covers (if any), and children.
     type private Node =
         { Label: string
-          Hint: string option
+          Range: range option
           Children: Node list }
 
     let private leaf label =
         { Label = label
-          Hint = None
+          Range = None
           Children = [] }
 
-    let private leafH label hint =
+    let private leafR label (r: range) =
         { Label = label
-          Hint = Some hint
+          Range = Some r
           Children = [] }
 
-    let private node label children =
+    let private nodeR label (r: range) children =
         { Label = label
-          Hint = None
-          Children = children }
-
-    let private nodeH label hint children =
-        { Label = label
-          Hint = Some hint
+          Range = Some r
           Children = children }
 
     let private identText(id: Ident) = id.idText
@@ -99,38 +102,44 @@ module SyntaxTree =
         | SynExpr.Paren(expr = inner) -> headLabel inner
         | _ -> "App"
 
-    /// Render an expression as a node tree — deep enough to show the structure of the DSL
-    /// (application calls, computation-expression `{ }` blocks, lists, tuples, literals) so the
-    /// AST inspector is a real explorer of the selected code.
+    /// Render an expression as a node tree — deep enough to show the structure of the code
+    /// (applications, `{ }` blocks, lists, tuples, literals). Every node carries its range.
     let rec private exprNode(e: SynExpr) : Node =
+        let r = e.Range
+
         match e with
         | SynExpr.Paren(expr = inner)
         | SynExpr.Typed(expr = inner)
         | SynExpr.TypeApp(expr = inner) -> exprNode inner
-        | SynExpr.Const(constant = c) ->
-            // A string literal's hint is its unquoted text (so clicking `"Name"` locates the
-            // DSL `Field("Name", …)`); other literals locate by their rendered value.
-            match c with
-            | SynConst.String(text = s) -> leafH ("\"" + s + "\"") s
-            | _ -> leaf(constText c)
-        | SynExpr.Ident id -> leaf(identText id)
-        | SynExpr.LongIdent(longDotId = lid) -> leaf(synLongText lid)
-        | SynExpr.Tuple(exprs = exprs) -> node "tuple" (exprs |> List.map exprNode)
-        | SynExpr.ArrayOrList(exprs = exprs) -> node "[ ]" (exprs |> List.map exprNode)
-        | SynExpr.ArrayOrListComputed(expr = body) -> node "[ ]" (seqNodes body)
-        | SynExpr.ComputationExpr(expr = body) -> node "{ }" (seqNodes body)
+        | SynExpr.Const(constant = c) -> leafR (constText c) r
+        | SynExpr.Ident id -> leafR (identText id) r
+        | SynExpr.LongIdent(longDotId = lid) -> leafR (synLongText lid) r
+        | SynExpr.Tuple(exprs = exprs) -> nodeR "tuple" r (exprs |> List.map exprNode)
+        | SynExpr.ArrayOrList(exprs = exprs) -> nodeR "[ ]" r (exprs |> List.map exprNode)
+        | SynExpr.ArrayOrListComputed(expr = body) -> nodeR "[ ]" r (seqNodes body)
+        | SynExpr.ComputationExpr(expr = body) -> nodeR "{ }" r (seqNodes body)
         | SynExpr.App _ ->
-            // `a |> b |> c` (the DSL's common tail) flattens to a "|>" chain; otherwise show
-            // the function head with its (tuple-flattened) arguments.
+            // `a |> b |> c` flattens to one "|>" node; otherwise show the function head with
+            // its (tuple-flattened) arguments.
             match pipeChain e with
-            | Some stages -> node "|>" (stages |> List.map exprNode)
+            | Some stages -> nodeR "|>" r (stages |> List.map exprNode)
             | None ->
                 let head, args = appSpine e
-                node ("App " + headLabel head) (appArgNodes args)
-        | SynExpr.Lambda(body = body) -> node "lambda" [ exprNode body ]
-        | SynExpr.IfThenElse(ifExpr = c; thenExpr = t) -> node "if" [ exprNode c; exprNode t ]
-        | SynExpr.Sequential _ -> node "seq" (seqNodes e)
-        | _ -> leaf "expr"
+                nodeR ("App " + headLabel head) r (appArgNodes args)
+        | SynExpr.Lambda(body = body) -> nodeR "lambda" r [ exprNode body ]
+        | SynExpr.IfThenElse(ifExpr = c; thenExpr = t; elseExpr = el) ->
+            nodeR "if" r ([ exprNode c; exprNode t ] @ (el |> Option.map exprNode |> Option.toList))
+        | SynExpr.Match(expr = target; clauses = clauses) ->
+            nodeR "match" r (exprNode target :: (clauses |> List.map clauseNode))
+        | SynExpr.Sequential _ -> nodeR "seq" r (seqNodes e)
+        | _ -> leafR "expr" r
+
+    and private clauseNode(SynMatchClause(pat = pat; resultExpr = result; range = r)) =
+        nodeR $"| {patText pat} ->" r [ exprNode result ]
+
+    and private bindingNode(b: SynBinding) =
+        let (SynBinding(headPat = pat; expr = body)) = b
+        nodeR $"Let {patText pat}" b.RangeOfBindingWithRhs [ exprNode body ]
 
     and private appSpine(e: SynExpr) : SynExpr * SynExpr list =
         let rec go acc e =
@@ -157,9 +166,11 @@ module SyntaxTree =
         | _ -> [ exprNode e ]
 
     and private pipeChain(e: SynExpr) : SynExpr list option =
+        // FCS represents an infix operator as `LongIdent op_PipeRight` (not a bare Ident).
         let isPipe e =
             match e with
             | SynExpr.Ident id -> id.idText = "op_PipeRight"
+            | SynExpr.LongIdent(longDotId = SynLongIdent(id = [ id ])) -> id.idText = "op_PipeRight"
             | _ -> false
 
         match e with
@@ -172,52 +183,67 @@ module SyntaxTree =
             Some(left @ [ rhs ])
         | _ -> None
 
-    let private fieldNode(SynField(idOpt = idOpt; fieldType = ft)) =
+    let private fieldNode(SynField(idOpt = idOpt; fieldType = ft; range = r)) =
         let name = idOpt |> Option.map identText |> Option.defaultValue "_"
-        leafH $"Field {name} : {typeText ft}" name
+        leafR $"Field {name} : {typeText ft}" r
 
-    let private unionCaseNode(SynUnionCase(ident = SynIdent(id, _); caseType = caseType)) =
+    let private unionCaseNode(SynUnionCase(ident = SynIdent(id, _); caseType = caseType; range = r)) =
         let name = identText id
 
         match caseType with
-        | SynUnionCaseKind.Fields(_ :: _ as fields) -> nodeH $"UnionCase {name}" name (fields |> List.map fieldNode)
-        | _ -> leafH $"UnionCase {name}" name
+        | SynUnionCaseKind.Fields(_ :: _ as fields) -> nodeR $"UnionCase {name}" r (fields |> List.map fieldNode)
+        | _ -> leafR $"UnionCase {name}" r
 
-    let private typeDefnNode(SynTypeDefn(typeInfo = SynComponentInfo(longId = lid); typeRepr = repr)) =
+    let private memberNode(m: SynMemberDefn) =
+        match m with
+        | SynMemberDefn.Member(memberDefn = b) -> bindingNode b
+        | SynMemberDefn.LetBindings(bindings = bs) -> nodeR "let" m.Range (bs |> List.map bindingNode)
+        | SynMemberDefn.ImplicitCtor _ -> leafR "new (primary constructor)" m.Range
+        | SynMemberDefn.AutoProperty(ident = id) -> leafR $"member val {identText id}" m.Range
+        | SynMemberDefn.Interface(interfaceType = t) -> leafR $"interface {typeText t}" m.Range
+        | SynMemberDefn.AbstractSlot(slotSig = SynValSig(ident = SynIdent(id, _))) ->
+            leafR $"abstract {identText id}" m.Range
+        | _ -> leafR "member" m.Range
+
+    let private typeDefnNode(td: SynTypeDefn) =
+        let (SynTypeDefn(typeInfo = SynComponentInfo(longId = lid); typeRepr = repr; members = extra)) =
+            td
+
         let name = longText lid
+        let r = td.Range
+        let members = extra |> List.map memberNode
 
         match repr with
         | SynTypeDefnRepr.Simple(simpleRepr = SynTypeDefnSimpleRepr.Record(recordFields = fields)) ->
-            nodeH $"Record {name}" name (fields |> List.map fieldNode)
+            nodeR $"Record {name}" r ((fields |> List.map fieldNode) @ members)
         | SynTypeDefnRepr.Simple(simpleRepr = SynTypeDefnSimpleRepr.Union(unionCases = cases)) ->
-            nodeH $"Union {name}" name (cases |> List.map unionCaseNode)
+            nodeR $"Union {name}" r ((cases |> List.map unionCaseNode) @ members)
         | SynTypeDefnRepr.Simple(simpleRepr = SynTypeDefnSimpleRepr.Enum(cases = cases)) ->
-            nodeH
+            nodeR
                 $"Enum {name}"
-                name
+                r
                 (cases
-                 |> List.map(fun (SynEnumCase(ident = SynIdent(id, _))) -> leafH (identText id) (identText id)))
+                 |> List.map(fun (SynEnumCase(ident = SynIdent(id, _); range = cr)) -> leafR (identText id) cr))
         | SynTypeDefnRepr.Simple(simpleRepr = SynTypeDefnSimpleRepr.TypeAbbrev(rhsType = ty)) ->
-            leafH $"Abbrev {name} = {typeText ty}" name
-        | _ -> leafH $"Type {name}" name
-
-    let private bindingNode(SynBinding(headPat = pat)) =
-        let name = patText pat
-        leafH $"Let {name}" name
+            leafR $"Abbrev {name} = {typeText ty}" r
+        | SynTypeDefnRepr.ObjectModel(members = ms) -> nodeR $"Type {name}" r ((ms |> List.map memberNode) @ members)
+        | _ -> nodeR $"Type {name}" r members
 
     let rec private declNodes(decl: SynModuleDecl) : Node list =
+        let r = decl.Range
+
         match decl with
         | SynModuleDecl.Open(target = SynOpenDeclTarget.ModuleOrNamespace(longId = lid)) ->
-            [ leaf $"open {synLongText lid}" ]
-        | SynModuleDecl.Open _ -> [ leaf "open …" ]
+            [ leafR $"open {synLongText lid}" r ]
+        | SynModuleDecl.Open _ -> [ leafR "open …" r ]
         | SynModuleDecl.Types(typeDefns = tds) -> tds |> List.map typeDefnNode
         | SynModuleDecl.Let(bindings = bs) -> bs |> List.map bindingNode
         | SynModuleDecl.Expr(expr = e) -> [ exprNode e ]
         | SynModuleDecl.NestedModule(moduleInfo = SynComponentInfo(longId = lid); decls = decls) ->
-            [ node $"module {longText lid}" (decls |> List.collect declNodes) ]
-        | _ -> []
+            [ nodeR $"module {longText lid}" r (decls |> List.collect declNodes) ]
+        | _ -> [ leafR "declaration" r ]
 
-    let private moduleNode(SynModuleOrNamespace(longId = lid; decls = decls; kind = kind)) =
+    let private moduleNode(SynModuleOrNamespace(longId = lid; decls = decls; kind = kind; range = r)) =
         let label =
             match kind, lid with
             | SynModuleOrNamespaceKind.AnonModule, _ -> "module (anonymous)"
@@ -225,15 +251,21 @@ module SyntaxTree =
             | _, [] -> "module"
             | _, _ -> $"module {longText lid}"
 
-        node label (decls |> List.collect declNodes)
+        nodeR label r (decls |> List.collect declNodes)
 
-    /// Render a node tree with ├─ / └─ connectors, collecting one locate-hint per line so the
-    /// tree text and the hint array line up index-for-index.
+    let private spanOf(r: range) =
+        { StartLine = r.StartLine
+          StartColumn = r.StartColumn
+          EndLine = r.EndLine
+          EndColumn = r.EndColumn }
+
+    /// Render a node tree with ├─ / └─ connectors, collecting one span per line so the tree
+    /// text and the span array line up index-for-index.
     let private render(root: Node) : Tree =
         let sb = StringBuilder()
-        let hints = ResizeArray<string option>()
+        let spans = ResizeArray<Span option>()
         sb.Append(root.Label).Append('\n') |> ignore
-        hints.Add root.Hint
+        spans.Add(root.Range |> Option.map spanOf)
 
         let rec go (prefix: string) (n: Node) =
             let count = List.length n.Children
@@ -243,28 +275,29 @@ module SyntaxTree =
                 let isLast = i = count - 1
                 let branch = if isLast then "└─ " else "├─ "
                 sb.Append(prefix).Append(branch).Append(child.Label).Append('\n') |> ignore
-                hints.Add child.Hint
+                spans.Add(child.Range |> Option.map spanOf)
                 let childPrefix = prefix + (if isLast then "   " else "│  ")
                 go childPrefix child)
 
         go "" root
 
         { Text = sb.ToString().TrimEnd('\n')
-          Hints = hints.ToArray() }
+          Spans = spans.ToArray() }
 
-    /// Summarise a parsed input as a syntax tree (text + per-line locate hints). Signature
-    /// files (not produced by the samples) get a short placeholder.
+    /// A tree that is just a message (no spans), for placeholder states.
+    let message(text: string) : Tree =
+        { Text = text
+          Spans = [||] }
+
+    /// Summarise a parsed implementation file as a syntax tree (text + per-line spans).
     let summarize(input: ParsedInput) : Tree =
         match input with
         | ParsedInput.ImplFile(ParsedImplFileInput(contents = modules)) ->
             match modules with
-            // A bare expression (e.g. a selection like `Oak() { … }`) renders without the
-            // anonymous-module wrapper, so the tree starts at the code you selected.
-            | [ SynModuleOrNamespace(
-                    kind = SynModuleOrNamespaceKind.AnonModule; decls = [ SynModuleDecl.Expr(expr = e) ]) ] ->
-                render(exprNode e)
             | [ single ] -> render(moduleNode single)
-            | _ -> render(node "ParsedInput" (modules |> List.map moduleNode))
-        | ParsedInput.SigFile _ ->
-            { Text = "// (signature file)"
-              Hints = [| None |] }
+            | _ ->
+                render
+                    { Label = "file"
+                      Range = None
+                      Children = modules |> List.map moduleNode }
+        | ParsedInput.SigFile _ -> message "// (signature file)"

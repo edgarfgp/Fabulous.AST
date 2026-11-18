@@ -1,0 +1,294 @@
+<!--
+  Editor chrome for the playground. Colours live in light/dark theme dictionaries (modelled on
+  VS Code's "Modern" themes), so "System" follows the OS live; the F# view only assigns classes.
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ae="using:AvaloniaEdit"
+        xmlns:editing="using:AvaloniaEdit.Editing">
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="ChromeBrush" Color="#181818" />
+          <SolidColorBrush x:Key="EditorBrush" Color="#1F1F1F" />
+          <SolidColorBrush x:Key="SeparatorBrush" Color="#2B2B2B" />
+          <SolidColorBrush x:Key="TextBrush" Color="#CCCCCC" />
+          <SolidColorBrush x:Key="StrongBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="DimBrush" Color="#9D9D9D" />
+          <SolidColorBrush x:Key="HoverBrush" Color="#2A2D2E" />
+          <SolidColorBrush x:Key="PressedBrush" Color="#37373D" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#0078D4" />
+          <SolidColorBrush x:Key="ErrorBrush" Color="#F85149" />
+          <SolidColorBrush x:Key="WarningBrush" Color="#CCA700" />
+          <SolidColorBrush x:Key="OkBrush" Color="#89D185" />
+          <SolidColorBrush x:Key="BannerBrush" Color="#3A3000" />
+          <SolidColorBrush x:Key="LineNumberBrush" Color="#6E7681" />
+          <SolidColorBrush x:Key="FSharpBrush" Color="#B180D7" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="ChromeBrush" Color="#F8F8F8" />
+          <SolidColorBrush x:Key="EditorBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="SeparatorBrush" Color="#E5E5E5" />
+          <SolidColorBrush x:Key="TextBrush" Color="#3B3B3B" />
+          <SolidColorBrush x:Key="StrongBrush" Color="#1F1F1F" />
+          <SolidColorBrush x:Key="DimBrush" Color="#6E6E6E" />
+          <SolidColorBrush x:Key="HoverBrush" Color="#E8E8E8" />
+          <SolidColorBrush x:Key="PressedBrush" Color="#DADADA" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#005FB8" />
+          <SolidColorBrush x:Key="ErrorBrush" Color="#E51400" />
+          <SolidColorBrush x:Key="WarningBrush" Color="#BF8803" />
+          <SolidColorBrush x:Key="OkBrush" Color="#388A34" />
+          <SolidColorBrush x:Key="BannerBrush" Color="#FFF6D5" />
+          <SolidColorBrush x:Key="LineNumberBrush" Color="#6E7781" />
+          <SolidColorBrush x:Key="FSharpBrush" Color="#8A4BB8" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- ===== Surfaces ===================================================================== -->
+
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource ChromeBrush}" />
+  </Style>
+
+  <Style Selector="Border.chrome">
+    <Setter Property="Background" Value="{DynamicResource ChromeBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+  </Style>
+  <Style Selector="Border.toolbar">
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+  <Style Selector="Border.statusBar">
+    <Setter Property="BorderThickness" Value="0,1,0,0" />
+  </Style>
+  <Style Selector="Border.surface">
+    <Setter Property="Background" Value="{DynamicResource EditorBrush}" />
+  </Style>
+  <Style Selector="Border.banner">
+    <Setter Property="Background" Value="{DynamicResource BannerBrush}" />
+  </Style>
+
+  <Style Selector="GridSplitter">
+    <Setter Property="Background" Value="{DynamicResource SeparatorBrush}" />
+  </Style>
+  <Style Selector="GridSplitter:pointerover">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <!-- ===== Code editors ================================================================= -->
+
+  <Style Selector="ae|TextEditor">
+    <Setter Property="Background" Value="{DynamicResource EditorBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="LineNumbersForeground" Value="{DynamicResource LineNumberBrush}" />
+    <Setter Property="FontFamily" Value="Cascadia Code, JetBrains Mono, Menlo, Consolas, monospace" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Padding" Value="0,6,0,0" />
+  </Style>
+
+  <!-- Line-number gutter: breathing room on both sides, and no dotted divider. -->
+  <Style Selector="editing|LineNumberMargin">
+    <Setter Property="Margin" Value="14,0,14,0" />
+  </Style>
+  <Style Selector="ae|TextEditor Line">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <!-- Editors inside the bottom panel sit on the panel colour. -->
+  <Style Selector="ae|TextEditor.panel">
+    <Setter Property="Background" Value="{DynamicResource ChromeBrush}" />
+    <Setter Property="Padding" Value="12,6,0,0" />
+  </Style>
+
+  <!-- ===== Text ========================================================================= -->
+
+  <Style Selector="TextBlock.text">
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+  </Style>
+  <Style Selector="TextBlock.dim">
+    <Setter Property="Foreground" Value="{DynamicResource DimBrush}" />
+  </Style>
+  <Style Selector="TextBlock.title">
+    <Setter Property="Foreground" Value="{DynamicResource StrongBrush}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+  <Style Selector="TextBlock.paneTitle">
+    <Setter Property="Foreground" Value="{DynamicResource DimBrush}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="LetterSpacing" Value="0.6" />
+  </Style>
+  <Style Selector="TextBlock.error">
+    <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+  </Style>
+  <Style Selector="TextBlock.warning">
+    <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+  </Style>
+  <Style Selector="TextBlock.ok">
+    <Setter Property="Foreground" Value="{DynamicResource OkBrush}" />
+  </Style>
+  <Style Selector="TextBlock.fsharp">
+    <Setter Property="Foreground" Value="{DynamicResource FSharpBrush}" />
+    <Setter Property="FontSize" Value="10" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+
+  <!-- ===== Flat buttons (toolbar, rows, icons) ========================================== -->
+
+  <Style Selector="Button.flat, DropDownButton.flat">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.flat:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource StrongBrush}" />
+  </Style>
+  <Style Selector="Button.flat:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PressedBrush}" />
+  </Style>
+  <Style Selector="DropDownButton.flat:pointerover /template/ Border">
+    <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+  </Style>
+  <Style Selector="DropDownButton.flat:pressed /template/ Border">
+    <Setter Property="Background" Value="{DynamicResource PressedBrush}" />
+  </Style>
+  <Style Selector="Button.flat:disabled /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource DimBrush}" />
+    <Setter Property="Opacity" Value="0.6" />
+  </Style>
+
+  <Style Selector="Button.row">
+    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="Padding" Value="12,5" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+  </Style>
+
+  <Style Selector="Button.run">
+    <Setter Property="Width" Value="96" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="0,5" />
+  </Style>
+
+  <!-- ===== Document tabs ================================================================ -->
+
+  <Style Selector="Border.tab">
+    <Setter Property="Background" Value="{DynamicResource ChromeBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource SeparatorBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,1,1" />
+    <Setter Property="Height" Value="35" />
+  </Style>
+  <Style Selector="Border.tab:pointerover">
+    <Setter Property="Background" Value="{DynamicResource EditorBrush}" />
+  </Style>
+  <Style Selector="Border.tab.active">
+    <Setter Property="Background" Value="{DynamicResource EditorBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,1,0" />
+  </Style>
+
+  <!-- The strip area right of the tabs: carries the strip's bottom edge. -->
+  <Style Selector="Border.tabFiller">
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <!-- The tab's title area: a bare button (the tab itself shows hover). -->
+  <Style Selector="Button.tabButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="Padding" Value="12,0,6,0" />
+    <Setter Property="VerticalAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.tabButton:pointerover /template/ ContentPresenter, Button.tabButton:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <!-- The 2px bar along the top of the active tab. -->
+  <Style Selector="Border.tabAccent">
+    <Setter Property="Height" Value="2" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="Border.tab.active Border.tabAccent">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <Style Selector="Border.tab TextBlock.tabTitle">
+    <Setter Property="Foreground" Value="{DynamicResource DimBrush}" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+  <Style Selector="Border.tab.active TextBlock.tabTitle, Border.tab:pointerover TextBlock.tabTitle">
+    <Setter Property="Foreground" Value="{DynamicResource StrongBrush}" />
+  </Style>
+
+  <!-- Close button: hidden until the tab is hovered or active (like VS Code). -->
+  <Style Selector="Button.tabClose">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Opacity" Value="0" />
+  </Style>
+  <Style Selector="Border.tab:pointerover Button.tabClose, Border.tab.active Button.tabClose">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+
+  <!-- ===== Bottom-panel tabs (PROBLEMS / OUTPUT / SYNTAX TREE) =========================== -->
+
+  <Style Selector="Border.panelTab">
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Margin" Value="0,0,8,0" />
+  </Style>
+  <Style Selector="Border.panelTab.active">
+    <Setter Property="BorderBrush" Value="{DynamicResource StrongBrush}" />
+  </Style>
+  <Style Selector="Border.panelTab Button">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource DimBrush}" />
+    <Setter Property="Padding" Value="4,0" />
+    <Setter Property="Height" Value="34" />
+  </Style>
+  <Style Selector="Border.panelTab.active Button">
+    <Setter Property="Foreground" Value="{DynamicResource StrongBrush}" />
+  </Style>
+  <Style Selector="Border.panelTab Button:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <!-- Badge with the problem count. -->
+  <Style Selector="Border.badge">
+    <Setter Property="Background" Value="{DynamicResource PressedBrush}" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="6,0" />
+    <Setter Property="Margin" Value="6,0,0,0" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Border.badge TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource StrongBrush}" />
+    <Setter Property="FontSize" Value="10" />
+  </Style>
+
+  <!-- ===== Status bar =================================================================== -->
+
+  <Style Selector="Border.statusBar TextBlock">
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="Border.statusBar Button.flat">
+    <Setter Property="Padding" Value="6,1" />
+    <Setter Property="CornerRadius" Value="3" />
+  </Style>
+</Styles>

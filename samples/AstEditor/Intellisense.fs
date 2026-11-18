@@ -22,19 +22,15 @@ module Intellisense =
           Describe: unit -> string }
 
     type Diagnostic =
-        {
-            StartLine: int
-            StartColumn: int
-            EndLine: int
-            EndColumn: int
-            IsError: bool
-            /// FCS error code (e.g. 39 = "The value or constructor … is not defined").
-            ErrorNumber: int
-            Message: string
-        }
+        { StartLine: int
+          StartColumn: int
+          EndLine: int
+          EndColumn: int
+          IsError: bool
+          Message: string }
 
     // suggestNamesForErrors: include "Maybe you want one of the following: …" hints in
-    // diagnostic messages — the quick-fix code action parses those for replacements.
+    // diagnostic messages, so a typo'd widget name points at the right one.
     let private checker = lazy FSharpChecker.Create(suggestNamesForErrors = true)
 
     // A stable script path; the content is supplied per-request.
@@ -51,18 +47,22 @@ module Intellisense =
         |> List.map(fun p -> "-r:" + p)
         |> Array.ofList
 
-    // The references are fixed and the DSL scripts carry no #load/#r, so the project options
-    // don't depend on the edited source — resolve them once and reuse (resolution is the slow
-    // part). A duplicate compute under a race is harmless (idempotent).
+    // The references are fixed and #r/#load lines are blanked before checking, so the project
+    // options never depend on the edited source. Resolve them once, from an empty script, and
+    // reuse them (resolution is the slow part). A duplicate compute under a race is harmless.
     let mutable private cachedOptions: FSharpProjectOptions option = None
 
-    let private getOptions(source: ISourceText) =
+    let private getOptions() =
         async {
             match cachedOptions with
             | Some options -> return options
             | None ->
                 let! options, _ =
-                    checker.Value.GetProjectOptionsFromScript(scriptPath, source, assumeDotNetFramework = false)
+                    checker.Value.GetProjectOptionsFromScript(
+                        scriptPath,
+                        SourceText.ofString "",
+                        assumeDotNetFramework = false
+                    )
 
                 let options =
                     { options with OtherOptions = Array.append options.OtherOptions referenceArgs }
@@ -73,8 +73,10 @@ module Intellisense =
 
     let private check(source: string) =
         async {
-            let text = SourceText.ofString source
-            let! options = getOptions text
+            // Same blanking as the evaluator, so a pasted `#r "../../src/..."` doesn't produce
+            // an error here for a script that evaluates fine.
+            let text = SourceText.ofString(Evaluator.blankDirectives source)
+            let! options = getOptions()
             let! parseResults, answer = checker.Value.ParseAndCheckFileInProject(scriptPath, 0, text, options)
 
             match answer with
@@ -87,7 +89,7 @@ module Intellisense =
     let parse(source: string) =
         async {
             let text = SourceText.ofString source
-            let! options = getOptions text
+            let! options = getOptions()
             let parsingOptions, _ = checker.Value.GetParsingOptionsFromProjectOptions options
             let! result = checker.Value.ParseFile(scriptPath, text, parsingOptions)
 
@@ -212,6 +214,5 @@ module Intellisense =
                           EndLine = d.EndLine
                           EndColumn = d.EndColumn
                           IsError = (d.Severity = FSharpDiagnosticSeverity.Error)
-                          ErrorNumber = d.ErrorNumber
                           Message = d.Message })
         }

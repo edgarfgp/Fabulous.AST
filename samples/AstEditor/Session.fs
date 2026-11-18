@@ -4,53 +4,54 @@ open System
 open System.IO
 open System.Text.Json
 
-/// Persists the editor session — every tab (name + DSL source) and the active tab — so your
-/// edits *and* any scratch pads you added survive a restart. Keyed by tab name so adding,
-/// removing or reordering the built-in samples in code doesn't scramble your saved edits.
+/// Persists the editor session — every document (name, DSL source, open or closed) and the
+/// active one — so your edits and new files survive a restart.
 module Session =
 
-    // CLIMutable so System.Text.Json can round-trip these F# records without a custom converter.
+    // CLIMutable + public so System.Text.Json can construct these records (a `private` record's
+    // constructors are internal, which System.Text.Json can't use).
     [<CLIMutable>]
-    type private TabJson =
+    type SavedDoc =
         { Name: string
-          Source: string }
+          Source: string
+          IsOpen: bool }
 
     [<CLIMutable>]
-    type private SessionJson =
-        { ActiveTab: int
-          Tabs: TabJson[] }
+    type SessionJson =
+        { Active: int
+          Docs: SavedDoc[] }
 
+    // v2: the v1 file held tabs for features that no longer exist (Quick Fix / Convert demos).
     let private path =
         let dir =
             Path.Combine(Environment.GetFolderPath Environment.SpecialFolder.ApplicationData, "Fabulous.AST.AstEditor")
 
         Directory.CreateDirectory dir |> ignore
-        Path.Combine(dir, "session.json")
+        Path.Combine(dir, "session-v2.json")
 
-    /// The saved tabs (name, source) and the active-tab index, or None if absent/corrupt.
-    let tryLoad() : ((string * string)[] * int) option =
+    /// The saved documents and the active index, or None if absent/corrupt/empty.
+    let tryLoad() : (SavedDoc[] * int) option =
         try
             if File.Exists path then
                 let data = JsonSerializer.Deserialize<SessionJson>(File.ReadAllText path)
 
-                if isNull(box data.Tabs) then
+                if isNull(box data.Docs) || data.Docs.Length = 0 then
                     None
                 else
-                    Some(data.Tabs |> Array.map(fun t -> t.Name, t.Source), data.ActiveTab)
+                    let docs = data.Docs
+
+                    Some(docs, data.Active)
             else
                 None
-        with _ ->
+        with ex ->
+            eprintfn "AstEditor: could not load the session — %s" ex.Message
             None
 
-    let save (tabs: (string * string)[]) (activeTab: int) =
+    let save (docs: SavedDoc[]) (active: int) =
         try
             let data =
-                { ActiveTab = activeTab
-                  Tabs =
-                    tabs
-                    |> Array.map(fun (name, source) ->
-                        { Name = name
-                          Source = source }) }
+                { Active = active
+                  Docs = docs }
 
             File.WriteAllText(path, JsonSerializer.Serialize data)
         with _ ->

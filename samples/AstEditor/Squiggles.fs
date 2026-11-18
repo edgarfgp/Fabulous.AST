@@ -1,17 +1,15 @@
 namespace AstEditor
 
-open System
 open System.Runtime.CompilerServices
 open Avalonia
 open Avalonia.Media
-open Avalonia.Threading
 open AvaloniaEdit
 open AvaloniaEdit.Document
 open AvaloniaEdit.Rendering
 
-/// Inline error/warning squiggles for the DSL editor, fed by the FCS diagnostics. A
-/// background renderer draws wavy underlines under each diagnostic range; the check runs
-/// debounced off the UI thread on every edit.
+/// Inline error/warning squiggles for the DSL editor. A background renderer draws wavy
+/// underlines under each diagnostic range; the diagnostics themselves come from the model
+/// (App runs the debounced FCS check), so squiggles and the Problems panel always agree.
 module Squiggles =
 
     /// A wavy underline along the bottom of a rect (the classic squiggle).
@@ -51,85 +49,56 @@ module Squiggles =
                         for rect in BackgroundGeometryBuilder.GetRectsForSegment(textView, segment) do
                             dc.DrawGeometry(null, pen, squiggle rect)
 
-    let private installed = ConditionalWeakTable<TextEditor, obj>()
+    let private renderers = ConditionalWeakTable<TextEditor, SquiggleRenderer>()
 
-    /// Wire debounced FCS diagnostics → squiggles onto an editor (idempotent per instance).
-    let install(editor: TextEditor) =
-        match installed.TryGetValue editor with
-        | true, _ -> ()
+    let private errorPen = Pen(SolidColorBrush(Color.Parse "#F14C4C"), 1.0) :> IPen
+    let private warningPen = Pen(SolidColorBrush(Color.Parse "#CCA700"), 1.0) :> IPen
+
+    /// The editor's squiggle renderer, installed on first use. Any edit clears the squiggles
+    /// (their ranges describe the previous text) until the model supplies fresh diagnostics.
+    let private rendererFor(editor: TextEditor) =
+        match renderers.TryGetValue editor with
+        | true, r -> r
         | _ ->
-            installed.Add(editor, box())
-
-            let textView = editor.TextArea.TextView
             let renderer = SquiggleRenderer()
+            renderers.Add(editor, renderer)
+            let textView = editor.TextArea.TextView
             textView.BackgroundRenderers.Add(renderer)
 
-            let errorPen = Pen(SolidColorBrush(Colors.Red), 1.0) :> IPen
-            let warningPen = Pen(SolidColorBrush(Color.Parse "#D7BA7D"), 1.0) :> IPen
-
-            let setMarkers(diags: Intellisense.Diagnostic[]) =
-                let doc = editor.Document
-                let length = doc.TextLength
-                let clamp o = max 0 (min o length)
-
-                let markers =
-                    diags
-                    |> Array.choose(fun d ->
-                        try
-                            let startOffset = clamp(doc.GetOffset(d.StartLine, d.StartColumn + 1))
-                            let rawEnd = clamp(doc.GetOffset(d.EndLine, d.EndColumn + 1))
-
-                            let endOffset =
-                                if rawEnd > startOffset then
-                                    rawEnd
-                                else
-                                    clamp(startOffset + 1)
-
-                            if endOffset > startOffset then
-                                Some(struct (startOffset, endOffset, (if d.IsError then errorPen else warningPen)))
-                            else
-                                None
-                        with _ ->
-                            None)
-
-                renderer.SetMarkers markers
-                textView.InvalidateLayer(KnownLayer.Selection)
-                // Publish for hover, so pointing at a squiggle can show its message.
-                DiagnosticsStore.set editor diags
-
-            // Bumped on every edit; a check result is only published if the text it was
-            // computed from is still current, so stale ranges never reach the store.
-            let mutable changeStamp = 0
-
-            let runCheck() =
-                let stamp = changeStamp
-                let source = editor.Text
-
-                async {
-                    try
-                        let! diags = Intellisense.diagnostics source
-
-                        Dispatcher.UIThread.Post(fun () ->
-                            if stamp = changeStamp then
-                                setMarkers diags)
-                    with _ ->
-                        ()
-                }
-                |> Async.Start
-
-            // Re-check shortly after the user stops typing.
-            let timer = DispatcherTimer(Interval = TimeSpan.FromMilliseconds 600.)
-
-            timer.Tick.Add(fun _ ->
-                timer.Stop()
-                runCheck())
-
             editor.Document.TextChanged.Add(fun _ ->
-                changeStamp <- changeStamp + 1
-                // The stored diagnostics describe the *previous* text; acting on them (quick
-                // fixes, hover) could rewrite the wrong span, so drop them until the re-check.
-                DiagnosticsStore.clear editor
-                timer.Stop()
-                timer.Start())
+                renderer.SetMarkers [||]
+                textView.InvalidateLayer(KnownLayer.Selection)
+                DiagnosticsStore.clear editor)
 
-            runCheck() // initial pass so the default sample is checked
+            renderer
+
+    /// Show `diags` as squiggles on `editor` (and publish them for hover).
+    let set (editor: TextEditor) (diags: Intellisense.Diagnostic[]) =
+        let renderer = rendererFor editor
+        let doc = editor.Document
+        let length = doc.TextLength
+        let clamp o = max 0 (min o length)
+
+        let markers =
+            diags
+            |> Array.choose(fun d ->
+                try
+                    let startOffset = clamp(doc.GetOffset(d.StartLine, d.StartColumn + 1))
+                    let rawEnd = clamp(doc.GetOffset(d.EndLine, d.EndColumn + 1))
+
+                    let endOffset =
+                        if rawEnd > startOffset then
+                            rawEnd
+                        else
+                            clamp(startOffset + 1)
+
+                    if endOffset > startOffset then
+                        Some(struct (startOffset, endOffset, (if d.IsError then errorPen else warningPen)))
+                    else
+                        None
+                with _ ->
+                    None)
+
+        renderer.SetMarkers markers
+        editor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection)
+        DiagnosticsStore.set editor diags

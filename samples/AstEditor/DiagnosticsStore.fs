@@ -13,21 +13,12 @@ module DiagnosticsStore =
     let private slot(editor: TextEditor) =
         table.GetValue(editor, fun _ -> ref [||])
 
-    // Notified (on the UI thread) whenever an editor's diagnostics change — the lightbulb
-    // gutter uses this to redraw.
-    let private listeners = ResizeArray<TextEditor -> unit>()
-    let onChanged(f: TextEditor -> unit) = listeners.Add f
-
-    let set (editor: TextEditor) (diags: Intellisense.Diagnostic[]) =
-        (slot editor).Value <- diags
-
-        for f in listeners do
-            f editor
+    let set (editor: TextEditor) (diags: Intellisense.Diagnostic[]) = (slot editor).Value <- diags
 
     let get(editor: TextEditor) = (slot editor).Value
 
     /// Drop an editor's diagnostics — called on every edit, because their line/column ranges
-    /// were computed against the previous text and acting on them (hover, quick fixes) could
+    /// were computed against the previous text and acting on them (hover) could
     /// target the wrong span. The next debounced check repopulates them.
     let clear(editor: TextEditor) = set editor [||]
 
