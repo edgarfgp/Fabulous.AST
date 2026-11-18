@@ -14,7 +14,7 @@ module IndexWithoutDot =
         Widgets.register "IndexWithoutDotExpr" (fun widget ->
             let identifierExpr = Widgets.getNodeFromWidget widget IdentifierExpr
             let indexExpr = Widgets.getNodeFromWidget widget IndexExpr
-            Expr.IndexWithoutDot(ExprIndexWithoutDotNode(identifierExpr, indexExpr, Range.Zero)))
+            Expr.IndexWithoutDot(ExprIndexWithoutDotNode(identifierExpr, indexExpr, Range.range0)))
 
 [<AutoOpen>]
 module IndexWithoutDotBuilders =

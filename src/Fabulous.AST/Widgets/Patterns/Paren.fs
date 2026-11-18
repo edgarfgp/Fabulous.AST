@@ -13,7 +13,7 @@ module ParenPat =
             let pat = Widgets.getNodeFromWidget widget Pat
 
             Pattern.Paren(
-                PatParenNode(SingleTextNode.leftParenthesis, pat, SingleTextNode.rightParenthesis, Range.Zero)
+                PatParenNode(SingleTextNode.leftParenthesis, pat, SingleTextNode.rightParenthesis, Range.range0)
             ))
 
 [<AutoOpen>]

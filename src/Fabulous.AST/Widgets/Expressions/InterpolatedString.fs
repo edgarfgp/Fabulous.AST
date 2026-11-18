@@ -63,7 +63,7 @@ module InterpolatedString =
                       yield Choice1Of2(SingleTextNode.Create(combinedText))
                       yield closeQuote ]
 
-                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.Zero))
+                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.range0))
             else
                 let processedParts =
                     [ yield Choice1Of2(SingleTextNode.Create dollars)
@@ -71,7 +71,7 @@ module InterpolatedString =
                       yield! parts |> Seq.collect processPart
                       yield closeQuote ]
 
-                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.Zero)))
+                Expr.InterpolatedStringExpr(ExprInterpolatedStringExprNode(processedParts, Range.range0)))
 
 [<AutoOpen>]
 module InterpolatedStringBuilders =

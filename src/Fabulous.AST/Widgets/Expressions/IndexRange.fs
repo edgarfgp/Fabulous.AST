@@ -16,7 +16,7 @@ module IndexRange =
 
             let toExpr = Widgets.tryGetNodeFromWidget widget ToExpr |> ValueOption.toOption
 
-            Expr.IndexRange(ExprIndexRangeNode(fromExpr, SingleTextNode.Create(".."), toExpr, Range.Zero)))
+            Expr.IndexRange(ExprIndexRangeNode(fromExpr, SingleTextNode.Create(".."), toExpr, Range.range0)))
 
 [<AutoOpen>]
 module IndexRangeBuilders =

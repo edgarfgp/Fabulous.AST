@@ -11,7 +11,7 @@ module MatchLambda =
         Widgets.register "MatchLambda" (fun widget ->
             let clauses = Widgets.getScalarValue widget Clauses |> List.ofSeq
 
-            Expr.MatchLambda(ExprMatchLambdaNode(SingleTextNode.``function``, clauses, Range.Zero)))
+            Expr.MatchLambda(ExprMatchLambdaNode(SingleTextNode.``function``, clauses, Range.range0)))
 
 [<AutoOpen>]
 module MatchLambdaBuilders =

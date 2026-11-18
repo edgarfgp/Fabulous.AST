@@ -27,7 +27,7 @@ module IfThenElif =
                 | ValueNone -> None
                 | ValueSome expr -> Some(SingleTextNode.``else``, expr)
 
-            Expr.IfThenElif(ExprIfThenElifNode(branches, elseExpr, Range.Zero)))
+            Expr.IfThenElif(ExprIfThenElifNode(branches, elseExpr, Range.range0)))
 
 [<AutoOpen>]
 module IfThenElifBuilders =

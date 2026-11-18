@@ -22,7 +22,7 @@ module Pattern =
 
     let WidgetUnitKey =
         Widgets.register "UnitPat" (fun _ ->
-            Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.Zero)))
+            Pattern.Unit(UnitNode(SingleTextNode.leftParenthesis, SingleTextNode.rightParenthesis, Range.range0)))
 
     let WidgetNullKey =
         Widgets.register "NullPat" (fun _ -> Pattern.Null(SingleTextNode.``null``))

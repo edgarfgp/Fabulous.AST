@@ -20,15 +20,22 @@ module AppLongIdentAndSingleParenArg =
                 |> Seq.map(SingleTextNode.Create)
                 |> Seq.intersperse(SingleTextNode.Create ".")
 
-            Expr.AppLongIdentAndSingleParenArg(
-                ExprAppLongIdentAndSingleParenArgNode(
-                    IdentListNode(
-                        [ for name in functionName do
-                              IdentifierOrDot.Ident(name) ],
-                        Range.Zero
+            // Fantomas 8 folded this into the general single-paren-argument application.
+            Expr.AppSingleParenArg(
+                ExprAppSingleParenArgNode(
+                    Expr.OptVar(
+                        ExprOptVarNode(
+                            false,
+                            IdentListNode(
+                                [ for name in functionName do
+                                      IdentifierOrDot.Ident(name) ],
+                                Range.range0
+                            ),
+                            Range.range0
+                        )
                     ),
                     expr,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

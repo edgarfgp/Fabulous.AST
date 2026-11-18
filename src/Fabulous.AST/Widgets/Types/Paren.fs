@@ -12,7 +12,12 @@ module ParenType =
             let identifier = Widgets.getNodeFromWidget widget Identifier
 
             Type.Paren(
-                TypeParenNode(SingleTextNode.leftParenthesis, identifier, SingleTextNode.rightParenthesis, Range.Zero)
+                TypeParenNode(
+                    SingleTextNode.leftParenthesis,
+                    identifier,
+                    SingleTextNode.rightParenthesis,
+                    Range.range0
+                )
             ))
 
 [<AutoOpen>]

@@ -14,21 +14,23 @@ module IfThen =
         let ifExp =
             Expr.InfixApp(
                 ExprInfixAppNode(
-                    Expr.Ident(SingleTextNode("x", Range.Zero)),
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Ident(SingleTextNode("12", Range.Zero)),
-                    Range.Zero
+                    Expr.Ident(SingleTextNode("x", Range.range0)),
+                    SingleTextNode("=", Range.range0),
+                    Expr.Ident(SingleTextNode("12", Range.range0)),
+                    Range.range0
                 )
             )
 
         let thenExpr =
             Expr.Constant(
-                Constant.Unit(UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero))
+                Constant.Unit(
+                    UnitNode(SingleTextNode("(", Range.range0), SingleTextNode(")", Range.range0), Range.range0)
+                )
             )
 
         let thenExpr =
             Expr.CompExprBody(
-                ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.Zero)
+                ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.range0)
             )
 
         Oak() { AnonymousModule() { IfThenExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr)) } }
@@ -123,21 +125,23 @@ elif x = 12 then
         let ifExp =
             Expr.InfixApp(
                 ExprInfixAppNode(
-                    Expr.Ident(SingleTextNode("x", Range.Zero)),
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Ident(SingleTextNode("12", Range.Zero)),
-                    Range.Zero
+                    Expr.Ident(SingleTextNode("x", Range.range0)),
+                    SingleTextNode("=", Range.range0),
+                    Expr.Ident(SingleTextNode("12", Range.range0)),
+                    Range.range0
                 )
             )
 
         let thenExpr =
             Expr.Constant(
-                Constant.Unit(UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero))
+                Constant.Unit(
+                    UnitNode(SingleTextNode("(", Range.range0), SingleTextNode(")", Range.range0), Range.range0)
+                )
             )
 
         let thenExpr =
             Expr.CompExprBody(
-                ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.Zero)
+                ExprCompExprBodyNode([ ComputationExpressionStatement.OtherStatement(thenExpr) ], Range.range0)
             )
 
         Oak() { AnonymousModule() { ElIfThenExpr(EscapeHatch(ifExp), EscapeHatch(thenExpr)) } }
@@ -238,10 +242,10 @@ else ()
         let ifExp =
             Expr.InfixApp(
                 ExprInfixAppNode(
-                    Expr.Ident(SingleTextNode("x", Range.Zero)),
-                    SingleTextNode("=", Range.Zero),
-                    Expr.Ident(SingleTextNode("12", Range.Zero)),
-                    Range.Zero
+                    Expr.Ident(SingleTextNode("x", Range.range0)),
+                    SingleTextNode("=", Range.range0),
+                    Expr.Ident(SingleTextNode("12", Range.range0)),
+                    Range.range0
                 )
             )
 
@@ -251,11 +255,15 @@ else ()
                     [ ComputationExpressionStatement.OtherStatement(
                           Expr.Constant(
                               Constant.Unit(
-                                  UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero)
+                                  UnitNode(
+                                      SingleTextNode("(", Range.range0),
+                                      SingleTextNode(")", Range.range0),
+                                      Range.range0
+                                  )
                               )
                           )
                       ) ],
-                    Range.Zero
+                    Range.range0
                 )
             )
 
@@ -265,11 +273,15 @@ else ()
                     [ ComputationExpressionStatement.OtherStatement(
                           Expr.Constant(
                               Constant.Unit(
-                                  UnitNode(SingleTextNode("(", Range.Zero), SingleTextNode(")", Range.Zero), Range.Zero)
+                                  UnitNode(
+                                      SingleTextNode("(", Range.range0),
+                                      SingleTextNode(")", Range.range0),
+                                      Range.range0
+                                  )
                               )
                           )
                       ) ],
-                    Range.Zero
+                    Range.range0
                 )
             )
 

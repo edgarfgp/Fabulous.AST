@@ -16,7 +16,7 @@ module Computation =
                     SingleTextNode.leftCurlyBrace,
                     bodyExpr,
                     SingleTextNode.rightCurlyBrace,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

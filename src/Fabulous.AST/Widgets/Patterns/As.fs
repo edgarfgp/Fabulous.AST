@@ -17,7 +17,7 @@ module As =
             let lhs = Widgets.getNodeFromWidget widget LHSPattern
             let middle = Widgets.getScalarValue widget MiddlePattern
             let rhs = Widgets.getNodeFromWidget widget RHSPattern
-            Pattern.As(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.Zero)))
+            Pattern.As(PatLeftMiddleRight(lhs, Choice1Of2(middle), rhs, Range.range0)))
 
 [<AutoOpen>]
 module AsBuilders =

@@ -49,16 +49,18 @@ module Augmentation =
                         attributes,
                         SingleTextNode.``type``,
                         accessControl,
-                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                        Type.LongIdent(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
+                        ),
                         typeParams,
                         [],
                         None,
                         None,
-                        Some SingleTextNode.``with``,
-                        Range.Zero
+                        Range.range0
                     ),
+                    Some SingleTextNode.``with``,
                     members,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

@@ -25,7 +25,7 @@ module Named =
                 | Internal -> Some(SingleTextNode.``internal``)
                 | Unknown -> None
 
-            Pattern.Named(PatNamedNode(accessControl, name, Range.Zero)))
+            Pattern.Named(PatNamedNode(accessControl, name, Range.range0)))
 
 [<AutoOpen>]
 module NamedBuilders =

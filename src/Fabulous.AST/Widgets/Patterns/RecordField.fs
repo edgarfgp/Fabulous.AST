@@ -22,20 +22,23 @@ module RecordFieldPat =
 
             let pattern = Widgets.getNodeFromWidget widget Pat
 
-            let prefix =
-                Widgets.tryGetScalarValue widget Prefix
-                |> ValueOption.map(fun value ->
-                    let value = PrettyNaming.NormalizeIdentifierBackticks value
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(value)) ], Range.Zero))
-                |> ValueOption.toOption
+            // Fantomas 8 keeps the optional module prefix in the field's identifier
+            // (`Prefix.field = pat`) instead of a separate node.
+            let identifier =
+                match Widgets.tryGetScalarValue widget Prefix with
+                | ValueSome prefix ->
+                    [ IdentifierOrDot.Ident(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks prefix))
+                      IdentifierOrDot.KnownDot(SingleTextNode.dot)
+                      IdentifierOrDot.Ident(SingleTextNode.Create(fieldName)) ]
+                | ValueNone -> [ IdentifierOrDot.Ident(SingleTextNode.Create(fieldName)) ]
 
-            PatRecordField(prefix, SingleTextNode.Create(fieldName), SingleTextNode.equals, pattern, Range.Zero))
+            NamePatPairNode(IdentListNode(identifier, Range.range0), SingleTextNode.equals, pattern, Range.range0))
 
 [<AutoOpen>]
 module RecordFieldPatBuilders =
     type Ast with
         static member RecordFieldPat(name: string, pat: WidgetBuilder<Pattern>) =
-            WidgetBuilder<PatRecordField>(
+            WidgetBuilder<NamePatPairNode>(
                 RecordFieldPat.WidgetKey,
                 AttributesBundle(
                     StackList.one(RecordFieldPat.FieldName.WithValue(name)),
@@ -51,7 +54,7 @@ module RecordFieldPatBuilders =
             Ast.RecordFieldPat(name, Ast.Constant(pat))
 
         static member RecordFieldPat(name: string, pat: WidgetBuilder<Pattern>, prefix: string) =
-            WidgetBuilder<PatRecordField>(
+            WidgetBuilder<NamePatPairNode>(
                 RecordFieldPat.WidgetKey,
                 AttributesBundle(
                     StackList.two(RecordFieldPat.FieldName.WithValue(name), RecordFieldPat.Prefix.WithValue(prefix)),

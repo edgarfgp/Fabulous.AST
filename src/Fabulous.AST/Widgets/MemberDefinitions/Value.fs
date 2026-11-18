@@ -46,7 +46,7 @@ module BindingValue =
 
             let returnType =
                 Widgets.tryGetNodeFromWidget widget BindingNode.Return
-                |> ValueOption.map(fun x -> BindingReturnInfoNode(SingleTextNode.colon, x, Range.Zero))
+                |> ValueOption.map(fun x -> BindingReturnInfoNode(SingleTextNode.colon, x, Range.range0))
                 |> ValueOption.toOption
 
             let typeParams =
@@ -56,7 +56,7 @@ module BindingValue =
             BindingNode(
                 xmlDocs,
                 attributes,
-                MultipleTextsNode([ leadingKeyword ], Range.Zero),
+                MultipleTextsNode([ leadingKeyword ], Range.range0),
                 isMutable,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
@@ -66,7 +66,8 @@ module BindingValue =
                 returnType,
                 SingleTextNode.equals,
                 bodyExpr,
-                Range.Zero
+                None,
+                Range.range0
             ))
 
 [<AutoOpen>]

@@ -10,7 +10,7 @@ module ExprBeginEnd =
     let WidgetKey =
         Widgets.register "ExprBeginEnd" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
-            Expr.BeginEnd(ExprBeginEndNode(SingleTextNode.``begin``, expr, SingleTextNode.``end``, Range.Zero)))
+            Expr.BeginEnd(ExprBeginEndNode(SingleTextNode.``begin``, expr, SingleTextNode.``end``, Range.range0)))
 
 [<AutoOpen>]
 module ExprBeginEndBuilders =

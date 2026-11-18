@@ -14,7 +14,7 @@ module While =
         Widgets.register "While" (fun widget ->
             let whileExpr = Widgets.getNodeFromWidget widget WhileExpr
             let doExpr = Widgets.getNodeFromWidget widget BodyExpr
-            Expr.While(ExprWhileNode(SingleTextNode.``while``, whileExpr, doExpr, Range.Zero)))
+            Expr.While(ExprWhileNode(SingleTextNode.``while``, whileExpr, doExpr, Range.range0)))
 
 [<AutoOpen>]
 module WhileBuilders =

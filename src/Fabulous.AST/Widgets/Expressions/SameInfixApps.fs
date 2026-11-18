@@ -19,7 +19,7 @@ module SameInfixApps =
                 |> Seq.map(fun x -> SingleTextNode.Create(fst x), snd x)
                 |> List.ofSeq
 
-            Expr.SameInfixApps(ExprSameInfixAppsNode(leadingExpr, subsequentExpressions, Range.Zero)))
+            Expr.SameInfixApps(ExprSameInfixAppsNode(leadingExpr, subsequentExpressions, Range.range0)))
 
 [<AutoOpen>]
 module SameInfixAppsBuilders =

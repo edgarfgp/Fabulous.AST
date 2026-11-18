@@ -13,7 +13,7 @@ module TypeArray =
         Widgets.register "TypeArray" (fun widget ->
             let t = Widgets.getNodeFromWidget widget T
             let rank = Widgets.getScalarValue widget Rank
-            Type.Array(TypeArrayNode(t, rank, Range.Zero)))
+            Type.Array(TypeArrayNode(t, rank, Range.range0)))
 
 [<AutoOpen>]
 module TypeArrayBuilders =

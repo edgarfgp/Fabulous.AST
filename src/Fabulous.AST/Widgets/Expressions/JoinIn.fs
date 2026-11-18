@@ -13,7 +13,7 @@ module JoinIn =
         Widgets.register "JoinIn" (fun widget ->
             let lhs = Widgets.getNodeFromWidget<Expr> widget LHS
             let rhs = Widgets.getNodeFromWidget<Expr> widget RHS
-            Expr.JoinIn(ExprJoinInNode(lhs, SingleTextNode.``in``, rhs, Range.Zero)))
+            Expr.JoinIn(ExprJoinInNode(lhs, SingleTextNode.``in``, rhs, Range.range0)))
 
 [<AutoOpen>]
 module JoinInBuilders =

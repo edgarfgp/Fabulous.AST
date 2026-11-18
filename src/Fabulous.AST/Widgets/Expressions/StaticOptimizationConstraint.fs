@@ -24,7 +24,7 @@ module StaticOptimizationConstraint =
                 StaticOptimizationConstraintWhenTyparTyconEqualsTyconNode(
                     SingleTextNode.Create(typar),
                     typedValue,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

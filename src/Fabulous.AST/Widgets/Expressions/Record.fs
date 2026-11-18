@@ -24,9 +24,12 @@ module RecordExpr =
                 | ValueSome copyInfo -> Some copyInfo
                 | ValueNone -> None
 
-            let fields = Widgets.getScalarValue widget Fields |> List.ofSeq
+            let fields =
+                Widgets.getScalarValue widget Fields
+                |> Seq.map ExprRecordFieldOrSpread.Field
+                |> List.ofSeq
 
-            Expr.Record(ExprRecordNode(openBrace, copyInfo, fields, closeBrace, Range.Zero)))
+            Expr.Record(ExprRecordNode(openBrace, copyInfo, fields, closeBrace, Range.range0)))
 
 [<AutoOpen>]
 module RecordExprBuilders =

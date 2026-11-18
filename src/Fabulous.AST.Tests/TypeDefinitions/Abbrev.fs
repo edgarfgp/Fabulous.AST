@@ -87,19 +87,21 @@ type MyInt = int
                 TypeNameNode(
                     None,
                     None,
-                    SingleTextNode("type", Range.Zero),
-                    Some(SingleTextNode("MyFloat", Range.Zero)),
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                    SingleTextNode("type", Range.range0),
+                    Some(SingleTextNode("MyFloat", Range.range0)),
+                    Type.LongIdent(
+                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.range0)) ], Range.range0)
+                    ),
                     None,
                     [],
                     None,
                     None,
-                    None,
-                    Range.Zero
+                    Range.range0
                 ),
-                Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)),
+                Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.range0)),
+                None,
                 [],
-                Range.Zero
+                Range.range0
             )
 
         Oak() {
@@ -131,21 +133,26 @@ type MyFloat = float
                             TypeNameNode(
                                 None,
                                 None,
-                                SingleTextNode("type", Range.Zero),
-                                Some(SingleTextNode("MyFloat", Range.Zero)),
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+                                SingleTextNode("type", Range.range0),
+                                Some(SingleTextNode("MyFloat", Range.range0)),
+                                Type.LongIdent(
+                                    IdentListNode(
+                                        [ IdentifierOrDot.Ident(SingleTextNode("=", Range.range0)) ],
+                                        Range.range0
+                                    )
+                                ),
                                 None,
                                 [],
                                 None,
                                 None,
-                                None,
-                                Range.Zero
+                                Range.range0
                             ),
                             Type.LongIdent(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)
+                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.range0)
                             ),
+                            None,
                             [],
-                            Range.Zero
+                            Range.range0
                         )
                     )
                 )

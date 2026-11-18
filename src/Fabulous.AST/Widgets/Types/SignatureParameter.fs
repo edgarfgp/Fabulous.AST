@@ -28,7 +28,7 @@ module SignatureParameter =
                 |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
-            Type.SignatureParameter(TypeSignatureParameterNode(attributes, identifier, value, Range.Zero)))
+            Type.SignatureParameter(TypeSignatureParameterNode(attributes, identifier, value, Range.range0)))
 
 [<AutoOpen>]
 module SignatureParameterBuilders =

@@ -10,7 +10,7 @@ module IndexFromEnd =
     let WidgetKey =
         Widgets.register "IndexFromEnd" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
-            Expr.IndexFromEnd(ExprIndexFromEndNode(expr, Range.Zero)))
+            Expr.IndexFromEnd(ExprIndexFromEndNode(expr, Range.range0)))
 
 [<AutoOpen>]
 module IndexFromEndBuilders =

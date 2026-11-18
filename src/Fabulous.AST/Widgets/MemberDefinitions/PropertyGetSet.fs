@@ -54,13 +54,13 @@ module PropertyGetSetMember =
                           SingleTextNode.``override``
                       else
                           SingleTextNode.``member`` ],
-                    Range.Zero
+                    Range.range0
                 )
 
             let inlinedNode = if isInlined then Some SingleTextNode.``inline`` else None
 
             let memberName =
-                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero)
+                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.range0)
 
             let firstBinding =
                 Widgets.getNodeFromWidget<PropertyGetSetBindingNode> widget FirstBindingWidget
@@ -87,7 +87,7 @@ module PropertyGetSetMember =
                     firstBinding,
                     andKeyword,
                     lastBindingWidget,
-                    Range.Zero
+                    Range.range0
                 )
 
             MemberDefn.PropertyGetSet(node))

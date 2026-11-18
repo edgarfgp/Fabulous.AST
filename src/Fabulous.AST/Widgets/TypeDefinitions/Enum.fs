@@ -41,17 +41,17 @@ module Enum =
                         attributes,
                         leadingKeyword,
                         Some(SingleTextNode.Create(name)),
-                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.Zero),
+                        Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.range0)),
                         None,
                         [],
                         None,
                         None,
-                        None,
-                        Range.Zero
+                        Range.range0
                     ),
                     enumCaseNodes,
+                    None,
                     [],
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

@@ -4,7 +4,7 @@ open Fantomas.FCS.Text
 open Fantomas.Core.SyntaxOak
 
 type SingleTextNode =
-    static member inline Create(idText: string) = SingleTextNode(idText, Range.Zero)
+    static member inline Create(idText: string) = SingleTextNode(idText, Range.range0)
 
 [<RequireQualifiedAccess>]
 module SingleTextNode =
@@ -73,6 +73,9 @@ module SingleTextNode =
     let ``extern`` = SingleTextNode.Create "extern"
     let hash = SingleTextNode.Create "#"
     let ``in`` = SingleTextNode.Create "in"
+    let ``of`` = SingleTextNode.Create "of"
+    let ``when`` = SingleTextNode.Create "when"
+    let ``exception`` = SingleTextNode.Create "exception"
     let letBang = SingleTextNode.Create "let!"
     let andBang = SingleTextNode.Create "and!"
     let ``use`` = SingleTextNode.Create "use"

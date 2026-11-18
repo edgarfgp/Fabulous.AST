@@ -21,7 +21,7 @@ module TypeApp =
                     SingleTextNode.lessThan,
                     parameters,
                     SingleTextNode.greaterThan,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

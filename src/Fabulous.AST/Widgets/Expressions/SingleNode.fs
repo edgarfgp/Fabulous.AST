@@ -27,7 +27,7 @@ module SingleNode =
                 Widgets.tryGetScalarValue widget AddSpace |> ValueOption.defaultValue false
 
             let leading = Widgets.getScalarValue widget Leading
-            ExprSingleNode(leading, addSpace, supportsStroustrup, expr, Range.Zero))
+            ExprSingleNode(leading, addSpace, supportsStroustrup, expr, Range.range0))
 
 [<AutoOpen>]
 module SingleNodeBuilders =

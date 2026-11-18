@@ -12,7 +12,7 @@ module ParenExpr =
             let expr = Widgets.getNodeFromWidget<Expr> widget Value
 
             Expr.Paren(
-                ExprParenNode(SingleTextNode.leftParenthesis, expr, SingleTextNode.rightParenthesis, Range.Zero)
+                ExprParenNode(SingleTextNode.leftParenthesis, expr, SingleTextNode.rightParenthesis, Range.range0)
             ))
 
 [<AutoOpen>]

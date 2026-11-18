@@ -20,7 +20,7 @@ module LibraryOnlyStaticOptimization =
             let constraints = Widgets.getScalarValue widget Constraints |> List.ofSeq
 
             Expr.LibraryOnlyStaticOptimization(
-                ExprLibraryOnlyStaticOptimizationNode(optExpr, constraints, expr, Range.Zero)
+                ExprLibraryOnlyStaticOptimizationNode(optExpr, constraints, expr, Range.range0)
             ))
 
 [<AutoOpen>]

@@ -18,7 +18,10 @@ module AnonStructRecord =
                 | ValueSome copyInfo -> Some copyInfo
                 | ValueNone -> None
 
-            let fields = Widgets.getScalarValue widget Fields |> List.ofSeq
+            let fields =
+                Widgets.getScalarValue widget Fields
+                |> Seq.map ExprRecordFieldOrSpread.Field
+                |> List.ofSeq
 
             Expr.AnonStructRecord(
                 ExprAnonStructRecordNode(
@@ -27,7 +30,7 @@ module AnonStructRecord =
                     copyInfo,
                     fields,
                     SingleTextNode.rightCurlyBraceWithBar,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

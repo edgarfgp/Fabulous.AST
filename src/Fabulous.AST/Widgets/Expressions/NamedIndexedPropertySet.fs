@@ -20,10 +20,10 @@ module NamedIndexedPropertySet =
 
             Expr.NamedIndexedPropertySet(
                 ExprNamedIndexedPropertySetNode(
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.range0),
                     indexExpr,
                     valueExpr,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

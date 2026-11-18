@@ -28,11 +28,11 @@ module NestedIndexWithoutDot =
         }
         |> producesValid
             """
-a[c]d
-a[c]d
-a[c]d
-a[c]d
-a[c]d
-a[b]d
-1[c]d
+a[c] d
+a[c] d
+a[c] d
+a[c] d
+a[c] d
+a[b] d
+1[c] d
 """

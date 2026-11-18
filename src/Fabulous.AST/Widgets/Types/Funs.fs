@@ -20,7 +20,7 @@ module TypeFuns =
                 | ValueSome parameters -> parameters |> Seq.map(fun x -> (x, SingleTextNode.rightArrow))
                 | ValueNone -> []
 
-            Type.Funs(TypeFunsNode(List.ofSeq members, returnType, Range.Zero)))
+            Type.Funs(TypeFunsNode(List.ofSeq members, returnType, Range.range0)))
 
 [<AutoOpen>]
 module FunsBuilders =

@@ -24,7 +24,7 @@ module IfThenElse =
                     thenExpr,
                     SingleTextNode.``else``,
                     elseExpr,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

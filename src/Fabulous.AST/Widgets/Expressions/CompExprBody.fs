@@ -11,7 +11,7 @@ module CompExprBody =
         Widgets.register "CompExprBody" (fun widget ->
             let statements = Widgets.getScalarValue widget Statements |> List.ofSeq
 
-            Expr.CompExprBody(ExprCompExprBodyNode(statements, Range.Zero)))
+            Expr.CompExprBody(ExprCompExprBodyNode(statements, Range.range0)))
 
 [<AutoOpen>]
 module CompExprBodyBuilders =

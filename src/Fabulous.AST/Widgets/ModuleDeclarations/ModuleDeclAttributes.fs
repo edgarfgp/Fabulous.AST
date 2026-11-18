@@ -16,7 +16,7 @@ module ModuleDeclAttributes =
                 |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
-            let node = ModuleDeclAttributesNode(attributes, doExpression, Range.Zero)
+            let node = ModuleDeclAttributesNode(attributes, doExpression, Range.range0)
             ModuleDecl.Attributes(node))
 
 [<AutoOpen>]

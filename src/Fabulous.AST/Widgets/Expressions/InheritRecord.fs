@@ -14,7 +14,10 @@ module InheritRecord =
             let inheritConstructor =
                 Widgets.getNodeFromWidget<InheritConstructor> widget InheritConstructor
 
-            let fields = Widgets.getScalarValue widget Fields |> List.ofSeq
+            let fields =
+                Widgets.getScalarValue widget Fields
+                |> Seq.map ExprRecordFieldOrSpread.Field
+                |> List.ofSeq
 
             Expr.InheritRecord(
                 ExprInheritRecordNode(
@@ -22,7 +25,7 @@ module InheritRecord =
                     inheritConstructor,
                     fields,
                     SingleTextNode.rightCurlyBrace,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

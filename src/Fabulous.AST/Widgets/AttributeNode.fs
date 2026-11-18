@@ -24,10 +24,10 @@ module AttributeNode =
             let typeName = Widgets.getScalarValue widget TypeName
 
             AttributeNode(
-                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create typeName) ], Range.Zero),
+                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create typeName) ], Range.range0),
                 expr,
                 target,
-                Range.Zero
+                Range.range0
             ))
 
 [<AutoOpen>]

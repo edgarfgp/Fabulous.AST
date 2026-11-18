@@ -10,7 +10,7 @@ module Ands =
     let WidgetKey =
         Widgets.register "Ands" (fun widget ->
             let items = Widgets.getScalarValue widget Items |> List.ofSeq
-            Pattern.Ands(PatAndsNode(items, Range.Zero)))
+            Pattern.Ands(PatAndsNode(items, Range.range0)))
 
 [<AutoOpen>]
 module AndsBuilders =

@@ -27,7 +27,7 @@ module InterfaceMember =
                     Some(SingleTextNode.``with``)
 
             let node =
-                MemberDefnInterfaceNode(SingleTextNode.``interface``, typeVal, withNode, members, Range.Zero)
+                MemberDefnInterfaceNode(SingleTextNode.``interface``, typeVal, withNode, members, Range.range0)
 
             MemberDefn.Interface(node))
 

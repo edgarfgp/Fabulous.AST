@@ -10,7 +10,7 @@ module Inherit =
     let WidgetKey =
         Widgets.register "InheritMember" (fun widget ->
             let tp = Widgets.getNodeFromWidget widget TypeValue
-            let node = MemberDefnInheritNode(SingleTextNode.``inherit``, tp, Range.Zero)
+            let node = MemberDefnInheritNode(SingleTextNode.``inherit``, tp, Range.range0)
             MemberDefn.Inherit(node))
 
 [<AutoOpen>]

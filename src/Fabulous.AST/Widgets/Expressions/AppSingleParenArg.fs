@@ -14,7 +14,7 @@ module AppSingleParenArg =
         Widgets.register "AppSingleParenArg" (fun widget ->
             let funcExpr = Widgets.getNodeFromWidget widget FuncExpr
             let argExpr = Widgets.getNodeFromWidget widget ArgExpr
-            Expr.AppSingleParenArg(ExprAppSingleParenArgNode(funcExpr, argExpr, Range.Zero)))
+            Expr.AppSingleParenArg(ExprAppSingleParenArgNode(funcExpr, argExpr, Range.range0)))
 
 [<AutoOpen>]
 module AppSingleParenArgBuilders =

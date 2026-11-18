@@ -126,10 +126,10 @@ type Colors =
                             None,
                             None,
                             None,
-                            SingleTextNode("Black", Range.Zero),
-                            SingleTextNode("=", Range.Zero),
-                            Expr.Constant(Constant.FromText(SingleTextNode("3", Range.Zero))),
-                            Range.Zero
+                            SingleTextNode("Black", Range.range0),
+                            SingleTextNode("=", Range.range0),
+                            Expr.Constant(Constant.FromText(SingleTextNode("3", Range.range0))),
+                            Range.range0
                         )
                     )
                 }
@@ -153,10 +153,10 @@ type Colors =
                 None,
                 None,
                 None,
-                SingleTextNode("Black", Range.Zero),
-                SingleTextNode("=", Range.Zero),
-                Expr.Constant(Constant.FromText(SingleTextNode("3", Range.Zero))),
-                Range.Zero
+                SingleTextNode("Black", Range.range0),
+                SingleTextNode("=", Range.range0),
+                Expr.Constant(Constant.FromText(SingleTextNode("3", Range.range0))),
+                Range.range0
             )
 
         Oak() {

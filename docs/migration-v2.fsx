@@ -159,19 +159,19 @@ let abbrevNode =
         TypeNameNode(
             None,
             None,
-            SingleTextNode("type", Range.Zero),
-            Some(SingleTextNode("MyFloat", Range.Zero)),
-            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.Zero)) ], Range.Zero),
+            SingleTextNode("type", Range.range0),
+            Some(SingleTextNode("MyFloat", Range.range0)),
+            Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("=", Range.range0)) ], Range.range0)),
             None,
             [],
             None,
             None,
-            None,
-            Range.Zero
+            Range.range0
         ),
-        Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.Zero)),
+        Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create("float")) ], Range.range0)),
+        None,
         [],
-        Range.Zero
+        Range.range0
     )
 
 Ast.Oak() {
@@ -198,17 +198,18 @@ let bindingNode =
     BindingNode(
         None,
         None,
-        MultipleTextsNode([ SingleTextNode("let", Range.Zero) ], Range.Zero),
+        MultipleTextsNode([ SingleTextNode("let", Range.range0) ], Range.range0),
         false,
         None,
         None,
-        Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("y", Range.Zero)) ], Range.Zero)),
+        Choice1Of2(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("y", Range.range0)) ], Range.range0)),
         None,
         List.Empty,
         None,
-        SingleTextNode("=", Range.Zero),
-        Expr.Constant(Constant.FromText(SingleTextNode("99", Range.Zero))),
-        Range.Zero
+        SingleTextNode("=", Range.range0),
+        Expr.Constant(Constant.FromText(SingleTextNode("99", Range.range0))),
+        None,
+        Range.range0
     )
 
 Ast.Oak() {
@@ -235,10 +236,10 @@ let enumCaseNode =
         None,
         None,
         None,
-        SingleTextNode("Black", Range.Zero),
-        SingleTextNode("=", Range.Zero),
-        Expr.Constant(Constant.FromText(SingleTextNode("3", Range.Zero))),
-        Range.Zero
+        SingleTextNode("Black", Range.range0),
+        SingleTextNode("=", Range.range0),
+        Expr.Constant(Constant.FromText(SingleTextNode("3", Range.range0))),
+        Range.range0
     )
 
 Ast.Oak() {
@@ -264,7 +265,8 @@ Ast.Oak() {
 ### EscapeHatch with Expr nodes
 *)
 
-let exprNode = Expr.Constant(Constant.FromText(SingleTextNode("name", Range.Zero)))
+let exprNode =
+    Expr.Constant(Constant.FromText(SingleTextNode("name", Range.range0)))
 
 Ast.Oak() {
     AnonymousModule() {

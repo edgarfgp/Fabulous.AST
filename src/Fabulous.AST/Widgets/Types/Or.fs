@@ -13,7 +13,7 @@ module OrType =
         Widgets.register "OrType" (fun widget ->
             let struct (lhs, rhs) = Widgets.getScalarValue widget Identifier
             let orNode = Widgets.getScalarValue widget OrTypeNode
-            Type.Or(TypeOrNode(lhs, orNode, rhs, Range.Zero)))
+            Type.Or(TypeOrNode(lhs, orNode, rhs, Range.range0)))
 
 [<AutoOpen>]
 module OrTypeBuilders =

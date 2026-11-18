@@ -97,35 +97,39 @@ let internal x = 12
                             Some(
                                 MultipleAttributeListNode(
                                     [ AttributeListNode(
-                                          SingleTextNode("[<", Range.Zero),
+                                          SingleTextNode("[<", Range.range0),
                                           [ SyntaxOak.AttributeNode(
                                                 IdentListNode(
-                                                    [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.Zero)) ],
-                                                    Range.Zero
+                                                    [ IdentifierOrDot.Ident(SingleTextNode("Literal", Range.range0)) ],
+                                                    Range.range0
                                                 ),
                                                 None,
                                                 None,
-                                                Range.Zero
+                                                Range.range0
                                             ) ],
-                                          SingleTextNode(">]", Range.Zero),
-                                          Range.Zero
+                                          SingleTextNode(">]", Range.range0),
+                                          Range.range0
                                       ) ],
-                                    Range.Zero
+                                    Range.range0
                                 )
                             ),
-                            MultipleTextsNode([ SingleTextNode.Create("let") ], Range.Zero),
+                            MultipleTextsNode([ SingleTextNode.Create("let") ], Range.range0),
                             false,
                             None,
                             None,
                             Choice1Of2(
-                                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode("x", Range.Zero)) ], Range.Zero)
+                                IdentListNode(
+                                    [ IdentifierOrDot.Ident(SingleTextNode("x", Range.range0)) ],
+                                    Range.range0
+                                )
                             ),
                             None,
                             List.Empty,
                             None,
-                            SingleTextNode("=", Range.Zero),
-                            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.Zero))),
-                            Range.Zero
+                            SingleTextNode("=", Range.range0),
+                            Expr.Constant(Constant.FromText(SingleTextNode("12", Range.range0))),
+                            None,
+                            Range.range0
                         )
                     )
                 )

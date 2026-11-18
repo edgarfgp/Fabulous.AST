@@ -17,7 +17,7 @@ module Typed =
             let expr = Widgets.getNodeFromWidget<Expr> widget Value
             let typed = Widgets.getNodeFromWidget widget Typed
             let text = Widgets.getScalarValue widget Text
-            Expr.Typed(ExprTypedNode(expr, text, typed, Range.Zero)))
+            Expr.Typed(ExprTypedNode(expr, text, typed, Range.range0)))
 
 [<AutoOpen>]
 module TypedBuilders =

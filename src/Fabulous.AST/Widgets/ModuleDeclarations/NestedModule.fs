@@ -49,10 +49,10 @@ module NestedModule =
                     SingleTextNode.``module``,
                     accessControl,
                     isRecursive,
-                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(name) ], Range.range0),
                     SingleTextNode.equals,
                     moduleDecls,
-                    Range.Zero
+                    Range.range0
                 )
 
             ModuleDecl.NestedModule(node))

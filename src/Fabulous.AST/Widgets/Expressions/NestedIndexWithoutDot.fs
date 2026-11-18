@@ -18,8 +18,13 @@ module NestedIndexWithoutDot =
             let indexExpr = Widgets.getNodeFromWidget widget IndexExpr
             let argumentExpr = Widgets.getNodeFromWidget widget ArgumentExpr
 
-            Expr.NestedIndexWithoutDot(
-                ExprNestedIndexWithoutDotNode(identifierExpr, indexExpr, argumentExpr, Range.Zero)
+            // Fantomas 8 has no dedicated node: `x[i] arg` is `x[i]` applied to `arg`.
+            Expr.App(
+                ExprAppNode(
+                    Expr.IndexWithoutDot(ExprIndexWithoutDotNode(identifierExpr, indexExpr, Range.range0)),
+                    [ argumentExpr ],
+                    Range.range0
+                )
             ))
 
 [<AutoOpen>]

@@ -238,7 +238,10 @@ type Colors =
                     UnionCase("Green")
                     UnionCase("Blue")
                     UnionCase("Yellow")
-                    EscapeHatch(UnionCaseNode(None, None, None, SingleTextNode("Black", Range.Zero), [], Range.Zero))
+
+                    EscapeHatch(
+                        UnionCaseNode(None, None, None, SingleTextNode("Black", Range.range0), None, [], Range.range0)
+                    )
                 }
             }
         }

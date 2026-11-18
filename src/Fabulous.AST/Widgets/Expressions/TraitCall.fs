@@ -17,7 +17,7 @@ module TraitCall =
             let expr = Widgets.getNodeFromWidget<Expr> widget Value
             let typed = Widgets.getNodeFromWidget<Type> widget Typed
             let memberDef = Widgets.getScalarValue widget MemberDef
-            Expr.TraitCall(ExprTraitCallNode(typed, memberDef, expr, Range.Zero)))
+            Expr.TraitCall(ExprTraitCallNode(typed, memberDef, expr, Range.range0)))
 
 [<AutoOpen>]
 module TraitCallBuilders =

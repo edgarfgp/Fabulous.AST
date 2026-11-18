@@ -48,7 +48,7 @@ module Record =
                             None,
                             field.Name,
                             field.Type,
-                            Range.Zero
+                            Range.range0
                         ))
 
             let members =
@@ -93,20 +93,22 @@ module Record =
                         attributes,
                         isRecursive,
                         None,
-                        IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                        Type.LongIdent(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
+                        ),
                         typeParams,
                         [],
                         None,
                         Some(SingleTextNode.equals),
-                        None,
-                        Range.Zero
+                        Range.range0
                     ),
                     accessControl,
                     SingleTextNode.leftCurlyBrace,
-                    fields,
+                    (fields |> List.map TypeDefnRecordFieldOrSpread.Field),
                     SingleTextNode.rightCurlyBrace,
+                    None,
                     members,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

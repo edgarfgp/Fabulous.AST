@@ -13,7 +13,7 @@ module TypeStaticConstantNamed =
         Widgets.register "TypeStaticConstantNamed" (fun widget ->
             let identifier = Widgets.getNodeFromWidget<Type> widget Identifier
             let value = Widgets.getNodeFromWidget<Type> widget Value
-            Type.StaticConstantNamed(TypeStaticConstantNamedNode(identifier, value, Range.Zero)))
+            Type.StaticConstantNamed(TypeStaticConstantNamedNode(identifier, value, Range.range0)))
 
 [<AutoOpen>]
 module TypeStaticConstantNamedBuilders =

@@ -17,7 +17,7 @@ module TypeStructTuple =
                 |> Seq.intersperse(Choice2Of2(SingleTextNode.comma))
 
             Type.StructTuple(
-                TypeStructTupleNode(SingleTextNode.``struct``, values, SingleTextNode.rightParenthesis, Range.Zero)
+                TypeStructTupleNode(SingleTextNode.``struct``, values, SingleTextNode.rightParenthesis, Range.range0)
             ))
 
 [<AutoOpen>]

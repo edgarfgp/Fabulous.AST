@@ -14,7 +14,7 @@ module TryWith =
         Widgets.register "TryWith" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Value
             let clauses = Widgets.getScalarValue widget Clauses |> List.ofSeq
-            Expr.TryWith(ExprTryWithNode(SingleTextNode.``try``, expr, SingleTextNode.``with``, clauses, Range.Zero)))
+            Expr.TryWith(ExprTryWithNode(SingleTextNode.``try``, expr, SingleTextNode.``with``, clauses, Range.range0)))
 
 [<AutoOpen>]
 module TryWithBuilders =

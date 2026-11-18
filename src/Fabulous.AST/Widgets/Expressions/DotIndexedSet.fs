@@ -17,7 +17,7 @@ module DotIndexedSet =
             let objExpr = Widgets.getNodeFromWidget widget ObjExpr
             let indexExpr = Widgets.getNodeFromWidget widget IndexExpr
             let valueExpr = Widgets.getNodeFromWidget widget ValueExpr
-            Expr.DotIndexedSet(ExprDotIndexedSetNode(objExpr, indexExpr, valueExpr, Range.Zero)))
+            Expr.DotIndexedSet(ExprDotIndexedSetNode(objExpr, indexExpr, valueExpr, Range.range0)))
 
 [<AutoOpen>]
 module DotIndexedSetBuilders =

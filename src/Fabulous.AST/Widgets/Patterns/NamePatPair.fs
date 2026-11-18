@@ -17,14 +17,20 @@ module NamePatPair =
                 Widgets.getScalarValue widget Ident |> PrettyNaming.NormalizeIdentifierBackticks
 
             let pat = Widgets.getNodeFromWidget widget Pat
-            NamePatPair(SingleTextNode.Create(ident), SingleTextNode.equals, pat, Range.Zero))
+
+            NamePatPairNode(
+                IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(ident)) ], Range.range0),
+                SingleTextNode.equals,
+                pat,
+                Range.range0
+            ))
 
 [<AutoOpen>]
 module NamePatPairBuilders =
     type Ast with
 
         static member NamePatPairPat(ident: string, pat: WidgetBuilder<Pattern>) =
-            WidgetBuilder<NamePatPair>(
+            WidgetBuilder<NamePatPairNode>(
                 NamePatPair.WidgetKey,
                 AttributesBundle(
                     StackList.one(NamePatPair.Ident.WithValue(ident)),

@@ -46,7 +46,17 @@ module ExceptionDefn =
                     None
 
             let node =
-                ExceptionDefnNode(xmlDocs, attributes, accessControl, unionCase, withKeyword, memberDefs, Range.Zero)
+                ExceptionDefnNode(
+                    xmlDocs,
+                    attributes,
+                    SingleTextNode.``exception``,
+                    accessControl,
+                    unionCase,
+                    None,
+                    withKeyword,
+                    memberDefs,
+                    Range.range0
+                )
 
             ModuleDecl.Exception(node))
 

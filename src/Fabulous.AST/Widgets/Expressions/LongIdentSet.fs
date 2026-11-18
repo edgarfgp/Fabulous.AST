@@ -17,9 +17,9 @@ module LongIdentSet =
 
             Expr.LongIdentSet(
                 ExprLongIdentSetNode(
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(identifier)) ], Range.range0),
                     expr,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

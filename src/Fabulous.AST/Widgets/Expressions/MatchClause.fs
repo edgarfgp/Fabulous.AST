@@ -13,13 +13,14 @@ module MatchClause =
     let WidgetKey =
         Widgets.register "MatchClause" (fun widget ->
             let pattern = Widgets.getNodeFromWidget widget PatternNamed
-            let whenExpr = Widgets.tryGetNodeFromWidget widget WhenExpr
+            let whenExpr = Widgets.tryGetNodeFromWidget<Expr> widget WhenExpr
             let bodyExpr = Widgets.getNodeFromWidget widget BodyExpr
 
             let whenExpr =
                 match whenExpr with
                 | ValueNone -> None
-                | ValueSome whenExpr -> Some whenExpr
+                // Fantomas 8 keeps the `when` keyword as its own token (for comment placement).
+                | ValueSome whenExpr -> Some(SingleTextNode.``when``, whenExpr)
 
             MatchClauseNode(
                 Some(SingleTextNode.bar),
@@ -27,7 +28,7 @@ module MatchClause =
                 whenExpr,
                 SingleTextNode.rightArrow,
                 bodyExpr,
-                Range.Zero
+                Range.range0
             ))
 
 [<AutoOpen>]

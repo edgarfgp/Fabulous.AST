@@ -15,7 +15,7 @@ module Dynamic =
             let funcExpr = Widgets.getNodeFromWidget widget FunExpr
             let argExpr = Widgets.getNodeFromWidget widget ArgExpr
 
-            Expr.Dynamic(ExprDynamicNode(funcExpr, argExpr, Range.Zero)))
+            Expr.Dynamic(ExprDynamicNode(funcExpr, argExpr, Range.range0)))
 
 [<AutoOpen>]
 module DynamicBuilders =

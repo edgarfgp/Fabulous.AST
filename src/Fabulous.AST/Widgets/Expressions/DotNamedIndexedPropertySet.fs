@@ -24,10 +24,10 @@ module DotNamedIndexedPropertySet =
             Expr.DotNamedIndexedPropertySet(
                 ExprDotNamedIndexedPropertySetNode(
                     identifier,
-                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.Zero),
+                    IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0),
                     property,
                     setter,
-                    Range.Zero
+                    Range.range0
                 )
             ))
 

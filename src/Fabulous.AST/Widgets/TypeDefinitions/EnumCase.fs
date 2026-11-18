@@ -40,7 +40,7 @@ module EnumCase =
                 SingleTextNode.Create(name),
                 SingleTextNode.equals,
                 value,
-                Range.Zero
+                Range.range0
             ))
 
 [<AutoOpen>]

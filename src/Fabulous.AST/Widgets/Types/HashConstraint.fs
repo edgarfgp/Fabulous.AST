@@ -10,7 +10,7 @@ module TypeHashConstraint =
     let WidgetKey =
         Widgets.register "TypeHashConstraint" (fun widget ->
             let typeWidget = Widgets.getNodeFromWidget widget TypeWidget
-            Type.HashConstraint(TypeHashConstraintNode(SingleTextNode.hash, typeWidget, Range.Zero)))
+            Type.HashConstraint(TypeHashConstraintNode(SingleTextNode.hash, typeWidget, Range.range0)))
 
 [<AutoOpen>]
 module TypeHashConstraintBuilders =

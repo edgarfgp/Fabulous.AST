@@ -17,7 +17,7 @@ module Match =
             let matchClauses = Widgets.getScalarValue widget MatchClauses |> List.ofSeq
 
             Expr.Match(
-                ExprMatchNode(SingleTextNode.``match``, expr, SingleTextNode.``with``, matchClauses, Range.Zero)
+                ExprMatchNode(SingleTextNode.``match``, expr, SingleTextNode.``with``, matchClauses, Range.range0)
             ))
 
 [<AutoOpen>]

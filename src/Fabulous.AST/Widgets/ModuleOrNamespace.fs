@@ -29,7 +29,7 @@ module ModuleOrNamespace =
                 |> ValueOption.defaultValue false
 
             if isAnonymousModule then
-                ModuleOrNamespaceNode(None, decls, Range.Zero)
+                ModuleOrNamespaceNode(None, decls, Range.range0)
             else
                 let isGlobal =
                     Widgets.tryGetScalarValue widget IsGlobal |> ValueOption.defaultValue false
@@ -75,15 +75,15 @@ module ModuleOrNamespace =
                         ModuleOrNamespaceHeaderNode(
                             xmlDocs,
                             attributes,
-                            MultipleTextsNode([ leadingKeyword ], Range.Zero),
+                            MultipleTextsNode([ leadingKeyword ], Range.range0),
                             accessControl,
                             isRecursive,
-                            Some(IdentListNode([ IdentifierOrDot.Ident(headerName) ], Range.Zero)),
-                            Range.Zero
+                            Some(IdentListNode([ IdentifierOrDot.Ident(headerName) ], Range.range0)),
+                            Range.range0
                         )
                     )
 
-                ModuleOrNamespaceNode(header, decls, Range.Zero))
+                ModuleOrNamespaceNode(header, decls, Range.range0))
 
 [<AutoOpen>]
 module NamespaceBuilders =

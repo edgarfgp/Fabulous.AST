@@ -16,9 +16,9 @@ module RewriteExprTests =
     /// → <c>Expr.Constant</c>), so a real-world rewrite must cover both shapes.
     let renameIdent (oldName: string) (newName: string) (e: Expr) : Expr =
         match e with
-        | Expr.Ident n when n.Text = oldName -> Expr.Ident(SingleTextNode(newName, Range.Zero))
+        | Expr.Ident n when n.Text = oldName -> Expr.Ident(SingleTextNode(newName, Range.range0))
         | Expr.Constant(Constant.FromText n) when n.Text = oldName ->
-            Expr.Constant(Constant.FromText(SingleTextNode(newName, Range.Zero)))
+            Expr.Constant(Constant.FromText(SingleTextNode(newName, Range.range0)))
         | _ -> e
 
     /// Compile a widget pipeline result to a formatted source string.
@@ -107,17 +107,16 @@ module RewriteExprTests =
     let private unionToRecord(td: TypeDefn) : TypeDefn =
         match td with
         | TypeDefn.Union n when n.UnionCases.Length = 1 ->
-            let itd = n :> ITypeDefn
-
             TypeDefn.Record(
                 TypeDefnRecordNode(
-                    itd.TypeName,
+                    n.TypeName,
                     n.Accessibility,
-                    SingleTextNode("{", Range.Zero),
-                    n.UnionCases.Head.Fields,
-                    SingleTextNode("}", Range.Zero),
-                    itd.Members,
-                    Range.Zero
+                    SingleTextNode("{", Range.range0),
+                    (n.UnionCases.Head.Fields |> List.map TypeDefnRecordFieldOrSpread.Field),
+                    SingleTextNode("}", Range.range0),
+                    None,
+                    n.Members,
+                    Range.range0
                 )
             )
         | _ -> td
