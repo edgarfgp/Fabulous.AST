@@ -35,14 +35,14 @@ module InterpolatedString =
     // Check if an interpolated string contains only text segments
     let private isTextOnly(parts: TextSegment seq) =
         parts
-        |> Seq.forall (function
+        |> Seq.forall(function
             | Text _ -> true
             | _ -> false)
 
     // Combine text-only segments for optimization
     let private combineTextOnly(parts: TextSegment seq) =
         parts
-        |> Seq.map (function
+        |> Seq.map(function
             | Text t -> t
             | _ -> "")
         |> String.concat ""

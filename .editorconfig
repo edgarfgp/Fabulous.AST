@@ -15,4 +15,6 @@ fsharp_space_before_parameter = false
 fsharp_space_before_lowercase_invocation = false
 fsharp_keep_max_number_of_blank_lines = 1
 fsharp_record_multiline_formatter = number_of_items
+# Fantomas 8 changed the default to aligned; keep the style this codebase has always used.
+fsharp_multiline_bracket_style = cramped
 

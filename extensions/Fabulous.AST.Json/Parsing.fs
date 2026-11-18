@@ -272,7 +272,7 @@ module Parsing =
     /// Extract all JsonObjects from a JsonArray
     let extractObjects(arr: JsonArray) : JsonObject array =
         arr
-        |> Seq.choose (function
+        |> Seq.choose(function
             | :? JsonObject as o -> Some o
             | _ -> None)
         |> Seq.toArray
