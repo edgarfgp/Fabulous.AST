@@ -8,15 +8,15 @@ index: 0
 # Fabulous.AST
 
 ## Contents
-- [What is AST?](#what-is-ast)
-- [Why Use AST for Code Generation?](#why-use-ast-for-code-generation)
-- [Code Generation Approaches](#code-generation-approaches)
-  - [String Interpolation](#string-interpolation)
-  - [Compiler AST](#compiler-ast)
-  - [Fantomas Oak AST](#fantomas-oak-ast)
-  - [Fabulous.AST DSL](#fabulousast-dsl)
-- [Getting Started](#getting-started)
-- [Documentation Structure](#documentation-structure)
+- [What is AST?](#What-is-AST)
+- [Why Use AST for Code Generation?](#Why-Use-AST-for-Code-Generation)
+- [Code Generation Approaches](#Code-Generation-Approaches)
+  - [String Interpolation](#String-Interpolation)
+  - [Compiler AST](#Compiler-AST)
+  - [Fantomas Oak AST](#Fantomas-Oak-AST)
+  - [Fabulous.AST DSL](#Fabulous-AST-DSL)
+- [Getting Started](#Getting-Started)
+- [Documentation Structure](#Documentation-Structure)
 
 ## What is AST?
 

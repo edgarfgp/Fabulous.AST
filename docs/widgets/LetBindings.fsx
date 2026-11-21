@@ -10,20 +10,20 @@ index: 13
 # Let Bindings
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Let Bindings for Values](#let-bindings-for-values)
-- [Let Bindings with Patterns](#let-bindings-with-patterns)
-- [Function Bindings](#function-bindings)
-- [Type Annotations](#type-annotations)
-- [Mutable and Inlined Bindings](#mutable-and-inlined-bindings)
-- [Let Bindings in Classes](#let-bindings-in-classes)
-- [Type Parameters in Let Bindings](#type-parameters-in-let-bindings)
-- [Attributes on Let Bindings](#attributes-on-let-bindings)
-- [XML Documentation](#xml-documentation)
-- [Access Modifiers](#access-modifiers)
-- [Scope and Accessibility](#scope-and-accessibility)
-- [Advanced Examples](#advanced-examples)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Let Bindings for Values](#Let-Bindings-for-Values)
+- [Let Bindings with Patterns](#Let-Bindings-with-Patterns)
+- [Function Bindings](#Function-Bindings)
+- [Type Annotations](#Type-Annotations)
+- [Mutable and Inlined Bindings](#Mutable-and-Inlined-Bindings)
+- [Let Bindings in Classes](#Let-Bindings-in-Classes)
+- [Type Parameters in Let Bindings](#Type-Parameters-in-Let-Bindings)
+- [Attributes on Let Bindings](#Attributes-on-Let-Bindings)
+- [XML Documentation](#XML-Documentation)
+- [Access Modifiers](#Access-Modifiers)
+- [Scope and Accessibility](#Scope-and-Accessibility)
+- [Advanced Examples](#Advanced-Examples)
 
 ## Overview
 A *binding* associates an identifier with a value or function. In F#, you use the `let` keyword to bind a name to a value or function. In Fabulous.AST, let bindings are represented using the `Value` widget for module-level declarations and `LetOrUseExpr` for expressions within functions.

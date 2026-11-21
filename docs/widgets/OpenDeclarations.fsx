@@ -15,9 +15,9 @@ imports a type's static members, and `OpenGlobal` opens from the root with the
 `global` specifier.
 
 ## Contents
-- [Opening Namespaces and Modules](#opening-namespaces-and-modules)
-- [Opening a Type](#opening-a-type)
-- [Global Opens](#global-opens)
+- [Opening Namespaces and Modules](#Opening-Namespaces-and-Modules)
+- [Opening a Type](#Opening-a-Type)
+- [Global Opens](#Global-Opens)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

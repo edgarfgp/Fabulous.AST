@@ -10,18 +10,18 @@ index: 15
 # Classes
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Constructors](#constructors)
-- [Let and Do Bindings](#let-and-do-bindings)
-- [Self Identifiers](#self-identifiers)
-- [Members](#members)
-- [Generic Type Parameters](#generic-type-parameters)
-- [Access Modifiers](#access-modifiers)
-- [Attributes](#attributes)
-- [Inheritance](#inheritance)
-- [Mutually Recursive Types](#mutually-recursive-types)
-- [Struct Classes](#struct-classes)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Constructors](#Constructors)
+- [Let and Do Bindings](#Let-and-Do-Bindings)
+- [Self Identifiers](#Self-Identifiers)
+- [Members](#Members)
+- [Generic Type Parameters](#Generic-Type-Parameters)
+- [Access Modifiers](#Access-Modifiers)
+- [Attributes](#Attributes)
+- [Inheritance](#Inheritance)
+- [Mutually Recursive Types](#Mutually-Recursive-Types)
+- [Struct Classes](#Struct-Classes)
 
 ## Overview
 Classes in F# are types that represent objects that can have properties, methods, and events. Classes are the primary type concept that supports object-oriented programming in F#. In Fabulous.AST, classes are created using the `TypeDefn` widget.

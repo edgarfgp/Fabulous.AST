@@ -10,17 +10,17 @@ index: 9
 # Types
 
 ## Contents
-- [Overview](#overview)
-- [Primitive Types](#primitive-types)
-- [String Literals](#string-literals)
-- [Collection Types](#collection-types)
-- [Tuple Types](#tuple-types)
-- [Option Types](#option-types)
-- [Function Types](#function-types)
-- [Generic Types](#generic-types)
-- [Unit of Measure](#unit-of-measure)
-- [Type Abbreviations](#type-abbreviations)
-- [Type Constraints](#type-constraints)
+- [Overview](#Overview)
+- [Primitive Types](#Primitive-Types)
+- [String Literals](#String-Literals)
+- [Collection Types](#Collection-Types)
+- [Tuple Types](#Tuple-Types)
+- [Option Types](#Option-Types)
+- [Function Types](#Function-Types)
+- [Generic Types](#Generic-Types)
+- [Unit of Measure](#Unit-of-Measure)
+- [Type Abbreviations](#Type-Abbreviations)
+- [Type Constraints](#Type-Constraints)
 
 ## Overview
 F# is a strongly-typed language with a rich type system. Types in F# range from simple primitives to complex user-defined types. This document provides examples of how to work with various F# types in the Fabulous.AST library.

@@ -19,6 +19,28 @@ let versionProperty =
     | None -> String.Empty
     | Some nv -> $"-p:Version=%s{nv}"
 
+/// `fsdocs build --eval --strict` fails on compile errors, but a snippet that throws at run time
+/// just renders an empty `include-output` block. Fail the build on those instead.
+let checkDocsOutput(siteDir: string) : unit =
+    let emptyOutput =
+        Text.RegularExpressions.Regex(@"<table class=""pre""><tr><td><pre><code>\s*</code></pre>")
+
+    let offenders =
+        Directory.GetFiles(siteDir, "*.html", SearchOption.AllDirectories)
+        |> Array.choose(fun file ->
+            let count = emptyOutput.Matches(File.ReadAllText file).Count
+
+            if count > 0 then
+                Some $"  {Path.GetRelativePath(siteDir, file)}: {count} empty output block(s)"
+            else
+                None)
+
+    if offenders.Length > 0 then
+        failwith(
+            "These docs pages have empty evaluated output; the snippet most likely threw at run time:\n"
+            + String.Join("\n", offenders)
+        )
+
 pipeline "ci" {
     description "Main pipeline used during pull requests"
 
@@ -43,6 +65,7 @@ pipeline "ci" {
         run $"dotnet publish extensions/Fabulous.AST.Json -f net10.0 -c {config}"
         run $"dotnet publish extensions/Fabulous.AST.Build -f net10.0 -c {config}"
         run $"dotnet fsdocs build --properties Configuration={config} --eval --strict"
+        run(fun _ -> checkDocsOutput(__SOURCE_DIRECTORY__ </> "output"))
     }
 
     stage "pack" { run $"dotnet pack {sln} -c {config} -p:PackageOutputPath=\"%s{nupkgs}\" {versionProperty}" }

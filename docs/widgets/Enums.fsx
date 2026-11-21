@@ -10,10 +10,10 @@ index: 17
 # Enums
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Enum Cases](#enum-cases)
-- [Attributes and XML Documentation](#attributes-and-xml-documentation)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Enum Cases](#Enum-Cases)
+- [Attributes and XML Documentation](#Attributes-and-XML-Documentation)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

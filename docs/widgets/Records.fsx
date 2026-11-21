@@ -10,19 +10,19 @@ index: 13
 # Records
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Record Fields](#record-fields)
-- [Type Parameters](#type-parameters)
-- [Record Attributes](#record-attributes)
-- [Access Modifiers](#access-modifiers)
-- [XML Documentation](#xml-documentation)
-- [Record Members](#record-members)
-- [Mutable Fields](#mutable-fields)
-- [Creating Records in F#](#creating-records-in-f)
-- [Copy and Update Record Expressions](#copy-and-update-record-expressions)
-- [Mutually Recursive Records](#mutually-recursive-records)
-- [Pattern Matching with Records](#pattern-matching-with-records)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Record Fields](#Record-Fields)
+- [Type Parameters](#Type-Parameters)
+- [Attributes](#Attributes)
+- [Access Modifiers](#Access-Modifiers)
+- [XML Documentation](#XML-Documentation)
+- [Members](#Members)
+- [Mutable Fields](#Mutable-Fields)
+- [Creating Records](#Creating-Records)
+- [Copy and Update Records](#Copy-and-Update-Records)
+- [Mutually Recursive Records](#Mutually-Recursive-Records)
+- [Pattern Matching](#Pattern-Matching)
 
 ## Overview
 Records in F# represent simple aggregates of named values, optionally with members. They can be either structs or reference types (reference types by default). Records provide automatic equality and comparison, and they're immutable by default.
@@ -320,7 +320,7 @@ Oak() {
 (*** include-output ***)
 
 (**
-## Pattern Matching:
+## Pattern Matching
 *)
 
 Oak() {

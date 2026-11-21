@@ -10,22 +10,22 @@ index: 12
 # Discriminated Unions
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Union Cases](#union-cases)
-- [Union Cases with Fields](#union-cases-with-fields)
-- [Named and Anonymous Fields](#named-and-anonymous-fields)
-- [Type Parameters](#type-parameters)
-- [Union Attributes](#union-attributes)
-- [Access Modifiers](#access-modifiers)
-- [XML Documentation](#xml-documentation)
-- [Union Members](#union-members)
-- [Struct Unions](#struct-unions)
-- [Using Unions Instead of Object Hierarchies](#using-unions-instead-of-object-hierarchies)
-- [Tree Data Structures with Recursive Unions](#tree-data-structures-with-recursive-unions)
-- [Mutually Recursive Unions](#mutually-recursive-unions)
-- [Unwrapping Union Cases](#unwrapping-union-cases)
-- [Pattern Matching with Unions](#pattern-matching-with-unions)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Union Cases](#Union-Cases)
+- [Union Cases with Fields](#Union-Cases-with-Fields)
+- [Named and Anonymous Fields](#Named-and-Anonymous-Fields)
+- [Type Parameters](#Type-Parameters)
+- [Union Attributes](#Union-Attributes)
+- [Access Modifiers](#Access-Modifiers)
+- [XML Documentation](#XML-Documentation)
+- [Union Members](#Union-Members)
+- [Struct Unions](#Struct-Unions)
+- [Using Unions Instead of Object Hierarchies](#Using-Unions-Instead-of-Object-Hierarchies)
+- [Tree Data Structures with Recursive Unions](#Tree-Data-Structures-with-Recursive-Unions)
+- [Mutually Recursive Unions](#Mutually-Recursive-Unions)
+- [Unwrapping Union Cases](#Unwrapping-Union-Cases)
+- [Pattern Matching with Unions](#Pattern-Matching-with-Unions)
 
 ## Overview
 Discriminated unions provide support for values that can be one of a number of named cases, possibly each with different values and types. They are useful for heterogeneous data, handling special cases (including valid and error cases), data that varies in type, and as an alternative to small object hierarchies. Recursive discriminated unions can represent tree data structures.
@@ -100,7 +100,9 @@ Oak() {
 (*** include-output ***)
 
 (**
-## Named and Anonymous Fields can be named or anonymous. In the previous example, most fields are named, but the second field of the Prism case is anonymous.
+## Named and Anonymous Fields
+
+Fields can be named or anonymous. In the previous example, most fields are named, but the second field of the Prism case is anonymous.
 
 You construct objects by providing values for the named and anonymous fields:
 

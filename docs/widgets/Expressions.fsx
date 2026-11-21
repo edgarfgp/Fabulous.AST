@@ -13,14 +13,14 @@ Expressions are the building blocks of values, member bodies, and statements. Th
 DSL exposes one widget per F# expression form — this page groups them by family.
 
 ## Contents
-- [Identifiers and Literals](#identifiers-and-literals)
-- [Collections and Tuples](#collections-and-tuples)
-- [Application and Operators](#application-and-operators)
-- [Lambdas](#lambdas)
-- [Conditionals and Pattern Matching](#conditionals-and-pattern-matching)
-- [Loops](#loops)
-- [Exception Handling](#exception-handling)
-- [Other Expressions](#other-expressions)
+- [Identifiers and Literals](#Identifiers-and-Literals)
+- [Collections and Tuples](#Collections-and-Tuples)
+- [Application and Operators](#Application-and-Operators)
+- [Lambdas](#Lambdas)
+- [Conditionals and Pattern Matching](#Conditionals-and-Pattern-Matching)
+- [Loops](#Loops)
+- [Exception Handling](#Exception-Handling)
+- [Other Expressions](#Other-Expressions)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

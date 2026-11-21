@@ -14,9 +14,9 @@ compiler checks. Declare a measure with `Measure`, and attach one to a literal
 with `ConstantMeasure`.
 
 ## Contents
-- [Defining a Measure](#defining-a-measure)
-- [Derived Measures](#derived-measures)
-- [Using a Measure](#using-a-measure)
+- [Defining a Measure](#Defining-a-Measure)
+- [Derived Measures](#Derived-Measures)
+- [Using a Measure](#Using-a-Measure)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

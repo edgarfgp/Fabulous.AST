@@ -13,12 +13,12 @@ Patterns appear on the left of bindings, in `match` clauses, and in function
 parameters. Each F# pattern form has a widget — this page groups them by kind.
 
 ## Contents
-- [Named, Or, As, and Ands Patterns](#named-or-as-and-ands-patterns)
-- [Tuple Patterns](#tuple-patterns)
-- [List Patterns](#list-patterns)
-- [Record Patterns](#record-patterns)
-- [Type-test Patterns](#type-test-patterns)
-- [Parameter Patterns with Attributes](#parameter-patterns-with-attributes)
+- [Named, Or, As, and Ands Patterns](#Named-Or-As-and-Ands-Patterns)
+- [Tuple Patterns](#Tuple-Patterns)
+- [List Patterns](#List-Patterns)
+- [Record Patterns](#Record-Patterns)
+- [Type-test Patterns](#Type-test-Patterns)
+- [Parameter Patterns with Attributes](#Parameter-Patterns-with-Attributes)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

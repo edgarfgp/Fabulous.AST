@@ -10,10 +10,10 @@ index: 19
 # Exceptions
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Exceptions with Fields](#exceptions-with-fields)
-- [Exception Members](#exception-members)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Exceptions with Fields](#Exceptions-with-Fields)
+- [Exception Members](#Exception-Members)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

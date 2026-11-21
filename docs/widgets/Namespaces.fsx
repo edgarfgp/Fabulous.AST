@@ -10,13 +10,13 @@ index: 2
 # Namespaces
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Implicit Namespaces](#implicit-namespaces)
-- [Global Namespace](#global-namespace)
-- [Multiple Modules in a Namespace](#multiple-modules-in-a-namespace)
-- [Multiple Namespaces](#nested-namespaces)
-- [Recursive Namespaces](#recursive-namespaces)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Implicit Namespaces](#Implicit-Namespaces)
+- [Global Namespace](#Global-Namespace)
+- [Multiple Modules in a Namespace](#Multiple-Modules-in-a-Namespace)
+- [Multiple Namespaces](#Multiple-Namespaces)
+- [Recursive Namespaces](#Recursive-Namespaces)
 
 ## Overview
 Namespaces in F# are a way to organize code by grouping related types and modules. They help prevent naming conflicts
