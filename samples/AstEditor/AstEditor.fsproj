@@ -47,9 +47,9 @@
   </ItemGroup>
 
   <!-- The published Fabulous.AST package is the code generator the REPL hosts in FSI.
-       We reference the package (not the project) so it brings a flexible FSharp.Core
-       (>=8.0.100) that aligns with FSharp.Compiler.Service's pinned 10.1.204. -->
+       We reference the package (not the project) so the sample builds standalone; its
+       FSharp.Core (>=10.1.300) binds to FSharp.Compiler.Service's pinned 10.1.204 (see NU1605). -->
   <ItemGroup>
-    <PackageReference Include="Fabulous.AST" Version="2.0.0-pre08" />
+    <PackageReference Include="Fabulous.AST" Version="2.0.0-pre09" />
   </ItemGroup>
 </Project>
