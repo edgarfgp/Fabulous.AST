@@ -5,7 +5,7 @@ on:
     paths-ignore: [ 'docs/**' ]
 
 permissions:
-  contents: read
+  contents: write   # create the GitHub Release
   id-token: write   # OIDC token for NuGet Trusted Publishing
 
 env:
@@ -104,3 +104,25 @@ jobs:
           user: edgardev
       - name: Push
         run: dotnet nuget push "nupkgs/*" -s https://api.nuget.org/v3/index.json -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate
+      # Runs only after the NuGet push succeeded. Notes come from the same changelog entries as
+      # the package release notes, passed via env vars so no shell parses their contents.
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CORE_NOTES: ${{ steps.changelog_reader.outputs.changes }}
+          JSON_NOTES: ${{ steps.json_changelog.outputs.changes }}
+          BUILD_NOTES: ${{ steps.build_changelog.outputs.changes }}
+        run: |
+          if gh release view "$RELEASE_VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "GitHub Release $RELEASE_VERSION already exists; skipping."
+            exit 0
+          fi
+          {
+            printf '%s\n' "$CORE_NOTES"
+            if [ -n "$JSON_NOTES" ]; then printf '\n## Fabulous.AST.Json\n\n%s\n' "$JSON_NOTES"; fi
+            if [ -n "$BUILD_NOTES" ]; then printf '\n## Fabulous.AST.Build\n\n%s\n' "$BUILD_NOTES"; fi
+          } > release-notes.md
+          prerelease=""
+          if [ -n "$PRE_RELEASE" ]; then prerelease="--prerelease"; fi
+          gh release create "$RELEASE_VERSION" --repo "$GITHUB_REPOSITORY" --verify-tag $prerelease \
+            --title "$RELEASE_VERSION" --notes-file release-notes.md
