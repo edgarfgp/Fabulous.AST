@@ -4,7 +4,9 @@ on:
     tags: ['[0-9]+.[0-9]+.[0-9]+', '[0-9]+.[0-9]+.[0-9]+-pre[0-9]+']
     paths-ignore: [ 'docs/**' ]
 
-permissions: write-all
+permissions:
+  contents: read
+  id-token: write   # OIDC token for NuGet Trusted Publishing
 
 env:
   CONFIG: Release
@@ -93,5 +95,12 @@ jobs:
         with:
           name: Packages
           path: nupkgs/
+      # Trusted Publishing: exchanges the job's OIDC token for a short-lived (~1h) NuGet API key.
+      # Requires a policy on nuget.org for edgarfgp/Fabulous.AST, workflow release.yml, environment nuget.
+      - name: NuGet login (OIDC)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: edgardev
       - name: Push
-        run: dotnet nuget push "nupkgs/*" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_TOKEN }} --skip-duplicate
+        run: dotnet nuget push "nupkgs/*" -s https://api.nuget.org/v3/index.json -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --skip-duplicate
