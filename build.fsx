@@ -9,6 +9,14 @@ let sln = __SOURCE_DIRECTORY__ </> "Fabulous.AST.slnx"
 let config = "Release"
 let nupkgs = __SOURCE_DIRECTORY__ </> "nupkgs"
 
+/// The packages whose API reference fsdocs generates. Listed explicitly: fsdocs 22 reads the .slnx
+/// and would otherwise crack every project in it (samples, tests), failing under --strict.
+let docsProjects =
+    [ "src/Fabulous.AST/Fabulous.AST.fsproj"
+      "extensions/Fabulous.AST.Json/Fabulous.AST.Json.fsproj"
+      "extensions/Fabulous.AST.Build/Fabulous.AST.Build.fsproj" ]
+    |> String.concat " "
+
 let nightlyVersion =
     Environment.GetEnvironmentVariable("NIGHTLY_VERSION")
     |> Option.ofObj
@@ -64,7 +72,7 @@ pipeline "ci" {
         run $"dotnet publish src/Fabulous.AST -f netstandard2.1 -c {config}"
         run $"dotnet publish extensions/Fabulous.AST.Json -f net10.0 -c {config}"
         run $"dotnet publish extensions/Fabulous.AST.Build -f net10.0 -c {config}"
-        run $"dotnet fsdocs build --properties Configuration={config} --eval --strict"
+        run $"dotnet fsdocs build --projects {docsProjects} --properties Configuration={config} --eval --strict"
         run(fun _ -> checkDocsOutput(__SOURCE_DIRECTORY__ </> "output"))
     }
 
@@ -82,7 +90,7 @@ pipeline "docs" {
         run "dotnet publish extensions/Fabulous.AST.Build -f net10.0 -c Release"
     }
 
-    stage "watch" { run "dotnet fsdocs watch --eval --clean" }
+    stage "watch" { run $"dotnet fsdocs watch --projects {docsProjects} --eval --clean" }
     runIfOnlySpecified true
 }
 
