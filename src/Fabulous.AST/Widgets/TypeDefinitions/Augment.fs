@@ -17,16 +17,10 @@ module Augmentation =
             let name = Widgets.getScalarValue widget Name
 
             let identifiers =
-                if name.Contains("``") then
-                    [ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ]
-                else
-                    name.Split('.')
-                    |> Array.map(fun segment ->
-                        IdentifierOrDot.Ident(
-                            SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks segment)
-                        ))
-                    |> List.ofArray
-                    |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
+                Naming.splitQualified name
+                |> List.map(fun segment ->
+                    IdentifierOrDot.Ident(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks segment)))
+                |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members

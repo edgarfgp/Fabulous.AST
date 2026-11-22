@@ -38,3 +38,11 @@ let private ( a ) = 12
 let ( * ) = fun a b -> a * b
 let ( *+ ) = fun a b -> a * b + b
 """
+
+    [<Fact>]
+    let ``Identifier names are still normalized``() =
+        Oak() { AnonymousModule() { Value(NamedParenStarIdentPat("type"), Int(1)) } }
+        |> producesValid
+            """
+let ( ``type`` ) = 1
+"""

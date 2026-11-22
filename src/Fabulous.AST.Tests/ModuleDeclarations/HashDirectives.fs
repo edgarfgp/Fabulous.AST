@@ -233,3 +233,16 @@ let x = 1
             |> _.hashDirective(ModuleDeclAttribute(UnitExpr()))
             |> ignore)
         |> ignore
+
+    [<Fact>]
+    let ``Oak hash directive keeps its conditional guard``() =
+        Oak() { AnonymousModule() { Value("x", Int(1)) } }
+        |> _.hashDirective(NoWarn("0044").triviaBefore(Directive("#if DEBUG")).triviaAfter(Directive("#endif")))
+        |> producesValid
+            """
+#if DEBUG
+#nowarn 0044
+#endif
+
+let x = 1
+"""

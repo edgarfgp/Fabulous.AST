@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `toRecursive()` on `Function` and `Value` generates `let rec`
 - `UseBangExpr` generates a `use!` binding in computation expressions
-- `Oak().hashDirective(...)` / `hashDirectives(...)` accept `NoWarn` and `HashDirective`, placing the directives at the top of the file. The existing overloads only accepted raw `ParsedHashDirectiveNode`s, which no builder produced
+- `Oak().hashDirective(...)` / `hashDirectives(...)` accept `NoWarn` and `HashDirective`, placing the directives at the top of the file (trivia such as an `#if` guard is kept). The existing overloads only accepted raw `ParsedHashDirectiveNode`s, which no builder produced
 
 ### Fixed
 - `StructAnonRecord` printed `struct [ X: float |}`; it now prints `struct {| X: float |}`

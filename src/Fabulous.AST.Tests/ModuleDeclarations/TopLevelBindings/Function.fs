@@ -543,3 +543,17 @@ let rec fact (n: int) = if n <= 1 then 1 else n * fact (n - 1)
 let rec inline count xs = List.length xs
 let rec ones = 1 :: ones
 """
+
+    [<Fact>]
+    let ``Only operator and active pattern names skip backticks``() =
+        Oak() {
+            AnonymousModule() {
+                Function("(test case)", ParameterPat("x"), "x")
+                Function("( +! )", [ ParameterPat("a"); ParameterPat("b") ], "a + b")
+            }
+        }
+        |> producesValid
+            """
+let ``(test case)`` x = x
+let ( +! ) a b = a + b
+"""

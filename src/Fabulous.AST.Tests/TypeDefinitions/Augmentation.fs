@@ -165,3 +165,20 @@ type IEnumerable<'T> with
 type System.String with
     member this.Shout() = this.ToUpper()
 """
+
+    [<Fact>]
+    let ``Each segment of a qualified name is normalized``() =
+        Oak() {
+            AnonymousModule() {
+                Augmentation("type.``Widget``") { Member("this.X", Int(1)) }
+                Augmentation("System.``My.Type``") { Member("this.X", Int(1)) }
+            }
+        }
+        |> producesValid
+            """
+type ``type``.Widget with
+    member this.X = 1
+
+type System.``My.Type`` with
+    member this.X = 1
+"""

@@ -68,6 +68,49 @@ module CommonExtensions =
                 Range.range0
             )
 
+/// Helpers for names that must not be wrapped in double backticks.
+[<RequireQualifiedAccess>]
+module Naming =
+    let private operatorChars = "!%&*+-./<=>?@^|~:$"
+
+    /// True for a symbolic operator name such as `*`, `*+` or `>>=`.
+    let isSymbolicOperator(name: string) =
+        name.Length > 0 && name |> Seq.forall(fun c -> operatorChars.IndexOf(c) >= 0)
+
+    /// True for a parenthesized active pattern name (`(|Even|Odd|)`, `(|Int|_|)`) or operator (`( +! )`).
+    let isParenthesizedOperatorOrActivePattern(name: string) =
+        if name.Length > 2 && name.StartsWith("(") && name.EndsWith(")") then
+            let inner = name.Substring(1, name.Length - 2).Trim()
+
+            (inner.Length > 2 && inner.StartsWith("|") && inner.EndsWith("|"))
+            || isSymbolicOperator inner
+        else
+            false
+
+    /// Splits a qualified name on the dots that are not inside double backticks
+    /// (`` System.``My.Type`` `` → `System`, ``` ``My.Type`` ```).
+    let splitQualified(name: string) : string list =
+        let segments = ResizeArray<string>()
+        let current = System.Text.StringBuilder()
+        let mutable inBackticks = false
+        let mutable i = 0
+
+        while i < name.Length do
+            if i + 1 < name.Length && name[i] = '`' && name[i + 1] = '`' then
+                inBackticks <- not inBackticks
+                current.Append("``") |> ignore
+                i <- i + 2
+            elif name[i] = '.' && not inBackticks then
+                segments.Add(current.ToString())
+                current.Clear() |> ignore
+                i <- i + 1
+            else
+                current.Append(name[i]) |> ignore
+                i <- i + 1
+
+        segments.Add(current.ToString())
+        List.ofSeq segments
+
 /// Helpers for curried parameters (`let f a b`, `member this.M a b`, `fun a b -> ...`).
 [<RequireQualifiedAccess>]
 module CurriedParameter =

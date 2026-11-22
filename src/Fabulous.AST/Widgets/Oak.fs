@@ -12,6 +12,33 @@ module Oak =
     let ParsedHashDirectives =
         Attributes.defineScalar<ParsedHashDirectiveNode seq> "ParsedHashDirectives"
 
+    /// The directives of a hash directive declaration (`NoWarn`, `HashDirective`). Trivia attached to the
+    /// declaration, such as an `#if DEBUG` / `#endif` guard, moves to the first and last directive.
+    let hashDirectivesOf(decl: ModuleDecl) : ParsedHashDirectiveNode list =
+        match decl with
+        | ModuleDecl.HashDirectiveList node ->
+            let directives = node.HashDirectives
+
+            match directives with
+            | [] -> []
+            | first :: _ ->
+                let last = List.last directives
+
+                for trivia in node.ContentBefore do
+                    first.AddBefore(trivia)
+
+                for trivia in node.ContentAfter do
+                    last.AddAfter(trivia)
+
+                directives
+        | _ ->
+            raise(
+                System.ArgumentException(
+                    "Oak hash directives must be hash directive declarations such as NoWarn or HashDirective.",
+                    "values"
+                )
+            )
+
     let WidgetKey =
         Widgets.register "AnonymousModule" (fun widget ->
             let decls = Widgets.getNodesFromWidgetCollection<ModuleOrNamespaceNode> widget Decls
@@ -77,15 +104,7 @@ type SyntaxOakModifiers =
     static member inline hashDirectives(this: WidgetBuilder<Oak>, values: WidgetBuilder<ModuleDecl> seq) =
         let directives =
             [ for value in values do
-                  match Gen.mkOak value with
-                  | ModuleDecl.HashDirectiveList node -> yield! node.HashDirectives
-                  | _ ->
-                      raise(
-                          System.ArgumentException(
-                              "Oak hash directives must be hash directive declarations such as NoWarn or HashDirective.",
-                              "values"
-                          )
-                      ) ]
+                  yield! Oak.hashDirectivesOf(Gen.mkOak value) ]
 
         this.AddScalar(Oak.ParsedHashDirectives.WithValue(directives))
 

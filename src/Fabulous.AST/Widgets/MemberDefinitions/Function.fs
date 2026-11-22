@@ -90,7 +90,7 @@ module BindingFunctionBuilders =
             ) =
             // Active patterns (`(|Even|Odd|)`) and operators (`( +! )`) are written as is.
             let name =
-                if name.StartsWith("(") then
+                if Naming.isParenthesizedOperatorOrActivePattern name then
                     name
                 else
                     PrettyNaming.NormalizeIdentifierBackticks name
