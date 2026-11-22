@@ -496,3 +496,19 @@ let unwrap (Some x) = x
 let isText (:? string) = true
 let ignore2 x () (y) = x
 """
+
+    [<Fact>]
+    let ``Compound patterns wrapped in an untyped ParameterPat are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("fst", ParameterPat(TuplePat([ NamedPat("a"); NamedPat("b") ])), "a")
+                Function("unwrap", ParameterPat(LongIdentPat("Some", NamedPat("x"))), "x")
+                Function("id", ParameterPat(NamedPat("x")), "x")
+            }
+        }
+        |> producesValid
+            """
+let fst (a, b) = a
+let unwrap (Some x) = x
+let id x = x
+"""

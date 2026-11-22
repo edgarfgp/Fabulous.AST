@@ -75,22 +75,27 @@ module CurriedParameter =
     /// parenthesized: `let f a: string` would make `string` the return type, `let f Some x`
     /// would take two parameters, and `let f a, b` does not parse. Patterns that are already
     /// atomic (names, wildcards, constants, `()`, parenthesized patterns, ...) are left as they are.
-    let parenthesize(pattern: Pattern) : Pattern =
-        let paren() =
-            Pattern.Paren(PatParenNode(SingleTextNode.Create "(", pattern, SingleTextNode.Create ")", Range.range0))
-
+    let rec private needsParens(pattern: Pattern) : bool =
         match pattern with
-        | Pattern.Parameter node when node.Type.IsSome || node.Attributes.IsSome -> paren()
+        // `ParameterPat` wraps another pattern: it needs parentheses for its own type annotation or
+        // attributes, or when the wrapped pattern does (`ParameterPat(TuplePat(...))`).
+        | Pattern.Parameter node -> node.Type.IsSome || node.Attributes.IsSome || needsParens node.Pattern
         // `LongIdentPat([ a; b ])` without a name is a bare list of curried parameters; only a
         // named pattern with arguments (`Some x`) needs parentheses.
-        | Pattern.LongIdent node when not node.Identifier.Content.IsEmpty && not node.Parameters.IsEmpty -> paren()
+        | Pattern.LongIdent node -> not node.Identifier.IsEmpty && not node.Parameters.IsEmpty
         | Pattern.Tuple _
         | Pattern.Or _
         | Pattern.Ands _
         | Pattern.As _
         | Pattern.ListCons _
-        | Pattern.IsInst _ -> paren()
-        | _ -> pattern
+        | Pattern.IsInst _ -> true
+        | _ -> false
+
+    let parenthesize(pattern: Pattern) : Pattern =
+        if needsParens pattern then
+            Pattern.Paren(PatParenNode(SingleTextNode.Create "(", pattern, SingleTextNode.Create ")", Range.range0))
+        else
+            pattern
 
 [<RequireQualifiedAccess>]
 module List =
