@@ -35,7 +35,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OtherFlags>$(OtherFlags) --test:GraphBasedChecking --test:ParallelOptimization --test:ParallelIlxGen --realsig+</OtherFlags>
+    <!--
+      No `realsig+`: it gives every module with values its own static constructor, and modules that
+      share a file then initialize each other through the file's startup class. Two threads touching
+      two such modules for the first time deadlock, and the runtime breaks the deadlock by letting one
+      thread read values that are not set yet (a widget key of 0). StaticInitializationTests guards this.
+    -->
+    <OtherFlags>$(OtherFlags) --test:GraphBasedChecking --test:ParallelOptimization --test:ParallelIlxGen</OtherFlags>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
   </PropertyGroup>
 

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Oak().hashDirective(...)` / `hashDirectives(...)` accept `NoWarn` and `HashDirective`, placing the directives at the top of the file (trivia such as an `#if` guard is kept). The existing overloads only accepted raw `ParsedHashDirectiveNode`s, which no builder produced
 
 ### Fixed
+- Building trees on several threads at once could fail on first use with `Could not find widget collection attribute Decls on widget { Key = 0 ... }`. The library was compiled with `--realsig+`, which gives each module its own static constructor; modules sharing a file (such as `Constant`, `ConstantUnit` and `ConstantMeasure`) then deadlocked on first use, and the runtime let one thread read widget keys that were not set yet. The packages are now built without `--realsig+`
 - `StructAnonRecord` printed `struct [ X: float |}`; it now prints `struct {| X: float |}`
 - `OptionalValPat("name")` dropped the `?`; it now prints `?name`
 - Names were wrapped in backticks where F# does not allow them: type variables in `Var("'T")`, operators in `NamedParenStarIdentPat("*")`, the `const` keyword in `StaticConstantExpr`, and active pattern names such as `Function("(|Even|Odd|)", ...)`. A qualified `Augmentation("System.String")` now prints `type System.String with` instead of ``type ``System.String`` with``
