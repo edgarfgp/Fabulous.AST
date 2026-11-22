@@ -103,7 +103,9 @@ module BlockCommentBuilders =
         /// <remarks>
         /// Used with <c>triviaBefore</c> on a declaration (a value, function, member, type or other module declaration),
         /// the comment is always followed by a line break, because a declaration that starts after a comment on the same
-        /// line breaks the offside rule. Before an expression, pattern or type the comment can stay inline.
+        /// line breaks the offside rule. A <c>do</c> expression gets the same treatment once it is yielded into a class or module.
+        /// Before an expression, pattern or type the comment can stay inline; for any other expression yielded directly into a
+        /// module, pass <c>newlineAfter = true</c> so that it does not share a line with the expression.
         /// </remarks>
         /// <param name="comment">The comment text.</param>
         /// <param name="newlineBefore">Whether to add a newline before the comment content.</param>
@@ -168,30 +170,6 @@ module NewlineBuilders =
         /// </code>
         static member Newline() =
             WidgetBuilder<TriviaContent>(Newline.WidgetKey)
-
-/// Placement rules applied by the triviaBefore modifiers.
-[<RequireQualifiedAccess>]
-module TriviaPlacement =
-    /// A block comment printed on the same line as a declaration pushes the declaration's keyword to the right,
-    /// which breaks the offside rule for every declaration except the first one; keep it on its own line instead.
-    let ownLine(trivia: TriviaNode) =
-        match trivia.Content with
-        | TriviaContent.BlockComment(comment, newlineBefore, false) ->
-            TriviaNode(TriviaContent.BlockComment(comment, newlineBefore, true), trivia.Range)
-        | _ -> trivia
-
-    let private isDeclaration(node: NodeBase) =
-        match node with
-        | :? BindingNode
-        | :? ExternBindingNode
-        | :? ValNode
-        | :? MemberDefnInterfaceNode
-        | :? ModuleOrNamespaceNode -> true
-        | _ -> false
-
-    /// Applies ownLine when the node is a declaration and leaves trivia on other nodes, such as expressions, untouched.
-    let before (node: NodeBase) (trivia: TriviaNode) =
-        if isDeclaration node then ownLine trivia else trivia
 
 type TriviaNodeModifiers =
     /// <summary>Adds trivia before the current node.</summary>

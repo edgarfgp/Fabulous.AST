@@ -127,6 +127,31 @@ type C() =
 """
 
     [<Fact>]
+    let ``Block comment before a do expression stays on its own line once it becomes a declaration``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("C", UnitPat()) {
+                    LetBindings([ Value("x", Int(1)) ])
+                    DoExpr(AppExpr("printfn", String("class"))).triviaBefore(BlockComment("Class do"))
+                }
+
+                Value("y", Int(2))
+                SingleExpr(DoExpr(AppExpr("printfn", String("module"))).triviaBefore(BlockComment("Module do")))
+            }
+        }
+        |> producesValid
+            """
+type C() =
+    let x = 1
+    (*Class do*)
+    do printfn "class"
+
+let y = 2
+(*Module do*)
+do printfn "module"
+"""
+
+    [<Fact>]
     let ``Block comment before an expression stays inline``() =
         Oak() { AnonymousModule() { Value("x", ConstantExpr(Int(500)).triviaBefore(BlockComment("ms"))) } }
         |> producesValid
