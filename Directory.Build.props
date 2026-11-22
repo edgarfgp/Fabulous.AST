@@ -16,7 +16,7 @@
     <Authors>Edgar Gonzalez, Timothé Larivière</Authors>
     <PackageTags>F#;Declarative;AST;Fantomas</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
