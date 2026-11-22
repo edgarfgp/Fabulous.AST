@@ -8,11 +8,11 @@ module OptionalVal =
     let Value = Attributes.defineScalar<string> "Value"
 
     let WidgetKey =
-        Widgets.register "Pattern" (fun widget ->
-            let value =
-                Widgets.getScalarValue widget Value |> PrettyNaming.NormalizeIdentifierBackticks
-
-            Pattern.OptionalVal(SingleTextNode.Create(value)))
+        Widgets.register "OptionalVal" (fun widget ->
+            // Accept both `name` and `?name`; the pattern is always written `?name`.
+            let value = (Widgets.getScalarValue widget Value).TrimStart('?')
+            let value = PrettyNaming.NormalizeIdentifierBackticks value
+            Pattern.OptionalVal(SingleTextNode.Create("?" + value)))
 
 [<AutoOpen>]
 module OptionalValBuilders =

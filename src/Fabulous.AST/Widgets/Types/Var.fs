@@ -9,9 +9,14 @@ module TypeVar =
 
     let WidgetKey =
         Widgets.register "TypeVar" (fun widget ->
+            let identifier = Widgets.getScalarValue widget Identifier
+
+            // A type variable ('T, ^T) is written as is; anything else is an identifier.
             let identifier =
-                Widgets.getScalarValue widget Identifier
-                |> PrettyNaming.NormalizeIdentifierBackticks
+                if identifier.StartsWith("'") || identifier.StartsWith("^") then
+                    identifier
+                else
+                    PrettyNaming.NormalizeIdentifierBackticks identifier
 
             Type.Var(SingleTextNode.Create(identifier)))
 

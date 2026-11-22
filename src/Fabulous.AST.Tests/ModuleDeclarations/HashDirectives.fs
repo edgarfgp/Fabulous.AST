@@ -214,3 +214,60 @@ let str = "Debugging!"
 #nowarn "0046"
 open System
 """
+
+    [<Fact>]
+    let ``Oak hash directives accept NoWarn and HashDirective``() =
+        Oak() { AnonymousModule() { Value("x", Int(1)) } }
+        |> _.hashDirectives([ NoWarn("0044"); HashDirective("r", String("nuget: Fantomas.Core")) ])
+        |> producesValid
+            """
+#nowarn 0044
+#r "nuget: Fantomas.Core"
+let x = 1
+"""
+
+    [<Fact>]
+    let ``Oak hash directive rejects declarations that are not directives``() =
+        Assert.Throws<System.ArgumentException>(fun () ->
+            Oak() { AnonymousModule() { Value("x", Int(1)) } }
+            |> _.hashDirective(ModuleDeclAttribute(UnitExpr()))
+            |> ignore)
+        |> ignore
+
+    [<Fact>]
+    let ``Oak hash directive keeps its conditional guard``() =
+        Oak() { AnonymousModule() { Value("x", Int(1)) } }
+        |> _.hashDirective(NoWarn("0044").triviaBefore(Directive("#if DEBUG")).triviaAfter(Directive("#endif")))
+        |> producesValid
+            """
+#if DEBUG
+#nowarn 0044
+#endif
+
+let x = 1
+"""
+
+    [<Fact>]
+    let ``A guarded directive builder can be reused``() =
+        let guarded =
+            NoWarn("0044").triviaBefore(Directive("#if DEBUG")).triviaAfter(Directive("#endif"))
+
+        let first =
+            Oak() { AnonymousModule() { Value("x", Int(1)) } } |> _.hashDirective(guarded)
+
+        let second =
+            Oak() { AnonymousModule() { Value("y", Int(2)) } } |> _.hashDirective(guarded)
+
+        let expected name value =
+            $"""
+#if DEBUG
+#nowarn 0044
+#endif
+
+let {name} = {value}
+"""
+
+        // Render each tree twice: the guard must appear exactly once every time.
+        first |> producesValid(expected "x" 1)
+        second |> producesValid(expected "y" 2)
+        first |> producesValid(expected "x" 1)

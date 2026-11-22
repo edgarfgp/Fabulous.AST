@@ -11,6 +11,18 @@ module BindingNode =
     let IsMutable = Attributes.defineScalar<bool> "IsMutable"
     let XmlDocs = Attributes.defineWidget "XmlDocs"
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
+    let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
+
+    /// The leading keywords of a `let` binding: `let`, or `let rec` when the binding is recursive.
+    let leadingKeywords (widget: Widget) (leading: SingleTextNode) =
+        let isRecursive =
+            Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
+
+        if isRecursive then
+            MultipleTextsNode([ leading; SingleTextNode.Create "rec" ], Fantomas.FCS.Text.Range.range0)
+        else
+            MultipleTextsNode([ leading ], Fantomas.FCS.Text.Range.range0)
+
     let IsStatic = Attributes.defineScalar<bool> "IsStatic"
     let IsOverride = Attributes.defineScalar<bool> "IsOverride"
 
@@ -169,6 +181,22 @@ type BindingNodeModifiers =
     [<Extension>]
     static member inline toInlined(this: WidgetBuilder<BindingNode>) =
         this.AddScalar(BindingNode.IsInlined.WithValue(true))
+
+    /// <summary>
+    /// Makes the current <c>let</c> binding recursive (<c>let rec</c>), so it can refer to itself.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Function("fact", ParameterPat("n", Int()), "if n &lt;= 1 then 1 else n * fact (n - 1)")
+    ///             .toRecursive()
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toRecursive(this: WidgetBuilder<BindingNode>) =
+        this.AddScalar(BindingNode.IsRecursive.WithValue(true))
 
     /// <summary>
     /// Sets the current widget to be static.

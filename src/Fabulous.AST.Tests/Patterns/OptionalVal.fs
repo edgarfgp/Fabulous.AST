@@ -10,9 +10,18 @@ open type Ast
 module OptionalVal =
 
     [<Fact>]
-    let ``let value with a OptionalVal pattern``() =
-        Oak() { AnonymousModule() { Value(OptionalValPat("a"), ConstantExpr(Int(12))) } }
+    let ``Optional parameter keeps its question mark``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Greeter", Constructor()) {
+                    Member("this.Greet", ParameterPat(OptionalValPat("name"), String()), "name")
+                    Member("this.Wave", ParameterPat(OptionalValPat("?name"), String()), "name")
+                }
+            }
+        }
         |> producesValid
             """
-let a = 12
+type Greeter() =
+    member this.Greet(?name: string) = name
+    member this.Wave(?name: string) = name
 """

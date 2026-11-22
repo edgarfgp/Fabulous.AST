@@ -24,3 +24,25 @@ let ( a ) = 12
             """
 let private ( a ) = 12
 """
+
+    [<Fact>]
+    let ``Operator names are not backticked``() =
+        Oak() {
+            AnonymousModule() {
+                Value(NamedParenStarIdentPat("*"), Constant("fun a b -> a * b"))
+                Value(NamedParenStarIdentPat("*+"), Constant("fun a b -> a * b + b"))
+            }
+        }
+        |> producesValid
+            """
+let ( * ) = fun a b -> a * b
+let ( *+ ) = fun a b -> a * b + b
+"""
+
+    [<Fact>]
+    let ``Identifier names are still normalized``() =
+        Oak() { AnonymousModule() { Value(NamedParenStarIdentPat("type"), Int(1)) } }
+        |> producesValid
+            """
+let ( ``type`` ) = 1
+"""

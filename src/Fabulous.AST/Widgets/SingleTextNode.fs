@@ -78,6 +78,7 @@ module SingleTextNode =
     let ``exception`` = SingleTextNode.Create "exception"
     let letBang = SingleTextNode.Create "let!"
     let andBang = SingleTextNode.Create "and!"
+    let useBang = SingleTextNode.Create "use!"
     let ``use`` = SingleTextNode.Create "use"
     let ``for`` = SingleTextNode.Create "for"
     let ``do`` = SingleTextNode.Create "do"

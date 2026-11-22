@@ -154,3 +154,31 @@ type IEnumerable<'T> with
                 for _ in 1 .. n -> x
         }
  """
+
+    [<Fact>]
+    let ``Qualified type names are not backticked``() =
+        Oak() {
+            AnonymousModule() { Augmentation("System.String") { Member("this.Shout()", Constant("this.ToUpper()")) } }
+        }
+        |> producesValid
+            """
+type System.String with
+    member this.Shout() = this.ToUpper()
+"""
+
+    [<Fact>]
+    let ``Each segment of a qualified name is normalized``() =
+        Oak() {
+            AnonymousModule() {
+                Augmentation("type.``Widget``") { Member("this.X", Int(1)) }
+                Augmentation("System.``My.Type``") { Member("this.X", Int(1)) }
+            }
+        }
+        |> producesValid
+            """
+type ``type``.Widget with
+    member this.X = 1
+
+type System.``My.Type`` with
+    member this.X = 1
+"""

@@ -68,3 +68,30 @@ seq {
     2
 }
 """
+
+    [<Fact>]
+    let ``use! binding in a computation expression``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "read",
+                    NamedComputationExpr(
+                        "task",
+                        CompExprBodyExpr(
+                            [ UseBangExpr("stream", "openAsync path")
+                              LetOrUseBangExpr("text", "readAllAsync stream")
+                              OtherExpr(SingleExpr("return", "text")) ]
+                        )
+                    )
+                )
+            }
+        }
+        |> producesValid
+            """
+let read =
+    task {
+        use! stream = openAsync path
+        let! text = readAllAsync stream
+        return text
+    }
+"""

@@ -501,3 +501,73 @@ let test (env: 't & #System.Numerics.INumber<'t> & #IEquatable<'t>) = ()
             """
 let test (env: #ILogger1: #ILogger2) = ()
 """
+
+    [<Fact>]
+    let ``Type variables are not backticked``() =
+        Oak() {
+            AnonymousModule() {
+                Function("id1", ParameterPat("x", Var("'a")), "x")
+                Function("id2", ParameterPat("x", Var("^b")), "x").toInlined()
+            }
+        }
+        |> producesValid
+            """
+let id1 (x: 'a) = x
+let inline id2 (x: ^b) = x
+"""
+
+    [<Fact>]
+    let ``Struct anonymous record type``() =
+        Oak() {
+            AnonymousModule() {
+                Function("toPoint", ParameterPat("p", StructAnonRecord([ "X", Float(); "Y", Float() ])), "p")
+                Abbrev("Size", AnonRecord([ "Width", Float(); "Height", Float() ]))
+            }
+        }
+        |> producesValid
+            """
+let toPoint (p: struct {| X: float; Y: float |}) = p
+type Size = {| Width: float; Height: float |}
+"""
+
+    [<Fact>]
+    let ``Static constant expression keeps its keyword``() =
+        Oak() { AnonymousModule() { Abbrev("V3", AppPrefix("Vector", [ StaticConstantExpr("const", Int(3)) ])) } }
+        |> produces
+            """
+type V3 = Vector<const 3>
+"""
+
+    [<Fact>]
+    let ``Prefix type parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Abbrev("Pair", Tuple([ "'a"; "'b" ])).typeParams(PrefixList([ "'a"; "'b" ]))
+                Abbrev("Box", "'a list").typeParams(PrefixList("'a"))
+            }
+        }
+        |> producesValid
+            """
+type ('a, 'b) Pair = 'a * 'b
+type ('a) Box = 'a list
+"""
+
+    [<Fact>]
+    let ``Intersection constraints are joined with ampersands``() =
+        Oak() {
+            AnonymousModule() {
+                Function("useBoth", ParameterPat("x", "'T"), "x")
+                    .typeParams(
+                        PostfixList(
+                            TyparDecl(
+                                "'T",
+                                [ HashConstraint("System.IComparable"); HashConstraint("System.IDisposable") ]
+                            )
+                        )
+                    )
+            }
+        }
+        |> producesValid
+            """
+let useBoth<'T & #System.IComparable & #System.IDisposable> (x: 'T) = x
+"""

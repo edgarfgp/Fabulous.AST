@@ -13,8 +13,14 @@ module Augmentation =
 
     let WidgetKey =
         Widgets.register "Augmentation" (fun widget ->
-            let name =
-                Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
+            // The extended type may be qualified (`System.String`): normalize each segment.
+            let name = Widgets.getScalarValue widget Name
+
+            let identifiers =
+                Naming.splitQualified name
+                |> List.map(fun segment ->
+                    IdentifierOrDot.Ident(SingleTextNode.Create(PrettyNaming.NormalizeIdentifierBackticks segment)))
+                |> List.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot))
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection<MemberDefn> widget Members
@@ -49,9 +55,7 @@ module Augmentation =
                         attributes,
                         SingleTextNode.``type``,
                         accessControl,
-                        Type.LongIdent(
-                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
-                        ),
+                        Type.LongIdent(IdentListNode(identifiers, Range.range0)),
                         typeParams,
                         [],
                         None,

@@ -93,7 +93,7 @@ Oak() {
 
 (**
 ## Hash Directives
-Add compiler directives to modules with the `hashDirective` or `hashDirectives` methods:
+Hash directives are declarations: `NoWarn` creates `#nowarn` and `HashDirective(name, arguments)` creates any other directive:
 *)
 
 Oak() {
@@ -102,6 +102,20 @@ Oak() {
         Module("MyModule") { Value("x", Int(42)) }
     }
 }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+To place directives at the top of the file, before any namespace or module, pass them to the
+`hashDirective` or `hashDirectives` modifier of `Oak()`:
+*)
+
+Oak() { Namespace("MyApp") { Module("MyModule") { Value("x", Int(42)) } } }
+|> _.hashDirectives([ NoWarn("0044"); HashDirective("r", String("nuget: FSharp.Data")) ])
 |> Gen.mkOak
 |> Gen.run
 |> printfn "%s"

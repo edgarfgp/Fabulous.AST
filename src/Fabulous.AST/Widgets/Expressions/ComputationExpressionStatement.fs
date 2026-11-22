@@ -71,6 +71,12 @@ module ComputationExpressionStatement =
             let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
             ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.letBang pat expr))
 
+    let WidgetUseBangStatementKey =
+        Widgets.register "UseBangStatement" (fun widget ->
+            let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
+            let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
+            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.useBang pat expr))
+
     let WidgetAndBangStatementKey =
         Widgets.register "AndBangStatement" (fun widget ->
             let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
@@ -116,6 +122,33 @@ module ComputationExpressionStatementBuilders =
 
         static member LetOrUseBangExpr(pat: string, expr: string) =
             Ast.LetOrUseBangExpr(Ast.Constant(pat), Ast.Constant(expr))
+
+        /// <summary>Creates a <c>use!</c> binding inside a computation expression; the bound value is
+        /// disposed when it goes out of scope.</summary>
+        /// <param name="pat">The pattern to bind.</param>
+        /// <param name="expr">The computation whose result is bound.</param>
+        /// <code language="fsharp">
+        /// NamedComputationExpr("task", CompExprBodyExpr([ UseBangExpr("conn", "openAsync ()"); OtherExpr("conn.Query()") ]))
+        /// </code>
+        static member UseBangExpr(pat: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
+            WidgetBuilder<ComputationExpressionStatement>(
+                ComputationExpressionStatement.WidgetUseBangStatementKey,
+                AttributesBundle(
+                    StackList.empty(),
+                    [| ComputationExpressionStatement.PatternValue.WithValue(pat.Compile())
+                       ComputationExpressionStatement.ExprValue.WithValue(expr.Compile()) |],
+                    Array.empty
+                )
+            )
+
+        static member UseBangExpr(pat: WidgetBuilder<Constant>, expr: WidgetBuilder<Expr>) =
+            Ast.UseBangExpr(Ast.ConstantPat(pat), expr)
+
+        static member UseBangExpr(pat: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
+            Ast.UseBangExpr(Ast.ConstantPat(pat), Ast.ConstantExpr(expr))
+
+        static member UseBangExpr(pat: string, expr: string) =
+            Ast.UseBangExpr(Ast.Constant(pat), Ast.Constant(expr))
 
         static member AndBangExpr(pat: WidgetBuilder<Pattern>, expr: WidgetBuilder<Expr>) =
             WidgetBuilder<ComputationExpressionStatement>(

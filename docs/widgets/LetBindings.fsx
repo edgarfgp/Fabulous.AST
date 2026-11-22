@@ -15,6 +15,7 @@ index: 4
 - [Let Bindings for Values](#Let-Bindings-for-Values)
 - [Let Bindings with Patterns](#Let-Bindings-with-Patterns)
 - [Function Bindings](#Function-Bindings)
+- [Recursive Functions](#Recursive-Functions)
 - [Type Annotations](#Type-Annotations)
 - [Mutable and Inlined Bindings](#Mutable-and-Inlined-Bindings)
 - [Let Bindings in Classes](#Let-Bindings-in-Classes)
@@ -135,6 +136,23 @@ Oak() {
 
         // Function with a simpler syntax
         Function("greet", "name", AppExpr("printfn", String("Hello, %s!")))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Recursive Functions
+A function that calls itself must be declared with `let rec`; use `toRecursive()`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Function("factorial", ParameterPat("n", Int()), "if n <= 1 then 1 else n * factorial (n - 1)").toRecursive()
     }
 }
 |> Gen.mkOak

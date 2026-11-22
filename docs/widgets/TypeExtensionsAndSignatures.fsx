@@ -86,7 +86,7 @@ Oak() {
 (*** include-output ***)
 
 (**
-`Augmentation` treats the whole name as a single identifier, so a dotted name such as `"System.String"` is printed as ``` ``System.String`` ```; open the namespace and use the short name instead, as above.
+The extended type can also be given by its full name, such as `Augmentation("System.String")`, which generates `type System.String with`.
 
 ## Generic Type Extensions
 Use `typeParams` to extend a generic type:

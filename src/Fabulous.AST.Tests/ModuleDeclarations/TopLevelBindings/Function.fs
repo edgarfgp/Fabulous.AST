@@ -512,3 +512,62 @@ let fst (a, b) = a
 let unwrap (Some x) = x
 let id x = x
 """
+
+    [<Fact>]
+    let ``Active pattern names are not backticked``() =
+        Oak() {
+            AnonymousModule() {
+                Function("(|Even|Odd|)", ParameterPat("n", Int()), "if n % 2 = 0 then Even else Odd")
+                Function("(|Int|_|)", ParameterPat("s", String()), "None")
+            }
+        }
+        |> producesValid
+            """
+let (|Even|Odd|) (n: int) = if n % 2 = 0 then Even else Odd
+let (|Int|_|) (s: string) = None
+"""
+
+    [<Fact>]
+    let ``Recursive functions use let rec``() =
+        Oak() {
+            AnonymousModule() {
+                Function("fact", ParameterPat("n", Int()), "if n <= 1 then 1 else n * fact (n - 1)").toRecursive()
+
+                Function("count", ParameterPat("xs"), "List.length xs").toRecursive().toInlined()
+                Value("ones", "1 :: ones").toRecursive()
+            }
+        }
+        |> producesValid
+            """
+let rec fact (n: int) = if n <= 1 then 1 else n * fact (n - 1)
+let rec inline count xs = List.length xs
+let rec ones = 1 :: ones
+"""
+
+    [<Fact>]
+    let ``Only operator and active pattern names skip backticks``() =
+        Oak() {
+            AnonymousModule() {
+                Function("(test case)", ParameterPat("x"), "x")
+                Function("( +! )", [ ParameterPat("a"); ParameterPat("b") ], "a + b")
+            }
+        }
+        |> producesValid
+            """
+let ``(test case)`` x = x
+let ( +! ) a b = a + b
+"""
+
+    [<Fact>]
+    let ``Operator names get spaces inside the parentheses``() =
+        Oak() {
+            AnonymousModule() {
+                Function("(*+)", [ ParameterPat("a"); ParameterPat("b") ], "a * b + b")
+                Function("(>>=)", [ ParameterPat("m"); ParameterPat("f") ], "Option.bind f m")
+            }
+        }
+        |> producesValid
+            """
+let ( *+ ) a b = a * b + b
+let ( >>= ) m f = Option.bind f m
+"""

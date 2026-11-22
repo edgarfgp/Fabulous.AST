@@ -56,7 +56,7 @@ module BindingValue =
             BindingNode(
                 xmlDocs,
                 attributes,
-                MultipleTextsNode([ leadingKeyword ], Range.range0),
+                BindingNode.leadingKeywords widget leadingKeyword,
                 isMutable,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
