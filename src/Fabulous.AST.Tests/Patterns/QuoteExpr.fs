@@ -1,5 +1,7 @@
 namespace Fabulous.AST.Tests.Patterns
 
+#nowarn "44" // QuoteExprPat is obsolete; this test keeps its output covered
+
 open Xunit
 open Fabulous.AST.Tests
 

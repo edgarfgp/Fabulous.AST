@@ -244,7 +244,8 @@ Oak() {
 (**
 ## Block Comments
 `BlockComment(text, newlineBefore, newlineAfter)` creates a `(* ... *)` comment; pass `true, true` to put the delimiters on their own lines.
-Without the flags the comment stays on the same line as the node, which suits expressions:
+Before a declaration the comment always ends with a line break, since a declaration that starts after a comment on the same line is not valid F#.
+Without the flags, a comment before an expression stays on the same line:
 *)
 
 Oak() {

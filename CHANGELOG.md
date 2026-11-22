@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `toRecursive()` on `Function` and `Value` generates `let rec`
 - `UseBangExpr` generates a `use!` binding in computation expressions
 - `Oak().hashDirective(...)` / `hashDirectives(...)` accept `NoWarn` and `HashDirective`, placing the directives at the top of the file (trivia such as an `#if` guard is kept). The existing overloads only accepted raw `ParsedHashDirectiveNode`s, which no builder produced
+- `returnAttribute(...)` / `returnAttributes(...)` on `ExternBinding` add attributes to the return type (`extern [<MarshalAs(UnmanagedType.Bool)>] bool ...`)
+- `MatchClauseExpr` overloads taking a pattern widget with a string body (and string or expression guard)
 
 ### Fixed
 - Building trees on several threads at once could fail on first use with `Could not find widget collection attribute Decls on widget { Key = 0 ... }`. The library was compiled with `--realsig+`, which gives each module its own static constructor; modules sharing a file (such as `Constant`, `ConstantUnit` and `ConstantMeasure`) then deadlocked on first use, and the runtime let one thread read widget keys that were not set yet. The packages are now built without `--realsig+`
@@ -21,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `TyparDecl` with several constraints joined them with commas (`<'T #A , #B>`); it now prints `<'T & #A & #B>`
 - Curried parameters that aren't atomic are now parenthesized in `Function`, `Member`, `Default`, `LambdaExpr`, `ParenLambdaExpr`, `AppWithLambdaExpr` and property `Getter`/`Setter` parameters: typed (`a: int`) and attributed parameters, tuples, union-case patterns with arguments (`Some x`), and `as`, `|`, `&`, `::` and `:?` patterns. Previously `Function("f", [ ParameterPat("a", String()); ParameterPat("b", Int()) ], ...)` produced the invalid `let f a: string b: int = ...`, a single typed parameter silently became the return type, and `LongIdentPat("Some", NamedPat "x")` became two parameters (`let f Some x`)
 - `DoExpr`, `SingleExpr` and `SingleNode` put a space after a keyword lead (`do`, `return`, `yield!`, `lazy`, ...) by default instead of producing `doprintfn ...` / `returnx`; symbol leads such as `&&` stay attached. `.addSpace(...)` still overrides the default. Code that worked around this with a leading space (`AppExpr(" printfn", ...)`) now gets two spaces and should drop it
+- A `BlockComment` passed to `triviaBefore` on a declaration (value, function, extern, `val`, member, type or module declaration) printed on the same line as the declaration, which does not parse for any declaration but the first (`let a = 1` then `(*c*) let b = 2`). It is now followed by a line break, also for a `DoExpr` yielded into a class, object expression or module; before expressions, patterns and types it still stays inline. Other expressions yielded directly into a module keep their trivia as given, so pass `newlineAfter = true` there
+- `InheritOther` printed `inherit Base 1`, which does not parse; an argument that isn't already parenthesized or unit is now wrapped in parentheses
+- XML docs: `ExternBinding`'s `toPublic`/`toInternal` described themselves as setting `private`; `DefaultsTo` now notes that default constraints only compile inside FSharp.Core
+
+### Deprecated
+- `QuoteExprPat`: the F# compiler rejects every quotation pattern (FS0731), so its output never compiles. Match quotations with the active patterns in `FSharp.Quotations.Patterns` instead
 
 ## [2.0.0-pre09] - 2026-11-18
 

@@ -100,6 +100,13 @@ module BlockComment =
 module BlockCommentBuilders =
     type Ast with
         /// <summary>Creates a block comment with optional newlines.</summary>
+        /// <remarks>
+        /// Used with <c>triviaBefore</c> on a declaration (a value, function, member, type or other module declaration),
+        /// the comment is always followed by a line break, because a declaration that starts after a comment on the same
+        /// line breaks the offside rule. A <c>do</c> expression gets the same treatment once it is yielded into a class or module.
+        /// Before an expression, pattern or type the comment can stay inline; for any other expression yielded directly into a
+        /// module, pass <c>newlineAfter = true</c> so that it does not share a line with the expression.
+        /// </remarks>
         /// <param name="comment">The comment text.</param>
         /// <param name="newlineBefore">Whether to add a newline before the comment content.</param>
         /// <param name="newlineAfter">Whether to add a newline after the comment content.</param>
@@ -180,7 +187,7 @@ type TriviaNodeModifiers =
 
         for content in value do
             let content = Ast.TriviaNode(content) |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.before (node :> NodeBase) content)
 
         Ast.EscapeHatch(node)
 
@@ -199,7 +206,7 @@ type TriviaNodeModifiers =
 
         for content in value do
             let content = content |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.before (node :> NodeBase) content)
 
         Ast.EscapeHatch(node)
 
@@ -809,7 +816,7 @@ type MemberDefnTriviaModifiers =
 
         for content in value do
             let content = Ast.TriviaNode(content) |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.ownLine content)
 
         Ast.EscapeHatch(memberDefn)
 
@@ -833,7 +840,7 @@ type MemberDefnTriviaModifiers =
 
         for content in value do
             let content = content |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.ownLine content)
 
         Ast.EscapeHatch(memberDefn)
 
@@ -972,7 +979,7 @@ type TypeDefnTriviaModifiers =
 
         for content in value do
             let content = Ast.TriviaNode(content) |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.ownLine content)
 
         Ast.EscapeHatch(typeDefn)
 
@@ -994,7 +1001,7 @@ type TypeDefnTriviaModifiers =
 
         for content in value do
             let content = content |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.ownLine content)
 
         Ast.EscapeHatch(typeDefn)
 
@@ -1121,7 +1128,7 @@ type ModuleDeclTriviaModifiers =
 
         for content in value do
             let content = Ast.TriviaNode(content) |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.ownLine content)
 
         Ast.EscapeHatch(moduleDecl)
 
@@ -1143,7 +1150,7 @@ type ModuleDeclTriviaModifiers =
 
         for content in value do
             let content = content |> Gen.mkOak
-            node.AddBefore(content)
+            node.AddBefore(TriviaPlacement.ownLine content)
 
         Ast.EscapeHatch(moduleDecl)
 

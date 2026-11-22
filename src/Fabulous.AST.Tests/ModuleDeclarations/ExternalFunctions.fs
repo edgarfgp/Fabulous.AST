@@ -49,3 +49,22 @@ extern void HelloWorld(string x)
             """
 extern void HelloWorld(string x, int y)
 """
+
+    [<Fact>]
+    let ``Produces an ExternBindingNode with return type attributes``() =
+        Oak() {
+            AnonymousModule() {
+                ExternBinding("bool", "CloseHandle", ExternBindingPat("nativeint", "handle"))
+                    .attribute(Attribute("DllImport", ParenExpr(String("kernel32.dll"))))
+                    .returnAttribute(Attribute("MarshalAs", ParenExpr(Constant("UnmanagedType.Bool"))))
+
+                ExternBinding("int", "GetValue").returnAttributes([ Attribute("A"); Attribute("B") ])
+            }
+        }
+        |> producesValid
+            """
+[<DllImport("kernel32.dll")>]
+extern [<MarshalAs(UnmanagedType.Bool)>] bool CloseHandle(nativeint handle)
+
+extern [<A; B>] int GetValue()
+"""

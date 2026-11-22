@@ -175,7 +175,8 @@ Oak() {
 
 (**
 Parameters accept attributes too, for example `ExternBindingPat("nativeint", "handle").attribute(Attribute("In"))` produces `[<In>] nativeint handle`.
-For a `[<return: ...>]` attribute, see [Attribute Targets](AttributesAndComments.html#Attribute-Targets).
+Attributes on the return type go between `extern` and the type; add them with `returnAttribute` or `returnAttributes`, for example `.returnAttribute(Attribute("MarshalAs", ParenExpr(Constant("UnmanagedType.Bool"))))` produces `extern [<MarshalAs(UnmanagedType.Bool)>] bool ...`.
+A `[<return: ...>]` attribute before the declaration works too; see [Attribute Targets](AttributesAndComments.html#Attribute-Targets).
 
 ## Signature Files
 A signature file (`.fsi`) sits next to an implementation file (`.fs`) and declares which values, functions and types the implementation exposes; anything left out becomes private to the file.

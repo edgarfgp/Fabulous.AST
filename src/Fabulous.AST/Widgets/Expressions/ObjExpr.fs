@@ -118,7 +118,9 @@ type ObjExprYieldExtensions =
     static member inline Yield
         (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<ExprSingleNode>)
         : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak x)).Compile()
+        let widget =
+            Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak x))).Compile()
+
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
@@ -127,7 +129,8 @@ type ObjExprYieldExtensions =
         : CollectionContent =
         let widgets =
             x
-            |> Seq.map(fun wb -> Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak wb)).Compile())
+            |> Seq.map(fun wb ->
+                Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak wb))).Compile())
             |> Seq.toArray
             |> MutStackArray1.fromArray
 
@@ -150,7 +153,9 @@ type ObjExprYieldExtensions =
     static member inline Yield
         (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<ExprSingleNode>)
         : CollectionContent =
-        let widget = Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak x)).Compile()
+        let widget =
+            Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak x))).Compile()
+
         { Widgets = MutStackArray1.One(widget) }
 
     [<Extension>]
@@ -159,7 +164,8 @@ type ObjExprYieldExtensions =
         : CollectionContent =
         let widgets =
             x
-            |> Seq.map(fun wb -> Ast.EscapeHatch(MemberDefn.DoExpr(Gen.mkOak wb)).Compile())
+            |> Seq.map(fun wb ->
+                Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak wb))).Compile())
             |> Seq.toArray
             |> MutStackArray1.fromArray
 

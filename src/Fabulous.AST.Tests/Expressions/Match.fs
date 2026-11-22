@@ -64,3 +64,23 @@ match value with
 | Member.C.C7b7df1dc arg1 -> failwith "Not implemented"
 | Member.C.C7b7df1dc(arg1, arg2) -> failwith "Not implemented"
 """
+
+    [<Fact>]
+    let ``Match clauses with a pattern and a string body``() =
+        Oak() {
+            AnonymousModule() {
+                MatchExpr(
+                    "value",
+                    [ MatchClauseExpr(NamedPat("x"), "x > 0", "x")
+                      MatchClauseExpr(NamedPat("y"), InfixAppExpr("y", "<", Int(0)), "-y")
+                      MatchClauseExpr(WildPat(), "0") ]
+                )
+            }
+        }
+        |> producesValid
+            """
+match value with
+| x when x > 0 -> x
+| y when y < 0 -> -y
+| _ -> 0
+"""

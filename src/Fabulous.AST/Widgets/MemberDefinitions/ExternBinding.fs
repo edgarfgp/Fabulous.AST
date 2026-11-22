@@ -13,7 +13,7 @@ module ExternBinding =
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode seq> "MultipleAttributes"
 
-    let AttributesOfType = Attributes.defineWidget "MultipleAttributes"
+    let AttributesOfType = Attributes.defineScalar<AttributeNode seq> "AttributesOfType"
     let TypeVal = Attributes.defineWidget "Type"
 
     let Accessibility = Attributes.defineScalar<AccessControl> "Accessibility"
@@ -30,8 +30,8 @@ module ExternBinding =
                 |> ValueOption.toOption
 
             let multipleAttributes =
-                Widgets.tryGetNodeFromWidget<AttributeListNode> widget AttributesOfType
-                |> ValueOption.map(fun x -> MultipleAttributeListNode([ x ], Range.range0))
+                Widgets.tryGetScalarValue widget AttributesOfType
+                |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
             let tp = Widgets.getNodeFromWidget widget TypeVal
@@ -279,6 +279,42 @@ type ExternBindingNodeModifiers =
     static member inline attribute(this: WidgetBuilder<ExternBindingNode>, attribute: WidgetBuilder<AttributeNode>) =
         ExternBindingNodeModifiers.attributes(this, [ attribute ])
 
+    /// <summary>Sets the attributes of the return type, printed between <c>extern</c> and the return type.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attributes">The attributes to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding("bool", "CloseHandle", ExternBindingPat("nativeint", "handle"))
+    ///             .attribute(Attribute("DllImport", ParenExpr(String("kernel32.dll"))))
+    ///             .returnAttributes([ Attribute("MarshalAs", ParenExpr(Constant("UnmanagedType.Bool"))) ])
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline returnAttributes
+        (this: WidgetBuilder<ExternBindingNode>, attributes: WidgetBuilder<AttributeNode> seq)
+        =
+        this.AddScalar(ExternBinding.AttributesOfType.WithValue(attributes |> Seq.map Gen.mkOak |> Seq.toArray))
+
+    /// <summary>Sets the attribute of the return type, printed between <c>extern</c> and the return type.</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="attribute">The attribute to set.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         ExternBinding("bool", "CloseHandle", ExternBindingPat("nativeint", "handle"))
+    ///             .attribute(Attribute("DllImport", ParenExpr(String("kernel32.dll"))))
+    ///             .returnAttribute(Attribute("MarshalAs", ParenExpr(Constant("UnmanagedType.Bool"))))
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline returnAttribute
+        (this: WidgetBuilder<ExternBindingNode>, attribute: WidgetBuilder<AttributeNode>)
+        =
+        ExternBindingNodeModifiers.returnAttributes(this, [ attribute ])
+
     /// <summary>Sets the accessibility to private for the current widget.</summary>
     /// <param name="this">Current widget.</param>
     /// <code language="fsharp">
@@ -297,7 +333,7 @@ type ExternBindingNodeModifiers =
     static member inline toPrivate(this: WidgetBuilder<ExternBindingNode>) =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Private))
 
-    /// <summary>Sets the accessibility to private for the current widget.</summary>
+    /// <summary>Sets the accessibility to public for the current widget.</summary>
     /// <param name="this">Current widget.</param>
     /// <code language="fsharp">
     /// Oak() {
@@ -315,7 +351,7 @@ type ExternBindingNodeModifiers =
     static member inline toPublic(this: WidgetBuilder<ExternBindingNode>) =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Public))
 
-    /// <summary>Sets the accessibility to private for the current widget.</summary>
+    /// <summary>Sets the accessibility to internal for the current widget.</summary>
     /// <param name="this">Current widget.</param>
     /// <code language="fsharp">
     /// Oak() {

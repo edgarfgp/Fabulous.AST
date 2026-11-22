@@ -290,3 +290,55 @@ module String =
                 (StringBuilder().Append("\""))
 
         sb.Append("\"").ToString()
+
+/// Placement rules for trivia attached before declarations.
+[<RequireQualifiedAccess>]
+module TriviaPlacement =
+    /// A block comment printed on the same line as a declaration pushes the declaration's keyword to the right,
+    /// which breaks the offside rule for every declaration except the first one; keep it on its own line instead.
+    let ownLine(trivia: TriviaNode) =
+        match trivia.Content with
+        | TriviaContent.BlockComment(comment, newlineBefore, false) ->
+            TriviaNode(TriviaContent.BlockComment(comment, newlineBefore, true), trivia.Range)
+        | _ -> trivia
+
+    let private isInlineBlockComment(trivia: TriviaNode) =
+        match trivia.Content with
+        | TriviaContent.BlockComment(_, _, false) -> true
+        | _ -> false
+
+    let private isDeclaration(node: NodeBase) =
+        match node with
+        | :? BindingNode
+        | :? ExternBindingNode
+        | :? ValNode
+        | :? MemberDefnInterfaceNode
+        | :? ModuleOrNamespaceNode -> true
+        | _ -> false
+
+    /// Applies ownLine when the node is a declaration and leaves trivia on other nodes, such as expressions, untouched.
+    let before (node: NodeBase) (trivia: TriviaNode) =
+        if isDeclaration node then ownLine trivia else trivia
+
+    /// An expression such as `do ...` gets its trivia while it is still an expression and only becomes a
+    /// declaration when it is yielded into a class or module; returns a copy whose leading block comments are on their own line.
+    let declarationSingleNode(node: ExprSingleNode) =
+        if node.ContentBefore |> Seq.exists isInlineBlockComment then
+            let copy =
+                ExprSingleNode(node.Leading, node.AddSpace, node.SupportsStroustrup, node.Expr, node.Range)
+
+            for trivia in node.ContentBefore do
+                copy.AddBefore(ownLine trivia)
+
+            for trivia in node.ContentAfter do
+                copy.AddAfter(trivia)
+
+            copy
+        else
+            node
+
+    /// Applies declarationSingleNode to an expression yielded as a module declaration.
+    let declarationExpr(expr: Expr) =
+        match expr with
+        | Expr.Single node -> Expr.Single(declarationSingleNode node)
+        | _ -> expr
