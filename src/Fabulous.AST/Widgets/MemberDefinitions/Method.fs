@@ -13,7 +13,12 @@ module BindingMethodNode =
     let WidgetKey =
         Widgets.register "MethodMember" (fun widget ->
             let name = Widgets.getScalarValue widget Name
-            let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
+
+            let parameters =
+                Widgets.getScalarValue widget Parameters
+                |> Seq.map CurriedParameter.parenthesize
+                |> List.ofSeq
+
             let bodyExpr = Widgets.getNodeFromWidget widget BindingNode.BodyExpr
             let isInlined = Widgets.tryGetScalarValue widget BindingNode.IsInlined
 

@@ -23,10 +23,14 @@ module SingleNode =
                 Widgets.tryGetScalarValue widget SupportsStroustrup
                 |> ValueOption.defaultValue false
 
-            let addSpace =
-                Widgets.tryGetScalarValue widget AddSpace |> ValueOption.defaultValue false
-
             let leading = Widgets.getScalarValue widget Leading
+
+            // Keywords (`do`, `return`, `yield!`, `lazy`, ...) need a space before the expression;
+            // symbols such as `&` and `&&` do not.
+            let addSpace =
+                Widgets.tryGetScalarValue widget AddSpace
+                |> ValueOption.defaultWith(fun () -> leading.Text.Length > 0 && System.Char.IsLetter(leading.Text[0]))
+
             ExprSingleNode(leading, addSpace, supportsStroustrup, expr, Range.range0))
 
 [<AutoOpen>]

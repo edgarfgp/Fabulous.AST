@@ -13,7 +13,11 @@ module ParenLambda =
     let WidgetKey =
         Widgets.register "ParenLambda" (fun widget ->
             let expr = Widgets.getNodeFromWidget<Expr> widget Value
-            let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
+
+            let parameters =
+                Widgets.getScalarValue widget Parameters
+                |> Seq.map CurriedParameter.parenthesize
+                |> List.ofSeq
 
             Expr.ParenLambda(
                 ExprParenLambdaNode(

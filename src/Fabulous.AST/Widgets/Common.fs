@@ -68,6 +68,24 @@ module CommonExtensions =
                 Range.range0
             )
 
+/// Helpers for curried parameters (`let f a b`, `member this.M a b`, `fun a b -> ...`).
+[<RequireQualifiedAccess>]
+module CurriedParameter =
+    /// Curried parameters are separated by spaces, so a parameter that is not atomic must be
+    /// parenthesized: `let f a: string` would make `string` the return type, and `let f a, b`
+    /// does not parse.
+    let parenthesize(pattern: Pattern) : Pattern =
+        let paren() =
+            Pattern.Paren(PatParenNode(SingleTextNode.Create "(", pattern, SingleTextNode.Create ")", Range.range0))
+
+        match pattern with
+        | Pattern.Parameter node when node.Type.IsSome -> paren()
+        | Pattern.Tuple _
+        | Pattern.Or _
+        | Pattern.As _
+        | Pattern.ListCons _ -> paren()
+        | _ -> pattern
+
 [<RequireQualifiedAccess>]
 module List =
     let intersperse separator (source: List<'T>) =

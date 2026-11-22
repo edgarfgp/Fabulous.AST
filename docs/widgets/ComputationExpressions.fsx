@@ -98,7 +98,7 @@ Oak() {
                 CompExprBodyExpr(
                     [ LetOrUseExpr(Use("reader", NewExpr("StreamReader", ParenExpr("path"))))
                       LetOrUseExpr(Value("text", "reader.ReadToEnd()"))
-                      OtherExpr(SingleExpr(SingleNode("return", "text").addSpace(true))) ]
+                      OtherExpr(SingleExpr(SingleNode("return", "text"))) ]
                 )
             )
         )
@@ -127,7 +127,7 @@ Oak() {
                 CompExprBodyExpr(
                     [ LetOrUseBangExpr("orders", "client.GetOrdersAsync()")
                       AndBangExpr("refunds", "client.GetRefundsAsync()")
-                      OtherExpr(SingleExpr(SingleNode("return", InfixAppExpr("orders", "-", "refunds")).addSpace(true))) ]
+                      OtherExpr(SingleExpr(SingleNode("return", InfixAppExpr("orders", "-", "refunds")))) ]
                 )
             )
         )
@@ -143,8 +143,8 @@ Oak() {
 (**
 ## Return and Yield
 Keywords such as `return`, `return!`, `yield` and `yield!` are written with
-`SingleExpr(SingleNode(keyword, expr))`; call `.addSpace(true)` so the keyword is
-separated from the expression. This generates a `seq` that yields a header line followed by
+`SingleExpr(SingleNode(keyword, expr))` (or the shorter `SingleExpr(keyword, expr)`). A space is
+added after a keyword automatically; `SingleNode(...).addSpace(false)` turns it off. This generates a `seq` that yields a header line followed by
 every row:
 *)
 
@@ -155,8 +155,8 @@ Oak() {
             [ ParameterPat("header"); ParameterPat("rows") ],
             SeqExpr(
                 CompExprBodyExpr(
-                    [ SingleExpr(SingleNode("yield", "header").addSpace(true))
-                      SingleExpr(SingleNode("yield!", "rows").addSpace(true)) ]
+                    [ SingleExpr(SingleNode("yield", "header"))
+                      SingleExpr(SingleNode("yield!", "rows")) ]
                 )
             )
         )
@@ -164,10 +164,7 @@ Oak() {
         Function(
             "download",
             ParameterPat("url"),
-            NamedComputationExpr(
-                "async",
-                SingleExpr(SingleNode("return!", AppExpr("fetchAsync", "url")).addSpace(true))
-            )
+            NamedComputationExpr("async", SingleExpr(SingleNode("return!", AppExpr("fetchAsync", "url"))))
         )
     }
 }
@@ -197,7 +194,7 @@ Oak() {
                     "numbers",
                     IfThenExpr(
                         InfixAppExpr(InfixAppExpr("x", "%", Int(2)), "=", Int(0)),
-                        SingleExpr(SingleNode("yield", "x").addSpace(true))
+                        SingleExpr(SingleNode("yield", "x"))
                     )
                 )
             )

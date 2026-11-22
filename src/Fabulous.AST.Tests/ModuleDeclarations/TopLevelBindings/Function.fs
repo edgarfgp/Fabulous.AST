@@ -448,3 +448,33 @@ let add a b = a + b
 let subtract a b = a - b
 let multiply a b = a * b
 """
+
+    [<Fact>]
+    let ``Typed parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("f", ParameterPat("path", String()), "path")
+                Function("g", [ ParameterPat("a", String()); ParameterPat("b", Int()) ], "a")
+                Function("h", [ ParenPat(ParameterPat("a", String())); ParameterPat("b") ], "a")
+            }
+        }
+        |> producesValid
+            """
+let f (path: string) = path
+let g (a: string) (b: int) = a
+let h (a: string) b = a
+"""
+
+    [<Fact>]
+    let ``Tuple and other compound parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("fst", TuplePat([ NamedPat("a"); NamedPat("_") ]), "a")
+                Function("head", ListConsPat(NamedPat("x"), NamedPat("_")), "x")
+            }
+        }
+        |> producesValid
+            """
+let fst (a, _) = a
+let head (x :: _) = x
+"""

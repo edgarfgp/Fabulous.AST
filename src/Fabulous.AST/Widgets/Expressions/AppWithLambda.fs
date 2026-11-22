@@ -28,7 +28,7 @@ module AppWithLambda =
                     Choice2Of2(ExprMatchLambdaNode(SingleTextNode.``function``, clauses, Range.range0))
                 else
                     let parameters, expr = Widgets.getScalarValue widget Parameters
-                    let parameters = parameters |> List.ofSeq
+                    let parameters = parameters |> Seq.map CurriedParameter.parenthesize |> List.ofSeq
 
                     Choice1Of2(
                         ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.range0)
