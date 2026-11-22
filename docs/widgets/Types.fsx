@@ -18,9 +18,17 @@ index: 9
 - [Option Types](#Option-Types)
 - [Function Types](#Function-Types)
 - [Generic Types](#Generic-Types)
+- [Prefix and Postfix Type Syntax](#Prefix-and-Postfix-Type-Syntax)
+- [Anonymous Record Types](#Anonymous-Record-Types)
+- [Wildcard Types](#Wildcard-Types)
+- [Nested Generic Types](#Nested-Generic-Types)
+- [Type Provider Static Arguments](#Type-Provider-Static-Arguments)
 - [Unit of Measure](#Unit-of-Measure)
 - [Type Abbreviations](#Type-Abbreviations)
+- [Explicit Type Parameters](#Explicit-Type-Parameters)
+- [Flexible and Intersection Types](#Flexible-and-Intersection-Types)
 - [Type Constraints](#Type-Constraints)
+- [Nullable Reference Types](#Nullable-Reference-Types)
 
 ## Overview
 F# is a strongly-typed language with a rich type system. Types in F# range from simple primitives to complex user-defined types. This document provides examples of how to work with various F# types in the Fabulous.AST library.
@@ -276,6 +284,135 @@ Oak() {
 (*** include-output ***)
 
 (**
+## Prefix and Postfix Type Syntax
+Most generic types can be written in prefix form (`option<int>`) or postfix form (`int option`).
+The `*Prefix` and `*Postfix` helpers generate either form, and `AppPostfix` applies any type in postfix position.
+`Obj()`, `Option()` and `Seq()` are shorthands for the `obj`, `option` and `seq` type names.
+*)
+
+Oak() {
+    AnonymousModule() {
+        Open("System.Threading.Tasks")
+
+        // Prefix form: array<int>, option<string>, voption<int>, seq<int>
+        Value("scores", ArrayExpr([ Int(90); Int(85) ]), ArrayPrefix(Int()))
+        Value("nickname", Constant("None"), OptionPrefix(String()))
+        Value("cachedId", Constant("ValueSome 42"), VOptionPrefix(Int()))
+        Value("evens", SeqExpr([ Int(2); Int(4) ]), SeqPrefix(Int()))
+
+        // Postfix form: int voption, int option, string seq, int option list
+        Value("lastId", Constant("ValueNone"), VOptionPostfix(Int()))
+        Value("retries", Constant("Some 3"), AppPostfix(Int(), Option()))
+        Value("names", SeqExpr([ String("Ada"); String("Grace") ]), AppPostfix(String(), Seq()))
+        Value("readings", ListExpr([ Constant("Some 1"); Constant("None") ]), AppPostfix(OptionPostfix(Int()), List()))
+
+        // Async<'T> and Task<'T>
+        Value("fetch", AppExpr("async.Return", String("data")), AsyncPrefix(String()))
+        Value("save", AppExpr("Task.FromResult", Bool(true)), TaskPrefix(Boolean()))
+
+        // obj
+        Value("boxed", AppExpr("box", Int(42)), Obj())
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Anonymous Record Types
+`AnonRecord` generates an anonymous record type from a list of field names and types.
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(
+            "person",
+            AnonRecordExpr([ RecordFieldExpr("Name", String("Ada")); RecordFieldExpr("Age", Int(36)) ]),
+            AnonRecord([ "Name", String(); "Age", Int() ])
+        )
+
+        Function("describe", ParenPat(ParameterPat("p", AnonRecord([ "Name", "string"; "Age", "int" ]))), "p.Name")
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Wildcard Types
+`Anon("_")` generates the `_` wildcard type, which asks the compiler to infer that part of the type.
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value("ids", ListExpr([ Int(1); Int(2) ]), AppPrefix(List(), Anon("_")))
+
+        Function("count", ParenPat(ParameterPat("xs", AppPostfix(Anon("_"), Seq()))), AppExpr("Seq.length", "xs"))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Nested Generic Types
+`LongIdentApp` refers to a type nested inside a generic type, such as `Dictionary<string, int>.KeyCollection`.
+*)
+
+Oak() {
+    AnonymousModule() {
+        Open("System.Collections.Generic")
+
+        Function(
+            "keysOf",
+            ParenPat(ParameterPat("d", AppPrefix("Dictionary", [ String(); Int() ]))),
+            "d.Keys",
+            LongIdentApp(AppPrefix("Dictionary", [ String(); Int() ]), "KeyCollection")
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Type Provider Static Arguments
+Type providers take static arguments: `StaticConstant` generates a positional argument and `StaticConstantNamed` a named one.
+*)
+
+Oak() {
+    AnonymousModule() {
+        Abbrev(
+            "Sales",
+            AppPrefix(
+                "CsvProvider",
+                [ StaticConstant(String("sales.csv"))
+                  StaticConstantNamed("Separators", StaticConstant(String(";")))
+                  StaticConstantNamed("HasHeaders", StaticConstant(Bool(true))) ]
+            )
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Unit of Measure
 F# supports units of measure for type-safe numeric calculations.
 *)
@@ -343,6 +480,85 @@ Oak() {
 (*** include-output ***)
 
 (**
+## Explicit Type Parameters
+`TyparDecl` declares a type parameter. Wrap declarations in `PostfixList` for the `<'T>` form
+or `SinglePrefix` for the ML-style `'a Name` form, and attach them with `.typeParams(...)`.
+*)
+
+Oak() {
+    AnonymousModule() {
+        // let first<'T> ...
+        Function("first", ParenPat(ParameterPat("xs", ListPostfix("'T"))), AppExpr("List.head", "xs"))
+            .typeParams(PostfixList(TyparDecl("'T")))
+
+        // type 'a Bag = ...
+        Abbrev("Bag", ListPostfix("'a")) |> _.typeParams(SinglePrefix("'a"))
+
+        // Type parameter with an attribute
+        Record("Vector") {
+            Field("X", AppPrefix(Float(), "'u"))
+            Field("Y", AppPrefix(Float(), "'u"))
+        }
+        |> _.typeParams(PostfixList(TyparDecl("'u").attribute(Attribute("Measure"))))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Flexible and Intersection Types
+`HashConstraint` generates a flexible type (`#seq<int>`), `WithSubType` an inline subtype constraint (`'T :> IDisposable`),
+and `Intersection` combines several constraints on one type parameter with `&`.
+*)
+
+Oak() {
+    AnonymousModule() {
+        // Accepts any subtype of seq<int>
+        Function(
+            "total",
+            ParenPat(ParameterPat("xs", HashConstraint(AppPrefix(Seq(), [ Int() ])))),
+            AppExpr("Seq.sum", "xs")
+        )
+
+        // Inline subtype constraint
+        Function(
+            "close",
+            ParenPat(ParameterPat("resource", WithSubType(SubtypeOf("'T", "System.IDisposable")))),
+            "resource.Dispose()"
+        )
+
+        // 'T must implement both interfaces
+        Function(
+            "compareResources",
+            ParenPat(
+                TuplePat(
+                    [ ParameterPat(
+                          "a",
+                          Intersection(
+                              [ LongIdent("'T")
+                                HashConstraint("System.IDisposable")
+                                HashConstraint("System.IComparable") ]
+                          )
+                      )
+                      ParameterPat("b", "'T") ]
+                )
+            ),
+            AppExpr("compare", [ "a"; "b" ])
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Type Constraints
 F# allows you to constrain type parameters to have certain properties.
 *)
@@ -372,6 +588,95 @@ Oak() {
             ),
             IfThenElifExpr([ IfThenExpr(InfixAppExpr("a", ">", "b"), ConstantExpr("a")) ], ConstantExpr("b"))
         )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+Constraints can also be declared on explicit type parameters with `PostfixList(decls, constraints)`.
+`ConstraintNotStruct`, `SubtypeOf`, `EnumOrDelegate`, `Supports` (member constraints) and `WhereSelf`
+(self-constrained interfaces with static abstract members) each generate one kind of constraint.
+For a member constraint over several type parameters, combine them with `Or` inside `Paren`.
+*)
+
+Oak() {
+    AnonymousModule() {
+        // 'T: not struct
+        Function("cache", ParenPat(ParameterPat("x", "'T")), "x")
+            .typeParams(PostfixList(TyparDecl("'T"), ConstraintNotStruct("'T")))
+
+        // 'T :> System.IDisposable
+        Function("disposeAll", ParenPat(ParameterPat("xs", ListPostfix("'T"))), "for x in xs do x.Dispose()")
+            .typeParams(PostfixList(TyparDecl("'T"), SubtypeOf("'T", "System.IDisposable")))
+
+        // 'T: enum<int>
+        Function("toValue", ParenPat(ParameterPat("x", "'T")), AppExpr("LanguagePrimitives.EnumToValue", "x"))
+            .typeParams(PostfixList(TyparDecl("'T"), EnumOrDelegate("'T", "enum", Int())))
+
+        // 'T: delegate<obj * System.EventArgs, unit>
+        Function("subscribe", ParenPat(ParameterPat("handler", "'T")), "handler")
+            .typeParams(
+                PostfixList(
+                    TyparDecl("'T"),
+                    EnumOrDelegate("'T", "delegate", [ Tuple([ Obj(); LongIdent("System.EventArgs") ]); Unit() ])
+                )
+            )
+
+        // ^T: (member Length: int)
+        Function("length", ParenPat(ParameterPat("x", "^T")), "(^T: (member Length: int) x)")
+            .typeParams(PostfixList(TyparDecl("^T"), Supports("^T", SigMember(Val("member", "Length", Int())))))
+            .toInlined()
+
+        // (^T or ^U): (static member (+): ^T * ^U -> ^T)
+        Function(
+            "add",
+            ParenPat(TuplePat([ ParameterPat("a", "^T"); ParameterPat("b", "^U") ])),
+            InfixAppExpr("a", "+", "b")
+        )
+            .typeParams(
+                PostfixList(
+                    [ TyparDecl("^T"); TyparDecl("^U") ],
+                    [ Supports(
+                          Paren(Or("^T", "^U")),
+                          SigMember(Val([ "static"; "member" ], "(+)", Funs(Tuple([ "^T"; "^U" ]), "^T")))
+                      ) ]
+                )
+            )
+            .toInlined()
+
+        // 'T when System.Numerics.INumber<'T>
+        Function("zeroOf", UnitPat(), "'T.Zero")
+            .typeParams(PostfixList(TyparDecl("'T"), WhereSelf(AppPrefix("System.Numerics.INumber", [ "'T" ]))))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Nullable Reference Types
+With nullable reference types enabled (F# 9, `--checknulls+`), `TypeOrNull` generates a `T | null` type
+and `WhereNotSupportsNull` generates the `'T: not null` constraint.
+*)
+
+Oak() {
+    AnonymousModule() {
+        Function(
+            "lengthOrZero",
+            ParenPat(ParameterPat("s", TypeOrNull(String()))),
+            MatchExpr("s", [ MatchClauseExpr(NullPat(), Int(0)); MatchClauseExpr("s", "s.Length") ])
+        )
+
+        Function("describe", ParenPat(ParameterPat("x", "'T")), "x.ToString()")
+            .typeParams(PostfixList(TyparDecl("'T"), WhereNotSupportsNull("'T")))
     }
 }
 |> Gen.mkOak
