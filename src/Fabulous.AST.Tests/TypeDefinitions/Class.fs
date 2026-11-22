@@ -399,3 +399,19 @@ type Calc() =
     abstract Twice: int -> int
     default this.Twice(x: int) = x * 2
 """
+
+    [<Fact>]
+    let ``Typed indexer parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Grid", Constructor()) {
+                    Member("this.Item", Getter([ ParameterPat("i", Int()) ], ConstantExpr("i")))
+                }
+            }
+        }
+        |> producesValid
+            """
+type Grid() =
+    member this.Item
+        with get (i: int) = i
+"""

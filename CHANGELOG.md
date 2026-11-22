@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- Typed (`a: int`), tuple, `as`, `|` and `::` parameters are now parenthesized when used as curried parameters of `Function`, `Member`, `Default`, `LambdaExpr`, `ParenLambdaExpr` and `AppWithLambdaExpr`. Previously `Function("f", [ ParameterPat("a", String()); ParameterPat("b", Int()) ], ...)` produced the invalid `let f a: string b: int = ...`, and a single typed parameter silently became the return type
+- Curried parameters that aren't atomic are now parenthesized in `Function`, `Member`, `Default`, `LambdaExpr`, `ParenLambdaExpr`, `AppWithLambdaExpr` and property `Getter`/`Setter` parameters: typed (`a: int`) and attributed parameters, tuples, union-case patterns with arguments (`Some x`), and `as`, `|`, `&`, `::` and `:?` patterns. Previously `Function("f", [ ParameterPat("a", String()); ParameterPat("b", Int()) ], ...)` produced the invalid `let f a: string b: int = ...`, a single typed parameter silently became the return type, and `LongIdentPat("Some", NamedPat "x")` became two parameters (`let f Some x`)
 - `DoExpr`, `SingleExpr` and `SingleNode` put a space after a keyword lead (`do`, `return`, `yield!`, `lazy`, ...) by default instead of producing `doprintfn ...` / `returnx`; symbol leads such as `&&` stay attached. `.addSpace(...)` still overrides the default. Code that worked around this with a leading space (`AppExpr(" printfn", ...)`) now gets two spaces and should drop it
 
 ## [2.0.0-pre09] - 2026-11-18

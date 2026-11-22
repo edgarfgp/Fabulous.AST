@@ -57,6 +57,7 @@ module PropertyGetSetBinding =
             let parameters =
                 Widgets.tryGetScalarValue widget Parameters
                 |> ValueOption.defaultValue([ pattern ])
+                |> Seq.map CurriedParameter.parenthesize
                 |> List.ofSeq
 
             let attributes =

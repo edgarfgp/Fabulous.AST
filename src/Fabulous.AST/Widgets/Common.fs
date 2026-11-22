@@ -72,18 +72,24 @@ module CommonExtensions =
 [<RequireQualifiedAccess>]
 module CurriedParameter =
     /// Curried parameters are separated by spaces, so a parameter that is not atomic must be
-    /// parenthesized: `let f a: string` would make `string` the return type, and `let f a, b`
-    /// does not parse.
+    /// parenthesized: `let f a: string` would make `string` the return type, `let f Some x`
+    /// would take two parameters, and `let f a, b` does not parse. Patterns that are already
+    /// atomic (names, wildcards, constants, `()`, parenthesized patterns, ...) are left as they are.
     let parenthesize(pattern: Pattern) : Pattern =
         let paren() =
             Pattern.Paren(PatParenNode(SingleTextNode.Create "(", pattern, SingleTextNode.Create ")", Range.range0))
 
         match pattern with
-        | Pattern.Parameter node when node.Type.IsSome -> paren()
+        | Pattern.Parameter node when node.Type.IsSome || node.Attributes.IsSome -> paren()
+        // `LongIdentPat([ a; b ])` without a name is a bare list of curried parameters; only a
+        // named pattern with arguments (`Some x`) needs parentheses.
+        | Pattern.LongIdent node when not node.Identifier.Content.IsEmpty && not node.Parameters.IsEmpty -> paren()
         | Pattern.Tuple _
         | Pattern.Or _
+        | Pattern.Ands _
         | Pattern.As _
-        | Pattern.ListCons _ -> paren()
+        | Pattern.ListCons _
+        | Pattern.IsInst _ -> paren()
         | _ -> pattern
 
 [<RequireQualifiedAccess>]

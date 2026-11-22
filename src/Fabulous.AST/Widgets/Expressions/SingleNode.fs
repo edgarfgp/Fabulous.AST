@@ -66,6 +66,11 @@ module SingleNodeBuilders =
             Ast.BaseSingleNode(SingleTextNode.``do``, Ast.ConstantExpr(value))
 
 type SingleNodeModifiers =
+    /// <summary>Sets whether a space separates the leading keyword or symbol from the expression.</summary>
+    /// <remarks>Defaults to true when the lead starts with a letter (`do`, `return`, `yield!`, `lazy`, ...)
+    /// and to false for symbols such as `&amp;&amp;`.</remarks>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">True to separate the lead from the expression with a space.</param>
     [<Extension>]
     static member inline addSpace(this: WidgetBuilder<ExprSingleNode>, value: bool) =
         this.AddScalar(SingleNode.AddSpace.WithValue(value))

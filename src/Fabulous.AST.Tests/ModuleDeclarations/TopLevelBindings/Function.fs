@@ -478,3 +478,21 @@ let h (a: string) b = a
 let fst (a, _) = a
 let head (x :: _) = x
 """
+
+    [<Fact>]
+    let ``Attributed, union case and type test parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("caller", ParameterPat("name").attribute(Attribute("CallerMemberName")), "name")
+                Function("unwrap", LongIdentPat("Some", NamedPat("x")), "x")
+                Function("isText", IsInstPat(String()), Bool(true))
+                Function("ignore2", [ NamedPat("x"); UnitPat(); ParenPat(NamedPat("y")) ], "x")
+            }
+        }
+        |> producesValid
+            """
+let caller ([<CallerMemberName>] name) = name
+let unwrap (Some x) = x
+let isText (:? string) = true
+let ignore2 x () (y) = x
+"""
