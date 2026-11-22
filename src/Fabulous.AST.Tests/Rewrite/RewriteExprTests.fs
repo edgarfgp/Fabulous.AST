@@ -132,3 +132,54 @@ module RewriteExprTests =
 
         Assert.Contains("type Point = { X: int; Y: int }", source)
         Assert.DoesNotContain("| Point", source)
+
+    [<Fact>]
+    let ``expr rewrite keeps comments on rebuilt nodes``() =
+        let widget: WidgetBuilder<Oak> =
+            Oak() {
+                AnonymousModule() {
+                    Value("x", AppExpr("f", "old"))
+                        .triviaBefore(SingleLine("value comment"))
+                        .triviaAfter(LineCommentAfterSourceCode("after"))
+
+                    Value("y", ParenExpr(AppExpr("g", "old").triviaBefore(BlockComment("arg"))))
+
+                    TypeDefn("C", UnitPat()) {
+                        Member("this.M", AppExpr("h", "old")).triviaBefore(SingleLine("member comment"))
+                    }
+                }
+            }
+
+        let source = widget |> Rewrite.expr(renameIdent "old" "renamed") |> render
+
+        Assert.Equal(
+            """// value comment
+let x = f renamed // after
+let y = ( (*arg*) g renamed)
+
+type C() =
+    // member comment
+    member this.M = h renamed
+""",
+            source
+        )
+
+    [<Fact>]
+    let ``typeDefn rewrite keeps comments on a rebuilt nested module``() =
+        let widget: WidgetBuilder<Oak> =
+            Oak() {
+                AnonymousModule() {
+                    Module("Shapes") { Union("Point") { UnionCase("Point", [ Field("X", Int()); Field("Y", Int()) ]) } }
+                    |> _.triviaBefore(SingleLine("module comment"))
+                }
+            }
+
+        let source = widget |> Rewrite.typeDefn unionToRecord |> render
+
+        Assert.Equal(
+            """// module comment
+module Shapes =
+    type Point = { X: int; Y: int }
+""",
+            source
+        )

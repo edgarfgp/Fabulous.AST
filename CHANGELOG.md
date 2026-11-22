@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `InheritOther` printed `inherit Base 1`, which does not parse; an argument that isn't already parenthesized or unit is now wrapped in parentheses
 - XML docs: `ExternBinding`'s `toPublic`/`toInternal` described themselves as setting `private`; `DefaultsTo` now notes that default constraints only compile inside FSharp.Core
 
+- `Rewrite.expr` and `Rewrite.typeDefn` dropped the comments, blank lines and directives attached to every node they rebuilt (any node with a changed descendant), so a rename could silently delete a `// comment` above a `let`. Rebuilt nodes now keep their trivia
+
 ### Deprecated
 - `QuoteExprPat`: the F# compiler rejects every quotation pattern (FS0731), so its output never compiles. Match quotations with the active patterns in `FSharp.Quotations.Patterns` instead
 
