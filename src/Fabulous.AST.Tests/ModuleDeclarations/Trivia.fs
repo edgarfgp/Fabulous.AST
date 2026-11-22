@@ -87,7 +87,51 @@ let x =// Comment after source code
         Oak() { AnonymousModule() { Value("x", "10").triviaBefore([ BlockComment("Comment before") ]) } }
         |> producesValid
             """
-(*Comment before*) let x = 10
+(*Comment before*)
+let x = 10
+"""
+
+    [<Fact>]
+    let ``Block comment before a declaration that is not the first stays on its own line``() =
+        Oak() {
+            AnonymousModule() {
+                Value("x", "10")
+                Value("y", "20").triviaBefore(BlockComment("Comment before"))
+
+                Module("M") {
+                    Value("a", "1")
+                    Open("System").triviaBefore(BlockComment("Open comment"))
+                }
+
+                TypeDefn("C", UnitPat()) {
+                    Member("this.A", Int(1))
+                    Member("this.B", Int(2)).triviaBefore(BlockComment("Member comment"))
+                }
+            }
+        }
+        |> producesValid
+            """
+let x = 10
+(*Comment before*)
+let y = 20
+
+module M =
+    let a = 1
+    (*Open comment*)
+    open System
+
+type C() =
+    member this.A = 1
+    (*Member comment*)
+    member this.B = 2
+"""
+
+    [<Fact>]
+    let ``Block comment before an expression stays inline``() =
+        Oak() { AnonymousModule() { Value("x", ConstantExpr(Int(500)).triviaBefore(BlockComment("ms"))) } }
+        |> producesValid
+            """
+let x = (*ms*) 500
 """
 
     [<Fact>]
@@ -100,7 +144,8 @@ let x =// Comment after source code
         |> producesValid
             """
 (*
-Comment before*) let x = 10
+Comment before*)
+let x = 10
 """
 
     [<Fact>]

@@ -41,7 +41,8 @@ let x: int = 42 // This is a comment
         }
         |> producesValid
             """
-(*This is a block comment*) let x: int = 42
+(*This is a block comment*)
+let x: int = 42
 """
 
     [<Fact>]
@@ -556,7 +557,8 @@ type MyClass() =
         |> producesValid
             """
 type MyClass() =
-    (*Block member comment*) member this.Value = 42
+    (*Block member comment*)
+    member this.Value = 42
 """
 
     [<Fact>]

@@ -118,6 +118,14 @@ module MatchClauseBuilders =
         static member MatchClauseExpr(pattern: string, whenExpr: string, bodyExpr: string) =
             Ast.MatchClauseExpr(pattern, whenExpr, Ast.ConstantExpr(bodyExpr))
 
+        static member MatchClauseExpr
+            (pattern: WidgetBuilder<Pattern>, whenExpr: WidgetBuilder<Expr>, bodyExpr: string)
+            =
+            Ast.MatchClauseExpr(pattern, whenExpr, Ast.ConstantExpr(bodyExpr))
+
+        static member MatchClauseExpr(pattern: WidgetBuilder<Pattern>, whenExpr: string, bodyExpr: string) =
+            Ast.MatchClauseExpr(pattern, Ast.Constant(whenExpr), Ast.ConstantExpr(bodyExpr))
+
         static member MatchClauseExpr(pattern: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Expr>) =
             WidgetBuilder<MatchClauseNode>(
                 MatchClause.WidgetKey,
@@ -139,6 +147,9 @@ module MatchClauseBuilders =
             Ast.MatchClauseExpr(Ast.Constant(pattern), bodyExpr)
 
         static member MatchClauseExpr(pattern: WidgetBuilder<Pattern>, bodyExpr: WidgetBuilder<Constant>) =
+            Ast.MatchClauseExpr(pattern, Ast.ConstantExpr(bodyExpr))
+
+        static member MatchClauseExpr(pattern: WidgetBuilder<Pattern>, bodyExpr: string) =
             Ast.MatchClauseExpr(pattern, Ast.ConstantExpr(bodyExpr))
 
         static member MatchClauseExpr(pattern: WidgetBuilder<Constant>, bodyExpr: WidgetBuilder<Constant>) =

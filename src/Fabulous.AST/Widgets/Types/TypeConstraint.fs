@@ -99,12 +99,28 @@ module TypeConstraintBuilders =
                 TypeConstraint.Single.WithValue((typar, "not struct"))
             )
 
+        /// <summary>Create a default type constraint, such as <c>default ^T: int</c>.</summary>
+        /// <remarks>
+        /// Default constraints are only accepted when compiling FSharp.Core; anywhere else the compiler
+        /// rejects them with FS0042, so this is only useful for generating FSharp.Core sources.
+        /// </remarks>
+        /// <param name="def">The keyword printed before the type parameter, normally <c>"default"</c>.</param>
+        /// <param name="typar">The type parameter, such as <c>"^T"</c>.</param>
+        /// <param name="tp">The default type.</param>
         static member DefaultsTo(def: string, typar: string, tp: WidgetBuilder<Type>) =
             WidgetBuilder<TypeConstraint>(
                 TypeConstraint.WidgetDefaultsToTypeKey,
                 TypeConstraint.DefaultsToType.WithValue((def, typar, Gen.mkOak tp))
             )
 
+        /// <summary>Create a default type constraint, such as <c>default ^T: int</c>.</summary>
+        /// <remarks>
+        /// Default constraints are only accepted when compiling FSharp.Core; anywhere else the compiler
+        /// rejects them with FS0042, so this is only useful for generating FSharp.Core sources.
+        /// </remarks>
+        /// <param name="def">The keyword printed before the type parameter, normally <c>"default"</c>.</param>
+        /// <param name="typar">The type parameter, such as <c>"^T"</c>.</param>
+        /// <param name="tp">The default type.</param>
         static member DefaultsTo(def: string, typar: string, tp: string) =
             Ast.DefaultsTo(def, typar, Ast.LongIdent(tp))
 

@@ -46,6 +46,21 @@ module InheritConstructor =
             let typeValue = Widgets.getNodeFromWidget widget TypeValue
             let expr = Widgets.getNodeFromWidget widget ExprValue
 
+            // `inherit Base x` does not parse; the constructor argument must be parenthesized or unit.
+            let expr =
+                match expr with
+                | Expr.Paren _
+                | Expr.Constant(Constant.Unit _) -> expr
+                | _ ->
+                    Expr.Paren(
+                        ExprParenNode(
+                            SingleTextNode.leftParenthesis,
+                            expr,
+                            SingleTextNode.rightParenthesis,
+                            Range.range0
+                        )
+                    )
+
             InheritConstructor.Other(
                 InheritConstructorOtherNode(SingleTextNode.``inherit``, typeValue, expr, Range.range0)
             ))
@@ -216,6 +231,7 @@ module InheritConstructorBuilders =
 
         /// <summary>
         /// Create an inherit constructor with the given type and expression.
+        /// An expression that is not already parenthesized or unit is wrapped in parentheses, because `inherit Base x` is not valid F#.
         /// </summary>
         /// <param name="value">The type of the inherit constructor.</param>
         /// <param name="expr">The expression of the inherit constructor.</param>

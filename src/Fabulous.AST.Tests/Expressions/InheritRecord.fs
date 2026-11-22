@@ -45,3 +45,25 @@ module InheritRecord =
 { inherit BaseClass(); B = 1; C = 2 }
 { inherit BaseClass (1); B = 1; C = 2 }
 """
+
+    [<Fact>]
+    let ``InheritOther parenthesizes an argument that is not already in parentheses``() =
+        Oak() {
+            AnonymousModule() {
+                InheritRecordExpr(InheritOther("BaseClass", "1"))
+
+                TypeDefn("Derived", UnitPat()) { InheritOther("BaseClass", ConstantExpr(Int(1))) }
+
+                TypeDefn("Derived2", UnitPat()) { InheritOther("BaseClass", UnitExpr()) }
+            }
+        }
+        |> producesValid
+            """
+{ inherit BaseClass (1) }
+
+type Derived() =
+    inherit BaseClass (1)
+
+type Derived2() =
+    inherit BaseClass ()
+"""
