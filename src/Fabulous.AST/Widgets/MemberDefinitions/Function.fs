@@ -64,7 +64,7 @@ module BindingFunction =
             BindingNode(
                 xmlDocs,
                 attributes,
-                MultipleTextsNode([ leading ], Range.range0),
+                BindingNode.leadingKeywords widget leading,
                 false,
                 (if isInlined then Some(SingleTextNode.``inline``) else None),
                 accessControl,
@@ -88,7 +88,13 @@ module BindingFunctionBuilders =
                 bodyExpr: WidgetBuilder<Expr>,
                 ?returnType: WidgetBuilder<Type>
             ) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            // Active patterns (`(|Even|Odd|)`) and operators (`( +! )`) are written as is.
+            let name =
+                if name.StartsWith("(") then
+                    name
+                else
+                    PrettyNaming.NormalizeIdentifierBackticks name
+
             let parameters = parameters |> Seq.map Gen.mkOak |> Seq.toArray
 
             WidgetBuilder<BindingNode>(

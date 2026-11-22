@@ -21,6 +21,7 @@ parameters. Each F# pattern form has a widget — this page groups them by kind.
 - [Record Patterns](#Record-Patterns)
 - [Type-test Patterns](#Type-test-Patterns)
 - [Parameter Patterns with Attributes](#Parameter-Patterns-with-Attributes)
+- [Optional and Operator Patterns](#Optional-and-Operator-Patterns)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"
@@ -218,6 +219,32 @@ Oak() {
         ) {
             Member("this.Value", ConstantExpr(Int(0)))
         }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Optional and Operator Patterns
+`OptionalValPat` declares an optional method parameter (`?name`), and `NamedParenStarIdentPat` binds an
+operator whose name starts with `*`, which must be written with spaces inside the parentheses:
+*)
+
+Oak() {
+    AnonymousModule() {
+        TypeDefn("Greeter", Constructor()) {
+            Member(
+                "this.Greet",
+                ParameterPat(OptionalValPat("name"), String()),
+                AppExpr("defaultArg", [ Constant("name"); String("world") ])
+            )
+        }
+
+        Value(NamedParenStarIdentPat("*+"), Constant("fun a b -> a * b + b"))
     }
 }
 |> Gen.mkOak

@@ -10,8 +10,8 @@ module NamedParenStarIdent =
 
     let WidgetKey =
         Widgets.register "NamedParenStarIdent" (fun widget ->
-            let value =
-                Widgets.getScalarValue widget Value |> PrettyNaming.NormalizeIdentifierBackticks
+            // An operator name such as `*` or `*+`; it must not be backticked.
+            let value = Widgets.getScalarValue widget Value
 
             let accessControl =
                 Widgets.tryGetScalarValue widget Pattern.Accessibility

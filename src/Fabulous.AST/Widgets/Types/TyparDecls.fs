@@ -25,10 +25,12 @@ module TyparDeclNode =
                 |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
+            // `'T & #IComparable & #IDisposable`: each constraint is introduced by `&`.
             let intersectionConstrains =
                 Widgets.getScalarValue widget IntersectionConstrains
-                |> Seq.map(Choice1Of2)
-                |> Seq.intersperse(Choice2Of2 SingleTextNode.comma)
+                |> Seq.collect(fun constraintType ->
+                    [ Choice2Of2 SingleTextNode.ampersand; Choice1Of2 constraintType ])
+                |> List.ofSeq
 
             TyparDeclNode(attributes, SingleTextNode.Create(tyPar), intersectionConstrains, Range.range0))
 
@@ -90,7 +92,13 @@ module TyparDecls =
             let decls = Widgets.getScalarValue widget Decls |> List.ofSeq
 
             TyparDecls.PrefixList(
-                TyparDeclsPrefixListNode(SingleTextNode.lessThan, decls, SingleTextNode.greaterThan, Range.range0)
+                // `type ('a, 'b) Pair`: prefix type parameters are parenthesized.
+                TyparDeclsPrefixListNode(
+                    SingleTextNode.leftParenthesis,
+                    decls,
+                    SingleTextNode.rightParenthesis,
+                    Range.range0
+                )
             ))
 
     let Constraints = Attributes.defineScalar<TypeConstraint seq> "ConstraintValue"

@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `toRecursive()` on `Function` and `Value` generates `let rec`
+- `UseBangExpr` generates a `use!` binding in computation expressions
+- `Oak().hashDirective(...)` / `hashDirectives(...)` accept `NoWarn` and `HashDirective`, placing the directives at the top of the file. The existing overloads only accepted raw `ParsedHashDirectiveNode`s, which no builder produced
+
 ### Fixed
+- `StructAnonRecord` printed `struct [ X: float |}`; it now prints `struct {| X: float |}`
+- `OptionalValPat("name")` dropped the `?`; it now prints `?name`
+- Names were wrapped in backticks where F# does not allow them: type variables in `Var("'T")`, operators in `NamedParenStarIdentPat("*")`, the `const` keyword in `StaticConstantExpr`, and active pattern names such as `Function("(|Even|Odd|)", ...)`. A qualified `Augmentation("System.String")` now prints `type System.String with` instead of ``type ``System.String`` with``
+- `PrefixList` printed `type <'a, 'b> Pair`; it now prints `type ('a, 'b) Pair`
+- `TyparDecl` with several constraints joined them with commas (`<'T #A , #B>`); it now prints `<'T & #A & #B>`
 - Curried parameters that aren't atomic are now parenthesized in `Function`, `Member`, `Default`, `LambdaExpr`, `ParenLambdaExpr`, `AppWithLambdaExpr` and property `Getter`/`Setter` parameters: typed (`a: int`) and attributed parameters, tuples, union-case patterns with arguments (`Some x`), and `as`, `|`, `&`, `::` and `:?` patterns. Previously `Function("f", [ ParameterPat("a", String()); ParameterPat("b", Int()) ], ...)` produced the invalid `let f a: string b: int = ...`, a single typed parameter silently became the return type, and `LongIdentPat("Some", NamedPat "x")` became two parameters (`let f Some x`)
 - `DoExpr`, `SingleExpr` and `SingleNode` put a space after a keyword lead (`do`, `return`, `yield!`, `lazy`, ...) by default instead of producing `doprintfn ...` / `returnx`; symbol leads such as `&&` stay attached. `.addSpace(...)` still overrides the default. Code that worked around this with a leading space (`AppExpr(" printfn", ...)`) now gets two spaces and should drop it
 

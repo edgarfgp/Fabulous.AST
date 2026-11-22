@@ -345,6 +345,20 @@ Oak() {
 (*** include-output ***)
 
 (**
+`StructAnonRecord` generates a struct anonymous record type:
+*)
+
+Oak() {
+    AnonymousModule() { Function("toPoint", ParameterPat("p", StructAnonRecord([ "X", Float(); "Y", Float() ])), "p") }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Wildcard Types
 `Anon("_")` generates the `_` wildcard type, which asks the compiler to infer that part of the type.
 *)
@@ -510,6 +524,19 @@ Oak() {
 (*** include-output ***)
 
 (**
+`PrefixList` generates the ML-style prefix form, `type ('a, 'b) Pair`, and `Var` refers to a type
+variable such as `'a`:
+*)
+
+Oak() { AnonymousModule() { Abbrev("Pair", Tuple([ Var("'a"); Var("'b") ])).typeParams(PrefixList([ "'a"; "'b" ])) } }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Flexible and Intersection Types
 `HashConstraint` generates a flexible type (`#seq<int>`), `WithSubType` an inline subtype constraint (`'T :> IDisposable`),
 and `Intersection` combines several constraints on one type parameter with `&`.
@@ -549,6 +576,27 @@ Oak() {
             ),
             AppExpr("compare", [ "a"; "b" ])
         )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+A type parameter can carry several flexible constraints, joined with `&`, by passing them to `TyparDecl`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Function("useAndDispose", ParameterPat("x", "'T"), "x")
+            .typeParams(
+                PostfixList(
+                    TyparDecl("'T", [ HashConstraint("System.IComparable"); HashConstraint("System.IDisposable") ])
+                )
+            )
     }
 }
 |> Gen.mkOak

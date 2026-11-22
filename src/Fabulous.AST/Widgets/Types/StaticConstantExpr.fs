@@ -14,8 +14,8 @@ module TypeStaticConstantExpr =
         Widgets.register "TypeStaticConstantExpr" (fun widget ->
             let expr = Widgets.getNodeFromWidget widget Expr
 
-            let constant =
-                Widgets.getScalarValue widget Const |> PrettyNaming.NormalizeIdentifierBackticks
+            // The leading keyword of a static constant expression (`const`); never an identifier.
+            let constant = Widgets.getScalarValue widget Const
 
             Type.StaticConstantExpr(TypeStaticConstantExprNode(SingleTextNode.Create(constant), expr, Range.range0)))
 

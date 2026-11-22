@@ -12,7 +12,7 @@ module TypeAnonRecord =
     let IsStructNode = Attributes.defineScalar<bool> "IsStructNode"
 
     let WidgetKey =
-        Widgets.register "TypeStructTuple" (fun widget ->
+        Widgets.register "TypeAnonRecord" (fun widget ->
             let fields = Widgets.getScalarValue widget Fields
 
             let fields =
@@ -34,7 +34,7 @@ module TypeAnonRecord =
 
             let openingToken =
                 if isStructNode then
-                    Some SingleTextNode.leftBracket
+                    Some SingleTextNode.leftCurlyBraceWithBar
                 else
                     None
 

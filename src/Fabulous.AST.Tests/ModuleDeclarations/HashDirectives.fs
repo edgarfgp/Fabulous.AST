@@ -214,3 +214,22 @@ let str = "Debugging!"
 #nowarn "0046"
 open System
 """
+
+    [<Fact>]
+    let ``Oak hash directives accept NoWarn and HashDirective``() =
+        Oak() { AnonymousModule() { Value("x", Int(1)) } }
+        |> _.hashDirectives([ NoWarn("0044"); HashDirective("r", String("nuget: Fantomas.Core")) ])
+        |> producesValid
+            """
+#nowarn 0044
+#r "nuget: Fantomas.Core"
+let x = 1
+"""
+
+    [<Fact>]
+    let ``Oak hash directive rejects declarations that are not directives``() =
+        Assert.Throws<System.ArgumentException>(fun () ->
+            Oak() { AnonymousModule() { Value("x", Int(1)) } }
+            |> _.hashDirective(ModuleDeclAttribute(UnitExpr()))
+            |> ignore)
+        |> ignore

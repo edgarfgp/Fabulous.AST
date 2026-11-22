@@ -154,3 +154,14 @@ type IEnumerable<'T> with
                 for _ in 1 .. n -> x
         }
  """
+
+    [<Fact>]
+    let ``Qualified type names are not backticked``() =
+        Oak() {
+            AnonymousModule() { Augmentation("System.String") { Member("this.Shout()", Constant("this.ToUpper()")) } }
+        }
+        |> producesValid
+            """
+type System.String with
+    member this.Shout() = this.ToUpper()
+"""

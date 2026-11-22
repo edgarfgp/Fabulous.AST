@@ -141,6 +141,32 @@ Oak() {
 (*** include-output ***)
 
 (**
+`UseBangExpr` produces a `use!` binding, which disposes the bound value when it goes out of scope:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Function(
+            "readAll",
+            ParameterPat("path", String()),
+            NamedComputationExpr(
+                "task",
+                CompExprBodyExpr(
+                    [ UseBangExpr("reader", "openReaderAsync path")
+                      OtherExpr(SingleExpr("return!", "reader.ReadToEndAsync()")) ]
+                )
+            )
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Return and Yield
 Keywords such as `return`, `return!`, `yield` and `yield!` are written with
 `SingleExpr(SingleNode(keyword, expr))` (or the shorter `SingleExpr(keyword, expr)`). A space is
