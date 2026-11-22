@@ -147,3 +147,58 @@ for that. There is also an overload that takes a source `string` directly, and
 in test suites the `producesValid` helper builds on it to assert that every
 generated snippet parses.
 *)
+
+(**
+## Formatting Options
+
+`Gen.run` formats with `Gen.DefaultConfig`: Fantomas' defaults (`FormatConfig.Default`), except that
+multiline lists, records and other bracketed expressions use the `Cramped` style. To change the
+layout, pass your own `FormatConfig` to the `Gen.run(oak, config)` overload. Starting from
+`Gen.DefaultConfig` keeps the rest of the default style:
+*)
+
+open Fantomas.Core
+
+let person =
+    Oak() {
+        AnonymousModule() {
+            Record("Person") {
+                Field("FirstName", String())
+                Field("LastName", String())
+                Field("DateOfBirth", LongIdent("System.DateOnly"))
+            }
+
+            Value(
+                "people",
+                ListExpr(
+                    [ RecordExpr(
+                          [ RecordFieldExpr("FirstName", String("Ada"))
+                            RecordFieldExpr("LastName", String("Lovelace"))
+                            RecordFieldExpr("DateOfBirth", Constant("System.DateOnly(1815, 12, 10)")) ]
+                      ) ]
+                )
+            )
+        }
+    }
+    |> Gen.mkOak
+
+// The default style
+Gen.run person |> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+The same tree with two-space indentation and the `Aligned` bracket style:
+*)
+
+Gen.run(
+    person,
+    { Gen.DefaultConfig with
+        IndentSize = 2
+        MultilineBracketStyle = Aligned }
+)
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)

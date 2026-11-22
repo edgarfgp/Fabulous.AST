@@ -16,6 +16,8 @@ parameters. Each F# pattern form has a widget — this page groups them by kind.
 - [Named, Or, As, and Ands Patterns](#Named-Or-As-and-Ands-Patterns)
 - [Tuple Patterns](#Tuple-Patterns)
 - [List Patterns](#List-Patterns)
+- [Array Patterns](#Array-Patterns)
+- [Null Patterns](#Null-Patterns)
 - [Record Patterns](#Record-Patterns)
 - [Type-test Patterns](#Type-test-Patterns)
 - [Parameter Patterns with Attributes](#Parameter-Patterns-with-Attributes)
@@ -79,6 +81,55 @@ Oak() {
         Value(ListPat([ NamedPat("c"); NamedPat("d") ]), ListExpr([ String("a"); String("b") ]))
 
         Value(ListConsPat(NamedPat("g"), NamedPat("h")), ListExpr([ Int(1) ]))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Array Patterns
+`ArrayPat` matches an array with a fixed number of elements:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(ArrayPat([ "x"; "y"; "z" ]), ArrayExpr([ Int(1); Int(2); Int(3) ]))
+
+        Function(
+            "describe",
+            ParenPat(ParameterPat("xs", Array(Int()))),
+            MatchExpr(
+                "xs",
+                [ MatchClauseExpr(ArrayPat([ "x" ]), String("one element"))
+                  MatchClauseExpr(ArrayPat([ "x"; "y" ]), String("two elements"))
+                  MatchClauseExpr(WildPat(), String("something else")) ]
+            )
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Null Patterns
+`NullPat` matches the `null` literal:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Function(
+            "orEmpty",
+            ParenPat(ParameterPat("s", String())),
+            MatchExpr("s", [ MatchClauseExpr(NullPat(), String("")); MatchClauseExpr("s", "s") ])
+        )
     }
 }
 |> Gen.mkOak

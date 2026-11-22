@@ -2,7 +2,7 @@
 ---
 title: Let Bindings
 category: widgets
-index: 13
+index: 4
 ---
 *)
 

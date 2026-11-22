@@ -20,8 +20,11 @@ index: 15
 - [Access Modifiers](#Access-Modifiers)
 - [Attributes](#Attributes)
 - [Inheritance](#Inheritance)
+- [Abstract and Default Members](#Abstract-and-Default-Members)
+- [Explicit Fields and Constructors](#Explicit-Fields-and-Constructors)
 - [Mutually Recursive Types](#Mutually-Recursive-Types)
 - [Struct Classes](#Struct-Classes)
+- [Class, Struct and Interface Blocks](#Class-Struct-and-Interface-Blocks)
 
 ## Overview
 Classes in F# are types that represent objects that can have properties, methods, and events. Classes are the primary type concept that supports object-oriented programming in F#. In Fabulous.AST, classes are created using the `TypeDefn` widget.
@@ -75,12 +78,31 @@ Oak() {
         TypeDefn("MyClass", Constructor(TuplePat([ ParameterPat("x", Int()); ParameterPat("y", Int()) ]))) {
             DoExpr(AppExpr(" printfn", [ String("%d %d"); Constant("x"); Constant("y") ]))
 
-            // Additional constructor
-            Constructor(
-                ParenPat(TuplePat([ Constant("0"); Constant("0") ])),
-                AppExpr("MyClass", ParenExpr(TupleExpr([ Constant("0"); Constant("0") ])))
-            )
+            // Additional parameterless constructor that calls the primary one
+            Constructor(UnitPat(), AppExpr("MyClass", ParenExpr(TupleExpr([ Constant("0"); Constant("0") ]))))
         }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+`TypeDefn` is a thin wrapper over `BaseTypeDefn(name, constructor)`, which takes the primary
+constructor as a `voption`. It is handy when the constructor is only known at run time. This
+generates the same class with and without a primary constructor:
+*)
+
+let classWith (name: string) (ctor: WidgetBuilder<Fantomas.Core.SyntaxOak.ImplicitConstructorNode> voption) =
+    BaseTypeDefn(name, ctor) { Member("Version", String("1.0")).toStatic() }
+
+Oak() {
+    AnonymousModule() {
+        classWith "Service" (ValueSome(Constructor()))
+        classWith "Settings" ValueNone
     }
 }
 |> Gen.mkOak
@@ -101,8 +123,11 @@ Oak() {
             // Let binding creates a private field
             LetBindings([ Value("data", "dataIn") ])
 
+            // LetBinding adds a single binding
+            LetBinding(Value("created", "System.DateTime.Now"))
+
             // Do binding runs initialization code
-            DoExpr(AppExpr(" self.PrintMessage", ConstantUnit()))
+            DoExpr(AppExpr(" printfn", [ String("Created Person with data %d"); Constant("data") ]))
 
             // Method that can access the private field
             Member(
@@ -161,7 +186,7 @@ Oak() {
             Member("this.Add(amount)", ConstantExpr("count <- count + amount"))
 
             // Static method
-            Member("Counter.Create()", NewExpr("Counter", UnitExpr())).toStatic()
+            Member("Create()", NewExpr("Counter", UnitExpr())).toStatic()
         }
     }
 }
@@ -180,6 +205,9 @@ Classes can have various types of members including methods, properties, and eve
 Oak() {
     AnonymousModule() {
         TypeDefn("Calculator", Constructor()) {
+            // Private mutable field (let bindings come before members)
+            Value("_result", Float(0.0)).toMutable()
+
             // Instance methods
             Member("this.Add(a, b)", InfixAppExpr("a", "+", "b"))
 
@@ -189,8 +217,6 @@ Oak() {
             Member("this.Pi", Getter(Float(3.14159)))
 
             // Property with getter and setter
-            Value("_result", Float(0.0)).toMutable()
-
             Member(
                 "this.Result",
                 Getter(ConstantExpr("_result")),
@@ -228,8 +254,8 @@ Oak() {
         |> _.typeParams(PostfixList([ "'K"; "'V" ]))
 
         // Using a generic class
-        Value("intBox", NewExpr("Box", Int(42)))
-        Value("nameBox", NewExpr("Box", String("John")))
+        Value("intBox", NewExpr("Box", ParenExpr(Int(42))))
+        Value("nameBox", NewExpr("Box", ParenExpr(String("John"))))
     }
 }
 |> Gen.mkOak
@@ -295,26 +321,21 @@ Oak() {
 
 (**
 ## Inheritance
-Classes can inherit from a base class using the `inherit` clause. In Fabulous.AST, you can specify inheritance using appropriate widgets.
+Classes can inherit from a base class using the `inherit` clause, generated with `InheritParen`. The derived classes below add new members; to override a virtual member, see [Abstract and Default Members](#Abstract-and-Default-Members).
 *)
 
 Oak() {
     AnonymousModule() {
         // Base class
-        TypeDefn("Animal", Constructor(ParameterPat("name", String()))) {
-            Member("this.Name", ConstantExpr("name"))
-            Member("this.MakeSound()", String("..."))
-        }
+        TypeDefn("Animal", Constructor(ParameterPat("name", String()))) { Member("this.Name", ConstantExpr("name")) }
 
         // Derived class
         TypeDefn("Dog", Constructor(ParenPat(ParameterPat("name", String())))) {
             // Inherit from base class
             InheritParen("Animal", ConstantExpr("name"))
 
-            // Override method
+            // New members
             Member("this.MakeSound()", String("Woof!"))
-
-            // Add new method
             Member("this.Fetch()", String("Fetching..."))
         }
 
@@ -323,11 +344,140 @@ Oak() {
             // Inherit from base class
             InheritParen("Animal", ConstantExpr("name"))
 
-            // Override method
+            // New members
             Member("this.MakeSound()", String("Meow!"))
-
-            // Add new method
             Member("this.Purr()", String("Purring..."))
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+`InheritUnit` produces `inherit Base()` for a base class with a parameterless constructor, and
+`InheritOther` passes the argument expression as is (it must be parenthesized). An interface
+inherits another interface with `Inherit`. This generates all three forms:
+*)
+
+Oak() {
+    AnonymousModule() {
+        TypeDefn("Repository", Constructor()) {
+            InheritUnit("Object")
+            Member("this.ToString", UnitPat(), String("Repository")).toOverride()
+        }
+
+        TypeDefn(
+            "Rectangle",
+            Constructor(ParenPat(TuplePat([ ParameterPat("width", Float()); ParameterPat("height", Float()) ])))
+        ) {
+            InheritOther("Measurement", ParenExpr(InfixAppExpr("width", "*", "height")))
+        }
+
+        TypeDefn("IResource") {
+            Inherit("IDisposable")
+            AbstractMember("Name", String())
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Abstract and Default Members
+`AbstractMember` declares a virtual slot, `Default` gives it a default implementation, and
+`.toOverride()` turns a `Member` into an `override` in a derived class. This generates a
+`Shape` base class with two virtual methods and two subclasses that override them:
+*)
+
+Oak() {
+    AnonymousModule() {
+        TypeDefn("Shape", Constructor(ParenPat(ParameterPat("name", String())))) {
+            AbstractMember("Area", [ Unit() ], Float())
+            Default("this.Area", UnitPat(), Float(0.0))
+
+            AbstractMember("Describe", [ Unit() ], String())
+
+            Default(
+                "this.Describe",
+                UnitPat(),
+                AppExpr(
+                    "sprintf",
+                    [ ConstantExpr(String("%s with area %.2f"))
+                      ConstantExpr("name")
+                      ParenExpr(AppExpr("this.Area", UnitExpr())) ]
+                )
+            )
+        }
+
+        TypeDefn("Circle", Constructor(ParenPat(ParameterPat("radius", Float())))) {
+            InheritParen("Shape", String("circle"))
+            Member("this.Area()", InfixAppExpr("Math.PI", "*", InfixAppExpr("radius", "*", "radius"))).toOverride()
+        }
+
+        TypeDefn("Square", Constructor(ParenPat(ParameterPat("side", Float())))) {
+            InheritParen("Shape", String("square"))
+            Member("this.Area()", InfixAppExpr("side", "*", "side")).toOverride()
+            Member("this.Describe()", String("A perfect square")).toOverride()
+        }
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Explicit Fields and Constructors
+A class without a primary constructor declares its fields with `ValField` (`val` fields,
+optionally `.toMutable()`) and initializes them in explicit `Constructor`s. Inside a
+constructor, `InheritRecordExpr` produces the `{ inherit Base(...); Field = value }` object
+initializer and `ExplicitConstructorThenExpr` adds a `then` block that runs after
+construction. This generates an exception type with an extra field and a linked-list node:
+*)
+
+Oak() {
+    AnonymousModule() {
+        TypeDefn("ValidationError") {
+            Inherit("Exception")
+            ValField("Field", String())
+
+            Constructor(
+                ParenPat(TuplePat([ ParameterPat("field", String()); ParameterPat("message", String()) ])),
+                InheritRecordExpr(InheritParen("Exception", "message"), [ RecordFieldExpr("Field", "field") ])
+            )
+
+            Constructor(
+                ParenPat(ParameterPat("field", String())),
+                CompExprBodyExpr(
+                    [ AppSingleParenArgExpr(
+                          "ValidationError",
+                          ParenExpr(TupleExpr([ Constant("field"); String("Invalid value") ]))
+                      )
+                      ExplicitConstructorThenExpr(
+                          AppExpr("printfn", [ String("Validation failed for %s"); Constant("field") ])
+                      ) ]
+                )
+            )
+        }
+
+        TypeDefn("Node") {
+            ValField("Value", Int())
+            ValField("Next", "Node option").toMutable()
+
+            Constructor(
+                ParenPat(ParameterPat("value", Int())),
+                RecordExpr([ RecordFieldExpr("Value", "value"); RecordFieldExpr("Next", "None") ])
+            )
         }
     }
 }
@@ -401,10 +551,37 @@ Oak() {
 
             Member(
                 "this.Distance",
-                AppExpr("sqrt", [ InfixAppExpr(InfixAppExpr("x", "*", "x"), "+", InfixAppExpr("y", "*", "y")) ])
+                AppExpr("sqrt", ParenExpr(InfixAppExpr(InfixAppExpr("x", "*", "x"), "+", InfixAppExpr("y", "*", "y"))))
             )
         }
         |> _.attribute(Attribute("Struct"))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Class, Struct and Interface Blocks
+`ClassEnd`, `StructEnd` and `InterfaceEnd` wrap the members in explicit `class ... end`,
+`struct ... end` and `interface ... end` blocks; with no members they produce an empty type.
+This generates an empty marker class, a struct with a primary constructor and an empty
+marker interface:
+*)
+
+Oak() {
+    AnonymousModule() {
+        ClassEnd("Marker") { () }
+
+        StructEnd("Vector", Constructor(TuplePat([ ParameterPat("x", Float()); ParameterPat("y", Float()) ]))) {
+            Member("this.X", ConstantExpr("x"))
+            Member("this.Y", ConstantExpr("y"))
+        }
+
+        InterfaceEnd("ITag") { () }
     }
 }
 |> Gen.mkOak

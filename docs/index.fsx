@@ -208,21 +208,7 @@ Oak(
 
 Fabulous.AST provides a more user-friendly API to generate code using ASTs. It's built on top of Fantomas Oak AST and offers a more concise and easier-to-use API for code generation. It dramatically reduces the boilerplate code required to generate F# code.
 
-You can configure code formatting using `FormatConfig`:
-
-```fsharp
-type FormatConfig =
-    { IndentSize: Num
-      MaxLineLength: Num
-      EndOfLine: EndOfLineStyle
-      InsertFinalNewline: bool
-      SpaceBeforeParameter: bool
-      SpaceBeforeLowercaseInvocation: bool
-      SpaceBeforeUppercaseInvocation: bool
-      SpaceBeforeClassConstructor: bool
-      SpaceBeforeMember: bool
-      SpaceBeforeColon: bool }
-```
+`Gen.run` formats the generated code with sensible defaults; see [Formatting Options](widgets/Oak.html#Formatting-Options) to pass your own `FormatConfig`.
 
 Here's the same example using Fabulous.AST:
 *)
