@@ -76,7 +76,7 @@ Oak() {
 
         // Class with an additional constructor
         TypeDefn("MyClass", Constructor(TuplePat([ ParameterPat("x", Int()); ParameterPat("y", Int()) ]))) {
-            DoExpr(AppExpr(" printfn", [ String("%d %d"); Constant("x"); Constant("y") ]))
+            DoExpr(AppExpr("printfn", [ String("%d %d"); Constant("x"); Constant("y") ]))
 
             // Additional parameterless constructor that calls the primary one
             Constructor(UnitPat(), AppExpr("MyClass", ParenExpr(TupleExpr([ Constant("0"); Constant("0") ]))))
@@ -127,7 +127,7 @@ Oak() {
             LetBinding(Value("created", "System.DateTime.Now"))
 
             // Do binding runs initialization code
-            DoExpr(AppExpr(" printfn", [ String("Created Person with data %d"); Constant("data") ]))
+            DoExpr(AppExpr("printfn", [ String("Created Person with data %d"); Constant("data") ]))
 
             // Method that can access the private field
             Member(

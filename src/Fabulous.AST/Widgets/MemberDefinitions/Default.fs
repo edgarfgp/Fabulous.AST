@@ -14,7 +14,11 @@ module DefaultMember =
         Widgets.register "DefaultMember" (fun widget ->
             let name = Widgets.getScalarValue widget Name
             let bodyExpr = Widgets.getNodeFromWidget<Expr> widget BindingNode.BodyExpr
-            let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
+
+            let parameters =
+                Widgets.getScalarValue widget Parameters
+                |> Seq.map CurriedParameter.parenthesize
+                |> List.ofSeq
 
             let accessControl =
                 Widgets.tryGetScalarValue widget MemberDefn.Accessibility

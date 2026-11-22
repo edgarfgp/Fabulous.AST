@@ -448,3 +448,67 @@ let add a b = a + b
 let subtract a b = a - b
 let multiply a b = a * b
 """
+
+    [<Fact>]
+    let ``Typed parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("f", ParameterPat("path", String()), "path")
+                Function("g", [ ParameterPat("a", String()); ParameterPat("b", Int()) ], "a")
+                Function("h", [ ParenPat(ParameterPat("a", String())); ParameterPat("b") ], "a")
+            }
+        }
+        |> producesValid
+            """
+let f (path: string) = path
+let g (a: string) (b: int) = a
+let h (a: string) b = a
+"""
+
+    [<Fact>]
+    let ``Tuple and other compound parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("fst", TuplePat([ NamedPat("a"); NamedPat("_") ]), "a")
+                Function("head", ListConsPat(NamedPat("x"), NamedPat("_")), "x")
+            }
+        }
+        |> producesValid
+            """
+let fst (a, _) = a
+let head (x :: _) = x
+"""
+
+    [<Fact>]
+    let ``Attributed, union case and type test parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("caller", ParameterPat("name").attribute(Attribute("CallerMemberName")), "name")
+                Function("unwrap", LongIdentPat("Some", NamedPat("x")), "x")
+                Function("isText", IsInstPat(String()), Bool(true))
+                Function("ignore2", [ NamedPat("x"); UnitPat(); ParenPat(NamedPat("y")) ], "x")
+            }
+        }
+        |> producesValid
+            """
+let caller ([<CallerMemberName>] name) = name
+let unwrap (Some x) = x
+let isText (:? string) = true
+let ignore2 x () (y) = x
+"""
+
+    [<Fact>]
+    let ``Compound patterns wrapped in an untyped ParameterPat are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Function("fst", ParameterPat(TuplePat([ NamedPat("a"); NamedPat("b") ])), "a")
+                Function("unwrap", ParameterPat(LongIdentPat("Some", NamedPat("x"))), "x")
+                Function("id", ParameterPat(NamedPat("x")), "x")
+            }
+        }
+        |> producesValid
+            """
+let fst (a, b) = a
+let unwrap (Some x) = x
+let id x = x
+"""

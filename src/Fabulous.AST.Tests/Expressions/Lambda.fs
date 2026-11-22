@@ -40,3 +40,17 @@ fun a b -> 1
             """
 fun a b -> c
 """
+
+    [<Fact>]
+    let ``Typed and tuple lambda parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                Value("add", LambdaExpr([ ParameterPat("a", Int()); ParameterPat("b", Int()) ], Constant("a + b")))
+                Value("first", LambdaExpr(TuplePat([ NamedPat("a"); NamedPat("_") ]), Constant("a")))
+            }
+        }
+        |> producesValid
+            """
+let add = fun (a: int) (b: int) -> a + b
+let first = fun (a, _) -> a
+"""

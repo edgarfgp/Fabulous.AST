@@ -13,7 +13,12 @@ module Lambda =
     let WidgetKey =
         Widgets.register "Lambda" (fun widget ->
             let expr = Widgets.getNodeFromWidget<Expr> widget Value
-            let parameters = Widgets.getScalarValue widget Parameters |> List.ofSeq
+
+            let parameters =
+                Widgets.getScalarValue widget Parameters
+                |> Seq.map CurriedParameter.parenthesize
+                |> List.ofSeq
+
             Expr.Lambda(ExprLambdaNode(SingleTextNode.``fun``, parameters, SingleTextNode.arrow, expr, Range.range0)))
 
 [<AutoOpen>]

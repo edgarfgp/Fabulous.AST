@@ -23,10 +23,14 @@ module SingleNode =
                 Widgets.tryGetScalarValue widget SupportsStroustrup
                 |> ValueOption.defaultValue false
 
-            let addSpace =
-                Widgets.tryGetScalarValue widget AddSpace |> ValueOption.defaultValue false
-
             let leading = Widgets.getScalarValue widget Leading
+
+            // Keywords (`do`, `return`, `yield!`, `lazy`, ...) need a space before the expression;
+            // symbols such as `&` and `&&` do not.
+            let addSpace =
+                Widgets.tryGetScalarValue widget AddSpace
+                |> ValueOption.defaultWith(fun () -> leading.Text.Length > 0 && System.Char.IsLetter(leading.Text[0]))
+
             ExprSingleNode(leading, addSpace, supportsStroustrup, expr, Range.range0))
 
 [<AutoOpen>]
@@ -62,6 +66,11 @@ module SingleNodeBuilders =
             Ast.BaseSingleNode(SingleTextNode.``do``, Ast.ConstantExpr(value))
 
 type SingleNodeModifiers =
+    /// <summary>Sets whether a space separates the leading keyword or symbol from the expression.</summary>
+    /// <remarks>Defaults to true when the lead starts with a letter (`do`, `return`, `yield!`, `lazy`, ...)
+    /// and to false for symbols such as `&amp;&amp;`.</remarks>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">True to separate the lead from the expression with a space.</param>
     [<Extension>]
     static member inline addSpace(this: WidgetBuilder<ExprSingleNode>, value: bool) =
         this.AddScalar(SingleNode.AddSpace.WithValue(value))

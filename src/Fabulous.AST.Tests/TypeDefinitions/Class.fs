@@ -380,3 +380,38 @@ type Person<'a, 'b>() =
     member this.Name = ""
 
 """
+
+    [<Fact>]
+    let ``Typed curried member parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Calc", Constructor()) {
+                    Member("this.Add", [ ParameterPat("a", Int()); ParameterPat("b", Int()) ], "a + b")
+                    AbstractMember("Twice", [ Int() ], Int())
+                    Default("this.Twice", ParameterPat("x", Int()), "x * 2")
+                }
+            }
+        }
+        |> producesValid
+            """
+type Calc() =
+    member this.Add (a: int) (b: int) = a + b
+    abstract Twice: int -> int
+    default this.Twice(x: int) = x * 2
+"""
+
+    [<Fact>]
+    let ``Typed indexer parameters are parenthesized``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Grid", Constructor()) {
+                    Member("this.Item", Getter([ ParameterPat("i", Int()) ], ConstantExpr("i")))
+                }
+            }
+        }
+        |> producesValid
+            """
+type Grid() =
+    member this.Item
+        with get (i: int) = i
+"""

@@ -68,6 +68,35 @@ module CommonExtensions =
                 Range.range0
             )
 
+/// Helpers for curried parameters (`let f a b`, `member this.M a b`, `fun a b -> ...`).
+[<RequireQualifiedAccess>]
+module CurriedParameter =
+    /// Curried parameters are separated by spaces, so a parameter that is not atomic must be
+    /// parenthesized: `let f a: string` would make `string` the return type, `let f Some x`
+    /// would take two parameters, and `let f a, b` does not parse. Patterns that are already
+    /// atomic (names, wildcards, constants, `()`, parenthesized patterns, ...) are left as they are.
+    let rec private needsParens(pattern: Pattern) : bool =
+        match pattern with
+        // `ParameterPat` wraps another pattern: it needs parentheses for its own type annotation or
+        // attributes, or when the wrapped pattern does (`ParameterPat(TuplePat(...))`).
+        | Pattern.Parameter node -> node.Type.IsSome || node.Attributes.IsSome || needsParens node.Pattern
+        // `LongIdentPat([ a; b ])` without a name is a bare list of curried parameters; only a
+        // named pattern with arguments (`Some x`) needs parentheses.
+        | Pattern.LongIdent node -> not node.Identifier.IsEmpty && not node.Parameters.IsEmpty
+        | Pattern.Tuple _
+        | Pattern.Or _
+        | Pattern.Ands _
+        | Pattern.As _
+        | Pattern.ListCons _
+        | Pattern.IsInst _ -> true
+        | _ -> false
+
+    let parenthesize(pattern: Pattern) : Pattern =
+        if needsParens pattern then
+            Pattern.Paren(PatParenNode(SingleTextNode.Create "(", pattern, SingleTextNode.Create ")", Range.range0))
+        else
+            pattern
+
 [<RequireQualifiedAccess>]
 module List =
     let intersperse separator (source: List<'T>) =

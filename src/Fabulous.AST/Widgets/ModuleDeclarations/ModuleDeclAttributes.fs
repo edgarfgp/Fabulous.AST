@@ -28,7 +28,7 @@ module ModuleDeclAttributeNodeBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         ModuleDeclAttribute(AppExpr(" printfn", String "Executing..."))
+        ///         ModuleDeclAttribute(AppExpr("printfn", String "Executing..."))
         ///     }
         /// }
         /// </code>
@@ -43,7 +43,7 @@ module ModuleDeclAttributeNodeBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         ModuleDeclAttribute(Constant(" printfn \"Executing...\""))
+        ///         ModuleDeclAttribute(Constant("printfn \"Executing...\""))
         ///     }
         /// }
         /// </code>
@@ -55,7 +55,7 @@ module ModuleDeclAttributeNodeBuilders =
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
-        ///         ModuleDeclAttribute(" printfn \"Executing...\"")
+        ///         ModuleDeclAttribute("printfn \"Executing...\"")
         ///     }
         /// }
         /// </code>

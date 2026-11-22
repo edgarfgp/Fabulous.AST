@@ -13,7 +13,7 @@ module ModuleDeclAttributes =
     let ``Produces a do expr AppExpr``() =
         Oak() {
             AnonymousModule() {
-                ModuleDeclAttribute(AppExpr(" printfn", String "Executing..."))
+                ModuleDeclAttribute(AppExpr("printfn", String "Executing..."))
                     .attribute(Attribute "MyCustomModuleAttribute")
             }
         }
@@ -27,8 +27,7 @@ do printfn "Executing..."
     let ``Produces a do expr Constant``() =
         Oak() {
             AnonymousModule() {
-                ModuleDeclAttribute(Constant(" printfn \"Executing...\""))
-                    .attribute(Attribute "MyCustomModuleAttribute")
+                ModuleDeclAttribute(Constant("printfn \"Executing...\"")).attribute(Attribute "MyCustomModuleAttribute")
             }
         }
         |> producesValid
@@ -41,7 +40,7 @@ do printfn "Executing..."
     let ``Produces a do expr string``() =
         Oak() {
             AnonymousModule() {
-                ModuleDeclAttribute((" printfn \"Executing...\"")).attribute(Attribute "MyCustomModuleAttribute")
+                ModuleDeclAttribute(("printfn \"Executing...\"")).attribute(Attribute "MyCustomModuleAttribute")
             }
         }
         |> producesValid
@@ -54,7 +53,7 @@ do printfn "Executing..."
     let ``Produces a ModuleDeclAttributes AppExpr``() =
         Oak() {
             AnonymousModule() {
-                ModuleDeclAttribute(AppExpr(" printfn", String "Executing..."))
+                ModuleDeclAttribute(AppExpr("printfn", String "Executing..."))
                     .attributes([ Attribute "MyCustomModuleAttribute"; Attribute "MyCustomModuleAttribute2" ])
 
             }

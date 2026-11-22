@@ -28,7 +28,7 @@ module NamedComputation =
         |> producesValid
             """
 task { "a" }
-task { return"a" }
+task { return "a" }
 task { return "a" }
 task { "a" }
 task { a }
