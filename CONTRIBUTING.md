@@ -37,6 +37,12 @@ please read these instructions carefully.
 
 ## How To Contribute
 
+### Prerequisites
+
+- The **.NET 11 SDK** (pinned in `global.json`); the .NET 10 runtime is also needed to run the `net10.0` tests.
+- Build, test, lint and build the docs exactly as CI does with `dotnet fsi build.fsx`.
+- Preview the docs locally with `dotnet fsi build.fsx -- -p docs` (runs `fsdocs watch`).
+
 ### Requirements
 
 For a contribution to be accepted:
@@ -44,7 +50,7 @@ For a contribution to be accepted:
 - Format the code using
 ```
 dotnet tool restore
-dotnet fantomas -r src
+dotnet fantomas src docs extensions
 ```
 - Make sure that the Fantomas [Oak](https://fsprojects.github.io/fantomas-tools/#/oak?data=N4KABGBEDGD2AmBTSAuKAbRAXMAPMAvGAIwAMkANOFEgGYCWAdogM6pSXWT0sBiL9drQCG6FoioRuLAOIAnYQAcAFgDV6iAO5DR4kAF8gA) model supports the code you are trying to generate.
 - Check that all tests pass: `dotnet test`;

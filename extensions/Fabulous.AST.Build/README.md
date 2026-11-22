@@ -16,7 +16,7 @@ Fabulous.AST.Build is an **MSBuild task** that:
 - Keep type definitions in sync with JSON schemas
 - Automate type generation in CI/CD pipelines
 
-> **💡 Tip:** For programmatic control over generation, use [Fabulous.AST.Json](../Fabulous.AST.Json/README.md) directly.
+> **💡 Tip:** For programmatic control over generation, use [Fabulous.AST.Json](https://github.com/edgarfgp/Fabulous.AST/blob/main/extensions/Fabulous.AST.Json/README.md) directly.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Fabulous.AST.Build is an **MSBuild task** that:
 dotnet add package Fabulous.AST.Build
 ```
 
-**Requirements:** .NET 8.0 or later
+**Requirements:** .NET 10 SDK or later
 
 ## Tutorial
 

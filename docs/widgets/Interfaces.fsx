@@ -16,9 +16,9 @@ type with `InterfaceWith`.
 See the official [F# interfaces documentation](https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/interfaces) for background.
 
 ## Contents
-- [Defining an Interface](#defining-an-interface)
-- [Abstract Members with Parameters](#abstract-members-with-parameters)
-- [Implementing an Interface](#implementing-an-interface)
+- [Defining an Interface](#Defining-an-Interface)
+- [Abstract Members with Parameters](#Abstract-Members-with-Parameters)
+- [Implementing an Interface](#Implementing-an-Interface)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

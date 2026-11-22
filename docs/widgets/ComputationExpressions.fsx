@@ -10,10 +10,10 @@ index: 20
 # Computation Expressions
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Named Computation Expressions](#named-computation-expressions)
-- [Multi-statement Bodies](#multi-statement-bodies)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Named Computation Expressions](#Named-Computation-Expressions)
+- [Multi-statement Bodies](#Multi-statement-Bodies)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

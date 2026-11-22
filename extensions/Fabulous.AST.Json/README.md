@@ -20,7 +20,7 @@ Fabulous.AST.Json is a **programmatic F# type generator** that:
 - Test fixtures and documentation
 - Custom code generation tooling
 
-> **💡 Tip:** For automatic build-time generation from JSON files, use [Fabulous.AST.Build](../Fabulous.AST.Build/README.md) instead.
+> **💡 Tip:** For automatic build-time generation from JSON files, use [Fabulous.AST.Build](https://github.com/edgarfgp/Fabulous.AST/blob/main/extensions/Fabulous.AST.Build/README.md) instead.
 
 ## Installation
 
@@ -28,7 +28,7 @@ Fabulous.AST.Json is a **programmatic F# type generator** that:
 dotnet add package Fabulous.AST.Json
 ```
 
-**Requirements:** .NET 8.0 or later
+**Requirements:** .NET 10 or later
 
 ## Tutorial
 
@@ -243,14 +243,15 @@ namespace MyApp.Models
 type User = { id: int; name: string }
 ```
 
-Or in a module:
+Or in a top-level module, by making the namespace implicit with `toImplicit()`:
 
 ```fsharp
 let source =
     Oak() {
-        Module("MyApp.Models") {
+        Namespace("MyApp.Models") {
             Json(json).rootName("User")
         }
+        |> _.toImplicit()
     }
     |> Gen.mkOak
     |> Gen.run

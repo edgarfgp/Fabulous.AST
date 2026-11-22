@@ -10,17 +10,17 @@ index: 3
 # Modules
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Anonymous Modules](#anonymous-modules)
-- [Named Modules](#named-modules)
-- [Hash Directives](#hash-directives)
-- [Nested Modules](#nested-modules)
-- [Referencing Code in Modules](#referencing-code-in-modules)
-- [Recursive Modules](#recursive-modules)
-- [Value Declarations in Modules](#value-declarations-in-modules)
-- [Function Declarations in Modules](#function-declarations-in-modules)
-- [Type Declarations in Modules](#type-declarations-in-modules)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Anonymous Modules](#Anonymous-Modules)
+- [Named Modules](#Named-Modules)
+- [Hash Directives](#Hash-Directives)
+- [Nested Modules](#Nested-Modules)
+- [Referencing Code in Modules](#Referencing-Code-in-Modules)
+- [Recursive Modules](#Recursive-Modules)
+- [Value Declarations in Modules](#Value-Declarations-in-Modules)
+- [Function Declarations in Modules](#Function-Declarations-in-Modules)
+- [Type Declarations in Modules](#Type-Declarations-in-Modules)
 
 ## Overview
 Modules in F# are a way to group related functionality together. All F# code exists within modules. When you create a new file,

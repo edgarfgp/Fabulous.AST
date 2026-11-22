@@ -10,10 +10,10 @@ index: 18
 # Delegates
 
 ## Contents
-- [Overview](#overview)
-- [Basic Usage](#basic-usage)
-- [Tupled and Named Parameters](#tupled-and-named-parameters)
-- [Access Modifiers](#access-modifiers)
+- [Overview](#Overview)
+- [Basic Usage](#Basic-Usage)
+- [Tupled and Named Parameters](#Tupled-and-Named-Parameters)
+- [Access Modifiers](#Access-Modifiers)
 *)
 
 #r "../../src/Fabulous.AST/bin/Release/netstandard2.1/publish/Fantomas.Core.dll"

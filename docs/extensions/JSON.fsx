@@ -235,14 +235,15 @@ Oak() {
 (*** include-output ***)
 
 (**
-Or in a module:
+Or in a top-level module, by making the namespace implicit with `toImplicit()`:
 *)
 
 Oak() {
-    Module("MyApp.Models") {
+    Namespace("MyApp.Models") {
         let json = """{ "id": 1, "name": "Alice" }"""
         Json(json).rootName("User")
     }
+    |> _.toImplicit()
 }
 |> Gen.mkOak
 |> Gen.run
