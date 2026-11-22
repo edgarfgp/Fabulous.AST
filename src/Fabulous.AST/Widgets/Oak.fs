@@ -17,7 +17,20 @@ module Oak =
     let hashDirectivesOf(decl: ModuleDecl) : ParsedHashDirectiveNode list =
         match decl with
         | ModuleDecl.HashDirectiveList node ->
-            let directives = node.HashDirectives
+            // Copy the directives: trivia modifiers keep returning the same declaration node, so
+            // adding trivia to the originals would repeat it every time the builder is reused.
+            let directives =
+                node.HashDirectives
+                |> List.map(fun directive ->
+                    let copy = ParsedHashDirectiveNode(directive.Ident, directive.Args, directive.Range)
+
+                    for trivia in directive.ContentBefore do
+                        copy.AddBefore(trivia)
+
+                    for trivia in directive.ContentAfter do
+                        copy.AddAfter(trivia)
+
+                    copy)
 
             match directives with
             | [] -> []

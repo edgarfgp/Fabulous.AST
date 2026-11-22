@@ -557,3 +557,17 @@ let rec ones = 1 :: ones
 let ``(test case)`` x = x
 let ( +! ) a b = a + b
 """
+
+    [<Fact>]
+    let ``Operator names get spaces inside the parentheses``() =
+        Oak() {
+            AnonymousModule() {
+                Function("(*+)", [ ParameterPat("a"); ParameterPat("b") ], "a * b + b")
+                Function("(>>=)", [ ParameterPat("m"); ParameterPat("f") ], "Option.bind f m")
+            }
+        }
+        |> producesValid
+            """
+let ( *+ ) a b = a * b + b
+let ( >>= ) m f = Option.bind f m
+"""

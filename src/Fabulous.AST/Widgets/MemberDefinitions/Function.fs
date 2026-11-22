@@ -88,10 +88,10 @@ module BindingFunctionBuilders =
                 bodyExpr: WidgetBuilder<Expr>,
                 ?returnType: WidgetBuilder<Type>
             ) =
-            // Active patterns (`(|Even|Odd|)`) and operators (`( +! )`) are written as is.
+            // Active patterns (`(|Even|Odd|)`) and operators (`( +! )`) are not backticked.
             let name =
                 if Naming.isParenthesizedOperatorOrActivePattern name then
-                    name
+                    Naming.parenthesizedDisplayName name
                 else
                     PrettyNaming.NormalizeIdentifierBackticks name
 

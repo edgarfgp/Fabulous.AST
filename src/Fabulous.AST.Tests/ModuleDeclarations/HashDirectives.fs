@@ -246,3 +246,28 @@ let x = 1
 
 let x = 1
 """
+
+    [<Fact>]
+    let ``A guarded directive builder can be reused``() =
+        let guarded =
+            NoWarn("0044").triviaBefore(Directive("#if DEBUG")).triviaAfter(Directive("#endif"))
+
+        let first =
+            Oak() { AnonymousModule() { Value("x", Int(1)) } } |> _.hashDirective(guarded)
+
+        let second =
+            Oak() { AnonymousModule() { Value("y", Int(2)) } } |> _.hashDirective(guarded)
+
+        let expected name value =
+            $"""
+#if DEBUG
+#nowarn 0044
+#endif
+
+let {name} = {value}
+"""
+
+        // Render each tree twice: the guard must appear exactly once every time.
+        first |> producesValid(expected "x" 1)
+        second |> producesValid(expected "y" 2)
+        first |> producesValid(expected "x" 1)

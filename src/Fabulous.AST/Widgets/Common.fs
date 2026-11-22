@@ -87,6 +87,13 @@ module Naming =
         else
             false
 
+    /// The display form of a parenthesized operator or active pattern. Operators get spaces inside the
+    /// parentheses (`( *+ )`), since `(*` would otherwise start a comment.
+    let parenthesizedDisplayName(name: string) =
+        let inner = name.Substring(1, name.Length - 2).Trim()
+
+        if isSymbolicOperator inner then $"( {inner} )" else name
+
     /// Splits a qualified name on the dots that are not inside double backticks
     /// (`` System.``My.Type`` `` → `System`, ``` ``My.Type`` ```).
     let splitQualified(name: string) : string list =
