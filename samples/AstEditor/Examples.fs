@@ -74,7 +74,7 @@ Oak() {
         Function("add", [ ParameterPat("a"); ParameterPat("b") ], InfixAppExpr("a", "+", "b"))
         Function("square", ParameterPat("x"), InfixAppExpr("x", "*", "x"))
 
-        AppExpr("printfn", [ String("%d %d"); ParenExpr(AppExpr("add", [ Int(1); Int(2) ])); ParenExpr(AppExpr("square", Int(4))) ])
+        AppExpr("printfn", [ ConstantExpr(String("%d %d")); ParenExpr(AppExpr("add", [ Int(1); Int(2) ])); ParenExpr(AppExpr("square", Int(4))) ])
     }
 }
 |> Gen.mkOak
@@ -87,7 +87,7 @@ open Fantomas.FCS.Text
 open type Fabulous.AST.Ast
 
 let intExpr (value: int) : Expr =
-    Expr.Constant(Constant.FromText(SingleTextNode(string value, Range.Zero)))
+    Expr.Constant(Constant.FromText(SingleTextNode(string value, Range.range0)))
 
 let (|IntLit|_|) (e: Expr) : int option =
     match e with
