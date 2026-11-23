@@ -40,6 +40,17 @@ module private RewriteImpl =
             let v' = f v
             if refEq v v' then opt else Some v'
 
+    /// Rebuilt nodes are new objects, so the comments, blank lines and directives attached to the
+    /// original node have to be carried over explicitly.
+    let withTriviaOf (source: NodeBase) (target: 'node :> NodeBase) : 'node =
+        for trivia in source.ContentBefore do
+            target.AddBefore(trivia)
+
+        for trivia in source.ContentAfter do
+            target.AddAfter(trivia)
+
+        target
+
     // ===== DU walkers =====
 
     let rec rewriteExpr (f: Expr -> Expr) (e: Expr) : Expr =
@@ -570,7 +581,7 @@ module private RewriteImpl =
         if refEq mods' oak.ModulesOrNamespaces then
             oak
         else
-            Oak(oak.ParsedHashDirectives, mods', oak.Range)
+            Oak(oak.ParsedHashDirectives, mods', oak.Range) |> withTriviaOf oak
 
     and rewriteModuleOrNamespaceNode (f: Expr -> Expr) (n: ModuleOrNamespaceNode) : ModuleOrNamespaceNode =
         let decls' = n.Declarations |> mapList(rewriteModuleDecl f)
@@ -578,7 +589,7 @@ module private RewriteImpl =
         if refEq decls' n.Declarations then
             n
         else
-            ModuleOrNamespaceNode(n.Header, decls', n.Range)
+            ModuleOrNamespaceNode(n.Header, decls', n.Range) |> withTriviaOf n
 
     and rewriteNestedModuleNode (f: Expr -> Expr) (n: NestedModuleNode) : NestedModuleNode =
         let decls' = n.Declarations |> mapList(rewriteModuleDecl f)
@@ -598,6 +609,7 @@ module private RewriteImpl =
                 decls',
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteModuleDeclAttributesNode (f: Expr -> Expr) (n: ModuleDeclAttributesNode) : ModuleDeclAttributesNode =
         let expr' = rewriteExpr f n.Expr
@@ -606,7 +618,7 @@ module private RewriteImpl =
         if refEq expr' n.Expr && refEq attrs' n.Attributes then
             n
         else
-            ModuleDeclAttributesNode(attrs', expr', n.Range)
+            ModuleDeclAttributesNode(attrs', expr', n.Range) |> withTriviaOf n
 
     and rewriteExceptionDefnNode (f: Expr -> Expr) (n: ExceptionDefnNode) : ExceptionDefnNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -627,6 +639,7 @@ module private RewriteImpl =
                 members',
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteBindingNode (f: Expr -> Expr) (n: BindingNode) : BindingNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -669,6 +682,7 @@ module private RewriteImpl =
                 n.In,
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteBindingListNode (f: Expr -> Expr) (n: BindingListNode) : BindingListNode =
         let bindings' = n.Bindings |> mapList(rewriteBindingNode f)
@@ -676,7 +690,7 @@ module private RewriteImpl =
         if refEq bindings' n.Bindings then
             n
         else
-            BindingListNode(bindings', n.Range)
+            BindingListNode(bindings', n.Range) |> withTriviaOf n
 
     and rewriteBindingReturnInfoNode (f: Expr -> Expr) (n: BindingReturnInfoNode) : BindingReturnInfoNode =
         let t' = rewriteType f n.Type
@@ -684,7 +698,7 @@ module private RewriteImpl =
         if refEq t' n.Type then
             n
         else
-            BindingReturnInfoNode(n.Colon, t', n.Range)
+            BindingReturnInfoNode(n.Colon, t', n.Range) |> withTriviaOf n
 
     and rewriteValNode (f: Expr -> Expr) (n: ValNode) : ValNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -714,6 +728,7 @@ module private RewriteImpl =
                 eo',
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteExternBindingNode (f: Expr -> Expr) (n: ExternBindingNode) : ExternBindingNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -746,6 +761,7 @@ module private RewriteImpl =
                 n.ClosingParen,
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteExternBindingPatternNode (f: Expr -> Expr) (n: ExternBindingPatternNode) : ExternBindingPatternNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -755,7 +771,7 @@ module private RewriteImpl =
         if refEq attrs' n.Attributes && refEq t' n.Type && refEq pat' n.Pattern then
             n
         else
-            ExternBindingPatternNode(attrs', t', pat', n.Range)
+            ExternBindingPatternNode(attrs', t', pat', n.Range) |> withTriviaOf n
 
     and rewriteFieldNode (f: Expr -> Expr) (n: FieldNode) : FieldNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -765,6 +781,7 @@ module private RewriteImpl =
             n
         else
             FieldNode(n.XmlDoc, attrs', n.LeadingKeyword, n.MutableKeyword, n.Accessibility, n.Name, t', n.Range)
+            |> withTriviaOf n
 
     and rewriteUnionCaseNode (f: Expr -> Expr) (n: UnionCaseNode) : UnionCaseNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -774,6 +791,7 @@ module private RewriteImpl =
             n
         else
             UnionCaseNode(n.XmlDoc, attrs', n.Bar, n.Identifier, n.OfKeyword, fields', n.Range)
+            |> withTriviaOf n
 
     and rewriteEnumCaseNode (f: Expr -> Expr) (n: EnumCaseNode) : EnumCaseNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -783,6 +801,7 @@ module private RewriteImpl =
             n
         else
             EnumCaseNode(n.XmlDoc, n.Bar, attrs', n.Identifier, n.Equals, constant', n.Range)
+            |> withTriviaOf n
 
     and rewriteAttributeNode (f: Expr -> Expr) (n: AttributeNode) : AttributeNode =
         let expr' = n.Expr |> mapOption(rewriteExpr f)
@@ -790,7 +809,7 @@ module private RewriteImpl =
         if refEq expr' n.Expr then
             n
         else
-            AttributeNode(n.TypeName, expr', n.Target, n.Range)
+            AttributeNode(n.TypeName, expr', n.Target, n.Range) |> withTriviaOf n
 
     and rewriteAttributeListNode (f: Expr -> Expr) (n: AttributeListNode) : AttributeListNode =
         let attrs' = n.Attributes |> mapList(rewriteAttributeNode f)
@@ -798,7 +817,7 @@ module private RewriteImpl =
         if refEq attrs' n.Attributes then
             n
         else
-            AttributeListNode(n.Opening, attrs', n.Closing, n.Range)
+            AttributeListNode(n.Opening, attrs', n.Closing, n.Range) |> withTriviaOf n
 
     and rewriteMultipleAttributeListNode (f: Expr -> Expr) (n: MultipleAttributeListNode) : MultipleAttributeListNode =
         let lists' = n.AttributeLists |> mapList(rewriteAttributeListNode f)
@@ -806,7 +825,7 @@ module private RewriteImpl =
         if refEq lists' n.AttributeLists then
             n
         else
-            MultipleAttributeListNode(lists', n.Range)
+            MultipleAttributeListNode(lists', n.Range) |> withTriviaOf n
 
     and rewriteImplicitConstructorNode (f: Expr -> Expr) (n: ImplicitConstructorNode) : ImplicitConstructorNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -816,6 +835,7 @@ module private RewriteImpl =
             n
         else
             ImplicitConstructorNode(n.XmlDoc, attrs', n.Accessibility, pat', n.Self, n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeNameNode (f: Expr -> Expr) (n: TypeNameNode) : TypeNameNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -846,6 +866,7 @@ module private RewriteImpl =
                 n.EqualsToken,
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteInterfaceImplNode (f: Expr -> Expr) (n: InterfaceImplNode) : InterfaceImplNode =
         let t' = rewriteType f n.Type
@@ -856,6 +877,7 @@ module private RewriteImpl =
             n
         else
             InterfaceImplNode(n.Interface, t', n.With, bindings', members', n.Range)
+            |> withTriviaOf n
 
     // ===== Type nodes =====
 
@@ -877,7 +899,7 @@ module private RewriteImpl =
         if not changed && refEq returnType' n.ReturnType then
             n
         else
-            TypeFunsNode(parameters', returnType', n.Range)
+            TypeFunsNode(parameters', returnType', n.Range) |> withTriviaOf n
 
     and rewriteTypeTupleNode (f: Expr -> Expr) (n: TypeTupleNode) : TypeTupleNode =
         let mutable changed = false
@@ -895,7 +917,10 @@ module private RewriteImpl =
                     Choice1Of2 t'
                 | other -> other)
 
-        if not changed then n else TypeTupleNode(path', n.Range)
+        if not changed then
+            n
+        else
+            TypeTupleNode(path', n.Range) |> withTriviaOf n
 
     and rewriteTypeStructTupleNode (f: Expr -> Expr) (n: TypeStructTupleNode) : TypeStructTupleNode =
         let mutable changed = false
@@ -916,7 +941,7 @@ module private RewriteImpl =
         if not changed then
             n
         else
-            TypeStructTupleNode(n.Keyword, path', n.ClosingParen, n.Range)
+            TypeStructTupleNode(n.Keyword, path', n.ClosingParen, n.Range) |> withTriviaOf n
 
     and rewriteTypeHashConstraintNode (f: Expr -> Expr) (n: TypeHashConstraintNode) : TypeHashConstraintNode =
         let t' = rewriteType f n.Type
@@ -924,7 +949,7 @@ module private RewriteImpl =
         if refEq t' n.Type then
             n
         else
-            TypeHashConstraintNode(n.Hash, t', n.Range)
+            TypeHashConstraintNode(n.Hash, t', n.Range) |> withTriviaOf n
 
     and rewriteTypeMeasurePowerNode (f: Expr -> Expr) (n: TypeMeasurePowerNode) : TypeMeasurePowerNode =
         let t' = rewriteType f n.BaseMeasure
@@ -932,7 +957,7 @@ module private RewriteImpl =
         if refEq t' n.BaseMeasure then
             n
         else
-            TypeMeasurePowerNode(t', n.Exponent, n.Range)
+            TypeMeasurePowerNode(t', n.Exponent, n.Range) |> withTriviaOf n
 
     and rewriteTypeStaticConstantExprNode
         (f: Expr -> Expr)
@@ -943,7 +968,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            TypeStaticConstantExprNode(n.Const, e', n.Range)
+            TypeStaticConstantExprNode(n.Const, e', n.Range) |> withTriviaOf n
 
     and rewriteTypeStaticConstantNamedNode
         (f: Expr -> Expr)
@@ -955,7 +980,7 @@ module private RewriteImpl =
         if refEq id' n.Identifier && refEq v' n.Value then
             n
         else
-            TypeStaticConstantNamedNode(id', v', n.Range)
+            TypeStaticConstantNamedNode(id', v', n.Range) |> withTriviaOf n
 
     and rewriteTypeArrayNode (f: Expr -> Expr) (n: TypeArrayNode) : TypeArrayNode =
         let t' = rewriteType f n.Type
@@ -963,7 +988,7 @@ module private RewriteImpl =
         if refEq t' n.Type then
             n
         else
-            TypeArrayNode(t', n.Rank, n.Range)
+            TypeArrayNode(t', n.Rank, n.Range) |> withTriviaOf n
 
     and rewriteTypeAppPostFixNode (f: Expr -> Expr) (n: TypeAppPostFixNode) : TypeAppPostFixNode =
         let first' = rewriteType f n.First
@@ -972,7 +997,7 @@ module private RewriteImpl =
         if refEq first' n.First && refEq last' n.Last then
             n
         else
-            TypeAppPostFixNode(first', last', n.Range)
+            TypeAppPostFixNode(first', last', n.Range) |> withTriviaOf n
 
     and rewriteTypeAppPrefixNode (f: Expr -> Expr) (n: TypeAppPrefixNode) : TypeAppPrefixNode =
         let id' = rewriteType f n.Identifier
@@ -982,6 +1007,7 @@ module private RewriteImpl =
             n
         else
             TypeAppPrefixNode(id', n.PostIdentifier, n.LessThen, args', n.GreaterThan, n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeAnonRecordNode (f: Expr -> Expr) (n: TypeAnonRecordNode) : TypeAnonRecordNode =
         let mutable changed = false
@@ -1000,6 +1026,7 @@ module private RewriteImpl =
             n
         else
             TypeAnonRecordNode(n.Struct, n.Opening, fields', n.Closing, n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeParenNode (f: Expr -> Expr) (n: TypeParenNode) : TypeParenNode =
         let t' = rewriteType f n.Type
@@ -1007,7 +1034,7 @@ module private RewriteImpl =
         if refEq t' n.Type then
             n
         else
-            TypeParenNode(n.OpeningParen, t', n.ClosingParen, n.Range)
+            TypeParenNode(n.OpeningParen, t', n.ClosingParen, n.Range) |> withTriviaOf n
 
     and rewriteTypeSignatureParameterNode
         (f: Expr -> Expr)
@@ -1019,7 +1046,7 @@ module private RewriteImpl =
         if refEq attrs' n.Attributes && refEq t' n.Type then
             n
         else
-            TypeSignatureParameterNode(attrs', n.Identifier, t', n.Range)
+            TypeSignatureParameterNode(attrs', n.Identifier, t', n.Range) |> withTriviaOf n
 
     and rewriteTypeOrNode (f: Expr -> Expr) (n: TypeOrNode) : TypeOrNode =
         let lhs' = rewriteType f n.LeftHandSide
@@ -1028,7 +1055,7 @@ module private RewriteImpl =
         if refEq lhs' n.LeftHandSide && refEq rhs' n.RightHandSide then
             n
         else
-            TypeOrNode(lhs', n.Or, rhs', n.Range)
+            TypeOrNode(lhs', n.Or, rhs', n.Range) |> withTriviaOf n
 
     and rewriteTypeLongIdentAppNode (f: Expr -> Expr) (n: TypeLongIdentAppNode) : TypeLongIdentAppNode =
         let t' = rewriteType f n.AppType
@@ -1036,7 +1063,7 @@ module private RewriteImpl =
         if refEq t' n.AppType then
             n
         else
-            TypeLongIdentAppNode(t', n.LongIdent, n.Range)
+            TypeLongIdentAppNode(t', n.LongIdent, n.Range) |> withTriviaOf n
 
     and rewriteTypeIntersectionNode (f: Expr -> Expr) (n: TypeIntersectionNode) : TypeIntersectionNode =
         let mutable changed = false
@@ -1057,7 +1084,7 @@ module private RewriteImpl =
         if not changed then
             n
         else
-            TypeIntersectionNode(items', n.Range)
+            TypeIntersectionNode(items', n.Range) |> withTriviaOf n
 
     and rewriteTypeWithGlobalConstraintsNode
         (f: Expr -> Expr)
@@ -1069,7 +1096,7 @@ module private RewriteImpl =
         if refEq t' n.Type && refEq constraints' n.TypeConstraints then
             n
         else
-            TypeWithGlobalConstraintsNode(t', constraints', n.Range)
+            TypeWithGlobalConstraintsNode(t', constraints', n.Range) |> withTriviaOf n
 
     // ===== TypeConstraint nodes =====
 
@@ -1083,6 +1110,7 @@ module private RewriteImpl =
             n
         else
             TypeConstraintDefaultsToTypeNode(n.Default, n.Typar, t', n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeConstraintSubtypeOfTypeNode
         (f: Expr -> Expr)
@@ -1093,7 +1121,7 @@ module private RewriteImpl =
         if refEq t' n.Type then
             n
         else
-            TypeConstraintSubtypeOfTypeNode(n.Typar, t', n.Range)
+            TypeConstraintSubtypeOfTypeNode(n.Typar, t', n.Range) |> withTriviaOf n
 
     and rewriteTypeConstraintSupportsMemberNode
         (f: Expr -> Expr)
@@ -1105,7 +1133,7 @@ module private RewriteImpl =
         if refEq t' n.Type && refEq m' n.MemberSig then
             n
         else
-            TypeConstraintSupportsMemberNode(t', m', n.Range)
+            TypeConstraintSupportsMemberNode(t', m', n.Range) |> withTriviaOf n
 
     and rewriteTypeConstraintEnumOrDelegateNode
         (f: Expr -> Expr)
@@ -1117,6 +1145,7 @@ module private RewriteImpl =
             n
         else
             TypeConstraintEnumOrDelegateNode(n.Typar, n.Verb, ts', n.Range)
+            |> withTriviaOf n
 
     // ===== TyparDecls nodes =====
 
@@ -1140,7 +1169,7 @@ module private RewriteImpl =
         if refEq attrs' n.Attributes && not changed then
             n
         else
-            TyparDeclNode(attrs', n.TypeParameter, constraints', n.Range)
+            TyparDeclNode(attrs', n.TypeParameter, constraints', n.Range) |> withTriviaOf n
 
     and rewriteTyparDeclsPostfixListNode (f: Expr -> Expr) (n: TyparDeclsPostfixListNode) : TyparDeclsPostfixListNode =
         let decls' = n.Decls |> mapList(rewriteTyparDeclNode f)
@@ -1150,6 +1179,7 @@ module private RewriteImpl =
             n
         else
             TyparDeclsPostfixListNode(n.LessThan, decls', constraints', n.GreaterThan, n.Range)
+            |> withTriviaOf n
 
     and rewriteTyparDeclsPrefixListNode (f: Expr -> Expr) (n: TyparDeclsPrefixListNode) : TyparDeclsPrefixListNode =
         let decls' = n.Decls |> mapList(rewriteTyparDeclNode f)
@@ -1158,6 +1188,7 @@ module private RewriteImpl =
             n
         else
             TyparDeclsPrefixListNode(n.OpeningParen, decls', n.ClosingParen, n.Range)
+            |> withTriviaOf n
 
     // ===== Pattern nodes =====
 
@@ -1168,7 +1199,7 @@ module private RewriteImpl =
         if refEq lhs' n.LeftHandSide && refEq rhs' n.RightHandSide then
             n
         else
-            PatLeftMiddleRight(lhs', n.Middle, rhs', n.Range)
+            PatLeftMiddleRight(lhs', n.Middle, rhs', n.Range) |> withTriviaOf n
 
     and rewritePatAndsNode (f: Expr -> Expr) (n: PatAndsNode) : PatAndsNode =
         let pats' = n.Patterns |> mapList(rewritePattern f)
@@ -1176,7 +1207,7 @@ module private RewriteImpl =
         if refEq pats' n.Patterns then
             n
         else
-            PatAndsNode(pats', n.Range)
+            PatAndsNode(pats', n.Range) |> withTriviaOf n
 
     and rewritePatParameterNode (f: Expr -> Expr) (n: PatParameterNode) : PatParameterNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -1186,7 +1217,7 @@ module private RewriteImpl =
         if refEq attrs' n.Attributes && refEq pat' n.Pattern && refEq t' n.Type then
             n
         else
-            PatParameterNode(attrs', pat', t', n.Range)
+            PatParameterNode(attrs', pat', t', n.Range) |> withTriviaOf n
 
     and rewritePatNamePatPairsNode (f: Expr -> Expr) (n: PatNamePatPairsNode) : PatNamePatPairsNode =
         let typars' = n.TyparDecls |> mapOption(rewriteTyparDecls f)
@@ -1196,6 +1227,7 @@ module private RewriteImpl =
             n
         else
             PatNamePatPairsNode(n.Identifier, typars', n.OpeningParen, pairs', n.ClosingParen, n.Range)
+            |> withTriviaOf n
 
     // Fantomas 8 uses one NamePatPairNode for both `Case(field = pat)` and `{ field = pat }`.
     and rewriteNamePatPairNode (f: Expr -> Expr) (n: NamePatPairNode) : NamePatPairNode =
@@ -1204,7 +1236,7 @@ module private RewriteImpl =
         if refEq pat' n.Pattern then
             n
         else
-            NamePatPairNode(n.FieldName, n.Equals, pat', n.Range)
+            NamePatPairNode(n.FieldName, n.Equals, pat', n.Range) |> withTriviaOf n
 
     and rewritePatLongIdentNode (f: Expr -> Expr) (n: PatLongIdentNode) : PatLongIdentNode =
         let typars' = n.TyparDecls |> mapOption(rewriteTyparDecls f)
@@ -1214,6 +1246,7 @@ module private RewriteImpl =
             n
         else
             PatLongIdentNode(n.Accessibility, n.Identifier, typars', parameters', n.Range)
+            |> withTriviaOf n
 
     and rewritePatParenNode (f: Expr -> Expr) (n: PatParenNode) : PatParenNode =
         let pat' = rewritePattern f n.Pattern
@@ -1221,7 +1254,7 @@ module private RewriteImpl =
         if refEq pat' n.Pattern then
             n
         else
-            PatParenNode(n.OpeningParen, pat', n.ClosingParen, n.Range)
+            PatParenNode(n.OpeningParen, pat', n.ClosingParen, n.Range) |> withTriviaOf n
 
     and rewritePatTupleNode (f: Expr -> Expr) (n: PatTupleNode) : PatTupleNode =
         let mutable changed = false
@@ -1239,7 +1272,10 @@ module private RewriteImpl =
                     Choice1Of2 p'
                 | other -> other)
 
-        if not changed then n else PatTupleNode(items', n.Range)
+        if not changed then
+            n
+        else
+            PatTupleNode(items', n.Range) |> withTriviaOf n
 
     and rewritePatStructTupleNode (f: Expr -> Expr) (n: PatStructTupleNode) : PatStructTupleNode =
         let pats' = n.Patterns |> mapList(rewritePattern f)
@@ -1247,7 +1283,7 @@ module private RewriteImpl =
         if refEq pats' n.Patterns then
             n
         else
-            PatStructTupleNode(pats', n.Range)
+            PatStructTupleNode(pats', n.Range) |> withTriviaOf n
 
     and rewritePatArrayOrListNode (f: Expr -> Expr) (n: PatArrayOrListNode) : PatArrayOrListNode =
         let pats' = n.Patterns |> mapList(rewritePattern f)
@@ -1255,7 +1291,7 @@ module private RewriteImpl =
         if refEq pats' n.Patterns then
             n
         else
-            PatArrayOrListNode(n.OpenToken, pats', n.CloseToken, n.Range)
+            PatArrayOrListNode(n.OpenToken, pats', n.CloseToken, n.Range) |> withTriviaOf n
 
     and rewritePatRecordNode (f: Expr -> Expr) (n: PatRecordNode) : PatRecordNode =
         let fields' = n.Fields |> mapList(rewriteNamePatPairNode f)
@@ -1263,7 +1299,7 @@ module private RewriteImpl =
         if refEq fields' n.Fields then
             n
         else
-            PatRecordNode(n.OpeningNode, fields', n.ClosingNode, n.Range)
+            PatRecordNode(n.OpeningNode, fields', n.ClosingNode, n.Range) |> withTriviaOf n
 
     and rewritePatIsInstNode (f: Expr -> Expr) (n: PatIsInstNode) : PatIsInstNode =
         let t' = rewriteType f n.Type
@@ -1271,7 +1307,7 @@ module private RewriteImpl =
         if refEq t' n.Type then
             n
         else
-            PatIsInstNode(n.Token, t', n.Range)
+            PatIsInstNode(n.Token, t', n.Range) |> withTriviaOf n
 
     // ===== Expr nodes =====
 
@@ -1281,7 +1317,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            ExprLazyNode(n.LazyWord, e', n.Range)
+            ExprLazyNode(n.LazyWord, e', n.Range) |> withTriviaOf n
 
     and rewriteExprSingleNode (f: Expr -> Expr) (n: ExprSingleNode) : ExprSingleNode =
         let e' = rewriteExpr f n.Expr
@@ -1290,6 +1326,7 @@ module private RewriteImpl =
             n
         else
             ExprSingleNode(n.Leading, n.AddSpace, n.SupportsStroustrup, e', n.Range)
+            |> withTriviaOf n
 
     and rewriteExprQuoteNode (f: Expr -> Expr) (n: ExprQuoteNode) : ExprQuoteNode =
         let e' = rewriteExpr f n.Expr
@@ -1297,7 +1334,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            ExprQuoteNode(n.OpenToken, e', n.CloseToken, n.Range)
+            ExprQuoteNode(n.OpenToken, e', n.CloseToken, n.Range) |> withTriviaOf n
 
     and rewriteExprTypedNode (f: Expr -> Expr) (n: ExprTypedNode) : ExprTypedNode =
         let e' = rewriteExpr f n.Expr
@@ -1306,7 +1343,7 @@ module private RewriteImpl =
         if refEq e' n.Expr && refEq t' n.Type then
             n
         else
-            ExprTypedNode(e', n.Operator, t', n.Range)
+            ExprTypedNode(e', n.Operator, t', n.Range) |> withTriviaOf n
 
     and rewriteExprNewNode (f: Expr -> Expr) (n: ExprNewNode) : ExprNewNode =
         let t' = rewriteType f n.Type
@@ -1315,7 +1352,7 @@ module private RewriteImpl =
         if refEq t' n.Type && refEq args' n.Arguments then
             n
         else
-            ExprNewNode(n.NewKeyword, t', args', n.Range)
+            ExprNewNode(n.NewKeyword, t', args', n.Range) |> withTriviaOf n
 
     and rewriteExprTupleNode (f: Expr -> Expr) (n: ExprTupleNode) : ExprTupleNode =
         let mutable changed = false
@@ -1333,7 +1370,10 @@ module private RewriteImpl =
                     Choice1Of2 e'
                 | other -> other)
 
-        if not changed then n else ExprTupleNode(items', n.Range)
+        if not changed then
+            n
+        else
+            ExprTupleNode(items', n.Range) |> withTriviaOf n
 
     and rewriteExprStructTupleNode (f: Expr -> Expr) (n: ExprStructTupleNode) : ExprStructTupleNode =
         let tuple' = rewriteExprTupleNode f n.Tuple
@@ -1341,7 +1381,7 @@ module private RewriteImpl =
         if refEq tuple' n.Tuple then
             n
         else
-            ExprStructTupleNode(n.Struct, tuple', n.ClosingParen, n.Range)
+            ExprStructTupleNode(n.Struct, tuple', n.ClosingParen, n.Range) |> withTriviaOf n
 
     and rewriteExprArrayOrListNode (f: Expr -> Expr) (n: ExprArrayOrListNode) : ExprArrayOrListNode =
         let elements' = n.Elements |> mapList(rewriteExpr f)
@@ -1349,7 +1389,7 @@ module private RewriteImpl =
         if refEq elements' n.Elements then
             n
         else
-            ExprArrayOrListNode(n.Opening, elements', n.Closing, n.Range)
+            ExprArrayOrListNode(n.Opening, elements', n.Closing, n.Range) |> withTriviaOf n
 
     and rewriteExprRecordNode (f: Expr -> Expr) (n: ExprRecordNode) : ExprRecordNode =
         let copyInfo' = n.CopyInfo |> mapOption(rewriteExpr f)
@@ -1359,6 +1399,7 @@ module private RewriteImpl =
             n
         else
             ExprRecordNode(n.OpeningBrace, copyInfo', fields', n.ClosingBrace, n.Range)
+            |> withTriviaOf n
 
     // Fantomas 8 (F# 11 record spreads): a record expression's items are fields or `...expr`.
     and rewriteExprRecordFieldOrSpread (f: Expr -> Expr) (item: ExprRecordFieldOrSpread) : ExprRecordFieldOrSpread =
@@ -1376,7 +1417,7 @@ module private RewriteImpl =
             if refEq e' n.Expr then
                 item
             else
-                ExprRecordFieldOrSpread.Spread(ExprSpreadNode(n.Dots, e', n.Range))
+                ExprRecordFieldOrSpread.Spread(ExprSpreadNode(n.Dots, e', n.Range) |> withTriviaOf n)
 
     and rewriteRecordFieldNode (f: Expr -> Expr) (n: RecordFieldNode) : RecordFieldNode =
         let e' = rewriteExpr f n.Expr
@@ -1384,7 +1425,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            RecordFieldNode(n.FieldName, n.Equals, e', n.Range)
+            RecordFieldNode(n.FieldName, n.Equals, e', n.Range) |> withTriviaOf n
 
     and rewriteExprInheritRecordNode (f: Expr -> Expr) (n: ExprInheritRecordNode) : ExprInheritRecordNode =
         let ic' = rewriteInheritConstructor f n.InheritConstructor
@@ -1394,6 +1435,7 @@ module private RewriteImpl =
             n
         else
             ExprInheritRecordNode(n.OpeningBrace, ic', fields', n.ClosingBrace, n.Range)
+            |> withTriviaOf n
 
     and rewriteExprAnonStructRecordNode (f: Expr -> Expr) (n: ExprAnonStructRecordNode) : ExprAnonStructRecordNode =
         let copyInfo' = n.CopyInfo |> mapOption(rewriteExpr f)
@@ -1403,6 +1445,7 @@ module private RewriteImpl =
             n
         else
             ExprAnonStructRecordNode(n.Struct, n.OpeningBrace, copyInfo', fields', n.ClosingBrace, n.Range)
+            |> withTriviaOf n
 
     and rewriteExprObjExprNode (f: Expr -> Expr) (n: ExprObjExprNode) : ExprObjExprNode =
         let t' = rewriteType f n.Type
@@ -1432,6 +1475,7 @@ module private RewriteImpl =
                 n.ClosingBrace,
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteExprWhileNode (f: Expr -> Expr) (n: ExprWhileNode) : ExprWhileNode =
         let we' = rewriteExpr f n.WhileExpr
@@ -1440,7 +1484,7 @@ module private RewriteImpl =
         if refEq we' n.WhileExpr && refEq de' n.DoExpr then
             n
         else
-            ExprWhileNode(n.While, we', de', n.Range)
+            ExprWhileNode(n.While, we', de', n.Range) |> withTriviaOf n
 
     and rewriteExprForNode (f: Expr -> Expr) (n: ExprForNode) : ExprForNode =
         let ib' = rewriteExpr f n.IdentBody
@@ -1451,6 +1495,7 @@ module private RewriteImpl =
             n
         else
             ExprForNode(n.For, n.Ident, n.Equals, ib', n.Direction, tb', db', n.Range)
+            |> withTriviaOf n
 
     and rewriteExprForEachNode (f: Expr -> Expr) (n: ExprForEachNode) : ExprForEachNode =
         let p' = rewritePattern f n.Pattern
@@ -1460,7 +1505,7 @@ module private RewriteImpl =
         if refEq p' n.Pattern && refEq ee' n.EnumExpr && refEq be' n.BodyExpr then
             n
         else
-            ExprForEachNode(n.For, p', ee', n.IsArrow, be', n.Range)
+            ExprForEachNode(n.For, p', ee', n.IsArrow, be', n.Range) |> withTriviaOf n
 
     and rewriteExprNamedComputationNode (f: Expr -> Expr) (n: ExprNamedComputationNode) : ExprNamedComputationNode =
         let ne' = rewriteExpr f n.Name
@@ -1470,6 +1515,7 @@ module private RewriteImpl =
             n
         else
             ExprNamedComputationNode(ne', n.OpeningBrace, be', n.ClosingBrace, n.Range)
+            |> withTriviaOf n
 
     and rewriteExprComputationNode (f: Expr -> Expr) (n: ExprComputationNode) : ExprComputationNode =
         let be' = rewriteExpr f n.Body
@@ -1478,6 +1524,7 @@ module private RewriteImpl =
             n
         else
             ExprComputationNode(n.OpeningBrace, be', n.ClosingBrace, n.Range)
+            |> withTriviaOf n
 
     and rewriteExprCompExprBodyNode (f: Expr -> Expr) (n: ExprCompExprBodyNode) : ExprCompExprBodyNode =
         let stmts' = n.Statements |> mapList(rewriteComputationExpressionStatement f)
@@ -1485,7 +1532,7 @@ module private RewriteImpl =
         if refEq stmts' n.Statements then
             n
         else
-            ExprCompExprBodyNode(stmts', n.Range)
+            ExprCompExprBodyNode(stmts', n.Range) |> withTriviaOf n
 
     and rewriteExprJoinInNode (f: Expr -> Expr) (n: ExprJoinInNode) : ExprJoinInNode =
         let lhs' = rewriteExpr f n.LeftHandSide
@@ -1494,7 +1541,7 @@ module private RewriteImpl =
         if refEq lhs' n.LeftHandSide && refEq rhs' n.RightHandSide then
             n
         else
-            ExprJoinInNode(lhs', n.In, rhs', n.Range)
+            ExprJoinInNode(lhs', n.In, rhs', n.Range) |> withTriviaOf n
 
     and rewriteExprParenLambdaNode (f: Expr -> Expr) (n: ExprParenLambdaNode) : ExprParenLambdaNode =
         let lambda' = rewriteExprLambdaNode f n.Lambda
@@ -1503,6 +1550,7 @@ module private RewriteImpl =
             n
         else
             ExprParenLambdaNode(n.OpeningParen, lambda', n.ClosingParen, n.Range)
+            |> withTriviaOf n
 
     and rewriteExprLambdaNode (f: Expr -> Expr) (n: ExprLambdaNode) : ExprLambdaNode =
         let parameters' = n.Parameters |> mapList(rewritePattern f)
@@ -1511,7 +1559,7 @@ module private RewriteImpl =
         if refEq parameters' n.Parameters && refEq e' n.Expr then
             n
         else
-            ExprLambdaNode(n.Fun, parameters', n.Arrow, e', n.Range)
+            ExprLambdaNode(n.Fun, parameters', n.Arrow, e', n.Range) |> withTriviaOf n
 
     and rewriteExprMatchLambdaNode (f: Expr -> Expr) (n: ExprMatchLambdaNode) : ExprMatchLambdaNode =
         let clauses' = n.Clauses |> mapList(rewriteMatchClauseNode f)
@@ -1519,7 +1567,7 @@ module private RewriteImpl =
         if refEq clauses' n.Clauses then
             n
         else
-            ExprMatchLambdaNode(n.Function, clauses', n.Range)
+            ExprMatchLambdaNode(n.Function, clauses', n.Range) |> withTriviaOf n
 
     and rewriteExprMatchNode (f: Expr -> Expr) (n: ExprMatchNode) : ExprMatchNode =
         let me' = rewriteExpr f n.MatchExpr
@@ -1528,7 +1576,7 @@ module private RewriteImpl =
         if refEq me' n.MatchExpr && refEq clauses' n.Clauses then
             n
         else
-            ExprMatchNode(n.Match, me', n.With, clauses', n.Range)
+            ExprMatchNode(n.Match, me', n.With, clauses', n.Range) |> withTriviaOf n
 
     and rewriteMatchClauseNode (f: Expr -> Expr) (n: MatchClauseNode) : MatchClauseNode =
         let p' = rewritePattern f n.Pattern
@@ -1545,7 +1593,7 @@ module private RewriteImpl =
         if refEq p' n.Pattern && refEq we' n.WhenExpr && refEq be' n.BodyExpr then
             n
         else
-            MatchClauseNode(n.Bar, p', we', n.Arrow, be', n.Range)
+            MatchClauseNode(n.Bar, p', we', n.Arrow, be', n.Range) |> withTriviaOf n
 
     and rewriteExprTraitCallNode (f: Expr -> Expr) (n: ExprTraitCallNode) : ExprTraitCallNode =
         let t' = rewriteType f n.Type
@@ -1555,7 +1603,7 @@ module private RewriteImpl =
         if refEq t' n.Type && refEq m' n.MemberDefn && refEq e' n.Expr then
             n
         else
-            ExprTraitCallNode(t', m', e', n.Range)
+            ExprTraitCallNode(t', m', e', n.Range) |> withTriviaOf n
 
     and rewriteExprParenNode (f: Expr -> Expr) (n: ExprParenNode) : ExprParenNode =
         let e' = rewriteExpr f n.Expr
@@ -1563,7 +1611,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            ExprParenNode(n.OpeningParen, e', n.ClosingParen, n.Range)
+            ExprParenNode(n.OpeningParen, e', n.ClosingParen, n.Range) |> withTriviaOf n
 
     and rewriteExprDynamicNode (f: Expr -> Expr) (n: ExprDynamicNode) : ExprDynamicNode =
         let func' = rewriteExpr f n.FuncExpr
@@ -1572,7 +1620,7 @@ module private RewriteImpl =
         if refEq func' n.FuncExpr && refEq arg' n.ArgExpr then
             n
         else
-            ExprDynamicNode(func', arg', n.Range)
+            ExprDynamicNode(func', arg', n.Range) |> withTriviaOf n
 
     and rewriteExprPrefixAppNode (f: Expr -> Expr) (n: ExprPrefixAppNode) : ExprPrefixAppNode =
         let e' = rewriteExpr f n.Expr
@@ -1580,7 +1628,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            ExprPrefixAppNode(n.Operator, e', n.Range)
+            ExprPrefixAppNode(n.Operator, e', n.Range) |> withTriviaOf n
 
     and rewriteExprSameInfixAppsNode (f: Expr -> Expr) (n: ExprSameInfixAppsNode) : ExprSameInfixAppsNode =
         let leading' = rewriteExpr f n.LeadingExpr
@@ -1599,7 +1647,7 @@ module private RewriteImpl =
         if refEq leading' n.LeadingExpr && not changed then
             n
         else
-            ExprSameInfixAppsNode(leading', subs', n.Range)
+            ExprSameInfixAppsNode(leading', subs', n.Range) |> withTriviaOf n
 
     and rewriteExprInfixAppNode (f: Expr -> Expr) (n: ExprInfixAppNode) : ExprInfixAppNode =
         let lhs' = rewriteExpr f n.LeftHandSide
@@ -1608,7 +1656,7 @@ module private RewriteImpl =
         if refEq lhs' n.LeftHandSide && refEq rhs' n.RightHandSide then
             n
         else
-            ExprInfixAppNode(lhs', n.Operator, rhs', n.Range)
+            ExprInfixAppNode(lhs', n.Operator, rhs', n.Range) |> withTriviaOf n
 
     and rewriteExprIndexWithoutDotNode (f: Expr -> Expr) (n: ExprIndexWithoutDotNode) : ExprIndexWithoutDotNode =
         let id' = rewriteExpr f n.Identifier
@@ -1617,7 +1665,7 @@ module private RewriteImpl =
         if refEq id' n.Identifier && refEq idx' n.Index then
             n
         else
-            ExprIndexWithoutDotNode(id', idx', n.Range)
+            ExprIndexWithoutDotNode(id', idx', n.Range) |> withTriviaOf n
 
     and rewriteExprAppSingleParenArgNode (f: Expr -> Expr) (n: ExprAppSingleParenArgNode) : ExprAppSingleParenArgNode =
         let func' = rewriteExpr f n.FunctionExpr
@@ -1626,7 +1674,7 @@ module private RewriteImpl =
         if refEq func' n.FunctionExpr && refEq arg' n.ArgExpr then
             n
         else
-            ExprAppSingleParenArgNode(func', arg', n.Range)
+            ExprAppSingleParenArgNode(func', arg', n.Range) |> withTriviaOf n
 
     and rewriteExprAppWithLambdaNode (f: Expr -> Expr) (n: ExprAppWithLambdaNode) : ExprAppWithLambdaNode =
         let func' = rewriteExpr f n.FunctionName
@@ -1645,6 +1693,7 @@ module private RewriteImpl =
             n
         else
             ExprAppWithLambdaNode(func', args', n.OpeningParen, lambda', n.ClosingParen, n.Range)
+            |> withTriviaOf n
 
     and rewriteExprAppNode (f: Expr -> Expr) (n: ExprAppNode) : ExprAppNode =
         let func' = rewriteExpr f n.FunctionExpr
@@ -1653,7 +1702,7 @@ module private RewriteImpl =
         if refEq func' n.FunctionExpr && refEq args' n.Arguments then
             n
         else
-            ExprAppNode(func', args', n.Range)
+            ExprAppNode(func', args', n.Range) |> withTriviaOf n
 
     and rewriteExprTypeAppNode (f: Expr -> Expr) (n: ExprTypeAppNode) : ExprTypeAppNode =
         let id' = rewriteExpr f n.Identifier
@@ -1663,6 +1712,7 @@ module private RewriteImpl =
             n
         else
             ExprTypeAppNode(id', n.LessThan, typeParams', n.GreaterThan, n.Range)
+            |> withTriviaOf n
 
     and rewriteExprTryWithSingleClauseNode
         (f: Expr -> Expr)
@@ -1675,6 +1725,7 @@ module private RewriteImpl =
             n
         else
             ExprTryWithSingleClauseNode(n.Try, try', n.With, clause', n.Range)
+            |> withTriviaOf n
 
     and rewriteExprTryWithNode (f: Expr -> Expr) (n: ExprTryWithNode) : ExprTryWithNode =
         let try' = rewriteExpr f n.TryExpr
@@ -1683,7 +1734,7 @@ module private RewriteImpl =
         if refEq try' n.TryExpr && refEq clauses' n.Clauses then
             n
         else
-            ExprTryWithNode(n.Try, try', n.With, clauses', n.Range)
+            ExprTryWithNode(n.Try, try', n.With, clauses', n.Range) |> withTriviaOf n
 
     and rewriteExprTryFinallyNode (f: Expr -> Expr) (n: ExprTryFinallyNode) : ExprTryFinallyNode =
         let try' = rewriteExpr f n.TryExpr
@@ -1692,7 +1743,7 @@ module private RewriteImpl =
         if refEq try' n.TryExpr && refEq fin' n.FinallyExpr then
             n
         else
-            ExprTryFinallyNode(n.Try, try', n.Finally, fin', n.Range)
+            ExprTryFinallyNode(n.Try, try', n.Finally, fin', n.Range) |> withTriviaOf n
 
     and rewriteExprIfThenNode (f: Expr -> Expr) (n: ExprIfThenNode) : ExprIfThenNode =
         let ie' = rewriteExpr f n.IfExpr
@@ -1701,7 +1752,7 @@ module private RewriteImpl =
         if refEq ie' n.IfExpr && refEq te' n.ThenExpr then
             n
         else
-            ExprIfThenNode(n.If, ie', n.Then, te', n.Range)
+            ExprIfThenNode(n.If, ie', n.Then, te', n.Range) |> withTriviaOf n
 
     and rewriteExprIfThenElseNode (f: Expr -> Expr) (n: ExprIfThenElseNode) : ExprIfThenElseNode =
         let ie' = rewriteExpr f n.IfExpr
@@ -1712,6 +1763,7 @@ module private RewriteImpl =
             n
         else
             ExprIfThenElseNode(n.If, ie', n.Then, te', n.Else, ee', n.Range)
+            |> withTriviaOf n
 
     and rewriteExprIfThenElifNode (f: Expr -> Expr) (n: ExprIfThenElifNode) : ExprIfThenElifNode =
         let branches' = n.Branches |> mapList(rewriteExprIfThenNode f)
@@ -1726,7 +1778,7 @@ module private RewriteImpl =
         if refEq branches' n.Branches && refEq elseBranch' n.Else then
             n
         else
-            ExprIfThenElifNode(branches', elseBranch', n.Range)
+            ExprIfThenElifNode(branches', elseBranch', n.Range) |> withTriviaOf n
 
     and rewriteExprLongIdentSetNode (f: Expr -> Expr) (n: ExprLongIdentSetNode) : ExprLongIdentSetNode =
         let rhs' = rewriteExpr f n.Expr
@@ -1734,7 +1786,7 @@ module private RewriteImpl =
         if refEq rhs' n.Expr then
             n
         else
-            ExprLongIdentSetNode(n.Identifier, rhs', n.Range)
+            ExprLongIdentSetNode(n.Identifier, rhs', n.Range) |> withTriviaOf n
 
     and rewriteExprDotIndexedSetNode (f: Expr -> Expr) (n: ExprDotIndexedSetNode) : ExprDotIndexedSetNode =
         let obj' = rewriteExpr f n.ObjectExpr
@@ -1744,7 +1796,7 @@ module private RewriteImpl =
         if refEq obj' n.ObjectExpr && refEq idx' n.Index && refEq v' n.Value then
             n
         else
-            ExprDotIndexedSetNode(obj', idx', v', n.Range)
+            ExprDotIndexedSetNode(obj', idx', v', n.Range) |> withTriviaOf n
 
     and rewriteExprNamedIndexedPropertySetNode
         (f: Expr -> Expr)
@@ -1757,6 +1809,7 @@ module private RewriteImpl =
             n
         else
             ExprNamedIndexedPropertySetNode(n.Identifier, idx', v', n.Range)
+            |> withTriviaOf n
 
     and rewriteExprDotNamedIndexedPropertySetNode
         (f: Expr -> Expr)
@@ -1770,6 +1823,7 @@ module private RewriteImpl =
             n
         else
             ExprDotNamedIndexedPropertySetNode(id', n.Name, p', s', n.Range)
+            |> withTriviaOf n
 
     and rewriteExprSetNode (f: Expr -> Expr) (n: ExprSetNode) : ExprSetNode =
         let id' = rewriteExpr f n.Identifier
@@ -1778,7 +1832,7 @@ module private RewriteImpl =
         if refEq id' n.Identifier && refEq s' n.Set then
             n
         else
-            ExprSetNode(id', s', n.Range)
+            ExprSetNode(id', s', n.Range) |> withTriviaOf n
 
     and rewriteExprLibraryOnlyStaticOptimizationNode
         (f: Expr -> Expr)
@@ -1791,6 +1845,7 @@ module private RewriteImpl =
             n
         else
             ExprLibraryOnlyStaticOptimizationNode(opt', n.Constraints, e', n.Range)
+            |> withTriviaOf n
 
     and rewriteExprInterpolatedStringExprNode
         (f: Expr -> Expr)
@@ -1814,7 +1869,7 @@ module private RewriteImpl =
         if not changed then
             n
         else
-            ExprInterpolatedStringExprNode(parts', n.Range)
+            ExprInterpolatedStringExprNode(parts', n.Range) |> withTriviaOf n
 
     and rewriteFillExprNode (f: Expr -> Expr) (n: FillExprNode) : FillExprNode =
         let e' = rewriteExpr f n.Expr
@@ -1822,7 +1877,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            FillExprNode(e', n.Ident, n.Range)
+            FillExprNode(e', n.Ident, n.Range) |> withTriviaOf n
 
     and rewriteExprIndexRangeNode (f: Expr -> Expr) (n: ExprIndexRangeNode) : ExprIndexRangeNode =
         let from' = n.From |> mapOption(rewriteExpr f)
@@ -1831,7 +1886,7 @@ module private RewriteImpl =
         if refEq from' n.From && refEq to' n.To then
             n
         else
-            ExprIndexRangeNode(from', n.Dots, to', n.Range)
+            ExprIndexRangeNode(from', n.Dots, to', n.Range) |> withTriviaOf n
 
     and rewriteExprIndexFromEndNode (f: Expr -> Expr) (n: ExprIndexFromEndNode) : ExprIndexFromEndNode =
         let e' = rewriteExpr f n.Expr
@@ -1839,7 +1894,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            ExprIndexFromEndNode(e', n.Range)
+            ExprIndexFromEndNode(e', n.Range) |> withTriviaOf n
 
     and rewriteExprChain (f: Expr -> Expr) (n: ExprChain) : ExprChain =
         let head' = rewriteExpr f n.Head
@@ -1849,7 +1904,7 @@ module private RewriteImpl =
         if refEq head' n.Head && refEq segments' n.Segments && refEq terminal' n.Terminal then
             n
         else
-            ExprChain(head', segments', terminal', n.Range)
+            ExprChain(head', segments', terminal', n.Range) |> withTriviaOf n
 
     and rewriteExprDynamicChainNode (f: Expr -> Expr) (n: ExprDynamicChainNode) : ExprDynamicChainNode =
         let leading' = rewriteExpr f n.LeadingExpr
@@ -1858,7 +1913,7 @@ module private RewriteImpl =
         if refEq leading' n.LeadingExpr && refEq items' n.Items then
             n
         else
-            ExprDynamicChainNode(leading', items', n.Range)
+            ExprDynamicChainNode(leading', items', n.Range) |> withTriviaOf n
 
     and rewriteExprDynamicChainItemNode (f: Expr -> Expr) (n: ExprDynamicChainItemNode) : ExprDynamicChainItemNode =
         let member' = rewriteExpr f n.MemberExpr
@@ -1867,7 +1922,7 @@ module private RewriteImpl =
         if refEq member' n.MemberExpr && refEq arg' n.ParenArg then
             n
         else
-            ExprDynamicChainItemNode(member', arg', n.Range)
+            ExprDynamicChainItemNode(member', arg', n.Range) |> withTriviaOf n
 
     and rewriteExprBeginEndNode (f: Expr -> Expr) (n: ExprBeginEndNode) : ExprBeginEndNode =
         let e' = rewriteExpr f n.Expr
@@ -1875,7 +1930,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            ExprBeginEndNode(n.Begin, e', n.End, n.Range)
+            ExprBeginEndNode(n.Begin, e', n.End, n.Range) |> withTriviaOf n
 
     and rewriteExprExplicitConstructorThenExpr
         (f: Expr -> Expr)
@@ -1886,7 +1941,7 @@ module private RewriteImpl =
         if refEq e' n.Expr then
             n
         else
-            ExprExplicitConstructorThenExpr(n.Then, e', n.Range)
+            ExprExplicitConstructorThenExpr(n.Then, e', n.Range) |> withTriviaOf n
 
     // ===== InheritConstructor nodes =====
 
@@ -1899,7 +1954,7 @@ module private RewriteImpl =
         if refEq t' n.Type then
             n
         else
-            InheritConstructorTypeOnlyNode(n.InheritKeyword, t', n.Range)
+            InheritConstructorTypeOnlyNode(n.InheritKeyword, t', n.Range) |> withTriviaOf n
 
     and rewriteInheritConstructorUnitNode
         (f: Expr -> Expr)
@@ -1911,6 +1966,7 @@ module private RewriteImpl =
             n
         else
             InheritConstructorUnitNode(n.InheritKeyword, t', n.OpeningParen, n.ClosingParen, n.Range)
+            |> withTriviaOf n
 
     and rewriteInheritConstructorParenNode
         (f: Expr -> Expr)
@@ -1922,7 +1978,7 @@ module private RewriteImpl =
         if refEq t' n.Type && refEq e' n.Expr then
             n
         else
-            InheritConstructorParenNode(n.InheritKeyword, t', e', n.Range)
+            InheritConstructorParenNode(n.InheritKeyword, t', e', n.Range) |> withTriviaOf n
 
     and rewriteInheritConstructorOtherNode
         (f: Expr -> Expr)
@@ -1934,7 +1990,7 @@ module private RewriteImpl =
         if refEq t' n.Type && refEq e' n.Expr then
             n
         else
-            InheritConstructorOtherNode(n.InheritKeyword, t', e', n.Range)
+            InheritConstructorOtherNode(n.InheritKeyword, t', e', n.Range) |> withTriviaOf n
 
     // ===== MemberDefn nodes =====
 
@@ -1944,7 +2000,7 @@ module private RewriteImpl =
         if refEq t' n.BaseType then
             n
         else
-            MemberDefnInheritNode(n.Inherit, t', n.Range)
+            MemberDefnInheritNode(n.Inherit, t', n.Range) |> withTriviaOf n
 
     and rewriteMemberDefnExplicitCtorNode
         (f: Expr -> Expr)
@@ -1958,6 +2014,7 @@ module private RewriteImpl =
             n
         else
             MemberDefnExplicitCtorNode(n.XmlDoc, attrs', n.Accessibility, n.New, p', n.Alias, n.Equals, e', n.Range)
+            |> withTriviaOf n
 
     and rewriteMemberDefnInterfaceNode (f: Expr -> Expr) (n: MemberDefnInterfaceNode) : MemberDefnInterfaceNode =
         let t' = rewriteType f n.Type
@@ -1967,6 +2024,7 @@ module private RewriteImpl =
             n
         else
             MemberDefnInterfaceNode(n.Interface, t', n.With, members', n.Range)
+            |> withTriviaOf n
 
     and rewriteMemberDefnAutoPropertyNode
         (f: Expr -> Expr)
@@ -1991,6 +2049,7 @@ module private RewriteImpl =
                 n.WithGetSet,
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteMemberDefnAbstractSlotNode
         (f: Expr -> Expr)
@@ -2013,6 +2072,7 @@ module private RewriteImpl =
                 n.WithGetSet,
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteMemberDefnPropertyGetSetNode
         (f: Expr -> Expr)
@@ -2042,6 +2102,7 @@ module private RewriteImpl =
                 last',
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewritePropertyGetSetBindingNode (f: Expr -> Expr) (n: PropertyGetSetBindingNode) : PropertyGetSetBindingNode =
         let attrs' = n.Attributes |> mapOption(rewriteMultipleAttributeListNode f)
@@ -2068,6 +2129,7 @@ module private RewriteImpl =
                 e',
                 n.Range
             )
+            |> withTriviaOf n
 
     and rewriteMemberDefnSigMemberNode (f: Expr -> Expr) (n: MemberDefnSigMemberNode) : MemberDefnSigMemberNode =
         let v' = rewriteValNode f n.Val
@@ -2075,7 +2137,7 @@ module private RewriteImpl =
         if refEq v' n.Val then
             n
         else
-            MemberDefnSigMemberNode(v', n.WithGetSet, n.Range)
+            MemberDefnSigMemberNode(v', n.WithGetSet, n.Range) |> withTriviaOf n
 
     // ===== TypeDefn nodes =====
 
@@ -2090,6 +2152,7 @@ module private RewriteImpl =
             n
         else
             TypeDefnEnumNode(tn', cases', n.WithKeyword, members', n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeDefnUnionNode (f: Expr -> Expr) (n: TypeDefnUnionNode) : TypeDefnUnionNode =
         let tn = n.TypeName
@@ -2102,6 +2165,7 @@ module private RewriteImpl =
             n
         else
             TypeDefnUnionNode(tn', n.Accessibility, cases', n.WithKeyword, members', n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeDefnRecordNode (f: Expr -> Expr) (n: TypeDefnRecordNode) : TypeDefnRecordNode =
         let tn = n.TypeName
@@ -2123,6 +2187,7 @@ module private RewriteImpl =
                 members',
                 n.Range
             )
+            |> withTriviaOf n
 
     // Fantomas 8 (F# 11 record spreads): a record type's items are fields or `...Type`.
     and rewriteTypeDefnRecordFieldOrSpread
@@ -2143,7 +2208,7 @@ module private RewriteImpl =
             if refEq t' n.Type then
                 item
             else
-                TypeDefnRecordFieldOrSpread.Spread(TypeSpreadNode(n.Dots, t', n.Range))
+                TypeDefnRecordFieldOrSpread.Spread(TypeSpreadNode(n.Dots, t', n.Range) |> withTriviaOf n)
 
     and rewriteTypeDefnAbbrevNode (f: Expr -> Expr) (n: TypeDefnAbbrevNode) : TypeDefnAbbrevNode =
         let tn = n.TypeName
@@ -2155,7 +2220,7 @@ module private RewriteImpl =
         if refEq tn' tn && refEq t' n.Type && refEq members' ms then
             n
         else
-            TypeDefnAbbrevNode(tn', t', n.WithKeyword, members', n.Range)
+            TypeDefnAbbrevNode(tn', t', n.WithKeyword, members', n.Range) |> withTriviaOf n
 
     and rewriteTypeDefnExplicitNode (f: Expr -> Expr) (n: TypeDefnExplicitNode) : TypeDefnExplicitNode =
         let tn = n.TypeName
@@ -2168,6 +2233,7 @@ module private RewriteImpl =
             n
         else
             TypeDefnExplicitNode(tn', body', n.WithKeyword, members', n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeDefnExplicitBodyNode (f: Expr -> Expr) (n: TypeDefnExplicitBodyNode) : TypeDefnExplicitBodyNode =
         let members' = n.Members |> mapList(rewriteMemberDefn f)
@@ -2175,7 +2241,7 @@ module private RewriteImpl =
         if refEq members' n.Members then
             n
         else
-            TypeDefnExplicitBodyNode(n.Kind, members', n.End, n.Range)
+            TypeDefnExplicitBodyNode(n.Kind, members', n.End, n.Range) |> withTriviaOf n
 
     and rewriteTypeDefnAugmentationNode (f: Expr -> Expr) (n: TypeDefnAugmentationNode) : TypeDefnAugmentationNode =
         let tn = n.TypeName
@@ -2187,6 +2253,7 @@ module private RewriteImpl =
             n
         else
             TypeDefnAugmentationNode(tn', n.WithKeyword, members', n.Range)
+            |> withTriviaOf n
 
     and rewriteTypeDefnDelegateNode (f: Expr -> Expr) (n: TypeDefnDelegateNode) : TypeDefnDelegateNode =
         let tn = n.TypeName
@@ -2196,7 +2263,7 @@ module private RewriteImpl =
         if refEq tn' tn && refEq tl' n.TypeList then
             n
         else
-            TypeDefnDelegateNode(tn', n.DelegateNode, tl', n.Range)
+            TypeDefnDelegateNode(tn', n.DelegateNode, tl', n.Range) |> withTriviaOf n
 
     and rewriteTypeDefnRegularNode (f: Expr -> Expr) (n: TypeDefnRegularNode) : TypeDefnRegularNode =
         let tn = n.TypeName
@@ -2207,7 +2274,7 @@ module private RewriteImpl =
         if refEq tn' tn && refEq members' ms then
             n
         else
-            TypeDefnRegularNode(tn', n.WithKeyword, members', n.Range)
+            TypeDefnRegularNode(tn', n.WithKeyword, members', n.Range) |> withTriviaOf n
 
     // ===== TypeDefn-level walker =====
     // Applies g to every TypeDefn in the Oak (top-level and inside nested
@@ -2236,6 +2303,7 @@ module private RewriteImpl =
                         decls',
                         n.Range
                     )
+                    |> withTriviaOf n
                 )
         | _ -> d
 
@@ -2248,12 +2316,12 @@ module private RewriteImpl =
                 if refEq decls' n.Declarations then
                     n
                 else
-                    ModuleOrNamespaceNode(n.Header, decls', n.Range))
+                    ModuleOrNamespaceNode(n.Header, decls', n.Range) |> withTriviaOf n)
 
         if refEq mods' oak.ModulesOrNamespaces then
             oak
         else
-            Oak(oak.ParsedHashDirectives, mods', oak.Range)
+            Oak(oak.ParsedHashDirectives, mods', oak.Range) |> withTriviaOf oak
 
 /// <summary>
 /// Bottom-up rewriter for expressions inside an Oak tree. Visits every
@@ -2261,7 +2329,10 @@ module private RewriteImpl =
 /// (including those nested inside type definitions, member bodies, patterns,
 /// types and attributes) and applies the caller-supplied function after each
 /// node's children are rebuilt. Reference equality is preserved on unchanged
-/// subtrees, so a no-op rewrite returns the same Oak instance.
+/// subtrees, so a no-op rewrite returns the same Oak instance. Comments, blank
+/// lines and directives attached to a rebuilt node are carried over to the new
+/// node; a node returned by the caller's function replaces the original along
+/// with its trivia.
 ///
 /// Curried with the target last, so it drops into a pipeline:
 /// <c>widget |> Rewrite.expr f |> Gen.run</c>.
