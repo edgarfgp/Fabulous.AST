@@ -70,3 +70,30 @@ type Person() =
 
     let mutable _age = "0"
 """
+
+    [<Fact>]
+    let ``toStatic on a class let binding produces static let``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Counter", UnitPat()) {
+                    Value("count", Int(0)).toMutable().toStatic()
+                    LetBinding(Value("step", Int(1)).toStatic())
+
+                    LetBinding(
+                        Function("fact", ParameterPat("n"), "if n <= 1 then 1 else n * fact (n - 1)")
+                            .toRecursive()
+                            .toStatic()
+                    )
+
+                    Member("_.Next", UnitPat(), "count <- count + step; fact count").toStatic()
+                }
+            }
+        }
+        |> producesValid
+            """
+type Counter() =
+    static let mutable count = 0
+    static let step = 1
+    static let rec fact n = if n <= 1 then 1 else n * fact (n - 1)
+    static member _.Next() = count <- count + step; fact count
+"""

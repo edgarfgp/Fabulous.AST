@@ -141,3 +141,12 @@ type m
 
 and [<Measure>] s
 """
+
+    [<Fact>]
+    let ``Measure with accessibility``() =
+        Oak() { AnonymousModule() { Measure("m") |> _.toInternal() } }
+        |> producesValid
+            """
+[<Measure>]
+type internal m
+"""

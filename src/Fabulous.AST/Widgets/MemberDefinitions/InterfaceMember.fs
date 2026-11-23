@@ -72,7 +72,8 @@ module InterfaceMemberBuilders =
         /// }
         /// </code>
         static member InterfaceWith(name: string) =
-            let name = PrettyNaming.NormalizeIdentifierBackticks name
+            // Not backtick-normalized: the name is usually qualified (`System.IDisposable`) or
+            // generic (`IEquatable<Point>`), and quoting it whole would not compile.
             Ast.InterfaceWith(Ast.LongIdent name)
 
 type InterfaceMemberYieldExtensions =

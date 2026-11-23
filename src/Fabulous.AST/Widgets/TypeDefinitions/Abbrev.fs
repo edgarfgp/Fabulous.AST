@@ -42,7 +42,7 @@ module TypeDefnAbbrevNode =
                         xmlDocs,
                         attributes,
                         leadingKeyword,
-                        None,
+                        TypeDefn.accessibility widget,
                         Type.LongIdent(
                             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
                         ),

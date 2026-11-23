@@ -201,3 +201,11 @@ type MyInt = int
 type MyString = string
 type MyFloat = float
 """
+
+    [<Fact>]
+    let ``Abbreviation with accessibility``() =
+        Oak() { AnonymousModule() { Abbrev("MyInt", Int()) |> _.toInternal() } }
+        |> producesValid
+            """
+type internal MyInt = int
+"""

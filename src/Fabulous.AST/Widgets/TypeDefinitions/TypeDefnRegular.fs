@@ -41,16 +41,7 @@ module TypeDefnRegular =
                 | ValueNone -> None
                 | ValueSome constructor -> Some constructor
 
-            let accessControl =
-                Widgets.tryGetScalarValue widget TypeDefn.Accessibility
-                |> ValueOption.defaultValue AccessControl.Unknown
-
-            let accessControl =
-                match accessControl with
-                | Public -> Some(SingleTextNode.``public``)
-                | Private -> Some(SingleTextNode.``private``)
-                | Internal -> Some(SingleTextNode.``internal``)
-                | Unknown -> None
+            let accessControl = TypeDefn.accessibility widget
 
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget TypeDefn.IsRecursive

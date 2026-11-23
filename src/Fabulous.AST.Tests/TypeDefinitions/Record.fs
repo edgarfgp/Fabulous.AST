@@ -261,3 +261,39 @@ type Person = public { Name: string; Age: int }
             """
 type Person = private { Name: string; Age: int }
 """
+
+    [<Fact>]
+    let ``toPrivate makes the record type private, toPrivateRepresentation its fields``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Hidden") { Field("Name", String()) } |> _.toPrivate()
+
+                Record("Opaque") { Field("Name", String()) } |> _.toPrivateRepresentation()
+
+                Record("Both") { Field("Name", String()) }
+                |> _.toInternal()
+                |> _.toPrivateRepresentation()
+            }
+        }
+        |> producesValid
+            """
+type private Hidden = { Name: string }
+type Opaque = private { Name: string }
+type internal Both = private { Name: string }
+"""
+
+    [<Fact>]
+    let ``toPrivateRepresentation overrides accessibility lifted from fields``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Person") {
+                    Field("Name", String()).toPrivate()
+                    Field("Age", Int())
+                }
+                |> _.toInternalRepresentation()
+            }
+        }
+        |> producesValid
+            """
+type Person = internal { Name: string; Age: int }
+"""

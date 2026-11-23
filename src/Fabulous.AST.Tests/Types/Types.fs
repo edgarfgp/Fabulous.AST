@@ -145,7 +145,7 @@ let t: obj = obj
         }
         |> produces
             """
-let a: struct (string , string) = false
+let a: struct (string * string) = false
 let b: #string = false
 let b: "A" = false
 let c: A B = false
@@ -154,7 +154,7 @@ let c: string=string = false
 let c: A = false
 let c: A = false
 let c: string[,] = false
-let c: struct (string , string) = false
+let c: struct (string * string) = false
 let c: string string = false
 let c: string string = false
 let c: Map<string, string> = false
@@ -570,4 +570,20 @@ type ('a) Box = 'a list
         |> producesValid
             """
 let useBoth<'T & #System.IComparable & #System.IDisposable> (x: 'T) = x
+"""
+
+    [<Fact>]
+    let ``Struct tuple type separates items with star``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    ConstantPat(Constant("a")),
+                    ConstantExpr(Constant("struct (1, \"x\")")),
+                    StructTuple([ Int(); String() ])
+                )
+            }
+        }
+        |> producesValid
+            """
+let a: struct (int * string) = struct (1, "x")
 """

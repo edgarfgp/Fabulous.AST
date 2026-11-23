@@ -12,9 +12,7 @@ module TypeStructTuple =
             let values = Widgets.getScalarValue widget Items
 
             let values =
-                values
-                |> Seq.map Choice1Of2
-                |> Seq.intersperse(Choice2Of2(SingleTextNode.comma))
+                values |> Seq.map Choice1Of2 |> Seq.intersperse(Choice2Of2(SingleTextNode.star))
 
             Type.StructTuple(
                 TypeStructTupleNode(SingleTextNode.``struct``, values, SingleTextNode.rightParenthesis, Range.range0)

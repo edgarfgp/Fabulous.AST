@@ -114,3 +114,17 @@ type Delegate = delegate of int -> int
             """
 type MyDelegate = delegate of [<ParamArray>] args: string[] -> int
 """
+
+    [<Fact>]
+    let ``Generic delegate with accessibility``() =
+        Oak() {
+            AnonymousModule() {
+                Delegate("Handler", [ LongIdent("'T") ], Unit())
+                |> _.typeParams(PostfixList([ "'T" ]))
+                |> _.toInternal()
+            }
+        }
+        |> producesValid
+            """
+type internal Handler<'T> = delegate of 'T -> unit
+"""
