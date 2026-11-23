@@ -134,3 +134,45 @@ let x =
       interface System.IFormattable with
           member _.ToString(format: string, provider: System.IFormatProvider) = "x" }
 """
+
+    [<Fact>]
+    let ``ObjExpr with a property get set member``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("I") { AbstractMember("X", Int(), true, true) }
+
+                Value(
+                    "x",
+                    ObjExpr(LongIdent("I")) {
+                        Member(
+                            "_.X",
+                            Getter(ConstantExpr(Int(1))),
+                            Setter([ ParenPat(ParameterPat("v", Int())) ], ConstantExpr(ConstantUnit()))
+                        )
+                    }
+                )
+            }
+        }
+        |> producesValid
+            """
+type I =
+    abstract X: int with get, set
+
+let x =
+    { new I with
+        member _.X
+            with get () = 1
+            and set (v: int) = () }
+"""
+
+    [<Fact>]
+    let ``ObjExpr rejects members object expressions do not allow``() =
+        Assert.Throws<System.ArgumentException>(fun () ->
+            Oak() {
+                AnonymousModule() {
+                    Value("x", ObjExpr(LongIdent("obj"), ConstantExpr(ConstantUnit())) { MemberVal("X", Int(1)) })
+                }
+            }
+            |> Gen.mkOak
+            |> ignore)
+        |> ignore

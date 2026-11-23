@@ -42,14 +42,7 @@ module Delegate =
                 |> ValueOption.map MultipleAttributeListNode.Create
                 |> ValueOption.toOption
 
-            let accessControl =
-                Widgets.tryGetScalarValue widget TypeDefn.Accessibility
-                |> ValueOption.defaultValue AccessControl.Unknown
-                |> function
-                    | Public -> Some(SingleTextNode.``public``)
-                    | Private -> Some(SingleTextNode.``private``)
-                    | Internal -> Some(SingleTextNode.``internal``)
-                    | Unknown -> None
+            let accessControl = TypeDefn.accessibility widget
 
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget TypeDefn.IsRecursive

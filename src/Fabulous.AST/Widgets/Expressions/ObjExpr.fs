@@ -12,8 +12,6 @@ module ObjExpr =
 
     let Members = Attributes.defineWidgetCollection "Members"
 
-    let Interfaces = Attributes.defineScalar<InterfaceImplNode seq> "Interface"
-
     let Value = Attributes.defineWidget "ExprValue"
 
     let Name = Attributes.defineWidget "TypeValue"
@@ -47,6 +45,8 @@ module ObjExpr =
                         | _ -> None
                     | _ -> None)
 
+            // Besides members and interface implementations, object expressions only allow
+            // property get/set members; `do`, `let`, `member val` and the rest do not compile.
             let members =
                 items
                 |> List.choose(fun item ->
@@ -55,33 +55,35 @@ module ObjExpr =
                         match m with
                         | MemberDefn.Member _
                         | MemberDefn.Interface _ -> None
-                        | _ -> Some m
+                        | MemberDefn.PropertyGetSet _ -> Some m
+                        | other ->
+                            invalidArg
+                                "item"
+                                $"ObjExpr accepts members (Member(...), property get/set) and InterfaceWith(...) blocks. Got: %s{other.GetType().Name}"
                     | _ -> None)
 
             // An `InterfaceWith(...)` block is an extra interface implementation
             // (`{ new A with member ... interface IB with member ... }`).
             let interfaces =
-                [ yield!
-                      items
-                      |> List.choose(fun item ->
-                          match item with
-                          | :? InterfaceImplNode as node -> Some node
-                          | :? MemberDefn as m ->
-                              match m with
-                              | MemberDefn.Interface node ->
-                                  Some(
-                                      InterfaceImplNode(
-                                          node.Interface,
-                                          node.Type,
-                                          node.With,
-                                          [],
-                                          node.Members,
-                                          Range.range0
-                                      )
-                                  )
-                              | _ -> None
-                          | _ -> None)
-                  yield! Widgets.tryGetScalarValue widget Interfaces |> ValueOption.defaultValue [] ]
+                items
+                |> List.choose(fun item ->
+                    match item with
+                    | :? InterfaceImplNode as node -> Some node
+                    | :? MemberDefn as m ->
+                        match m with
+                        | MemberDefn.Interface node ->
+                            Some(
+                                InterfaceImplNode(
+                                    node.Interface,
+                                    node.Type,
+                                    node.With,
+                                    [],
+                                    node.Members,
+                                    Range.range0
+                                )
+                            )
+                        | _ -> None
+                    | _ -> None)
 
             let typeName = Widgets.getNodeFromWidget<Type> widget Name
 
@@ -213,50 +215,6 @@ type ObjExprYieldExtensions =
 
     [<Extension>]
     static member inline Yield
-        (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<ExprSingleNode>)
-        : CollectionContent =
-        let widget =
-            Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak x))).Compile()
-
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<ExprSingleNode> seq)
-        : CollectionContent =
-        let widgets =
-            x
-            |> Seq.map(fun wb ->
-                Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak wb))).Compile())
-            |> Seq.toArray
-            |> MutStackArray1.fromArray
-
-        { Widgets = widgets }
-
-    [<Extension>]
-    static member inline Yield
         (_: CollectionBuilder<Expr, BindingNode>, x: WidgetBuilder<MemberDefn>)
         : CollectionContent =
         { Widgets = MutStackArray1.One(ObjExpr.itemWidget(Gen.mkOak x)) }
-
-    [<Extension>]
-    static member inline Yield
-        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<ExprSingleNode>)
-        : CollectionContent =
-        let widget =
-            Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak x))).Compile()
-
-        { Widgets = MutStackArray1.One(widget) }
-
-    [<Extension>]
-    static member inline YieldFrom
-        (_: AttributeCollectionBuilder<Expr, MemberDefn>, x: WidgetBuilder<ExprSingleNode> seq)
-        : CollectionContent =
-        let widgets =
-            x
-            |> Seq.map(fun wb ->
-                Ast.EscapeHatch(MemberDefn.DoExpr(TriviaPlacement.declarationSingleNode(Gen.mkOak wb))).Compile())
-            |> Seq.toArray
-            |> MutStackArray1.fromArray
-
-        { Widgets = widgets }

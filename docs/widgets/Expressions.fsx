@@ -498,3 +498,30 @@ Oak() {
 
 // produces the following code:
 (*** include-output ***)
+
+(**
+An object expression can implement more interfaces than its own type: put `InterfaceWith(...)`
+blocks after its members. It needs at least one member of its own, since Fantomas prints one with
+only extra interfaces in a form the compiler rejects:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(
+            "resource",
+            ObjExpr("System.IDisposable") {
+                Member("_.Dispose()", ConstantExpr(ConstantUnit()))
+
+                InterfaceWith("System.IFormattable") {
+                    Member("_.ToString(format: string, provider: System.IFormatProvider)", ConstantExpr(String("resource")))
+                }
+            }
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
