@@ -513,7 +513,10 @@ Oak() {
                 Member("_.Dispose()", ConstantExpr(ConstantUnit()))
 
                 InterfaceWith("System.IFormattable") {
-                    Member("_.ToString(format: string, provider: System.IFormatProvider)", ConstantExpr(String("resource")))
+                    Member(
+                        "_.ToString(format: string, provider: System.IFormatProvider)",
+                        ConstantExpr(String("resource"))
+                    )
                 }
             }
         )

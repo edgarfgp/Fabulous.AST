@@ -545,8 +545,7 @@ Ast.Oak() {
     AnonymousModule() {
         Record("Hidden") { Field("Name", String()) } |> _.toPrivate()
 
-        Record("Opaque") { Field("Name", String()) }
-        |> _.toPrivateRepresentation()
+        Record("Opaque") { Field("Name", String()) } |> _.toPrivateRepresentation()
     }
 }
 |> Gen.mkOak
