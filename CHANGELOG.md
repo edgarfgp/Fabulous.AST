@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MatchClauseExpr` overloads taking a pattern widget with a string body (and string or expression guard)
 
 ### Fixed
+- The NuGet packages declared the `Apache-2.0` license while `LICENSE` and the README have always been MIT; Fabulous.AST, Fabulous.AST.Json and Fabulous.AST.Build now declare `MIT`
 - Building trees on several threads at once could fail on first use with `Could not find widget collection attribute Decls on widget { Key = 0 ... }`. The library was compiled with `--realsig+`, which gives each module its own static constructor; modules sharing a file (such as `Constant`, `ConstantUnit` and `ConstantMeasure`) then deadlocked on first use, and the runtime let one thread read widget keys that were not set yet. The packages are now built without `--realsig+`
 - `StructAnonRecord` printed `struct [ X: float |}`; it now prints `struct {| X: float |}`
 - `OptionalValPat("name")` dropped the `?`; it now prints `?name`
