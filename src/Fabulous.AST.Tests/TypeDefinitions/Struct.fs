@@ -58,3 +58,19 @@ type X =
     val mutable x: int
     new(x) = { x = x }
 """
+
+    [<Fact>]
+    let ``toStatic on a ValField produces static val``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("X", UnitPat()) {
+                    ValField("count", Int()).toMutable().toStatic().toPrivate().attribute(Attribute("DefaultValue"))
+                }
+            }
+        }
+        |> producesValid
+            """
+type X() =
+    [<DefaultValue>]
+    static val mutable private count: int
+"""

@@ -190,7 +190,7 @@ Oak() {
 
 (**
 ## Access Modifiers
-Set access modifiers for unions with the `toPublic`, `toPrivate`, and `toInternal` methods.
+Set the accessibility of the union type with the `toPublic`, `toPrivate`, and `toInternal` methods.
 By default, accessibility for discriminated unions is public.
 *)
 
@@ -207,6 +207,27 @@ Oak() {
             UnionCase("Case2")
         }
         |> _.toPrivate()
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+To keep the type visible but hide its cases, so values can only be created and matched inside
+its own module, use `toPrivateRepresentation`, `toInternalRepresentation` or `toPublicRepresentation`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Union("Opaque") {
+            UnionCase("Case1")
+            UnionCase("Case2")
+        }
+        |> _.toPrivateRepresentation()
     }
 }
 |> Gen.mkOak

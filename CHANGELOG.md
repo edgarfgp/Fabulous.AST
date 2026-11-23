@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Oak().hashDirective(...)` / `hashDirectives(...)` accept `NoWarn` and `HashDirective`, placing the directives at the top of the file (trivia such as an `#if` guard is kept). The existing overloads only accepted raw `ParsedHashDirectiveNode`s, which no builder produced
 - `returnAttribute(...)` / `returnAttributes(...)` on `ExternBinding` add attributes to the return type (`extern [<MarshalAs(UnmanagedType.Bool)>] bool ...`)
 - `MatchClauseExpr` overloads taking a pattern widget with a string body (and string or expression guard)
+- `toPrivateRepresentation()`, `toInternalRepresentation()` and `toPublicRepresentation()` set the accessibility of a record's fields or a union's cases (`type R = private { ... }`)
+- `ObjExpr` accepts `InterfaceWith(...)` blocks after its members, for object expressions that implement extra interfaces (`{ new A with member ... interface IB with member ... }`). Its `.members()` modifier, which no item could be yielded into, now takes the same items as the body
+
+### Changed
+- **Breaking:** `toPrivate()`, `toInternal()` and `toPublic()` on `Record` and `Union` now set the accessibility of the type (`type private R = { ... }`), as they do on every other type definition. They used to set the accessibility of the fields or cases, which is now `toPrivateRepresentation()` and friends
 
 ### Fixed
 - The NuGet packages declared the `Apache-2.0` license while `LICENSE` and the README have always been MIT; Fabulous.AST, Fabulous.AST.Json and Fabulous.AST.Build now declare `MIT`
@@ -27,7 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A `BlockComment` passed to `triviaBefore` on a declaration (value, function, extern, `val`, member, type or module declaration) printed on the same line as the declaration, which does not parse for any declaration but the first (`let a = 1` then `(*c*) let b = 2`). It is now followed by a line break, also for a `DoExpr` yielded into a class, object expression or module; before expressions, patterns and types it still stays inline. Other expressions yielded directly into a module keep their trivia as given, so pass `newlineAfter = true` there
 - `InheritOther` printed `inherit Base 1`, which does not parse; an argument that isn't already parenthesized or unit is now wrapped in parentheses
 - XML docs: `ExternBinding`'s `toPublic`/`toInternal` described themselves as setting `private`; `DefaultsTo` now notes that default constraints only compile inside FSharp.Core
-
+- `StructTuple` types printed `struct (int , string)`, which does not compile; they now print `struct (int * string)`
+- `toStatic()` was ignored on `Value`, `Function` and `ValField`; class `let` bindings now print `static let` (and `static let rec`) and fields `static val`
+- `toInternal()` and the other accessibility modifiers were ignored on `Abbrev`, `Enum` and `Measure`, and `typeParams(...)` on `Delegate`; they now print `type internal Abbr = int`, `type internal E = ...`, `[<Measure>] type internal m` and `type D<'T> = delegate of ...`
+- `InterfaceWith("System.IDisposable")` wrapped the qualified name in backticks; it now prints `interface System.IDisposable with`
 - `Rewrite.expr` and `Rewrite.typeDefn` dropped the comments, blank lines and directives attached to every node they rebuilt (any node with a changed descendant), so a rename could silently delete a `// comment` above a `let`. Rebuilt nodes now keep their trivia
 
 ### Deprecated

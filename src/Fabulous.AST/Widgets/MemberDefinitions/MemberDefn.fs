@@ -8,6 +8,8 @@ open Fantomas.Core.SyntaxOak
 module MemberDefn =
     let XmlDocs = Attributes.defineWidget "SharedXmlDocs"
     let IsMutable = Attributes.defineScalar<bool> "SharedIsMutable"
+    /// Shared with `BindingNode.IsStatic` so `toStatic()` works on fields as well as bindings.
+    let IsStatic = Attributes.defineScalar<bool> "SharedIsStatic"
 
     let MultipleAttributes =
         Attributes.defineScalar<AttributeNode seq> "SharedMultipleAttributes"

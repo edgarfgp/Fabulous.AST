@@ -102,9 +102,18 @@ module Field =
                 else
                     None
 
+            let isStatic =
+                Widgets.tryGetScalarValue widget MemberDefn.IsStatic
+                |> ValueOption.defaultValue false
+
             let leadingKeyword =
                 Widgets.tryGetScalarValue widget LeadingKeyword
-                |> ValueOption.map(fun x -> MultipleTextsNode.Create([ x ]))
+                |> ValueOption.map(fun x ->
+                    MultipleTextsNode.Create(
+                        [ if isStatic then
+                              SingleTextNode.``static``
+                          x ]
+                    ))
                 |> ValueOption.toOption
 
             let accessControl =

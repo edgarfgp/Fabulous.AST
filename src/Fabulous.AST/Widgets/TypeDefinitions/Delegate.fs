@@ -66,7 +66,7 @@ module Delegate =
                         Type.LongIdent(
                             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
                         ),
-                        None,
+                        Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams |> ValueOption.toOption,
                         [],
                         None,
                         Some SingleTextNode.equals,

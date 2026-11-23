@@ -66,10 +66,6 @@ module Record =
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams |> ValueOption.toOption
 
-            let accessControl =
-                Widgets.tryGetScalarValue widget TypeDefn.Accessibility
-                |> ValueOption.defaultValue AccessControl.Unknown
-
             let isRecursive =
                 Widgets.tryGetScalarValue widget TypeDefn.IsRecursive
                 |> ValueOption.map(fun x ->
@@ -79,12 +75,8 @@ module Record =
                         SingleTextNode.``type``)
                 |> ValueOption.defaultValue SingleTextNode.``type``
 
-            let accessControl =
-                match accessControl with
-                | Public -> Some(SingleTextNode.``public``)
-                | Private -> Some(SingleTextNode.``private``)
-                | Internal -> Some(SingleTextNode.``internal``)
-                | Unknown -> fieldAccessibility
+            let representationAccessibility =
+                TypeDefn.representationAccessibility widget |> Option.orElse fieldAccessibility
 
             TypeDefn.Record(
                 TypeDefnRecordNode(
@@ -92,7 +84,7 @@ module Record =
                         xmlDocs,
                         attributes,
                         isRecursive,
-                        None,
+                        TypeDefn.accessibility widget,
                         Type.LongIdent(
                             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
                         ),
@@ -102,7 +94,7 @@ module Record =
                         Some(SingleTextNode.equals),
                         Range.range0
                     ),
-                    accessControl,
+                    representationAccessibility,
                     SingleTextNode.leftCurlyBrace,
                     (fields |> List.map TypeDefnRecordFieldOrSpread.Field),
                     SingleTextNode.rightCurlyBrace,

@@ -413,3 +413,44 @@ type Colors<'other> =
     | Yellow
 
 """
+
+    [<Fact>]
+    let ``toPrivate makes the union type private, toPrivateRepresentation its cases``() =
+        Oak() {
+            AnonymousModule() {
+                Union("Hidden") {
+                    UnionCase("A")
+                    UnionCase("B")
+                }
+                |> _.toPrivate()
+
+                Union("Opaque") {
+                    UnionCase("A")
+                    UnionCase("B")
+                }
+                |> _.toPrivateRepresentation()
+
+                Union("Both") {
+                    UnionCase("A")
+                    UnionCase("B")
+                }
+                |> _.toInternal()
+                |> _.toInternalRepresentation()
+            }
+        }
+        |> producesValid
+            """
+type private Hidden =
+    | A
+    | B
+
+type Opaque =
+    private
+    | A
+    | B
+
+type internal Both =
+    internal
+    | A
+    | B
+"""

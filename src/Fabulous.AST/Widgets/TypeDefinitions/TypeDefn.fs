@@ -19,6 +19,27 @@ module TypeDefn =
 
     let Members = Attributes.defineWidgetCollection "TypeDefn_Members"
 
+    /// Accessibility of a record's fields or a union's cases (`type R = private { ... }`),
+    /// as opposed to `Accessibility`, which applies to the type name (`type private R = ...`).
+    let RepresentationAccessibility =
+        Attributes.defineScalar<AccessControl> "TypeDefn_RepresentationAccessibility"
+
+    let private accessNode(access: AccessControl voption) =
+        match access with
+        | ValueSome Public -> Some(SingleTextNode.``public``)
+        | ValueSome Private -> Some(SingleTextNode.``private``)
+        | ValueSome Internal -> Some(SingleTextNode.``internal``)
+        | ValueSome Unknown
+        | ValueNone -> None
+
+    /// The accessibility set with `toPrivate()`/`toInternal()`/`toPublic()`, printed after `type`.
+    let accessibility(widget: Widget) =
+        Widgets.tryGetScalarValue widget Accessibility |> accessNode
+
+    /// The accessibility set with `toPrivateRepresentation()` and friends, printed after `=`.
+    let representationAccessibility(widget: Widget) =
+        Widgets.tryGetScalarValue widget RepresentationAccessibility |> accessNode
+
 /// Modifiers for all TypeDefn widgets
 type TypeDefnModifiers =
     /// <summary>Sets the members for the current type definition.</summary>
@@ -70,6 +91,31 @@ type TypeDefnModifiers =
     [<Extension>]
     static member inline toInternal(this: WidgetBuilder<TypeDefn>) =
         this.AddScalar(TypeDefn.Accessibility.WithValue(AccessControl.Internal))
+
+    /// <summary>
+    /// Makes the fields of a record or the cases of a union private (<c>type R = private { ... }</c>):
+    /// the type stays visible but can only be constructed and deconstructed inside its module.
+    /// Use <c>toPrivate()</c> to make the type itself private. Other type definitions ignore it.
+    /// </summary>
+    [<Extension>]
+    static member inline toPrivateRepresentation(this: WidgetBuilder<TypeDefn>) =
+        this.AddScalar(TypeDefn.RepresentationAccessibility.WithValue(AccessControl.Private))
+
+    /// <summary>
+    /// Makes the fields of a record or the cases of a union internal (<c>type R = internal { ... }</c>).
+    /// Use <c>toInternal()</c> to make the type itself internal. Other type definitions ignore it.
+    /// </summary>
+    [<Extension>]
+    static member inline toInternalRepresentation(this: WidgetBuilder<TypeDefn>) =
+        this.AddScalar(TypeDefn.RepresentationAccessibility.WithValue(AccessControl.Internal))
+
+    /// <summary>
+    /// Marks the fields of a record or the cases of a union public (<c>type R = public { ... }</c>).
+    /// Other type definitions ignore it.
+    /// </summary>
+    [<Extension>]
+    static member inline toPublicRepresentation(this: WidgetBuilder<TypeDefn>) =
+        this.AddScalar(TypeDefn.RepresentationAccessibility.WithValue(AccessControl.Public))
 
     /// <summary>Sets the type definition to be recursive.</summary>
     [<Extension>]

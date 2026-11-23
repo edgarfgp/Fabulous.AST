@@ -127,7 +127,7 @@ Oak() {
 
 (**
 ## Access Modifiers
-Set access modifiers for records with the `toPublic`, `toPrivate`, and `toInternal` methods:
+Set the accessibility of the record type with the `toPublic`, `toPrivate`, and `toInternal` methods:
 *)
 
 Oak() {
@@ -149,6 +149,32 @@ Oak() {
             Field("Field2", String())
         }
         |> _.toInternal()
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+To keep the type visible but hide its fields, so the record can only be created and taken apart
+inside its own module, set the accessibility of the representation with `toPrivateRepresentation`,
+`toInternalRepresentation` or `toPublicRepresentation`. Both can be combined:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Record("Opaque") {
+            Field("Field1", Int())
+            Field("Field2", String())
+        }
+        |> _.toPrivateRepresentation()
+
+        Record("Both") { Field("Field1", Int()) }
+        |> _.toInternal()
+        |> _.toPrivateRepresentation()
     }
 }
 |> Gen.mkOak

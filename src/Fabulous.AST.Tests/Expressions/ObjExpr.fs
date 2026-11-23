@@ -77,3 +77,60 @@ module ObjExpr =
     member x.ToString(format: string, provider: System.IFormatProvider) =
         if format = "D" then delim1 + value + delim2 else value }
 """
+
+    [<Fact>]
+    let ``ObjExpr implementing several interfaces``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    ObjExpr(LongIdent("System.IDisposable")) {
+                        Member("_.Dispose", UnitPat(), ConstantExpr(ConstantUnit()))
+
+                        InterfaceWith("System.IFormattable") {
+                            Member(
+                                "_.ToString(format: string, provider: System.IFormatProvider)",
+                                ConstantExpr(String("x"))
+                            )
+                        }
+                    }
+                )
+            }
+        }
+        |> producesValid
+            """
+let x =
+    { new System.IDisposable with
+        member _.Dispose() = ()
+      interface System.IFormattable with
+          member _.ToString(format: string, provider: System.IFormatProvider) = "x" }
+"""
+
+    [<Fact>]
+    let ``ObjExpr members modifier``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "x",
+                    (ObjExpr(LongIdent("System.IDisposable")) {
+                        Member("_.Dispose", UnitPat(), ConstantExpr(ConstantUnit()))
+                    })
+                        .members() {
+                        InterfaceWith("System.IFormattable") {
+                            Member(
+                                "_.ToString(format: string, provider: System.IFormatProvider)",
+                                ConstantExpr(String("x"))
+                            )
+                        }
+                    }
+                )
+            }
+        }
+        |> producesValid
+            """
+let x =
+    { new System.IDisposable with
+        member _.Dispose() = ()
+      interface System.IFormattable with
+          member _.ToString(format: string, provider: System.IFormatProvider) = "x" }
+"""

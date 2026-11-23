@@ -532,6 +532,31 @@ Ast.Oak() {
 (*** include-output ***)
 
 (**
+## 9. `toPrivate()` on records and unions makes the type private
+
+`toPrivate()`, `toInternal()` and `toPublic()` on a `Record` or `Union` used to set the
+accessibility of its fields or cases (`type R = private { ... }`), while on every other type
+definition they set the accessibility of the type itself. They now set the type's accessibility
+on records and unions too (`type private R = { ... }`). To keep the old output, use
+`toPrivateRepresentation()`, `toInternalRepresentation()` or `toPublicRepresentation()`:
+*)
+
+Ast.Oak() {
+    AnonymousModule() {
+        Record("Hidden") { Field("Name", String()) } |> _.toPrivate()
+
+        Record("Opaque") { Field("Name", String()) }
+        |> _.toPrivateRepresentation()
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Summary
 
 When migrating to v2.0.0:
@@ -543,6 +568,7 @@ When migrating to v2.0.0:
 5. **Replace `Gen.runWith config oak`** with the `Gen.run(oak, config)` overload (`Gen` is now a type)
 6. **Drop `getterAccessibility` / `setterAccessibility`** arguments from `AbstractMember` calls
 7. **Move record accessibility to the type** if you relied on per-field modifiers — field accessibility now applies to the whole representation
+8. **Use `toPrivateRepresentation()`** on records and unions where you meant `type R = private { ... }`; `toPrivate()` now makes the type itself private
 
 The v2.0 changes provide a cleaner, more consistent API while maintaining full compatibility with the Fantomas Oak AST.
 *)

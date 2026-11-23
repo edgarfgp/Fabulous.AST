@@ -40,12 +40,14 @@ module Enum =
                         xmlDocs,
                         attributes,
                         leadingKeyword,
-                        Some(SingleTextNode.Create(name)),
-                        Type.LongIdent(IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.equals) ], Range.range0)),
+                        TypeDefn.accessibility widget,
+                        Type.LongIdent(
+                            IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
+                        ),
                         None,
                         [],
                         None,
-                        None,
+                        Some(SingleTextNode.equals),
                         Range.range0
                     ),
                     enumCaseNodes,

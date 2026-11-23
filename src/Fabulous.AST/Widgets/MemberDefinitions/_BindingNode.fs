@@ -13,17 +13,27 @@ module BindingNode =
     let IsInlined = Attributes.defineScalar<bool> "IsInlined"
     let IsRecursive = Attributes.defineScalar<bool> "IsRecursive"
 
-    /// The leading keywords of a `let` binding: `let`, or `let rec` when the binding is recursive.
+    let IsStatic = MemberDefn.IsStatic
+
+    /// The leading keywords of a `let` binding: `let`, with `static` in front when the binding is
+    /// static (`static let` in a class) and `rec` after it when the binding is recursive.
     let leadingKeywords (widget: Widget) (leading: SingleTextNode) =
         let isRecursive =
             Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
 
-        if isRecursive then
-            MultipleTextsNode([ leading; SingleTextNode.Create "rec" ], Fantomas.FCS.Text.Range.range0)
-        else
-            MultipleTextsNode([ leading ], Fantomas.FCS.Text.Range.range0)
+        let isStatic =
+            leading.Text = "let"
+            && (Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false)
 
-    let IsStatic = Attributes.defineScalar<bool> "IsStatic"
+        MultipleTextsNode(
+            [ if isStatic then
+                  SingleTextNode.``static``
+              leading
+              if isRecursive then
+                  SingleTextNode.Create "rec" ],
+            Fantomas.FCS.Text.Range.range0
+        )
+
     let IsOverride = Attributes.defineScalar<bool> "IsOverride"
 
     let MultipleAttributes =
@@ -199,14 +209,17 @@ type BindingNodeModifiers =
         this.AddScalar(BindingNode.IsRecursive.WithValue(true))
 
     /// <summary>
-    /// Sets the current widget to be static.
+    /// Makes the current binding static: a member prints as <c>static member</c>, and a <c>let</c>
+    /// binding inside a class prints as <c>static let</c>. F# only allows <c>static let</c> in types
+    /// with a primary constructor.
     /// </summary>
     /// <param name="this">Current widget.</param>
     /// <code language="fsharp">
     /// Oak() {
     ///     AnonymousModule() {
-    ///         Value("x", Int(12))
-    ///             .toStatic()
+    ///         TypeDefn("Counter", UnitPat()) {
+    ///             Value("count", Int(0)).toMutable().toStatic()
+    ///         }
     ///     }
     /// }
     /// </code>

@@ -313,3 +313,21 @@ type Colors =
     | Green = 1
     | Blue = 2
 """
+
+    [<Fact>]
+    let ``Enum with accessibility``() =
+        Oak() {
+            AnonymousModule() {
+                Enum("Colors") {
+                    EnumCase("Red", Int(0))
+                    EnumCase("Green", Int(1))
+                }
+                |> _.toInternal()
+            }
+        }
+        |> producesValid
+            """
+type internal Colors =
+    | Red = 0
+    | Green = 1
+"""

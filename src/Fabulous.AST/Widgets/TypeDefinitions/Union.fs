@@ -36,17 +36,6 @@ module Union =
             let typeParams =
                 Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams |> ValueOption.toOption
 
-            let accessControl =
-                Widgets.tryGetScalarValue widget TypeDefn.Accessibility
-                |> ValueOption.defaultValue AccessControl.Unknown
-
-            let accessControl =
-                match accessControl with
-                | Public -> Some(SingleTextNode.``public``)
-                | Private -> Some(SingleTextNode.``private``)
-                | Internal -> Some(SingleTextNode.``internal``)
-                | Unknown -> None
-
             let isRecursive =
                 Widgets.tryGetScalarValue widget TypeDefn.IsRecursive
                 |> ValueOption.defaultValue false
@@ -63,7 +52,7 @@ module Union =
                         xmlDocs,
                         attributes,
                         leadingKeyword,
-                        None,
+                        TypeDefn.accessibility widget,
                         Type.LongIdent(
                             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
                         ),
@@ -73,7 +62,7 @@ module Union =
                         Some(SingleTextNode.equals),
                         Range.range0
                     ),
-                    accessControl,
+                    TypeDefn.representationAccessibility widget,
                     unionCaseNode,
                     None,
                     members,
