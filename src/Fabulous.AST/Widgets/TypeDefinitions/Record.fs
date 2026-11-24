@@ -13,12 +13,33 @@ module Record =
 
     let Name = Attributes.defineScalar<string> "Name"
 
+    let SpreadType = Attributes.defineWidget "SpreadType"
+
+    let SpreadWidgetKey =
+        Widgets.register "TypeSpread" (fun widget ->
+            let t = Widgets.getNodeFromWidget<Type> widget SpreadType
+            TypeSpreadNode(SingleTextNode.Create("..."), t, Range.range0))
+
     let WidgetKey =
         Widgets.register "Record" (fun widget ->
             let name =
                 Widgets.getScalarValue widget Name |> PrettyNaming.NormalizeIdentifierBackticks
 
-            let fields = Widgets.getNodesFromWidgetCollection<FieldNode> widget RecordCaseNode
+            // Fields and spreads (`...Base`), in source order.
+            let items =
+                Widgets.getNodesFromWidgetCollection<obj> widget RecordCaseNode
+                |> List.map(fun item ->
+                    match item with
+                    | :? FieldNode as node -> TypeDefnRecordFieldOrSpread.Field node
+                    | :? TypeSpreadNode as node -> TypeDefnRecordFieldOrSpread.Spread node
+                    | other -> invalidArg "item" $"Records accept fields and spreads. Got: %s{other.GetType().Name}")
+
+            let fields =
+                items
+                |> List.choose(fun item ->
+                    match item with
+                    | TypeDefnRecordFieldOrSpread.Field node -> Some node
+                    | TypeDefnRecordFieldOrSpread.Spread _ -> None)
 
             // Accessibility modifiers are not permitted on individual record fields;
             // F# only allows accessibility on the whole representation. Lift any
@@ -34,22 +55,24 @@ module Record =
                     | _ -> 2)
                 |> List.tryHead
 
-            let fields =
-                fields
-                |> List.map(fun field ->
-                    match field.Accessibility with
-                    | None -> field
-                    | Some _ ->
-                        FieldNode(
-                            field.XmlDoc,
-                            field.Attributes,
-                            field.LeadingKeyword,
-                            field.MutableKeyword,
-                            None,
-                            field.Name,
-                            field.Type,
-                            Range.range0
-                        ))
+            let items =
+                items
+                |> List.map(fun item ->
+                    match item with
+                    | TypeDefnRecordFieldOrSpread.Field field when field.Accessibility.IsSome ->
+                        TypeDefnRecordFieldOrSpread.Field(
+                            FieldNode(
+                                field.XmlDoc,
+                                field.Attributes,
+                                field.LeadingKeyword,
+                                field.MutableKeyword,
+                                None,
+                                field.Name,
+                                field.Type,
+                                Range.range0
+                            )
+                        )
+                    | item -> item)
 
             let members =
                 Widgets.tryGetNodesFromWidgetCollection widget TypeDefn.Members
@@ -96,7 +119,7 @@ module Record =
                     ),
                     representationAccessibility,
                     SingleTextNode.leftCurlyBrace,
-                    (fields |> List.map TypeDefnRecordFieldOrSpread.Field),
+                    items,
                     SingleTextNode.rightCurlyBrace,
                     None,
                     members,
@@ -124,6 +147,47 @@ module RecordBuilders =
             let name = PrettyNaming.NormalizeIdentifierBackticks name
 
             CollectionBuilder<TypeDefn, FieldNode>(Record.WidgetKey, Record.RecordCaseNode, Record.Name.WithValue(name))
+
+        /// <summary>
+        /// Create a spread (<c>...Base</c>) that copies the fields of an existing record type into a record
+        /// definition. Yield it in the body of <c>Record(...)</c>. Record spreads need F# 11 or later.
+        /// </summary>
+        /// <param name="value">The record type whose fields are copied.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Record("Point3D") {
+        ///             Spread(LongIdent("Point"))
+        ///             Field("Z", Float())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member Spread(value: WidgetBuilder<Type>) =
+            WidgetBuilder<TypeSpreadNode>(Record.SpreadWidgetKey, Record.SpreadType.WithValue(value.Compile()))
+
+        /// <summary>
+        /// Create a spread (<c>...Base</c>) of the named record type. Record spreads need F# 11 or later.
+        /// </summary>
+        /// <param name="value">The record type whose fields are copied.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Record("Point3D") {
+        ///             Spread("Point")
+        ///             Field("Z", Float())
+        ///         }
+        ///     }
+        /// }
+        /// </code>
+        static member Spread(value: string) = Ast.Spread(Ast.LongIdent(value))
+
+type RecordYieldExtensions =
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<TypeDefn, FieldNode>, x: WidgetBuilder<TypeSpreadNode>)
+        : CollectionContent =
+        { Widgets = MutStackArray1.One(x.Compile()) }
 
 type TypeDefnYieldExtensions =
     [<Extension>]

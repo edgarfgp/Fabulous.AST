@@ -78,3 +78,55 @@ module RecordExpr =
             """
 {| A with B = 1 |}
 """
+
+    [<Fact>]
+    let ``RecordExpr body mixes spreads and fields in order``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "p2",
+                    RecordExpr() {
+                        SpreadExpr("p1")
+                        RecordFieldExpr("X", Int(1))
+                        SpreadExpr(ParenExpr(AppExpr("make", Int(2))))
+                    }
+                )
+            }
+        }
+        |> producesValid
+            """
+let p2 = { ...p1; X = 1; ...(make 2) }
+"""
+
+    [<Fact>]
+    let ``AnonRecordExpr body with a spread``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "p2",
+                    AnonRecordExpr() {
+                        SpreadExpr("p1")
+                        RecordFieldExpr("Z", Int(3))
+                    }
+                )
+            }
+        }
+        |> producesValid
+            """
+let p2 = {| ...p1; Z = 3 |}
+"""
+
+    [<Fact>]
+    let ``RecordExpr body with only fields``() =
+        Oak() {
+            AnonymousModule() {
+                RecordExpr() {
+                    RecordFieldExpr("A", Int(1))
+                    RecordFieldExpr("B", Int(2))
+                }
+            }
+        }
+        |> producesValid
+            """
+{ A = 1; B = 2 }
+"""

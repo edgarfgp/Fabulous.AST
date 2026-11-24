@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `returnAttribute(...)` / `returnAttributes(...)` on `ExternBinding` add attributes to the return type (`extern [<MarshalAs(UnmanagedType.Bool)>] bool ...`)
 - `MatchClauseExpr` overloads taking a pattern widget with a string body (and string or expression guard)
 - `toPrivateRepresentation()`, `toInternalRepresentation()` and `toPublicRepresentation()` set the accessibility of a record's fields or a union's cases (`type R = private { ... }`)
+- Record spreads (F# 11): `Spread("Base")` in a `Record(...)` body (`type R = { ...Base; Z: float }`), and `SpreadExpr(...)` in the new body forms `RecordExpr() { ... }`, `AnonRecordExpr() { ... }` and `AnonStructRecordExpr() { ... }`, which take spreads and fields in order (`{ ...p; Z = 1.0 }`)
+- `DynamicChainExpr` with `DynamicMember` steps generates chained dynamic lookups (`x?a?b(1)`), keeping each argument right after its member so the chain parses as written
 - `ObjExpr` accepts `InterfaceWith(...)` blocks after its members, for object expressions that implement extra interfaces (`{ new A with member ... interface IB with member ... }`). Its `.members()` modifier, which no item could be yielded into, now takes the same items as the body. Items object expressions do not allow (`do`, `let`, `member val`, ...) now fail with an error naming the item instead of an `InvalidCastException`, and the overloads that yielded `do` expressions into an object expression are removed
 
 ### Changed
@@ -22,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - The NuGet packages declared the `Apache-2.0` license while `LICENSE` and the README have always been MIT; Fabulous.AST, Fabulous.AST.Json and Fabulous.AST.Build now declare `MIT`
 - Building trees on several threads at once could fail on first use with `Could not find widget collection attribute Decls on widget { Key = 0 ... }`. The library was compiled with `--realsig+`, which gives each module its own static constructor; modules sharing a file (such as `Constant`, `ConstantUnit` and `ConstantMeasure`) then deadlocked on first use, and the runtime let one thread read widget keys that were not set yet. The packages are now built without `--realsig+`
+- `ParenILEmbeddedExpr` printed its text as a plain identifier; it now produces an inline IL expression and adds the `(# ... #)` around the IL when they are missing
 - `StructAnonRecord` printed `struct [ X: float |}`; it now prints `struct {| X: float |}`
 - `OptionalValPat("name")` dropped the `?`; it now prints `?name`
 - Names were wrapped in backticks where F# does not allow them: type variables in `Var("'T")`, operators in `NamedParenStarIdentPat("*")`, the `const` keyword in `StaticConstantExpr`, and active pattern names such as `Function("(|Even|Odd|)", ...)`. A qualified `Augmentation("System.String")` now prints `type System.String with` instead of ``type ``System.String`` with``
