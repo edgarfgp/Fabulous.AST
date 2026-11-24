@@ -3,12 +3,17 @@ namespace Fabulous.AST
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module DynamicChainItem =
     let MemberExpr = Attributes.defineWidget "MemberExpr"
 
     let ArgExpr = Attributes.defineWidget "ArgExpr"
+
+    /// The member name as an identifier, in backticks when it is a keyword or not a valid name (`x?``type```).
+    let memberExpr(name: string) =
+        Ast.ConstantExpr(Ast.Constant(PrettyNaming.NormalizeIdentifierBackticks name)).Compile()
 
     let WidgetKey =
         Widgets.register "DynamicChainItem" (fun widget ->
@@ -43,6 +48,38 @@ module DynamicChain =
     let WidgetKey =
         Widgets.register "DynamicChain" (fun widget ->
             let leadingExpr = Widgets.getNodeFromWidget<Expr> widget LeadingExpr
+
+            // `?` binds tighter than application and operators: `f x?a` looks up `a` on `x`, and
+            // `-x?a` negates the lookup. Anything but an atomic expression is parenthesized.
+            let leadingExpr =
+                match leadingExpr with
+                | Expr.Ident _
+                | Expr.OptVar _
+                | Expr.Constant _
+                | Expr.Paren _
+                | Expr.ParenILEmbedded _
+                | Expr.ParenFunctionNameWithStar _
+                | Expr.Record _
+                | Expr.AnonStructRecord _
+                | Expr.ArrayOrList _
+                | Expr.AppSingleParenArg _
+                | Expr.IndexWithoutDot _
+                | Expr.TypeApp _
+                | Expr.Chain _
+                | Expr.InterpolatedStringExpr _
+                | Expr.Dynamic _
+                | Expr.DynamicChain _
+                | Expr.BeginEnd _ -> leadingExpr
+                | _ ->
+                    Expr.Paren(
+                        ExprParenNode(
+                            SingleTextNode.leftParenthesis,
+                            leadingExpr,
+                            SingleTextNode.rightParenthesis,
+                            Range.range0
+                        )
+                    )
+
             let items = Widgets.getScalarValue widget Items
 
             if List.isEmpty items then
@@ -61,7 +98,7 @@ module DynamicChainBuilders =
         static member DynamicMember(name: string) =
             WidgetBuilder<ExprDynamicChainItemNode>(
                 DynamicChainItem.WidgetKey,
-                DynamicChainItem.MemberExpr.WithValue(Ast.ConstantExpr(Ast.Constant(name)).Compile())
+                DynamicChainItem.MemberExpr.WithValue(DynamicChainItem.memberExpr name)
             )
 
         /// <summary>
@@ -75,7 +112,7 @@ module DynamicChainBuilders =
                 DynamicChainItem.WidgetKey,
                 AttributesBundle(
                     StackList.empty(),
-                    [| DynamicChainItem.MemberExpr.WithValue(Ast.ConstantExpr(Ast.Constant(name)).Compile())
+                    [| DynamicChainItem.MemberExpr.WithValue(DynamicChainItem.memberExpr name)
                        DynamicChainItem.ArgExpr.WithValue(arg.Compile()) |],
                     Array.empty
                 )
@@ -99,8 +136,9 @@ module DynamicChainBuilders =
 
         /// <summary>
         /// Create a chain of dynamic lookups (<c>x?a?b(1)</c>), which requires a user-defined <c>?</c> operator.
-        /// Use <c>DynamicExpr</c> for a single lookup. A leading expression that is an application
-        /// needs parentheses (<c>ParenExpr(...)</c>), otherwise the lookup binds to its last argument.
+        /// Use <c>DynamicExpr</c> for a single lookup. A leading expression that is not atomic
+        /// (an application, an operator, a lambda, ...) is parenthesized, because <c>?</c> binds tighter.
+        /// Member names that are keywords or not valid identifiers are put in backticks.
         /// </summary>
         /// <param name="value">The expression the chain starts from.</param>
         /// <param name="items">The <c>DynamicMember(...)</c> steps, at least one.</param>

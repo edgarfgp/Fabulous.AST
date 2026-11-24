@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MatchClauseExpr` overloads taking a pattern widget with a string body (and string or expression guard)
 - `toPrivateRepresentation()`, `toInternalRepresentation()` and `toPublicRepresentation()` set the accessibility of a record's fields or a union's cases (`type R = private { ... }`)
 - Record spreads (F# 11): `Spread("Base")` in a `Record(...)` body (`type R = { ...Base; Z: float }`), and `SpreadExpr(...)` in the new body forms `RecordExpr() { ... }`, `AnonRecordExpr() { ... }` and `AnonStructRecordExpr() { ... }`, which take spreads and fields in order (`{ ...p; Z = 1.0 }`)
-- `DynamicChainExpr` with `DynamicMember` steps generates chained dynamic lookups (`x?a?b(1)`), keeping each argument right after its member so the chain parses as written
+- `DynamicChainExpr` with `DynamicMember` steps generates chained dynamic lookups (`x?a?b(1)`), keeping each argument right after its member so the chain parses as written. Non-atomic leading expressions are parenthesized (`(f x)?a`) and keyword member names are put in backticks
 - `ObjExpr` accepts `InterfaceWith(...)` blocks after its members, for object expressions that implement extra interfaces (`{ new A with member ... interface IB with member ... }`). Its `.members()` modifier, which no item could be yielded into, now takes the same items as the body. Items object expressions do not allow (`do`, `let`, `member val`, ...) now fail with an error naming the item instead of an `InvalidCastException`, and the overloads that yielded `do` expressions into an object expression are removed
 
 ### Changed

@@ -324,7 +324,7 @@ Oak() {
 F# 11 can spread the fields of an existing record into a new one with `...`. In a record
 definition, `Spread` copies the fields of another record type. In an expression, the body form
 of `RecordExpr()` (and `AnonRecordExpr()` / `AnonStructRecordExpr()`) takes `SpreadExpr` and
-`RecordFieldExpr` items in order; a later item overrides the fields of an earlier one:
+`RecordFieldExpr` items in the order they are written:
 *)
 
 Oak() {

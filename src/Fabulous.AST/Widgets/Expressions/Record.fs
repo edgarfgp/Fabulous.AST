@@ -122,7 +122,7 @@ module RecordExprBuilders =
 
         /// <summary>
         /// Create a record expression whose fields and spreads are given in the body, in order.
-        /// A spread (<c>SpreadExpr("r")</c>) copies the fields of an existing value; later items override earlier ones.
+        /// A spread (<c>SpreadExpr("r")</c>) copies the fields of an existing value.
         /// Record spreads need F# 11 or later.
         /// </summary>
         /// <code language="fsharp">

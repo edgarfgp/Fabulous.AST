@@ -62,6 +62,22 @@ let c = (f x)?a(1, 2)?b
 """
 
     [<Fact>]
+    let ``Dynamic chain parenthesizes a non-atomic leading expression and escapes keyword members``() =
+        Oak() {
+            AnonymousModule() {
+                Value("a", DynamicChainExpr(AppExpr("f", "x"), [ DynamicMember("a"); DynamicMember("b") ]))
+                Value("b", DynamicChainExpr(PrefixAppExpr("-", "x"), [ DynamicMember("a") ]))
+                Value("c", DynamicChainExpr("x", [ DynamicMember("type"); DynamicMember("my member", Int(1)) ]))
+            }
+        }
+        |> producesValid
+            """
+let a = (f x)?a?b
+let b = (-x)?a
+let c = x?``type``?``my member``(1)
+"""
+
+    [<Fact>]
     let ``Dynamic chain needs at least one member``() =
         Assert.Throws<System.ArgumentException>(fun () ->
             Oak() { AnonymousModule() { DynamicChainExpr("x", []) } }
