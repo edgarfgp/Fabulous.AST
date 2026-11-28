@@ -56,6 +56,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    # Pages accepts one deployment at a time; two pushes close together made the second deploy fail
+    # ("in progress deployment"). Queue deploys instead, and never cancel one that has started.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
