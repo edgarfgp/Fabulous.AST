@@ -13,10 +13,17 @@ This guide covers the breaking changes introduced in Fabulous.AST 2.0.0 and show
 
 ## Overview of Breaking Changes
 
-1. **Return type changes**: `MemberDefn`, `TypeDefn`, and `ModuleDecl` builders now return unified types instead of specific node types
-2. **EscapeHatch requirement**: Raw SyntaxOak nodes must be wrapped with `EscapeHatch()` when yielding into collections
-3. **Unified modifiers**: Per-node modifiers have been replaced with unified modifier extensions
-4. **NestedModule return type**: `Module` builder now returns `CollectionBuilder<ModuleDecl, ModuleDecl>`
+- **Return type changes** (section 1): `MemberDefn`, `TypeDefn`, and `ModuleDecl` builders now return unified types instead of specific node types
+- **EscapeHatch requirement** (section 2): Raw SyntaxOak nodes must be wrapped with `EscapeHatch()` when yielding into collections
+- **Unified modifiers** (section 3): Per-node modifiers have been replaced with unified modifier extensions
+- **NestedModule return type** (section 4): `Module` builder now returns `CollectionBuilder<ModuleDecl, ModuleDecl>`
+- **`Gen` is a type** (section 6): `Gen.runWith config oak` becomes the `Gen.run(oak, config)` overload
+- **`AbstractMember` accessibility parameters removed** (section 7)
+- **Record field accessibility** (section 8): accessibility on a field now applies to the whole record representation
+- **`toPrivate()` on records and unions** (section 9): it now makes the type private; the fields or cases use `toPrivateRepresentation()`
+- **`isVerbatim` renamed `isTripleQuoted`** (section 10): `isVerbatim` now produces `$@"..."`
+
+Section 5 walks through a complete migration example.
 
 ## 1. Return Type Changes
 
