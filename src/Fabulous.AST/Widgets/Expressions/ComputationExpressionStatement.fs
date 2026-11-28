@@ -180,8 +180,8 @@ type ComputationExpressionStatementModifiers =
     /// </summary>
     /// <param name="this">Current widget.</param>
     /// <code language="fsharp">
-    /// NamedComputationExpr("async", CompExprBodyExpr([ LetOrUseBangExpr("x", "fetch ()").withIn(); OtherExpr("return x") ]))
+    /// NamedComputationExpr("async", CompExprBodyExpr([ LetOrUseBangExpr("x", "fetch ()").toIn(); OtherExpr("return x") ]))
     /// </code>
     [<Extension>]
-    static member inline withIn(this: WidgetBuilder<ComputationExpressionStatement>) =
+    static member inline toIn(this: WidgetBuilder<ComputationExpressionStatement>) =
         this.AddScalar(ComputationExpressionStatement.InKeyword.WithValue(true))
