@@ -82,6 +82,7 @@
         <Compile Include="Widgets\Expressions\InterpolatedString.fs" />
         <Compile Include="Widgets\Expressions\TryFinally.fs" />
         <Compile Include="Widgets\Expressions\Dynamic.fs" />
+        <Compile Include="Widgets\Expressions\DynamicChain.fs" />
         <Compile Include="Widgets\Expressions\TryWithSingleClause.fs" />
         <Compile Include="Widgets\Expressions\IndexFromEnd.fs" />
         <Compile Include="Widgets\Expressions\TripleNumberIndexRange.fs" />

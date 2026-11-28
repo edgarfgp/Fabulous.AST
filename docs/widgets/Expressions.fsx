@@ -134,6 +134,7 @@ Oak() {
 - `PrefixAppExpr` applies a prefix operator such as `-` or `~~~`.
 - `ParenFunctionNameWithStarExpr` references an operator containing `*` as a function, adding the spaces that keep `( * )` from being read as a comment.
 - `DynamicExpr` builds a dynamic lookup `obj?name`, which requires a user-defined `?` operator.
+- `DynamicChainExpr` builds a chain of dynamic lookups such as `obj?a?b(1)` from `DynamicMember` steps, keeping each argument right after its member name.
 *)
 
 Oak() {
@@ -151,6 +152,8 @@ Oak() {
         AppExpr(ParenFunctionNameWithStarExpr("*"), [ "2"; "3" ])
 
         DynamicExpr("obj", "Name")
+
+        DynamicChainExpr("obj", [ DynamicMember("Items"); DynamicMember("Item", Int(0)) ])
     }
 }
 |> Gen.mkOak
@@ -474,7 +477,8 @@ Oak() {
 ## Other Expressions
 `LazyExpr`, `QuotedExpr` (and `UntypedQuotedExpr` for `<@@ ... @@>`), `BeginEndExpr` (a `begin ... end` block), `InheritRecordExpr`
 (the `{ inherit Base(...); Field = ... }` form used in explicit constructors), the object
-expression `ObjExpr`, and named computation expressions such as `task { ... }`:
+expression `ObjExpr`, and named computation expressions such as `task { ... }`.
+`ParenILEmbeddedExpr` emits inline IL (`(# "ldnull" : 'T #)`), which only compiles inside FSharp.Core:
 *)
 
 Oak() {

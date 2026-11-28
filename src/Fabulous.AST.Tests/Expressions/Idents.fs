@@ -43,11 +43,12 @@ module ParenILEmbedded =
     let ``ParenILEmbedded expression``() =
         Oak() {
             AnonymousModule() {
-                ParenILEmbeddedExpr("a")
-
+                Value("a", ParenILEmbeddedExpr("\"ldnull\" : 'T"))
+                Value("b", ParenILEmbeddedExpr("(# \"add\" x y : int #)"))
             }
         }
         |> producesValid
             """
-a
+let a = (# "ldnull" : 'T #)
+let b = (# "add" x y : int #)
 """

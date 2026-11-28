@@ -6,7 +6,8 @@ open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
 module AnonStructRecord =
-    let Fields = Attributes.defineScalar<RecordFieldNode seq> "Fields"
+    // Shared with RecordExpr so both widgets read their fields and spreads with RecordExpr.items.
+    let Fields = RecordExpr.Fields
     let CopyInfo = Attributes.defineWidget "CopyInfo"
 
     let WidgetKey =
@@ -18,10 +19,7 @@ module AnonStructRecord =
                 | ValueSome copyInfo -> Some copyInfo
                 | ValueNone -> None
 
-            let fields =
-                Widgets.getScalarValue widget Fields
-                |> Seq.map ExprRecordFieldOrSpread.Field
-                |> List.ofSeq
+            let fields = RecordExpr.items widget
 
             Expr.AnonStructRecord(
                 ExprAnonStructRecordNode(
@@ -68,3 +66,20 @@ module AnonStructRecordBuilders =
 
         static member AnonStructRecordExpr(fields: WidgetBuilder<RecordFieldNode> seq) =
             Ast.BaseAnonStructRecordExpr(ValueNone, fields)
+
+        /// <summary>
+        /// Create an anonymous struct record expression whose fields and spreads are given in the body, in order.
+        /// Record spreads need F# 11 or later.
+        /// </summary>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("p2", AnonStructRecordExpr() {
+        ///             SpreadExpr("p1")
+        ///             RecordFieldExpr("Z", Int(3))
+        ///         })
+        ///     }
+        /// }
+        /// </code>
+        static member AnonStructRecordExpr() =
+            CollectionBuilder<Expr, RecordFieldNode>(AnonStructRecord.WidgetKey, RecordExpr.Items)
