@@ -3,12 +3,26 @@ namespace Fabulous.AST
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
+open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text
 
 module Dynamic =
     let FunExpr = Attributes.defineWidget "FunExpr"
 
     let ArgExpr = Attributes.defineWidget "ArgExpr"
+
+    /// A string argument is raw expression text (`obj?f x`), except that a single word that is a
+    /// keyword is put in backticks (`obj?``type```), since `obj?type` never parses.
+    let memberName(name: string) =
+        let isWord =
+            name.Length > 0
+            && PrettyNaming.IsIdentifierFirstCharacter name[0]
+            && Seq.forall PrettyNaming.IsIdentifierPartCharacter name
+
+        if isWord && PrettyNaming.DoesIdentifierNeedBackticks name then
+            Ast.Constant($"``%s{name}``")
+        else
+            Ast.Constant(name)
 
     let WidgetKey =
         Widgets.register "Dynamic" (fun widget ->
@@ -36,7 +50,7 @@ module DynamicBuilders =
             Ast.DynamicExpr(Ast.ConstantExpr(value), expr)
 
         static member DynamicExpr(value: WidgetBuilder<Constant>, expr: string) =
-            Ast.DynamicExpr(Ast.ConstantExpr(value), Ast.Constant(expr))
+            Ast.DynamicExpr(Ast.ConstantExpr(value), Dynamic.memberName expr)
 
         static member DynamicExpr(value: string, expr: WidgetBuilder<Expr>) =
             Ast.DynamicExpr(Ast.Constant(value), expr)
@@ -45,7 +59,7 @@ module DynamicBuilders =
             Ast.DynamicExpr(value, Ast.ConstantExpr(expr))
 
         static member DynamicExpr(value: WidgetBuilder<Expr>, expr: string) =
-            Ast.DynamicExpr(value, Ast.Constant(expr))
+            Ast.DynamicExpr(value, Dynamic.memberName expr)
 
         static member DynamicExpr(value: WidgetBuilder<Constant>, expr: WidgetBuilder<Constant>) =
             Ast.DynamicExpr(Ast.ConstantExpr(value), Ast.ConstantExpr(expr))
@@ -54,4 +68,4 @@ module DynamicBuilders =
             Ast.DynamicExpr(Ast.Constant(value), expr)
 
         static member DynamicExpr(value: string, expr: string) =
-            Ast.DynamicExpr(Ast.Constant(value), Ast.Constant(expr))
+            Ast.DynamicExpr(Ast.Constant(value), Dynamic.memberName expr)

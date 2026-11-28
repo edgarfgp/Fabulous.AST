@@ -78,3 +78,17 @@ exception Error2 of string * int
 exception Error3 of msg: string with
     static member Message = ""
 """
+
+    [<Fact>]
+    let ``Exception abbreviation``() =
+        Oak() {
+            AnonymousModule() {
+                ExceptionAbbrev("NotFound", "System.IO.FileNotFoundException")
+                ExceptionAbbrev("Failure2", "Failure")
+            }
+        }
+        |> producesValid
+            """
+exception NotFound = System.IO.FileNotFoundException
+exception Failure2 = Failure
+"""

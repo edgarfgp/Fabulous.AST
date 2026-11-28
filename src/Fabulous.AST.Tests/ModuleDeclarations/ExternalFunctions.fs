@@ -68,3 +68,35 @@ extern [<MarshalAs(UnmanagedType.Bool)>] bool CloseHandle(nativeint handle)
 
 extern [<A; B>] int GetValue()
 """
+
+    [<Fact>]
+    let ``Extern binding with unnamed parameters``() =
+        Oak() {
+            AnonymousModule() {
+                ExternBinding(Int(), "add", [ ExternBindingPat(Int()); ExternBindingPat("int") ])
+                    .attribute(Attribute("DllImport", ParenExpr(String("native"))))
+            }
+        }
+        |> producesValid
+            """
+[<DllImport("native")>]
+extern int add(int, int)
+"""
+
+    [<Fact>]
+    let ``Static extern binding inside a class``() =
+        Oak() {
+            AnonymousModule() {
+                TypeDefn("Native", UnitPat()) {
+                    ExternBinding(Int(), "getpid")
+                        .attribute(Attribute("DllImport", ParenExpr(String("libc"))))
+                        .toStatic()
+                }
+            }
+        }
+        |> producesValid
+            """
+type Native() =
+    [<DllImport("libc")>]
+    static extern int getpid()
+"""

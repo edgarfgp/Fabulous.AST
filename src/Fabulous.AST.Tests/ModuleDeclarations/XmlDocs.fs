@@ -153,3 +153,20 @@ val collect: char -> string -> string -> string
 /// <exception cref="ArgumentNullException">Thrown when <paramref name="mapping"/> is null.</exception>
 val collect: char -> string -> string -> string
 """
+
+    [<Fact>]
+    let ``Val with a literal value``() =
+        Oak() {
+            AnonymousModule() {
+                Val("Max", Int()).attribute(Attribute("Literal")).literalValue(Int(100))
+                Val("Name", String()).attribute(Attribute("Literal")).literalValue(String("lib"))
+            }
+        }
+        |> produces
+            """
+[<Literal>]
+val Max: int = 100
+
+[<Literal>]
+val Name: string = "lib"
+"""

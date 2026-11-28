@@ -13,6 +13,13 @@ module TypeDefn =
 
     let TypeParams = Attributes.defineWidget "TypeDefn_TypeParams"
 
+    /// Constraints written after the type name (`type 'T Box when 'T: equality = ...`).
+    let Constraints =
+        Attributes.defineScalar<TypeConstraint list> "TypeDefn_Constraints"
+
+    let constraints(widget: Widget) =
+        Widgets.tryGetScalarValue widget Constraints |> ValueOption.defaultValue []
+
     let Accessibility = Attributes.defineScalar<AccessControl> "TypeDefn_Accessibility"
 
     let IsRecursive = Attributes.defineScalar<bool> "TypeDefn_IsRecursive"
@@ -76,6 +83,34 @@ type TypeDefnModifiers =
     [<Extension>]
     static member inline typeParams(this: WidgetBuilder<TypeDefn>, typeParams: WidgetBuilder<TyparDecls>) =
         this.AddWidget(TypeDefn.TypeParams.WithValue(typeParams.Compile()))
+
+    /// <summary>
+    /// Adds <c>when</c> constraints after the type name (<c>type 'T Box when 'T: equality = ...</c>).
+    /// This is the only place to constrain prefix type parameters (<c>PrefixList</c>); with
+    /// <c>PostfixList</c> the constraints usually go inside the angle brackets instead. Enums,
+    /// units of measure and augmentations ignore it.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="constraints">The constraints.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Record("Box") { Field("Value", "'T") }
+    ///         |> _.typeParams(PrefixList("'T"))
+    ///         |> _.constraints([ ConstraintSingle("'T", "equality") ])
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline constraints(this: WidgetBuilder<TypeDefn>, constraints: WidgetBuilder<TypeConstraint> seq) =
+        this.AddScalar(TypeDefn.Constraints.WithValue(constraints |> Seq.map Gen.mkOak |> List.ofSeq))
+
+    /// <summary>Adds a <c>when</c> constraint after the type name (<c>type 'T Box when 'T: equality = ...</c>).</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The constraint.</param>
+    [<Extension>]
+    static member inline constraints(this: WidgetBuilder<TypeDefn>, value: WidgetBuilder<TypeConstraint>) =
+        TypeDefnModifiers.constraints(this, [ value ])
 
     /// <summary>Sets the type definition to be private.</summary>
     [<Extension>]

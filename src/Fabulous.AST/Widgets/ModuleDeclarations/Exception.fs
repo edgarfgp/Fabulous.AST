@@ -3,6 +3,7 @@ namespace Fabulous.AST
 open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections
+open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
 open Fantomas.FCS.Text
 
@@ -10,6 +11,9 @@ module ExceptionDefn =
     let UnionCase = Attributes.defineWidget "UnionCase"
 
     let Members = Attributes.defineWidgetCollection "MemberDefs"
+
+    /// The exception this one abbreviates (`exception E2 = E1`).
+    let Abbreviation = Attributes.defineScalar<string> "Abbreviation"
 
     let WidgetKey =
         Widgets.register "ExceptionDefn" (fun widget ->
@@ -39,6 +43,17 @@ module ExceptionDefn =
                 Widgets.tryGetNodesFromWidgetCollection widget Members
                 |> ValueOption.defaultValue []
 
+            let abbreviation =
+                Widgets.tryGetScalarValue widget Abbreviation
+                |> ValueOption.map(fun name ->
+                    IdentListNode(
+                        name.Split('.')
+                        |> Seq.map(fun part -> IdentifierOrDot.Ident(SingleTextNode.Create(part)))
+                        |> Seq.intersperse(IdentifierOrDot.KnownDot(SingleTextNode.dot)),
+                        Range.range0
+                    ))
+                |> ValueOption.toOption
+
             let withKeyword =
                 if not memberDefs.IsEmpty then
                     Some(SingleTextNode.``with``)
@@ -52,7 +67,7 @@ module ExceptionDefn =
                     SingleTextNode.``exception``,
                     accessControl,
                     unionCase,
-                    None,
+                    abbreviation,
                     withKeyword,
                     memberDefs,
                     Range.range0
@@ -85,6 +100,29 @@ module ExceptionDefnBuilders =
         /// }
         /// </code>
         static member ExceptionDefn(value: string) = Ast.ExceptionDefn(Ast.UnionCase(value))
+
+        /// <summary>
+        /// Create an exception abbreviation (<c>exception NotFound = System.IO.FileNotFoundException</c>):
+        /// a new name for an existing exception.
+        /// </summary>
+        /// <param name="name">The new exception name.</param>
+        /// <param name="target">The exception it stands for, possibly qualified.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         ExceptionAbbrev("NotFound", "System.IO.FileNotFoundException")
+        ///     }
+        /// }
+        /// </code>
+        static member ExceptionAbbrev(name: string, target: string) =
+            WidgetBuilder<ModuleDecl>(
+                ExceptionDefn.WidgetKey,
+                AttributesBundle(
+                    StackList.one(ExceptionDefn.Abbreviation.WithValue(target)),
+                    [| ExceptionDefn.UnionCase.WithValue(Ast.UnionCase(name).Compile()) |],
+                    Array.empty
+                )
+            )
 
         /// <summary>Create an exception definition with a union case.</summary>
         /// <param name="value">The union case.</param>

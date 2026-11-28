@@ -57,7 +57,7 @@ module Union =
                             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
                         ),
                         typeParams,
-                        [],
+                        TypeDefn.constraints widget,
                         None,
                         Some(SingleTextNode.equals),
                         Range.range0

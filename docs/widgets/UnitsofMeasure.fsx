@@ -91,13 +91,16 @@ Oak() { AnonymousModule() { Value("length", ConstantExpr(ConstantMeasure("10.0",
 (**
 ## Measure Expressions
 Literal measures can be combined: `MeasureOperator` joins two measures with an operator such as `*`,
-`MeasureSeq` multiplies measures by juxtaposition (`kg m`), `MeasureDivide` divides them, and
-`MeasureParen` groups a sub-expression in parentheses:
+`MeasureSeq` multiplies measures by juxtaposition (`kg m`), `MeasureDivide` divides them (with a
+single argument it gives a reciprocal such as `/s`, "per second"), and `MeasureParen` groups a
+sub-expression in parentheses:
 *)
 
 Oak() {
     AnonymousModule() {
         Value("torque", ConstantExpr(ConstantMeasure(Float(12.5), MeasureOperator("*", "N", "m"))))
+
+        Value("frequency", ConstantExpr(ConstantMeasure(Float(50.0), MeasureDivide("s"))))
 
         Value(
             "force",

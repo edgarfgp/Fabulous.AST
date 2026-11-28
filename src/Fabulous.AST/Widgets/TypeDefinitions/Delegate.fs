@@ -60,7 +60,7 @@ module Delegate =
                             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
                         ),
                         Widgets.tryGetNodeFromWidget widget TypeDefn.TypeParams |> ValueOption.toOption,
-                        [],
+                        TypeDefn.constraints widget,
                         None,
                         Some SingleTextNode.equals,
                         Range.range0

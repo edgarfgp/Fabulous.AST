@@ -175,6 +175,8 @@ Oak() {
 
 (**
 Parameters accept attributes too, for example `ExternBindingPat("nativeint", "handle").attribute(Attribute("In"))` produces `[<In>] nativeint handle`.
+`ExternBindingPat(type)` without a name gives a parameter that only states its type (`extern int add(int, int)`).
+To declare the function inside a class, yield the `ExternBinding` in the class body and call `toStatic()`, which produces `static extern ...`.
 Attributes on the return type go between `extern` and the type; add them with `returnAttribute` or `returnAttributes`, for example `.returnAttribute(Attribute("MarshalAs", ParenExpr(Constant("UnmanagedType.Bool"))))` produces `extern [<MarshalAs(UnmanagedType.Bool)>] bool ...`.
 A `[<return: ...>]` attribute before the declaration works too; see [Attribute Targets](AttributesAndComments.html#Attribute-Targets).
 
@@ -184,7 +186,8 @@ Generating one is useful when you also generate the implementation, or when you 
 `Gen.run` prints whatever declarations the `Oak` contains, so a signature file is an `Oak` built from signature declarations (`Val`, `SigMember`, abstract members and type definitions), written to a `.fsi` file.
 
 ## Value Signatures
-`Val(name, type)` creates a `val` declaration; it supports `xmlDocs`, `attributes`, `typeParams`, `toMutable`, `toInlined` and the access modifiers:
+`Val(name, type)` creates a `val` declaration; it supports `xmlDocs`, `attributes`, `typeParams`, `toMutable`, `toInlined` and the access modifiers.
+A literal also gives its value with `literalValue` (`[<Literal>] val MaxSize: int = 100`):
 *)
 
 Oak() {
@@ -199,6 +202,8 @@ Oak() {
         Val("tryParse", Funs([ "string" ], "int option"))
 
         Val("identity", Funs([ "'T" ], "'T")).typeParams(PostfixList("'T"))
+
+        Val("MaxSize", Int()).attribute(Attribute("Literal")).literalValue(Int(100))
     }
     |> _.toImplicit()
 }

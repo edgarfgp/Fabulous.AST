@@ -13,6 +13,7 @@ index: 19
 - [Overview](#Overview)
 - [Basic Usage](#Basic-Usage)
 - [Exceptions with Fields](#Exceptions-with-Fields)
+- [Exception Abbreviations](#Exception-Abbreviations)
 - [Exception Members](#Exception-Members)
 *)
 
@@ -54,6 +55,19 @@ Oak() {
         ExceptionDefn("Failure", [ "string"; "int" ])
     }
 }
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Exception Abbreviations
+`ExceptionAbbrev` gives an existing exception another name:
+*)
+
+Oak() { AnonymousModule() { ExceptionAbbrev("NotFound", "System.IO.FileNotFoundException") } }
 |> Gen.mkOak
 |> Gen.run
 |> printfn "%s"

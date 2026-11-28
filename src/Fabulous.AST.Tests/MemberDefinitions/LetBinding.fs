@@ -97,3 +97,29 @@ type Counter() =
     static let rec fact n = if n <= 1 then 1 else n * fact (n - 1)
     static member _.Next() = count <- count + step; fact count
 """
+
+    [<Fact>]
+    let ``toAnd continues a let rec group at module level and in a class``() =
+        Oak() {
+            AnonymousModule() {
+                Function("isEven", ParameterPat("n"), "if n = 0 then true else isOdd (n - 1)").toRecursive()
+
+                Function("isOdd", ParameterPat("n"), "if n = 0 then false else isEven (n - 1)").toAnd()
+
+                TypeDefn("Walker", UnitPat()) {
+                    Function("a", UnitPat(), "b ()").toRecursive()
+                    Function("b", UnitPat(), "a ()").toAnd()
+                    Member("_.Run()", "a ()")
+                }
+            }
+        }
+        |> producesValid
+            """
+let rec isEven n = if n = 0 then true else isOdd (n - 1)
+and isOdd n = if n = 0 then false else isEven (n - 1)
+
+type Walker() =
+    let rec a () = b ()
+    and b () = a ()
+    member _.Run() = a ()
+"""

@@ -196,6 +196,20 @@ module MeasureBuilders =
                 )
             )
 
+        /// <summary>
+        /// Creates a reciprocal measure with no numerator (<c>/s</c>, as in <c>1.0&lt;/s&gt;</c> for "per second").
+        /// </summary>
+        /// <param name="rhs">The denominator measure.</param>
+        static member MeasureDivide(rhs: WidgetBuilder<Measure>) =
+            WidgetBuilder<Measure>(Measure.WidgetMeasureDivideKey, Measure.RHS.WithValue(rhs.Compile()))
+
+        /// <summary>
+        /// Creates a reciprocal measure with no numerator (<c>/s</c>, as in <c>1.0&lt;/s&gt;</c> for "per second").
+        /// </summary>
+        /// <param name="rhs">The denominator measure.</param>
+        static member MeasureDivide(rhs: string) =
+            Ast.MeasureDivide(Ast.MeasureSingle(rhs))
+
         /// <summary>Creates a division measure between two measures.</summary>
         /// <param name="lhs">The numerator measure.</param>
         /// <param name="rhs">The denominator measure.</param>

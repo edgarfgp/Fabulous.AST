@@ -328,3 +328,28 @@ type Point3D = { ...Point; Z: float; ...Wrapper<int> }
             """
 type Point3D = internal { ...Point; Z: float }
 """
+
+    [<Fact>]
+    let ``Constraints after the type name``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Box") { Field("Value", "'T") }
+                |> _.typeParams(PrefixList("'T"))
+                |> _.constraints(ConstraintSingle("'T", "equality"))
+
+                Union("Tree") {
+                    UnionCase("Leaf")
+                    UnionCase("Node", "'T")
+                }
+                |> _.typeParams(PostfixList("'T"))
+                |> _.constraints([ ConstraintSingle("'T", "comparison") ])
+            }
+        }
+        |> producesValid
+            """
+type ('T) Box when 'T: equality = { Value: 'T }
+
+type Tree<'T> when 'T: comparison =
+    | Leaf
+    | Node of 'T
+"""

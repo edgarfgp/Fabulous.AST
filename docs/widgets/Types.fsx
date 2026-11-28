@@ -537,6 +537,26 @@ Oak() { AnonymousModule() { Abbrev("Pair", Tuple([ Var("'a"); Var("'b") ])).type
 (*** include-output ***)
 
 (**
+Constraints on `PostfixList` type parameters go inside the angle brackets
+(`PostfixList(decls, constraints)`). For prefix type parameters, or to list the constraints after
+the name instead, use `.constraints(...)`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Record("Box") { Field("Value", "'T") }
+        |> _.typeParams(PrefixList("'T"))
+        |> _.constraints(ConstraintSingle("'T", "equality"))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Flexible and Intersection Types
 `HashConstraint` generates a flexible type (`#seq<int>`), `WithSubType` an inline subtype constraint (`'T :> IDisposable`),
 and `Intersection` combines several constraints on one type parameter with `&`.
