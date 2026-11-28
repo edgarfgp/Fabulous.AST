@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The NuGet packages declared the `Apache-2.0` license while `LICENSE` and the README have always been MIT; Fabulous.AST, Fabulous.AST.Json and Fabulous.AST.Build now declare `MIT`
 - Building trees on several threads at once could fail on first use with `Could not find widget collection attribute Decls on widget { Key = 0 ... }`. The library was compiled with `--realsig+`, which gives each module its own static constructor; modules sharing a file (such as `Constant`, `ConstantUnit` and `ConstantMeasure`) then deadlocked on first use, and the runtime let one thread read widget keys that were not set yet. The packages are now built without `--realsig+`
 - `DynamicExpr(value, "type")` printed `obj?type`, which does not parse; a single-word string argument that is a keyword is now put in backticks (`obj?``type```). Other strings are still emitted as raw text
+- `InterpolatedStringExpr` with `dollars` greater than 1 wrapped expressions given without a brace count in single braces (`$$"""{12}"""`), which is literal text rather than an interpolation. They now get as many braces as there are dollars (`$$"""{{12}}"""`)
+- `InterpolatedStringExpr` with `dollars` greater than 1 and no triple quotes produced `$$"..."`, which F# rejects; it now throws an `ArgumentException` asking for `isTripleQuoted = true`
 - `ParenILEmbeddedExpr` printed its text as a plain identifier; it now produces an inline IL expression and adds the `(# ... #)` around the IL when they are missing
 - `StructAnonRecord` printed `struct [ X: float |}`; it now prints `struct {| X: float |}`
 - `OptionalValPat("name")` dropped the `?`; it now prints `?name`

@@ -323,9 +323,9 @@ $"'{a}' is not a valid number"
                 Oak() {
                     AnonymousModule() {
                         // $$"""{{12}}"""
-                        InterpolatedStringExpr([ ConstantExpr("12") ], dollars = 2)
-                        InterpolatedStringExpr([ Int(12) ], dollars = 2)
-                        InterpolatedStringExpr([ "12" ], dollars = 2)
+                        InterpolatedStringExpr([ ConstantExpr("12") ], isTripleQuoted = true, dollars = 2)
+                        InterpolatedStringExpr([ Int(12) ], isTripleQuoted = true, dollars = 2)
+                        InterpolatedStringExpr([ "12" ], isTripleQuoted = true, dollars = 2)
                         InterpolatedStringExpr([ Text("{{12}}") ], isTripleQuoted = true, dollars = 2)
 
                     }
@@ -339,9 +339,10 @@ $"'{a}' is not a valid number"
             return
                 Oak() {
                     AnonymousModule() {
-                        // $$"""{12}{12}{12}"""
+                        // $$"""{{12}}{{12}}{{12}}"""
                         InterpolatedStringExpr(
                             [ ConstantExpr("12"); ConstantExpr("12"); ConstantExpr("12") ],
+                            isTripleQuoted = true,
                             dollars = 2
                         )
 
@@ -349,12 +350,18 @@ $"'{a}' is not a valid number"
                             [ Expr(FillExpr(Int(12)), 3)
                               Expr(FillExpr(Int(12)), 2)
                               Expr(FillExpr(Int(12)), 1) ],
+                            isTripleQuoted = true,
                             dollars = 2
                         )
 
-                        InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], dollars = 2)
-                        InterpolatedStringExpr([ "12"; "12"; "12" ], dollars = 2)
-                        InterpolatedStringExpr([ Text("{12}"); Text("{12}"); Text("{12}") ], dollars = 2)
+                        InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], isTripleQuoted = true, dollars = 2)
+                        InterpolatedStringExpr([ "12"; "12"; "12" ], isTripleQuoted = true, dollars = 2)
+
+                        InterpolatedStringExpr(
+                            [ Text("{12}"); Text("{12}"); Text("{12}") ],
+                            isTripleQuoted = true,
+                            dollars = 2
+                        )
                     }
                 }
         }
@@ -441,12 +448,6 @@ $""Quote\"in string "{value}"
                         // $""""""
                         InterpolatedStringExpr([ String("") ], isTripleQuoted = true)
 
-                        // $$""
-                        InterpolatedStringExpr([ Text("") ], dollars = 2)
-
-                        // $$""
-                        InterpolatedStringExpr([ String("") ], dollars = 2)
-
                         // $$""""""
                         InterpolatedStringExpr([ Text("") ], isTripleQuoted = true, dollars = 2)
 
@@ -463,14 +464,18 @@ $""Quote\"in string "{value}"
             return
                 Oak() {
                     AnonymousModule() {
-                        // $$$"{{{12}}}"
-                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = 3)
-
                         // $$$"""{{{12}}}"""
-                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isTripleQuoted = true, dollars = 3)
+                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 3) ], isTripleQuoted = true, dollars = 3)
 
-                        // $$$"Text with {{{value}}}"
-                        InterpolatedStringExpr([ Text("Text with "); Expr(FillExpr("value"), 1) ], dollars = 3)
+                        // $$$"""{{{12}}}""" (the brace count follows the dollars)
+                        InterpolatedStringExpr(Int(12), isTripleQuoted = true, dollars = 3)
+
+                        // $$$"""Text with {{{value}}}"""
+                        InterpolatedStringExpr(
+                            [ Text("Text with "); Expr(FillExpr("value"), 3) ],
+                            isTripleQuoted = true,
+                            dollars = 3
+                        )
                     }
                 }
         }
@@ -610,3 +615,30 @@ let b = $@"a {x}"
         Assert.Throws<System.ArgumentException>(fun () ->
             render(InterpolatedStringExpr([ Text("a") ], isVerbatim = true, dollars = 2)))
         |> ignore
+
+    [<Fact>]
+    let ``More than one dollar needs triple quotes``() =
+        Assert.Throws<System.ArgumentException>(fun () ->
+            Oak() { AnonymousModule() { InterpolatedStringExpr([ Int(12) ], dollars = 2) } }
+            |> Gen.mkOak
+            |> Gen.run
+            |> ignore)
+        |> ignore
+
+    [<Fact>]
+    let ``Expressions get as many braces as dollars``() =
+        Oak() {
+            AnonymousModule() {
+                Value("a", InterpolatedStringExpr([ "x"; "y" ], isTripleQuoted = true, dollars = 2))
+
+                Value(
+                    "b",
+                    InterpolatedStringExpr(
+                        [ Text("{literal} "); Expr(FillExpr("x"), 2) ],
+                        isTripleQuoted = true,
+                        dollars = 2
+                    )
+                )
+            }
+        }
+        |> producesValid("let a = $$\"\"\"{{x}}{{y}}\"\"\"\n" + "let b = $$\"\"\"{literal} {{x}}\"\"\"")

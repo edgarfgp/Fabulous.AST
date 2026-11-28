@@ -39,7 +39,7 @@ open type Fabulous.AST.Ast
 ## Identifiers and Literals
 `IdentExpr` references an identifier, `NullExpr` emits the `null` literal, and
 `InterpolatedStringExpr` builds an interpolated string, optionally triple-quoted
-(`isTripleQuoted`), verbatim (`isVerbatim`, `$@"..."`), or with extra `$` for nested braces (`dollars`):
+(`isTripleQuoted`), verbatim (`isVerbatim`, `$@"..."`), or with extra `$` so that single braces are plain text (`dollars`, which needs triple quotes):
 *)
 
 Oak() {
@@ -52,7 +52,7 @@ Oak() {
 
         InterpolatedStringExpr([ "a"; "b"; "c" ], isTripleQuoted = true)
 
-        InterpolatedStringExpr([ ConstantExpr("12"); ConstantExpr("12") ], isTripleQuoted = true, dollars = 1)
+        InterpolatedStringExpr([ Text("{literal} "); Expr(FillExpr("value"), 2) ], isTripleQuoted = true, dollars = 2)
 
         InterpolatedStringExpr([ Text(@"C:\Users\"); Expr(FillExpr("name"), 1) ], isVerbatim = true)
     }
