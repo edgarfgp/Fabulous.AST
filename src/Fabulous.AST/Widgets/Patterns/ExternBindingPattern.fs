@@ -53,6 +53,19 @@ module ExternBindingPatternNodeBuilders =
         static member ExternBindingPat(value: string, pat: string) =
             Ast.ExternBindingPat(Ast.LongIdent(value), Ast.ConstantPat(pat))
 
+        /// <summary>Create an unnamed extern parameter that only gives its type (<c>extern int f(int, string)</c>).</summary>
+        /// <param name="value">The parameter type.</param>
+        static member ExternBindingPat(value: WidgetBuilder<Type>) =
+            WidgetBuilder<ExternBindingPatternNode>(
+                ExternBindingPattern.WidgetKey,
+                ExternBindingPattern.TypeValue.WithValue(value.Compile())
+            )
+
+        /// <summary>Create an unnamed extern parameter that only gives its type (<c>extern int f(int, string)</c>).</summary>
+        /// <param name="value">The parameter type.</param>
+        static member ExternBindingPat(value: string) =
+            Ast.ExternBindingPat(Ast.LongIdent(value))
+
 type ExternBindingPatternNodeModifiers =
     [<Extension>]
     static member inline attributes

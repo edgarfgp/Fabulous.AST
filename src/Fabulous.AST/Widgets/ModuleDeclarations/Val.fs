@@ -23,6 +23,9 @@ module Val =
 
     let TypeParams = Attributes.defineWidget "ValTypeParams"
 
+    /// The value of a literal (`[<Literal>] val X: int = 1`).
+    let LiteralValue = Attributes.defineWidget "ValLiteralValue"
+
     let IsMutable = Attributes.defineScalar<bool> "ValIsMutable"
 
     let IsInlined = Attributes.defineScalar<bool> "ValIsInlined"
@@ -71,6 +74,9 @@ module Val =
                 |> ValueOption.map(fun nodes -> MultipleTextsNode(nodes, Range.range0))
                 |> ValueOption.toOption
 
+            let literalValue =
+                Widgets.tryGetNodeFromWidget<Expr> widget LiteralValue |> ValueOption.toOption
+
             ValNode(
                 xmlDocs,
                 attributes,
@@ -81,8 +87,11 @@ module Val =
                 identifier,
                 typeParams,
                 returnType,
-                None,
-                None,
+                (if literalValue.IsSome then
+                     Some SingleTextNode.equals
+                 else
+                     None),
+                literalValue,
                 Range.range0
             ))
 
@@ -275,6 +284,39 @@ type ValNodeModifiers =
     [<Extension>]
     static member inline attribute(this: WidgetBuilder<ValNode>, attribute: WidgetBuilder<AttributeNode>) =
         ValNodeModifiers.attributes(this, [ attribute ])
+
+    /// <summary>
+    /// Gives the value of a literal in a signature file (<c>[&lt;Literal&gt;] val Max: int = 100</c>).
+    /// F# only accepts a value on a <c>val</c> that has the <c>Literal</c> attribute.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The literal value.</param>
+    /// <code lang="fsharp">
+    /// Oak() {
+    ///     Namespace("Lib") {
+    ///         NestedModule("Limits") {
+    ///             Val("Max", Int()).attribute(Attribute("Literal")).literalValue(Int(100))
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline literalValue(this: WidgetBuilder<ValNode>, value: WidgetBuilder<Expr>) =
+        this.AddWidget(Val.LiteralValue.WithValue(value.Compile()))
+
+    /// <summary>Gives the value of a literal in a signature file (<c>[&lt;Literal&gt;] val Max: int = 100</c>).</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The literal value.</param>
+    [<Extension>]
+    static member inline literalValue(this: WidgetBuilder<ValNode>, value: WidgetBuilder<Constant>) =
+        ValNodeModifiers.literalValue(this, Ast.ConstantExpr(value))
+
+    /// <summary>Gives the value of a literal in a signature file (<c>[&lt;Literal&gt;] val Max: int = 100</c>).</summary>
+    /// <param name="this">Current widget.</param>
+    /// <param name="value">The literal value.</param>
+    [<Extension>]
+    static member inline literalValue(this: WidgetBuilder<ValNode>, value: string) =
+        ValNodeModifiers.literalValue(this, Ast.ConstantExpr(Ast.Constant(value)))
 
     /// <summary>Sets the Val to be private.</summary>
     /// <param name="this">Current widget.</param>

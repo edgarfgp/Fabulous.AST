@@ -15,9 +15,17 @@ module BindingNode =
 
     let IsStatic = MemberDefn.IsStatic
 
+    /// Continues a `let rec` group: the binding starts with `and` instead of `let`.
+    let IsAnd = Attributes.defineScalar<bool> "IsAnd"
+
     /// The leading keywords of a `let` binding: `let`, with `static` in front when the binding is
     /// static (`static let` in a class) and `rec` after it when the binding is recursive.
+    /// A binding that continues a `let rec` group starts with `and` alone.
     let leadingKeywords (widget: Widget) (leading: SingleTextNode) =
+        let isAnd =
+            leading.Text = "let"
+            && (Widgets.tryGetScalarValue widget IsAnd |> ValueOption.defaultValue false)
+
         let isRecursive =
             Widgets.tryGetScalarValue widget IsRecursive |> ValueOption.defaultValue false
 
@@ -26,11 +34,16 @@ module BindingNode =
             && (Widgets.tryGetScalarValue widget IsStatic |> ValueOption.defaultValue false)
 
         MultipleTextsNode(
-            [ if isStatic then
-                  SingleTextNode.``static``
-              leading
-              if isRecursive then
-                  SingleTextNode.Create "rec" ],
+            [ if isAnd then
+                  SingleTextNode.``and``
+              else
+                  if isStatic then
+                      SingleTextNode.``static``
+
+                  leading
+
+                  if isRecursive then
+                      SingleTextNode.Create "rec" ],
             Fantomas.FCS.Text.Range.range0
         )
 
@@ -207,6 +220,24 @@ type BindingNodeModifiers =
     [<Extension>]
     static member inline toRecursive(this: WidgetBuilder<BindingNode>) =
         this.AddScalar(BindingNode.IsRecursive.WithValue(true))
+
+    /// <summary>
+    /// Continues the <c>let rec</c> binding before it: the binding starts with <c>and</c> instead of
+    /// <c>let</c>, so the two can refer to each other. Put it right after a <c>toRecursive()</c>
+    /// binding (or another <c>toAnd()</c> one). Members ignore it.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         Function("isEven", ParameterPat("n"), "if n = 0 then true else isOdd (n - 1)").toRecursive()
+    ///         Function("isOdd", ParameterPat("n"), "if n = 0 then false else isEven (n - 1)").toAnd()
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toAnd(this: WidgetBuilder<BindingNode>) =
+        this.AddScalar(BindingNode.IsAnd.WithValue(true))
 
     /// <summary>
     /// Makes the current binding static: a member prints as <c>static member</c>, and a <c>let</c>

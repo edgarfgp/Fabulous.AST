@@ -85,3 +85,17 @@ let c = x?``type``?``my member``(1)
             |> Gen.run
             |> ignore)
         |> ignore
+
+    [<Fact>]
+    let ``Dynamic expression escapes keyword member names``() =
+        Oak() {
+            AnonymousModule() {
+                Value("a", DynamicExpr("obj", "type"))
+                Value("b", DynamicExpr("obj", "Name"))
+            }
+        }
+        |> producesValid
+            """
+let a = obj?``type``
+let b = obj?Name
+"""

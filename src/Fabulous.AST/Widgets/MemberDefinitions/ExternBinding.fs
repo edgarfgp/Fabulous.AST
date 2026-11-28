@@ -20,6 +20,8 @@ module ExternBinding =
     let Identifier = Attributes.defineScalar<string> "Identifier"
     let Parameters = Attributes.defineScalar<ExternBindingPatternNode seq> "Parameters"
 
+    let IsStatic = Attributes.defineScalar<bool> "ExternIsStatic"
+
     let WidgetKey =
         Widgets.register "ModuleDeclAttributes" (fun widget ->
             let xmlDocs = Widgets.tryGetNodeFromWidget widget XmlDocs |> ValueOption.toOption
@@ -54,10 +56,15 @@ module ExternBinding =
                 |> ValueOption.defaultValue []
                 |> List.ofSeq
 
+            let staticNode =
+                match Widgets.tryGetScalarValue widget IsStatic with
+                | ValueSome true -> Some SingleTextNode.``static``
+                | _ -> None
+
             ExternBindingNode(
                 xmlDocs,
                 attributes,
-                None,
+                staticNode,
                 SingleTextNode.``extern``,
                 multipleAttributes,
                 tp,
@@ -369,7 +376,33 @@ type ExternBindingNodeModifiers =
     static member inline toInternal(this: WidgetBuilder<ExternBindingNode>) =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Internal))
 
+    /// <summary>
+    /// Makes the extern binding a static member (<c>static extern</c>), for declaring it inside a class
+    /// rather than a module.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// Oak() {
+    ///     AnonymousModule() {
+    ///         TypeDefn("Native", UnitPat()) {
+    ///             ExternBinding("int", "getpid").attribute(Attribute("DllImport", ParenExpr(String("libc")))).toStatic()
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    [<Extension>]
+    static member inline toStatic(this: WidgetBuilder<ExternBindingNode>) =
+        this.AddScalar(ExternBinding.IsStatic.WithValue(true))
+
 type ExternBindingNodeYieldExtensions =
+    /// An extern binding inside a class or other type definition (usually <c>static extern</c>).
+    [<Extension>]
+    static member inline Yield
+        (_: CollectionBuilder<'parent, MemberDefn>, x: WidgetBuilder<ExternBindingNode>)
+        : CollectionContent =
+        let widget = Ast.EscapeHatch(MemberDefn.ExternBinding(Gen.mkOak x)).Compile()
+        { Widgets = MutStackArray1.One(widget) }
+
     [<Extension>]
     static member inline Yield(_: CollectionBuilder<'parent, ModuleDecl>, x: ExternBindingNode) : CollectionContent =
         let moduleDecl = ModuleDecl.ExternBinding x

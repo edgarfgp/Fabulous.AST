@@ -63,7 +63,7 @@ module TypeDefnExplicit =
                             IdentListNode([ IdentifierOrDot.Ident(SingleTextNode.Create(name)) ], Range.range0)
                         ),
                         typeParams,
-                        [],
+                        TypeDefn.constraints widget,
                         implicitConstructor,
                         Some(SingleTextNode.equals),
                         Range.range0

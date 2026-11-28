@@ -163,6 +163,24 @@ Oak() {
 (*** include-output ***)
 
 (**
+Functions that call each other are declared together, with `let rec ... and ...`. Mark the first one
+with `toRecursive()` and each one after it with `toAnd()`; this works in modules and in classes:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Function("isEven", ParameterPat("n"), "if n = 0 then true else isOdd (n - 1)").toRecursive()
+        Function("isOdd", ParameterPat("n"), "if n = 0 then false else isEven (n - 1)").toAnd()
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Type Annotations
 You can add type annotations to value and function bindings:
 *)

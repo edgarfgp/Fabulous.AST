@@ -232,3 +232,17 @@ printfn "\'Start\'\t\r\n🌟{0}%s\'End\'"
             """
 printfn "\n\r\t\\0"
     """
+
+    [<Fact>]
+    let ``Reciprocal measure``() =
+        Oak() {
+            AnonymousModule() {
+                Value("rate", ConstantExpr(ConstantMeasure("1.0", MeasureDivide("s"))))
+                Value("speed", ConstantExpr(ConstantMeasure("2.0", MeasureDivide("m", "s"))))
+            }
+        }
+        |> producesValid
+            """
+let rate = 1.0< / s>
+let speed = 2.0<m / s>
+"""
