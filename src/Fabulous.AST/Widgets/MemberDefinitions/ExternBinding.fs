@@ -377,8 +377,8 @@ type ExternBindingNodeModifiers =
         this.AddScalar(ExternBinding.Accessibility.WithValue(AccessControl.Internal))
 
     /// <summary>
-    /// Makes the extern binding a static member (<c>static extern</c>), for declaring it inside a class
-    /// rather than a module.
+    /// Makes the extern binding a static member (<c>static extern</c>), for declaring it inside a class.
+    /// F# rejects <c>static</c> on an extern declared directly in a module.
     /// </summary>
     /// <param name="this">Current widget.</param>
     /// <code language="fsharp">

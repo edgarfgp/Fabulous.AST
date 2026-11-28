@@ -92,10 +92,13 @@ let c = x?``type``?``my member``(1)
             AnonymousModule() {
                 Value("a", DynamicExpr("obj", "type"))
                 Value("b", DynamicExpr("obj", "Name"))
+                // Other strings are still raw expression text.
+                Value("c", DynamicExpr("obj", "f y"))
             }
         }
         |> producesValid
             """
 let a = obj?``type``
 let b = obj?Name
+let c = obj?f y
 """

@@ -11,9 +11,18 @@ module Dynamic =
 
     let ArgExpr = Attributes.defineWidget "ArgExpr"
 
-    /// A member name given as a string, in backticks when it is a keyword or not a valid name (`obj?``type```).
+    /// A string argument is raw expression text (`obj?f x`), except that a single word that is a
+    /// keyword is put in backticks (`obj?``type```), since `obj?type` never parses.
     let memberName(name: string) =
-        Ast.Constant(PrettyNaming.NormalizeIdentifierBackticks name)
+        let isWord =
+            name.Length > 0
+            && PrettyNaming.IsIdentifierFirstCharacter name[0]
+            && Seq.forall PrettyNaming.IsIdentifierPartCharacter name
+
+        if isWord && PrettyNaming.DoesIdentifierNeedBackticks name then
+            Ast.Constant($"``%s{name}``")
+        else
+            Ast.Constant(name)
 
     let WidgetKey =
         Widgets.register "Dynamic" (fun widget ->
