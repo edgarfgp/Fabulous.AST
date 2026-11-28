@@ -38,8 +38,8 @@ open type Fabulous.AST.Ast
 (**
 ## Identifiers and Literals
 `IdentExpr` references an identifier, `NullExpr` emits the `null` literal, and
-`InterpolatedStringExpr` builds an interpolated string (optionally verbatim, or with
-extra `$` for nested braces):
+`InterpolatedStringExpr` builds an interpolated string, optionally triple-quoted
+(`isTripleQuoted`), verbatim (`isVerbatim`, `$@"..."`), or with extra `$` for nested braces (`dollars`):
 *)
 
 Oak() {
@@ -50,9 +50,11 @@ Oak() {
 
         InterpolatedStringExpr(ConstantExpr("12"))
 
-        InterpolatedStringExpr([ "a"; "b"; "c" ], isVerbatim = true)
+        InterpolatedStringExpr([ "a"; "b"; "c" ], isTripleQuoted = true)
 
-        InterpolatedStringExpr([ ConstantExpr("12"); ConstantExpr("12") ], isVerbatim = true, dollars = 1)
+        InterpolatedStringExpr([ ConstantExpr("12"); ConstantExpr("12") ], isTripleQuoted = true, dollars = 1)
+
+        InterpolatedStringExpr([ Text(@"C:\Users\"); Expr(FillExpr("name"), 1) ], isVerbatim = true)
     }
 }
 |> Gen.mkOak
@@ -470,7 +472,7 @@ Oak() {
 
 (**
 ## Other Expressions
-`LazyExpr`, `QuotedExpr`, `BeginEndExpr` (a `begin ... end` block), `InheritRecordExpr`
+`LazyExpr`, `QuotedExpr` (and `UntypedQuotedExpr` for `<@@ ... @@>`), `BeginEndExpr` (a `begin ... end` block), `InheritRecordExpr`
 (the `{ inherit Base(...); Field = ... }` form used in explicit constructors), the object
 expression `ObjExpr`, and named computation expressions such as `task { ... }`:
 *)
@@ -484,6 +486,8 @@ Oak() {
         InheritRecordExpr(InheritParen("Exception", ConstantExpr("message")), [ RecordFieldExpr("Code", "code") ])
 
         QuotedExpr(InfixAppExpr(Int(1), "+", Int(2)))
+
+        UntypedQuotedExpr(InfixAppExpr(Int(1), "+", Int(2)))
 
         NamedComputationExpr(ConstantExpr(Constant "task"), String("a"))
 
