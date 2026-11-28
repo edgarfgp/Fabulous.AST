@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes_
+
+## [2.0.0-pre10] - 2026-11-28
+
 ### Added
 - `toRecursive()` on `Function` and `Value` generates `let rec`
 - `UseBangExpr` generates a `use!` binding in computation expressions
@@ -25,11 +29,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `toPrivateRepresentation()`, `toInternalRepresentation()` and `toPublicRepresentation()` set the accessibility of a record's fields or a union's cases (`type R = private { ... }`)
 - Record spreads (F# 11): `Spread("Base")` in a `Record(...)` body (`type R = { ...Base; Z: float }`), and `SpreadExpr(...)` in the new body forms `RecordExpr() { ... }`, `AnonRecordExpr() { ... }` and `AnonStructRecordExpr() { ... }`, which take spreads and fields in order (`{ ...p; Z = 1.0 }`)
 - `DynamicChainExpr` with `DynamicMember` steps generates chained dynamic lookups (`x?a?b(1)`), keeping each argument right after its member so the chain parses as written. Non-atomic leading expressions are parenthesized (`(f x)?a`) and keyword member names are put in backticks
-- `ObjExpr` accepts `InterfaceWith(...)` blocks after its members, for object expressions that implement extra interfaces (`{ new A with member ... interface IB with member ... }`). Its `.members()` modifier, which no item could be yielded into, now takes the same items as the body. Items object expressions do not allow (`do`, `let`, `member val`, ...) now fail with an error naming the item instead of an `InvalidCastException`, and the overloads that yielded `do` expressions into an object expression are removed
+- `ObjExpr` accepts `InterfaceWith(...)` blocks after its members, for object expressions that implement extra interfaces (`{ new A with member ... interface IB with member ... }`). Its `.members()` modifier, which no item could be yielded into, now takes the same items as the body. Items object expressions do not allow (`do`, `let`, `member val`, ...) now fail with an error naming the item instead of an `InvalidCastException`
 
 ### Changed
 - **Breaking:** the `isVerbatim` argument of `InterpolatedStringExpr` is renamed `isTripleQuoted`, because it has always produced triple quotes (`$"""..."""`). A new `isVerbatim` argument produces verbatim strings (`$@"..."`), so a call written `isVerbatim = true` still compiles but now generates `$@"..."`: rename it to `isTripleQuoted = true` to keep the old output. Positional calls are unaffected
 - **Breaking:** `toPrivate()`, `toInternal()` and `toPublic()` on `Record` and `Union` now set the accessibility of the type (`type private R = { ... }`), as they do on every other type definition. They used to set the accessibility of the fields or cases, which is now `toPrivateRepresentation()` and friends
+
+### Deprecated
+- `QuoteExprPat`: the F# compiler rejects every quotation pattern (FS0731), so its output never compiles. Match quotations with the active patterns in `FSharp.Quotations.Patterns` instead
+
+### Removed
+- **Breaking:** the overloads that yielded `do` expressions (`DoExpr`, `SingleNode`) into an `ObjExpr` body or its `.members()`. F# does not allow `do` in an object expression, so their output never compiled
 
 ### Fixed
 - The NuGet packages declared the `Apache-2.0` license while `LICENSE` and the README have always been MIT; Fabulous.AST, Fabulous.AST.Json and Fabulous.AST.Build now declare `MIT`
@@ -53,9 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `toInternal()` and the other accessibility modifiers were ignored on `Abbrev`, `Enum` and `Measure`, and `typeParams(...)` on `Delegate`; they now print `type internal Abbr = int`, `type internal E = ...`, `[<Measure>] type internal m` and `type D<'T> = delegate of ...`
 - `InterfaceWith("System.IDisposable")` wrapped the qualified name in backticks; it now prints `interface System.IDisposable with`
 - `Rewrite.expr` and `Rewrite.typeDefn` dropped the comments, blank lines and directives attached to every node they rebuilt (any node with a changed descendant), so a rename could silently delete a `// comment` above a `let`. Rebuilt nodes now keep their trivia
-
-### Deprecated
-- `QuoteExprPat`: the F# compiler rejects every quotation pattern (FS0731), so its output never compiles. Match quotations with the active patterns in `FSharp.Quotations.Patterns` instead
 
 ## [2.0.0-pre09] - 2026-11-18
 
@@ -481,7 +488,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre09...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre10...HEAD
+[2.0.0-pre10]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre10
 [2.0.0-pre09]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre09
 [2.0.0-pre08]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre08
 [2.0.0-pre07]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre07

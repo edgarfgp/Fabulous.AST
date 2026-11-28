@@ -13,10 +13,17 @@ This guide covers the breaking changes introduced in Fabulous.AST 2.0.0 and show
 
 ## Overview of Breaking Changes
 
-1. **Return type changes**: `MemberDefn`, `TypeDefn`, and `ModuleDecl` builders now return unified types instead of specific node types
-2. **EscapeHatch requirement**: Raw SyntaxOak nodes must be wrapped with `EscapeHatch()` when yielding into collections
-3. **Unified modifiers**: Per-node modifiers have been replaced with unified modifier extensions
-4. **NestedModule return type**: `Module` builder now returns `CollectionBuilder<ModuleDecl, ModuleDecl>`
+- **Return type changes** (section 1): `MemberDefn`, `TypeDefn`, and `ModuleDecl` builders now return unified types instead of specific node types
+- **EscapeHatch requirement** (section 2): Raw SyntaxOak nodes must be wrapped with `EscapeHatch()` when yielding into collections
+- **Unified modifiers** (section 3): Per-node modifiers have been replaced with unified modifier extensions
+- **NestedModule return type** (section 4): `Module` builder now returns `CollectionBuilder<ModuleDecl, ModuleDecl>`
+- **`Gen` is a type** (section 6): `Gen.runWith config oak` becomes the `Gen.run(oak, config)` overload
+- **`AbstractMember` accessibility parameters removed** (section 7)
+- **Record field accessibility** (section 8): accessibility on a field now applies to the whole record representation
+- **`toPrivate()` on records and unions** (section 9): it now makes the type private; the fields or cases use `toPrivateRepresentation()`
+- **`isVerbatim` renamed `isTripleQuoted`** (section 10): `isVerbatim` now produces `$@"..."`
+
+Section 5 walks through a complete migration example.
 
 ## 1. Return Type Changes
 
@@ -556,6 +563,39 @@ Ast.Oak() {
 (*** include-output ***)
 
 (**
+## 10. `InterpolatedStringExpr`: `isVerbatim` is now `isTripleQuoted`
+
+The `isVerbatim` argument of `InterpolatedStringExpr` always produced a triple-quoted string
+(`$"""..."""`), so it is renamed `isTripleQuoted`. `isVerbatim` now produces a real verbatim
+string (`$@"..."`). A call written `isVerbatim = true` still compiles but changes output, so
+rename it to `isTripleQuoted = true` to keep the old output. Positional calls keep their
+meaning (the second argument is still the triple-quote flag).
+
+Two related checks are new. More than one `$` (`dollars`) requires `isTripleQuoted = true`,
+because F# only allows extended interpolation on triple-quoted strings. Expressions given
+without an explicit brace count now get as many braces as there are dollars:
+*)
+
+Ast.Oak() {
+    AnonymousModule() {
+        // Was `isVerbatim = true`
+        InterpolatedStringExpr([ Text("Hello "); Expr(FillExpr("name"), 1) ], isTripleQuoted = true)
+
+        // A real verbatim string
+        InterpolatedStringExpr([ Text(@"C:\Users\"); Expr(FillExpr("name"), 1) ], isVerbatim = true)
+
+        // Two dollars: triple quotes, and `{{...}}` around the value
+        InterpolatedStringExpr([ "name" ], isTripleQuoted = true, dollars = 2)
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Summary
 
 When migrating to v2.0.0:
@@ -568,6 +608,7 @@ When migrating to v2.0.0:
 6. **Drop `getterAccessibility` / `setterAccessibility`** arguments from `AbstractMember` calls
 7. **Move record accessibility to the type** if you relied on per-field modifiers — field accessibility now applies to the whole representation
 8. **Use `toPrivateRepresentation()`** on records and unions where you meant `type R = private { ... }`; `toPrivate()` now makes the type itself private
+9. **Rename `isVerbatim = true` to `isTripleQuoted = true`** in `InterpolatedStringExpr` calls; `isVerbatim` now produces `$@"..."`
 
 The v2.0 changes provide a cleaner, more consistent API while maintaining full compatibility with the Fantomas Oak AST.
 *)
