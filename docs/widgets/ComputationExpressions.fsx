@@ -168,7 +168,7 @@ Oak() {
 (*** include-output ***)
 
 (**
-A binding can end with `in`, as in `let! x = fetch () in`: call `withIn()` on any `let`, `use`,
+A binding can end with `in`, as in `let! x = fetch () in`: call `toIn()` on any `let`, `use`,
 `let!`, `use!` or `and!` statement:
 *)
 
@@ -179,7 +179,7 @@ Oak() {
             NamedComputationExpr(
                 "async",
                 CompExprBodyExpr(
-                    [ LetOrUseBangExpr("x", "fetch ()").withIn()
+                    [ LetOrUseBangExpr("x", "fetch ()").toIn()
                       OtherExpr(SingleExpr("return", InfixAppExpr("x", "+", Int(1)))) ]
                 )
             )

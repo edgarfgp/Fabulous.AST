@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MatchClauseExpr` overloads taking a pattern widget with a string body (and string or expression guard)
 - `MatchBangExpr` (`match! ... with`) and `WhileBangExpr` (`while! ... do`) for computation expressions, with the same overloads as `MatchExpr` and `WhileExpr`
 - `UntypedQuotedExpr` generates untyped quotations (`<@@ 1 + 1 @@>`)
-- `withIn()` on a computation expression statement ends a `let`, `use`, `let!`, `use!` or `and!` binding with `in` (`let! x = fetch () in`). `LetOrUseExpr` already read this setting, but no builder set it
+- `toIn()` on a computation expression statement ends a `let`, `use`, `let!`, `use!` or `and!` binding with `in` (`let! x = fetch () in`). `LetOrUseExpr` already read this setting, but no builder set it
 - `toAnd()` on `Function` and `Value` continues a `let rec` group with `and` (`let rec isEven n = ... and isOdd n = ...`), in modules and classes
 - `ExceptionAbbrev("NotFound", "System.IO.FileNotFoundException")` generates an exception abbreviation (`exception NotFound = System.IO.FileNotFoundException`)
 - `literalValue(...)` on `Val` gives a literal its value in a signature file (`[<Literal>] val MaxSize: int = 100`)

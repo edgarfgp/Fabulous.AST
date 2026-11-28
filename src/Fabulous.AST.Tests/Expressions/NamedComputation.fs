@@ -132,7 +132,7 @@ let run =
 """
 
     [<Fact>]
-    let ``withIn ends bindings with in``() =
+    let ``toIn ends bindings with in``() =
         Oak() {
             AnonymousModule() {
                 Value(
@@ -140,8 +140,8 @@ let run =
                     NamedComputationExpr(
                         "async",
                         CompExprBodyExpr(
-                            [ LetOrUseBangExpr("x", "fetch ()").withIn()
-                              LetOrUseExpr(Value("y", "x")).withIn()
+                            [ LetOrUseBangExpr("x", "fetch ()").toIn()
+                              LetOrUseExpr(Value("y", "x")).toIn()
                               OtherExpr(SingleExpr("return", "y")) ]
                         )
                     )
