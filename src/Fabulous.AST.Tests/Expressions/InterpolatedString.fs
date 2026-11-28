@@ -589,9 +589,14 @@ let b = $@"a {x}"
 """
 
     [<Fact>]
-    let ``The second positional argument is still the triple-quote flag``() =
-        Oak() { AnonymousModule() { Value("c", InterpolatedStringExpr([ Expr(FillExpr("x"), 1) ], true)) } }
-        |> producesValid "let c = $\"\"\"{x}\"\"\""
+    let ``Positional arguments keep their meaning``() =
+        Oak() {
+            AnonymousModule() {
+                Value("c", InterpolatedStringExpr([ Expr(FillExpr("x"), 1) ], true))
+                Value("d", InterpolatedStringExpr([ Expr(FillExpr("x"), 2) ], true, 2))
+            }
+        }
+        |> producesValid "let c = $\"\"\"{x}\"\"\"\nlet d = $$\"\"\"{{x}}\"\"\""
 
     [<Fact>]
     let ``A verbatim interpolated string cannot be triple-quoted or have extra dollars``() =

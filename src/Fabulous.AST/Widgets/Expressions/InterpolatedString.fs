@@ -88,7 +88,7 @@ module InterpolatedString =
 module InterpolatedStringBuilders =
     type Ast with
         static member private BaseInterpolatedStringExpr
-            (parts: TextSegment seq, isTripleQuoted: bool option, isVerbatim: bool option, dollars: int option)
+            (parts: TextSegment seq, isTripleQuoted: bool option, dollars: int option, isVerbatim: bool option)
             =
             let dollars =
                 dollars
@@ -115,8 +115,8 @@ module InterpolatedStringBuilders =
         /// </summary>
         /// <param name="parts">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -130,17 +130,17 @@ module InterpolatedStringBuilders =
         /// }
         /// </code>
         static member InterpolatedStringExpr
-            (parts: TextSegment seq, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int)
+            (parts: TextSegment seq, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool)
             =
-            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, dollars, isVerbatim)
 
         /// <summary>
         /// Create an interpolated string expression.
         /// </summary>
         /// <param name="part">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -152,17 +152,17 @@ module InterpolatedStringBuilders =
         /// }
         /// </code>
         static member InterpolatedStringExpr
-            (part: TextSegment, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int)
+            (part: TextSegment, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool)
             =
-            Ast.BaseInterpolatedStringExpr([ part ], isTripleQuoted, isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr([ part ], isTripleQuoted, dollars, isVerbatim)
 
         /// <summary>
         /// Create an interpolated string expression.
         /// </summary>
         /// <param name="parts">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -174,18 +174,18 @@ module InterpolatedStringBuilders =
         /// }
         /// </code>
         static member InterpolatedStringExpr
-            (parts: WidgetBuilder<Expr> seq, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int)
+            (parts: WidgetBuilder<Expr> seq, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool)
             =
             let parts = parts |> Seq.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
-            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, dollars, isVerbatim)
 
         /// <summary>
         /// Create an interpolated string expression.
         /// </summary>
         /// <param name="part">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -197,13 +197,13 @@ module InterpolatedStringBuilders =
         /// }
         /// </code>
         static member InterpolatedStringExpr
-            (part: WidgetBuilder<Expr>, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int)
+            (part: WidgetBuilder<Expr>, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool)
             =
             Ast.BaseInterpolatedStringExpr(
                 [ TextSegment.Expr(Ast.FillExpr(part), 1) ],
                 isTripleQuoted,
-                isVerbatim,
-                dollars
+                dollars,
+                isVerbatim
             )
 
         /// <summary>
@@ -211,8 +211,8 @@ module InterpolatedStringBuilders =
         /// </summary>
         /// <param name="parts">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -224,18 +224,18 @@ module InterpolatedStringBuilders =
         /// }
         /// </code>
         static member InterpolatedStringExpr
-            (parts: WidgetBuilder<Constant> seq, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int)
+            (parts: WidgetBuilder<Constant> seq, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool)
             =
             let parts = parts |> Seq.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
-            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, dollars, isVerbatim)
 
         /// <summary>
         /// Create an interpolated string expression.
         /// </summary>
         /// <param name="part">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -247,13 +247,13 @@ module InterpolatedStringBuilders =
         /// }
         /// </code>
         static member InterpolatedStringExpr
-            (part: WidgetBuilder<Constant>, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int)
+            (part: WidgetBuilder<Constant>, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool)
             =
             Ast.BaseInterpolatedStringExpr(
                 [ TextSegment.Expr(Ast.FillExpr(part), 1) ],
                 isTripleQuoted,
-                isVerbatim,
-                dollars
+                dollars,
+                isVerbatim
             )
 
         /// <summary>
@@ -261,8 +261,8 @@ module InterpolatedStringBuilders =
         /// </summary>
         /// <param name="parts">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -274,18 +274,18 @@ module InterpolatedStringBuilders =
         /// }
         /// </code>
         static member InterpolatedStringExpr
-            (parts: string seq, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int)
+            (parts: string seq, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool)
             =
             let parts = parts |> Seq.map(fun x -> TextSegment.Expr(Ast.FillExpr(x), 1))
-            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, isVerbatim, dollars)
+            Ast.BaseInterpolatedStringExpr(parts, isTripleQuoted, dollars, isVerbatim)
 
         /// <summary>
         /// Create an interpolated string expression.
         /// </summary>
         /// <param name="part">The parts of the interpolated string.</param>
         /// <param name="isTripleQuoted">Whether the string is triple-quoted (<c>$"""..."""</c>).</param>
-        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>.</param>
         /// <param name="dollars">The number of dollars in the string.</param>
+        /// <param name="isVerbatim">Whether the string is verbatim (<c>$@"..."</c>). It cannot also be triple-quoted or have more than one <c>$</c>. Text segments are written as is, so double any <c>"</c> in them.</param>
         /// <code language="fsharp">
         /// Oak() {
         ///     AnonymousModule() {
@@ -296,5 +296,5 @@ module InterpolatedStringBuilders =
         ///     }
         /// }
         /// </code>
-        static member InterpolatedStringExpr(part: string, ?isTripleQuoted: bool, ?isVerbatim: bool, ?dollars: int) =
-            Ast.BaseInterpolatedStringExpr([ TextSegment.Text(part) ], isTripleQuoted, isVerbatim, dollars)
+        static member InterpolatedStringExpr(part: string, ?isTripleQuoted: bool, ?dollars: int, ?isVerbatim: bool) =
+            Ast.BaseInterpolatedStringExpr([ TextSegment.Text(part) ], isTripleQuoted, dollars, isVerbatim)
