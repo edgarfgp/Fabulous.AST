@@ -46,3 +46,42 @@ module RecordFieldBuilders =
 
         static member RecordFieldExpr(name: string, expr: string) =
             Ast.RecordFieldExpr(name, Ast.Constant(expr))
+
+module RecordSpread =
+    let Value = Attributes.defineWidget "Value"
+
+    let WidgetKey =
+        Widgets.register "RecordSpread" (fun widget ->
+            let expr = Widgets.getNodeFromWidget widget Value
+            ExprSpreadNode(SingleTextNode.Create("..."), expr, Range.range0))
+
+[<AutoOpen>]
+module RecordSpreadBuilders =
+    type Ast with
+
+        /// <summary>
+        /// Create a spread (<c>...source</c>) that copies the fields of an existing value into a record
+        /// or anonymous record expression. Yield it in the body of <c>RecordExpr()</c>,
+        /// <c>AnonRecordExpr()</c> or <c>AnonStructRecordExpr()</c>. Record spreads need F# 11 or later.
+        /// </summary>
+        /// <param name="value">The value whose fields are copied.</param>
+        /// <code language="fsharp">
+        /// Oak() {
+        ///     AnonymousModule() {
+        ///         Value("p2", RecordExpr() {
+        ///             SpreadExpr("p1")
+        ///             RecordFieldExpr("X", Int(1))
+        ///         })
+        ///     }
+        /// }
+        /// </code>
+        static member SpreadExpr(value: WidgetBuilder<Expr>) =
+            WidgetBuilder<ExprSpreadNode>(RecordSpread.WidgetKey, RecordSpread.Value.WithValue(value.Compile()))
+
+        /// <summary>Create a spread (<c>...source</c>) of the named value. Record spreads need F# 11 or later.</summary>
+        /// <param name="value">The value whose fields are copied.</param>
+        static member SpreadExpr(value: WidgetBuilder<Constant>) = Ast.SpreadExpr(Ast.ConstantExpr(value))
+
+        /// <summary>Create a spread (<c>...source</c>) of the named value. Record spreads need F# 11 or later.</summary>
+        /// <param name="value">The value whose fields are copied.</param>
+        static member SpreadExpr(value: string) = Ast.SpreadExpr(Ast.Constant(value))

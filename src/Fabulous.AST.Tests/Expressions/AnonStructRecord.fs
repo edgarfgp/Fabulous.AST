@@ -45,3 +45,18 @@ struct {| A = 1 |}
             """
 struct {| A with B = 1 |}
 """
+
+    [<Fact>]
+    let ``AnonStructRecordExpr body with a spread``() =
+        Oak() {
+            AnonymousModule() {
+                AnonStructRecordExpr() {
+                    SpreadExpr("p1")
+                    RecordFieldExpr("Z", Int(3))
+                }
+            }
+        }
+        |> producesValid
+            """
+struct {| ...p1; Z = 3 |}
+"""

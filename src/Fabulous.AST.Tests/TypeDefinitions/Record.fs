@@ -297,3 +297,34 @@ type internal Both = private { Name: string }
             """
 type Person = internal { Name: string; Age: int }
 """
+
+    [<Fact>]
+    let ``Record with spreads keeps them in order``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Point3D") {
+                    Spread("Point")
+                    Field("Z", Float())
+                    Spread(AppPrefix(LongIdent "Wrapper", [ Int() ]))
+                }
+            }
+        }
+        |> producesValid
+            """
+type Point3D = { ...Point; Z: float; ...Wrapper<int> }
+"""
+
+    [<Fact>]
+    let ``Record spreads keep lifted field accessibility``() =
+        Oak() {
+            AnonymousModule() {
+                Record("Point3D") {
+                    Spread("Point")
+                    Field("Z", Float()).toInternal()
+                }
+            }
+        }
+        |> producesValid
+            """
+type Point3D = internal { ...Point; Z: float }
+"""

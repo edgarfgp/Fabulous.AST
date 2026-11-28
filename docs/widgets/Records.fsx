@@ -21,6 +21,7 @@ index: 13
 - [Mutable Fields](#Mutable-Fields)
 - [Creating Records](#Creating-Records)
 - [Copy and Update Records](#Copy-and-Update-Records)
+- [Record Spreads](#Record-Spreads)
 - [Mutually Recursive Records](#Mutually-Recursive-Records)
 - [Pattern Matching](#Pattern-Matching)
 
@@ -310,6 +311,36 @@ Oak() {
     AnonymousModule() {
         // Using the Point record defined earlier
         Value("myPoint", RecordExpr("myPoint", [ RecordFieldExpr("Y", Float(3.0)) ]))
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Record Spreads
+F# 11 can spread the fields of an existing record into a new one with `...`. In a record
+definition, `Spread` copies the fields of another record type. In an expression, the body form
+of `RecordExpr()` (and `AnonRecordExpr()` / `AnonStructRecordExpr()`) takes `SpreadExpr` and
+`RecordFieldExpr` items in the order they are written:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Record("Point3D") {
+            Spread("Point")
+            Field("Z", Float())
+        }
+
+        Value(
+            "point3D",
+            RecordExpr() {
+                SpreadExpr("myPoint")
+                RecordFieldExpr("Z", Float(3.0))
+            }
+        )
     }
 }
 |> Gen.mkOak
