@@ -86,7 +86,7 @@ $"{{{{{12}}}}}"
                               Text("|")
                               Expr(FillExpr(TupleExpr([ String("Right"); Constant("7") ])), 1)
                               Text("|") ],
-                            isVerbatim = true
+                            isTripleQuoted = true
                         )
                     }
                 }
@@ -256,26 +256,26 @@ $"'{a}' is not a valid number"
                 Oak() {
                     AnonymousModule() {
                         // $"""{12}"""
-                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true)
-                        InterpolatedStringExpr([ ConstantExpr(Int(12)) ], isVerbatim = true)
-                        InterpolatedStringExpr([ Int(12) ], isVerbatim = true)
-                        InterpolatedStringExpr([ "12" ], isVerbatim = true)
+                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isTripleQuoted = true)
+                        InterpolatedStringExpr([ ConstantExpr(Int(12)) ], isTripleQuoted = true)
+                        InterpolatedStringExpr([ Int(12) ], isTripleQuoted = true)
+                        InterpolatedStringExpr([ "12" ], isTripleQuoted = true)
 
                         // $"""{12}{12}{12}"""
                         InterpolatedStringExpr(
                             [ Expr(FillExpr(Int(12)), 1)
                               Expr(FillExpr(Int(12)), 1)
                               Expr(FillExpr(Int(12)), 1) ],
-                            isVerbatim = true
+                            isTripleQuoted = true
                         )
 
                         InterpolatedStringExpr(
                             [ ConstantExpr(Int(12)); ConstantExpr(Int(12)); ConstantExpr(Int(12)) ],
-                            isVerbatim = true
+                            isTripleQuoted = true
                         )
 
-                        InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], isVerbatim = true)
-                        InterpolatedStringExpr([ "12"; "12"; "12" ], isVerbatim = true)
+                        InterpolatedStringExpr([ Int(12); Int(12); Int(12) ], isTripleQuoted = true)
+                        InterpolatedStringExpr([ "12"; "12"; "12" ], isTripleQuoted = true)
                     }
                 }
         }
@@ -292,7 +292,7 @@ $"'{a}' is not a valid number"
                               Expr(FillExpr(ConstantExpr("12")), 1)
                               Text(" This is a test: ")
                               Expr(FillExpr(ConstantExpr("12")), 1) ],
-                            isVerbatim = true
+                            isTripleQuoted = true
                         )
 
                         InterpolatedStringExpr(
@@ -300,7 +300,7 @@ $"'{a}' is not a valid number"
                               Expr(FillExpr(Int(12)), 1)
                               Text(" This is a test: ")
                               Expr(FillExpr(Int(12)), 1) ],
-                            isVerbatim = true
+                            isTripleQuoted = true
                         )
 
                         InterpolatedStringExpr(
@@ -308,10 +308,10 @@ $"'{a}' is not a valid number"
                               Expr(FillExpr("12"), 1)
                               Text(" This is a test: ")
                               Expr(FillExpr("12"), 1) ],
-                            isVerbatim = true
+                            isTripleQuoted = true
                         )
 
-                        InterpolatedStringExpr([ Text("'{a}'"); Text(" is not a valid number") ], isVerbatim = true)
+                        InterpolatedStringExpr([ Text("'{a}'"); Text(" is not a valid number") ], isTripleQuoted = true)
                     }
                 }
         }
@@ -326,7 +326,7 @@ $"'{a}' is not a valid number"
                         InterpolatedStringExpr([ ConstantExpr("12") ], dollars = 2)
                         InterpolatedStringExpr([ Int(12) ], dollars = 2)
                         InterpolatedStringExpr([ "12" ], dollars = 2)
-                        InterpolatedStringExpr([ Text("{{12}}") ], isVerbatim = true, dollars = 2)
+                        InterpolatedStringExpr([ Text("{{12}}") ], isTripleQuoted = true, dollars = 2)
 
                     }
                 }
@@ -371,7 +371,7 @@ $"'{a}' is not a valid number"
                               Expr(FillExpr(ConstantExpr("12")), 1)
                               Text(" This is a test: ")
                               Expr(FillExpr(ConstantExpr("12")), 1) ],
-                            isVerbatim = true,
+                            isTripleQuoted = true,
                             dollars = 2
                         )
 
@@ -380,7 +380,7 @@ $"'{a}' is not a valid number"
                               Expr(FillExpr(Int(12)), 1)
                               Text(" This is a test: ")
                               Expr(FillExpr(Int(12)), 1) ],
-                            isVerbatim = true,
+                            isTripleQuoted = true,
                             dollars = 2
                         )
 
@@ -389,13 +389,13 @@ $"'{a}' is not a valid number"
                               Expr(FillExpr("12"), 1)
                               Text(" This is a test: ")
                               Expr(FillExpr("12"), 1) ],
-                            isVerbatim = true,
+                            isTripleQuoted = true,
                             dollars = 2
                         )
 
                         InterpolatedStringExpr(
                             [ Text("'{a}'"); Text(" is not a valid number") ],
-                            isVerbatim = true,
+                            isTripleQuoted = true,
                             dollars = 2
                         )
                     }
@@ -436,10 +436,10 @@ $""Quote\"in string "{value}"
                         InterpolatedStringExpr([ String("") ])
 
                         // $""""""
-                        InterpolatedStringExpr([ Text("") ], isVerbatim = true)
+                        InterpolatedStringExpr([ Text("") ], isTripleQuoted = true)
 
                         // $""""""
-                        InterpolatedStringExpr([ String("") ], isVerbatim = true)
+                        InterpolatedStringExpr([ String("") ], isTripleQuoted = true)
 
                         // $$""
                         InterpolatedStringExpr([ Text("") ], dollars = 2)
@@ -448,10 +448,10 @@ $""Quote\"in string "{value}"
                         InterpolatedStringExpr([ String("") ], dollars = 2)
 
                         // $$""""""
-                        InterpolatedStringExpr([ Text("") ], isVerbatim = true, dollars = 2)
+                        InterpolatedStringExpr([ Text("") ], isTripleQuoted = true, dollars = 2)
 
                         // $$""""""
-                        InterpolatedStringExpr([ String("") ], isVerbatim = true, dollars = 2)
+                        InterpolatedStringExpr([ String("") ], isTripleQuoted = true, dollars = 2)
                     }
                 }
 
@@ -467,7 +467,7 @@ $""Quote\"in string "{value}"
                         InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], dollars = 3)
 
                         // $$$"""{{{12}}}"""
-                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isVerbatim = true, dollars = 3)
+                        InterpolatedStringExpr([ Expr(FillExpr(Int(12)), 1) ], isTripleQuoted = true, dollars = 3)
 
                         // $$$"Text with {{{value}}}"
                         InterpolatedStringExpr([ Text("Text with "); Expr(FillExpr("value"), 1) ], dollars = 3)
@@ -573,3 +573,40 @@ let message1 = $"Hello {name}"
 let message2 = $"Age: {age}"
 let combined = $"Hello {name}" + " " + $"Age: {age}"
 """
+
+    [<Fact>]
+    let ``Verbatim interpolated strings``() =
+        Oak() {
+            AnonymousModule() {
+                Value("a", InterpolatedStringExpr([ Text(@"C:\Users\"); Expr(FillExpr("name"), 1) ], isVerbatim = true))
+                Value("b", InterpolatedStringExpr([ Text("a "); Expr(FillExpr("x"), 1) ], isVerbatim = true))
+            }
+        }
+        |> producesValid
+            """
+let a = $@"C:\Users\{name}"
+let b = $@"a {x}"
+"""
+
+    [<Fact>]
+    let ``Positional arguments keep their meaning``() =
+        Oak() {
+            AnonymousModule() {
+                Value("c", InterpolatedStringExpr([ Expr(FillExpr("x"), 1) ], true))
+                Value("d", InterpolatedStringExpr([ Expr(FillExpr("x"), 2) ], true, 2))
+            }
+        }
+        |> producesValid "let c = $\"\"\"{x}\"\"\"\nlet d = $$\"\"\"{{x}}\"\"\""
+
+    [<Fact>]
+    let ``A verbatim interpolated string cannot be triple-quoted or have extra dollars``() =
+        let render(expr: WidgetBuilder<Fantomas.Core.SyntaxOak.Expr>) =
+            Oak() { AnonymousModule() { expr } } |> Gen.mkOak |> Gen.run |> ignore
+
+        Assert.Throws<System.ArgumentException>(fun () ->
+            render(InterpolatedStringExpr([ Text("a") ], isTripleQuoted = true, isVerbatim = true)))
+        |> ignore
+
+        Assert.Throws<System.ArgumentException>(fun () ->
+            render(InterpolatedStringExpr([ Text("a") ], isVerbatim = true, dollars = 2)))
+        |> ignore

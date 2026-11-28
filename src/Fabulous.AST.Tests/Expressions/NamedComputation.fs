@@ -95,3 +95,65 @@ let read =
         return text
     }
 """
+
+    [<Fact>]
+    let ``match! and while! inside a computation expression``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "run",
+                    NamedComputationExpr(
+                        "task",
+                        CompExprBodyExpr(
+                            [ OtherExpr(WhileBangExpr("reader.ReadAsync()", AppExpr("handle", "reader")))
+                              OtherExpr(
+                                  MatchBangExpr(
+                                      "fetch ()",
+                                      [ MatchClauseExpr(LongIdentPat("Some", NamedPat("x")), "x")
+                                        MatchClauseExpr(LongIdentPat("None"), Int(0)) ]
+                                  )
+                              ) ]
+                        )
+                    )
+                )
+            }
+        }
+        |> producesValid
+            """
+let run =
+    task {
+        while! reader.ReadAsync() do
+            handle reader
+
+        match! fetch () with
+        | Some x -> x
+        | None -> 0
+    }
+"""
+
+    [<Fact>]
+    let ``withIn ends bindings with in``() =
+        Oak() {
+            AnonymousModule() {
+                Value(
+                    "run",
+                    NamedComputationExpr(
+                        "async",
+                        CompExprBodyExpr(
+                            [ LetOrUseBangExpr("x", "fetch ()").withIn()
+                              LetOrUseExpr(Value("y", "x")).withIn()
+                              OtherExpr(SingleExpr("return", "y")) ]
+                        )
+                    )
+                )
+            }
+        }
+        |> producesValid
+            """
+let run =
+    async {
+        let! x = fetch () in
+        let y = x in
+        return y
+    }
+"""

@@ -16,6 +16,7 @@ index: 20
 - [Multi-statement Bodies](#Multi-statement-Bodies)
 - [Let and Use Bindings](#Let-and-Use-Bindings)
 - [Bang Bindings](#Bang-Bindings)
+- [Match and While Bang](#Match-and-While-Bang)
 - [Return and Yield](#Return-and-Yield)
 - [For Loops](#For-Loops)
 - [Query Expressions](#Query-Expressions)
@@ -154,6 +155,66 @@ Oak() {
                 CompExprBodyExpr(
                     [ UseBangExpr("reader", "openReaderAsync path")
                       OtherExpr(SingleExpr("return!", "reader.ReadToEndAsync()")) ]
+                )
+            )
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+A binding can end with `in`, as in `let! x = fetch () in`: call `withIn()` on any `let`, `use`,
+`let!`, `use!` or `and!` statement:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(
+            "total",
+            NamedComputationExpr(
+                "async",
+                CompExprBodyExpr(
+                    [ LetOrUseBangExpr("x", "fetch ()").withIn()
+                      OtherExpr(SingleExpr("return", InfixAppExpr("x", "+", Int(1)))) ]
+                )
+            )
+        )
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
+## Match and While Bang
+`MatchBangExpr` awaits a computation and matches on its result (`match! ... with`), and
+`WhileBangExpr` awaits the loop condition on each iteration (`while! ... do`). They take the same
+arguments as `MatchExpr` and `WhileExpr`:
+*)
+
+Oak() {
+    AnonymousModule() {
+        Value(
+            "run",
+            NamedComputationExpr(
+                "task",
+                CompExprBodyExpr(
+                    [ OtherExpr(WhileBangExpr("reader.ReadAsync()", AppExpr("handle", "reader")))
+                      OtherExpr(
+                          MatchBangExpr(
+                              "fetch ()",
+                              [ MatchClauseExpr(LongIdentPat("Some", "x"), "x")
+                                MatchClauseExpr(NamedPat("None"), Int(0)) ]
+                          )
+                      ) ]
                 )
             )
         )

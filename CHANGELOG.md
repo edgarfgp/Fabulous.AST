@@ -13,12 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Oak().hashDirective(...)` / `hashDirectives(...)` accept `NoWarn` and `HashDirective`, placing the directives at the top of the file (trivia such as an `#if` guard is kept). The existing overloads only accepted raw `ParsedHashDirectiveNode`s, which no builder produced
 - `returnAttribute(...)` / `returnAttributes(...)` on `ExternBinding` add attributes to the return type (`extern [<MarshalAs(UnmanagedType.Bool)>] bool ...`)
 - `MatchClauseExpr` overloads taking a pattern widget with a string body (and string or expression guard)
+- `MatchBangExpr` (`match! ... with`) and `WhileBangExpr` (`while! ... do`) for computation expressions, with the same overloads as `MatchExpr` and `WhileExpr`
+- `UntypedQuotedExpr` generates untyped quotations (`<@@ 1 + 1 @@>`)
+- `withIn()` on a computation expression statement ends a `let`, `use`, `let!`, `use!` or `and!` binding with `in` (`let! x = fetch () in`). `LetOrUseExpr` already read this setting, but no builder set it
 - `toPrivateRepresentation()`, `toInternalRepresentation()` and `toPublicRepresentation()` set the accessibility of a record's fields or a union's cases (`type R = private { ... }`)
 - Record spreads (F# 11): `Spread("Base")` in a `Record(...)` body (`type R = { ...Base; Z: float }`), and `SpreadExpr(...)` in the new body forms `RecordExpr() { ... }`, `AnonRecordExpr() { ... }` and `AnonStructRecordExpr() { ... }`, which take spreads and fields in order (`{ ...p; Z = 1.0 }`)
 - `DynamicChainExpr` with `DynamicMember` steps generates chained dynamic lookups (`x?a?b(1)`), keeping each argument right after its member so the chain parses as written. Non-atomic leading expressions are parenthesized (`(f x)?a`) and keyword member names are put in backticks
 - `ObjExpr` accepts `InterfaceWith(...)` blocks after its members, for object expressions that implement extra interfaces (`{ new A with member ... interface IB with member ... }`). Its `.members()` modifier, which no item could be yielded into, now takes the same items as the body. Items object expressions do not allow (`do`, `let`, `member val`, ...) now fail with an error naming the item instead of an `InvalidCastException`, and the overloads that yielded `do` expressions into an object expression are removed
 
 ### Changed
+- **Breaking:** the `isVerbatim` argument of `InterpolatedStringExpr` is renamed `isTripleQuoted`, because it has always produced triple quotes (`$"""..."""`). A new `isVerbatim` argument produces verbatim strings (`$@"..."`), so a call written `isVerbatim = true` still compiles but now generates `$@"..."`: rename it to `isTripleQuoted = true` to keep the old output. Positional calls are unaffected
 - **Breaking:** `toPrivate()`, `toInternal()` and `toPublic()` on `Record` and `Union` now set the accessibility of the type (`type private R = { ... }`), as they do on every other type definition. They used to set the accessibility of the fields or cases, which is now `toPrivateRepresentation()` and friends
 
 ### Fixed

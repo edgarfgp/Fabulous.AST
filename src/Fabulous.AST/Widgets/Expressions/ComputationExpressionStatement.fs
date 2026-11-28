@@ -1,5 +1,6 @@
 namespace Fabulous.AST
 
+open System.Runtime.CompilerServices
 open Fabulous.AST
 open Fabulous.AST.StackAllocatedCollections.StackList
 open Fantomas.Core.SyntaxOak
@@ -31,7 +32,15 @@ module ComputationExpressionStatement =
             b.Range
         )
 
-    let private bangBinding (keyword: SingleTextNode) (pat: Pattern) (expr: Expr) =
+    let private inKeyword(widget: Widget) =
+        match Widgets.tryGetScalarValue widget InKeyword with
+        | ValueSome true -> Some SingleTextNode.``in``
+        | _ -> None
+
+    let private bangBinding (keyword: SingleTextNode) (widget: Widget) =
+        let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
+        let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
+
         BindingNode(
             None,
             None,
@@ -45,7 +54,7 @@ module ComputationExpressionStatement =
             None,
             SingleTextNode.equals,
             expr,
-            None,
+            inKeyword widget,
             Range.range0
         )
 
@@ -54,9 +63,9 @@ module ComputationExpressionStatement =
             let binding = Widgets.getNodeFromWidget<BindingNode> widget Binding
 
             let binding =
-                match Widgets.tryGetScalarValue widget InKeyword with
-                | ValueSome true -> withInKeyword (Some SingleTextNode.``in``) binding
-                | _ -> binding
+                match inKeyword widget with
+                | Some _ as node -> withInKeyword node binding
+                | None -> binding
 
             ComputationExpressionStatement.BindingStatement(binding))
 
@@ -67,21 +76,15 @@ module ComputationExpressionStatement =
 
     let WidgetLetOrUseBangStatementKey =
         Widgets.register "LetOrUseBangStatement" (fun widget ->
-            let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
-            let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
-            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.letBang pat expr))
+            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.letBang widget))
 
     let WidgetUseBangStatementKey =
         Widgets.register "UseBangStatement" (fun widget ->
-            let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
-            let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
-            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.useBang pat expr))
+            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.useBang widget))
 
     let WidgetAndBangStatementKey =
         Widgets.register "AndBangStatement" (fun widget ->
-            let pat = Widgets.getNodeFromWidget<Pattern> widget PatternValue
-            let expr = Widgets.getNodeFromWidget<Expr> widget ExprValue
-            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.andBang pat expr))
+            ComputationExpressionStatement.BindingStatement(bangBinding SingleTextNode.andBang widget))
 
 [<AutoOpen>]
 module ComputationExpressionStatementBuilders =
@@ -169,3 +172,16 @@ module ComputationExpressionStatementBuilders =
 
         static member AndBangExpr(pat: string, expr: string) =
             Ast.AndBangExpr(Ast.Constant(pat), Ast.Constant(expr))
+
+type ComputationExpressionStatementModifiers =
+    /// <summary>
+    /// Ends a <c>let</c>, <c>use</c>, <c>let!</c>, <c>use!</c> or <c>and!</c> binding with <c>in</c>
+    /// (<c>let! x = fetch () in</c>). Other statements ignore it.
+    /// </summary>
+    /// <param name="this">Current widget.</param>
+    /// <code language="fsharp">
+    /// NamedComputationExpr("async", CompExprBodyExpr([ LetOrUseBangExpr("x", "fetch ()").withIn(); OtherExpr("return x") ]))
+    /// </code>
+    [<Extension>]
+    static member inline withIn(this: WidgetBuilder<ComputationExpressionStatement>) =
+        this.AddScalar(ComputationExpressionStatement.InKeyword.WithValue(true))
