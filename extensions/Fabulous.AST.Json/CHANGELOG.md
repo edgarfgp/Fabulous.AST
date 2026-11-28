@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0-pre10] - 2026-11-28
+
+### Changed
+- Built on Fabulous.AST 2.0.0-pre10; the generated code is unchanged
+
 ## [2.0.0-pre09] - 2026-11-18
 
 ### Changed
@@ -51,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0-pre01] - 2025-12-11
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre09...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre10...HEAD
+[2.0.0-pre10]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre10
 [2.0.0-pre09]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre09
 [2.0.0-pre08]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre08
 [2.0.0-pre07]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre07

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes_
+
+## [2.0.0-pre10] - 2026-11-28
+
 ### Added
 - `toRecursive()` on `Function` and `Value` generates `let rec`
 - `UseBangExpr` generates a `use!` binding in computation expressions
@@ -481,7 +485,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre09...HEAD
+[unreleased]: https://github.com/edgarfgp/Fabulous.AST/compare/2.0.0-pre10...HEAD
+[2.0.0-pre10]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre10
 [2.0.0-pre09]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre09
 [2.0.0-pre08]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre08
 [2.0.0-pre07]: https://github.com/edgarfgp/Fabulous.AST/releases/tag/2.0.0-pre07
