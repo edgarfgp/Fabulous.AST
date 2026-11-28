@@ -556,6 +556,39 @@ Ast.Oak() {
 (*** include-output ***)
 
 (**
+## 10. `InterpolatedStringExpr`: `isVerbatim` is now `isTripleQuoted`
+
+The `isVerbatim` argument of `InterpolatedStringExpr` always produced a triple-quoted string
+(`$"""..."""`), so it is renamed `isTripleQuoted`. `isVerbatim` now produces a real verbatim
+string (`$@"..."`). A call written `isVerbatim = true` still compiles but changes output, so
+rename it to `isTripleQuoted = true` to keep the old output. Positional calls keep their
+meaning (the second argument is still the triple-quote flag).
+
+Two related checks are new. More than one `$` (`dollars`) requires `isTripleQuoted = true`,
+because F# only allows extended interpolation on triple-quoted strings. Expressions given
+without an explicit brace count now get as many braces as there are dollars:
+*)
+
+Ast.Oak() {
+    AnonymousModule() {
+        // Was `isVerbatim = true`
+        InterpolatedStringExpr([ Text("Hello "); Expr(FillExpr("name"), 1) ], isTripleQuoted = true)
+
+        // A real verbatim string
+        InterpolatedStringExpr([ Text(@"C:\Users\"); Expr(FillExpr("name"), 1) ], isVerbatim = true)
+
+        // Two dollars: triple quotes, and `{{...}}` around the value
+        InterpolatedStringExpr([ "name" ], isTripleQuoted = true, dollars = 2)
+    }
+}
+|> Gen.mkOak
+|> Gen.run
+|> printfn "%s"
+
+// produces the following code:
+(*** include-output ***)
+
+(**
 ## Summary
 
 When migrating to v2.0.0:
@@ -568,6 +601,7 @@ When migrating to v2.0.0:
 6. **Drop `getterAccessibility` / `setterAccessibility`** arguments from `AbstractMember` calls
 7. **Move record accessibility to the type** if you relied on per-field modifiers — field accessibility now applies to the whole representation
 8. **Use `toPrivateRepresentation()`** on records and unions where you meant `type R = private { ... }`; `toPrivate()` now makes the type itself private
+9. **Rename `isVerbatim = true` to `isTripleQuoted = true`** in `InterpolatedStringExpr` calls; `isVerbatim` now produces `$@"..."`
 
 The v2.0 changes provide a cleaner, more consistent API while maintaining full compatibility with the Fantomas Oak AST.
 *)
