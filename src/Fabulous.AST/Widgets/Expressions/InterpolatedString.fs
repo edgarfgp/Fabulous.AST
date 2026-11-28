@@ -96,9 +96,11 @@ module InterpolatedStringBuilders =
             (parts: TextSegment seq, isTripleQuoted: bool option, dollars: int option, isVerbatim: bool option)
             =
             let dollars =
-                dollars
-                |> Option.map(fun count -> String.replicate count "$")
-                |> Option.defaultValue "$"
+                match dollars with
+                | Some count when count < 1 ->
+                    invalidArg "dollars" $"An interpolated string needs at least one $. Got: %d{count}"
+                | Some count -> String.replicate count "$"
+                | None -> "$"
 
             let isTripleQuoted = defaultArg isTripleQuoted false
             let isVerbatim = defaultArg isVerbatim false

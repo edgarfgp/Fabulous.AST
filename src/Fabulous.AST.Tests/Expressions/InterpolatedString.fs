@@ -617,13 +617,18 @@ let b = $@"a {x}"
         |> ignore
 
     [<Fact>]
-    let ``More than one dollar needs triple quotes``() =
-        Assert.Throws<System.ArgumentException>(fun () ->
-            Oak() { AnonymousModule() { InterpolatedStringExpr([ Int(12) ], dollars = 2) } }
-            |> Gen.mkOak
-            |> Gen.run
-            |> ignore)
-        |> ignore
+    let ``More than one dollar needs triple quotes, and there is at least one``() =
+        for dollars, isTripleQuoted in [ 2, false; 0, true; -1, true ] do
+            Assert.Throws<System.ArgumentException>(fun () ->
+                Oak() {
+                    AnonymousModule() {
+                        InterpolatedStringExpr([ Int(12) ], isTripleQuoted = isTripleQuoted, dollars = dollars)
+                    }
+                }
+                |> Gen.mkOak
+                |> Gen.run
+                |> ignore)
+            |> ignore
 
     [<Fact>]
     let ``Expressions get as many braces as dollars``() =
